@@ -30,7 +30,7 @@ export function StoriesSection() {
             
             // Map requirements to get product IDs
             const reqProductNames = storyData
-                .map(s => s.requirements.find(r => r.type === 'product')?.name)
+                .map(s => s.requirements.find((r: { type: string; name?: string }) => r.type === 'product')?.name)
                 .filter(Boolean);
             
             if (reqProductNames.length > 0) {
