@@ -17,7 +17,7 @@ const navLinks = [
 
 export function Navbar() {
   const { setIsCartOpen, cartCount } = useCart();
-  const { user, logout, openAuthModal, isAdmin } = useAuth();
+  const { user, signOut, openAuthModal, isAdmin } = useAuth();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -129,7 +129,7 @@ export function Navbar() {
                                             <Shield size={14} /> Admin Panel
                                         </Link>
                                     )}
-                                    <button onClick={() => { logout(); setIsProfileOpen(false); }} className="px-4 py-3 text-sm text-red-500 hover:bg-red-900/20 hover:text-red-400 flex items-center gap-3 transition-colors text-left w-full border-t border-[#333]">
+                                    <button onClick={() => { signOut(); setIsProfileOpen(false); }} className="px-4 py-3 text-sm text-red-500 hover:bg-red-900/20 hover:text-red-400 flex items-center gap-3 transition-colors text-left w-full border-t border-[#333]">
                                         <LogOut size={14} /> Disconnect
                                     </button>
                                 </>
@@ -227,7 +227,7 @@ export function Navbar() {
                                         <Shield size={20} /> Admin Panel
                                     </Link>
                                 )}
-                                <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="text-lg font-mono uppercase text-red-500 flex items-center gap-4">
+                                <button onClick={() => { signOut(); setIsMobileMenuOpen(false); }} className="text-lg font-mono uppercase text-red-500 flex items-center gap-4">
                                     <LogOut size={20} /> Logout
                                 </button>
                             </>

@@ -2,19 +2,13 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Terminal, Lock, User, ArrowRight, AlertCircle, Chrome, Command, Facebook, Twitter, CheckCircle } from "lucide-react";
-import { useAuth } from "@/context/auth-context";
 import { STORAGE_KEYS } from "@/lib/constants";
-
-// Demo mode credentials - only active in development
-const isDemoMode = process.env.NODE_ENV === 'development' || !isSupabaseConfigured;
-const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL || "demo@machinebrain.com";
-const DEMO_PASSWORD = "demo";
 
 function AuthPageContent() {
   const [isLogin, setIsLogin] = useState(true);
@@ -26,7 +20,6 @@ function AuthPageContent() {
   const [lastProvider, setLastProvider] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth();
 
   useEffect(() => {
     const emailParam = searchParams.get('email');
@@ -52,7 +45,7 @@ function AuthPageContent() {
 
   const handleSocialMock = (provider: string) => {
       localStorage.setItem(STORAGE_KEYS.LAST_PROVIDER, provider);
-      alert(`${provider} login simulated. Please use the test account for this demo.`);
+      alert(`${provider} login coming soon. Please use email/password for now.`);
   };
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -70,22 +63,10 @@ function AuthPageContent() {
     // Save email as last provider
     localStorage.setItem(STORAGE_KEYS.LAST_PROVIDER, 'email');
 
-    // Demo mode login - allows testing without Supabase configured
-    if (isDemoMode && email === DEMO_EMAIL && password === DEMO_PASSWORD) {
-        setTimeout(() => {
-            login(email);
-            router.push("/profile/me");
-        }, 1000);
-        return;
-    }
-
     try {
       if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        if (data.user?.email) {
-            login(data.user.email);
-        }
         router.push("/profile/me");
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password });
@@ -93,24 +74,20 @@ function AuthPageContent() {
             if (error.message.includes("User already registered") || error.message.includes("already exists")) {
                 setIsLogin(true);
                 setErrorMsg("Account already exists. Please enter your password to login.");
+                setLoading(false);
                 return;
             }
             throw error;
         }
         if (data.user?.email && !data.session) {
              alert("Check your email for the confirmation link!");
-        } else if (data.user?.email) {
-             login(data.user.email);
+        } else {
              router.push("/profile/me");
         }
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "An authentication error occurred.";
-      if (errorMessage.includes("SupabaseUrl is required") || errorMessage.includes("apikey")) {
-          setErrorMsg("System Offline: Database credentials missing. Use test account.");
-      } else {
-          setErrorMsg(errorMessage);
-      }
+      setErrorMsg(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -250,13 +227,6 @@ function AuthPageContent() {
                     <span>{isLogin ? "System Access // V.2.0.4" : "New Identity Protocol"}</span>
                 </div>
             </div>
-
-            {/* Demo mode notice */}
-            {isDemoMode && (
-                <div className="mb-4 p-3 bg-primary/10 border border-primary/30 text-xs text-primary font-mono">
-                    <span className="font-bold">Demo Mode:</span> Use <span className="bg-black/30 px-1">{DEMO_EMAIL}</span> / <span className="bg-black/30 px-1">{DEMO_PASSWORD}</span>
-                </div>
-            )}
 
             {/* Error Message */}
             {errorMsg && (

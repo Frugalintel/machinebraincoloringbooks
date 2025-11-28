@@ -85,7 +85,7 @@ function AchievementTile({ ach }: { ach: any }) {
 
 export default function ProfilePage() {
   const { username } = useParams();
-  const { user, logout, openAuthModal } = useAuth();
+  const { user, signOut, openAuthModal } = useAuth();
   const { collectionSets, achievements, activeAchievementIds } = useGame();
   
   const isCurrentUser = username === "me" || (user && username === user.id);
@@ -358,7 +358,7 @@ export default function ProfilePage() {
                                     <div className="mt-4">
                                         <Button 
                                             variant="outline" 
-                                            onClick={logout}
+                                            onClick={signOut}
                                             className="w-full border border-red-900/50 text-red-500 hover:bg-red-900 hover:text-white font-heading tracking-widest uppercase h-12 rounded-none"
                                         >
                                             Disconnect System (Logout)
