@@ -21,7 +21,7 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isAdmin, isLoading, logout } = useAuth();
+  const { user, isAdmin, isLoading, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -92,7 +92,7 @@ export default function AdminLayout({
 
         <div className="p-4 border-t border-[#333]">
           <button
-            onClick={logout}
+            onClick={signOut}
             className="flex items-center gap-3 px-4 py-3 w-full rounded-md text-red-500 hover:bg-red-900/20 transition-all"
           >
             <LogOut size={18} />
