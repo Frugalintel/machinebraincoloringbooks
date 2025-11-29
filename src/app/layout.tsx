@@ -8,6 +8,7 @@ import { ToastProvider } from "@/context/toast-context";
 import { CartDrawer } from "@/components/cart-drawer";
 import { NewsletterModal } from "@/components/newsletter-modal";
 import { AuthModal } from "@/components/auth-modal";
+import { ComingSoon } from "@/components/coming-soon";
 
 const oswald = Oswald({
   variable: "--font-oswald",
@@ -32,23 +33,29 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isComingSoon = process.env.COMING_SOON === "true";
+
   return (
     <html lang="en" className="dark">
       <body
         className={`${oswald.variable} ${rajdhani.variable} antialiased bg-background text-foreground font-sans overflow-x-hidden`}
       >
-        <AuthProvider>
-          <ToastProvider>
-            <GameProvider>
-              <CartProvider>
-                {children}
-                <CartDrawer />
-                <NewsletterModal />
-                <AuthModal />
-              </CartProvider>
-            </GameProvider>
-          </ToastProvider>
-        </AuthProvider>
+        {isComingSoon ? (
+          <ComingSoon />
+        ) : (
+          <AuthProvider>
+            <ToastProvider>
+              <GameProvider>
+                <CartProvider>
+                  {children}
+                  <CartDrawer />
+                  <NewsletterModal />
+                  <AuthModal />
+                </CartProvider>
+              </GameProvider>
+            </ToastProvider>
+          </AuthProvider>
+        )}
       </body>
     </html>
   );
