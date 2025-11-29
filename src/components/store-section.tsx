@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useCart } from "@/context/cart-context";
+import { useSettings } from "@/context/settings-context";
 import Link from "next/link";
 import { Plus, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -22,6 +23,7 @@ interface Product {
 
 export function StoreSection() {
   const { addItem } = useCart();
+  const { campaign } = useSettings();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -100,86 +102,105 @@ export function StoreSection() {
         </div>
       ) : (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8">
-        {products.map((cat, i) => (
-          <motion.div
-            key={cat.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            viewport={{ once: true }}
-            className="group perspective-1000"
-          >
-            <Link href={`/store/${cat.id}`} className="block h-full">
-                {/* Compact Book Cover Mockup */}
-                <div className="relative aspect-[3/4] w-full bg-[#111] shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-primary/20 border border-[#222] group-hover:border-primary/50 flex flex-col cursor-pointer h-full">
-                
-                {/* Spine Shadow (Left) */}
-                <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/60 to-transparent z-20 pointer-events-none"></div>
-                
-                {/* Cover Top: Visuals */}
-                <div className={`flex-1 ${cat.color} relative overflow-hidden`}>
-                    {/* Top Strip: Title */}
-                    <div className="absolute top-0 left-0 right-0 h-8 bg-black/30 flex items-center justify-center border-b border-black/10 backdrop-blur-sm z-10">
-                        <span className="font-heading text-white/90 text-sm tracking-widest uppercase">{cat.subtitle}</span>
-                    </div>
+        {products.map((cat, i) => {
+          let finalPrice = cat.price;
+          const isDiscountEnabled = campaign.isActive && campaign.discount.enabled;
+          
+          if (isDiscountEnabled) {
+              if (campaign.discount.type === 'percentage') {
+                  finalPrice = cat.price * (1 - campaign.discount.value / 100);
+              } else if (campaign.discount.type === 'fixed') {
+                  finalPrice = Math.max(0, cat.price - campaign.discount.value);
+              }
+          }
 
-                    {/* Abstract Art Area */}
-                    <div className="absolute inset-0 flex items-center justify-center p-4">
-                        <div className="absolute inset-0 opacity-30" 
-                            style={{ backgroundImage: `radial-gradient(circle at 50% 50%, transparent 20%, #000 120%)` }}></div>
-                        <div className={`w-16 h-16 rounded-full border-[2px] border-white/20 flex items-center justify-center relative z-10`}>
-                            <div className={`w-10 h-10 bg-white/10 rounded-full backdrop-blur-md`}></div>
-                        </div>
-                        {/* Dither Pattern */}
-                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-multiply"></div>
-                    </div>
+          return (
+            <motion.div
+              key={cat.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              viewport={{ once: true }}
+              className="group perspective-1000"
+            >
+              <Link href={`/store/${cat.id}`} className="block h-full">
+                  {/* Compact Book Cover Mockup */}
+                  <div className="relative aspect-[3/4] w-full bg-[#111] shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-primary/20 border border-[#222] group-hover:border-primary/50 flex flex-col cursor-pointer h-full">
+                  
+                  {/* Spine Shadow (Left) */}
+                  <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/60 to-transparent z-20 pointer-events-none"></div>
+                  
+                  {/* Cover Top: Visuals */}
+                  <div className={`flex-1 ${cat.color} relative overflow-hidden`}>
+                      {/* Top Strip: Title */}
+                      <div className="absolute top-0 left-0 right-0 h-8 bg-black/30 flex items-center justify-center border-b border-black/10 backdrop-blur-sm z-10">
+                          <span className="font-heading text-white/90 text-sm tracking-widest uppercase">{cat.subtitle}</span>
+                      </div>
 
-                    {/* Quick Add Button Overlay (Inside Image Container) */}
-                    <button 
-                        onClick={(e) => {
-                            e.preventDefault(); // Prevent navigation
-                            addItem({ id: cat.id, title: cat.title, price: cat.price, subtitle: cat.subtitle });
-                        }}
-                        className="absolute top-0 right-0 w-10 h-10 bg-primary text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-white hover:text-primary shadow-lg border-l border-b border-black/20"
-                    >
-                        <Plus size={20} strokeWidth={3} />
-                    </button>
-                </div>
-                    
-                {/* Cover Bottom: Data Block */}
-                <div className="bg-[#0a0a0a] p-3 border-t border-[#333] flex flex-col justify-center relative z-10">
-                    {/* Price & Difficulty */}
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                            <span className="text-gray-500 line-through text-[10px] font-mono">${cat.price.toFixed(2)}</span>
-                            <span className="font-heading text-white text-lg tracking-tight">${(cat.price * 0.7).toFixed(2)}</span>
-                        </div>
-                        <div className="flex flex-col items-end gap-0.5">
-                            <div className="flex gap-[2px]">
-                                {[...Array(5)].map((_, i) => (
-                                    <div key={i} className={`w-1 h-1.5 rounded-[1px] ${i < cat.difficulty ? 'bg-primary' : 'bg-[#222]'}`}></div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                      {/* Abstract Art Area */}
+                      <div className="absolute inset-0 flex items-center justify-center p-4">
+                          <div className="absolute inset-0 opacity-30" 
+                              style={{ backgroundImage: `radial-gradient(circle at 50% 50%, transparent 20%, #000 120%)` }}></div>
+                          <div className={`w-16 h-16 rounded-full border-[2px] border-white/20 flex items-center justify-center relative z-10`}>
+                              <div className={`w-10 h-10 bg-white/10 rounded-full backdrop-blur-md`}></div>
+                          </div>
+                          {/* Dither Pattern */}
+                          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-multiply"></div>
+                      </div>
 
-                    {/* Age & Vol */}
-                    <div className="flex items-center justify-between border-t border-[#222] pt-2">
-                        <span className="text-[9px] text-gray-400 font-mono uppercase tracking-widest">{cat.age}</span>
-                        <span className="text-[9px] text-gray-600 font-mono">VOL. {String(i + 1).padStart(3, '0')}</span>
-                    </div>
-                </div>
-                </div>
-            </Link>
+                      {/* Quick Add Button Overlay (Inside Image Container) */}
+                      <button 
+                          onClick={(e) => {
+                              e.preventDefault(); // Prevent navigation
+                              addItem({ id: cat.id, title: cat.title, price: finalPrice, subtitle: cat.subtitle });
+                          }}
+                          className="absolute top-0 right-0 w-10 h-10 bg-primary text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-white hover:text-primary shadow-lg border-l border-b border-black/20"
+                      >
+                          <Plus size={20} strokeWidth={3} />
+                      </button>
+                  </div>
+                      
+                  {/* Cover Bottom: Data Block */}
+                  <div className="bg-[#0a0a0a] p-3 border-t border-[#333] flex flex-col justify-center relative z-10">
+                      {/* Price & Difficulty */}
+                      <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                              {isDiscountEnabled ? (
+                                <>
+                                  <span className="text-gray-500 line-through text-[10px] font-mono">${cat.price.toFixed(2)}</span>
+                                  <span className="font-heading text-white text-lg tracking-tight">${finalPrice.toFixed(2)}</span>
+                                </>
+                              ) : (
+                                <span className="font-heading text-white text-lg tracking-tight">${cat.price.toFixed(2)}</span>
+                              )}
+                          </div>
+                          <div className="flex flex-col items-end gap-0.5">
+                              <div className="flex gap-[2px]">
+                                  {[...Array(5)].map((_, i) => (
+                                      <div key={i} className={`w-1 h-1.5 rounded-[1px] ${i < cat.difficulty ? 'bg-primary' : 'bg-[#222]'}`}></div>
+                                  ))}
+                              </div>
+                          </div>
+                      </div>
 
-            {/* Title Below */}
-            <div className="mt-3 text-center">
-              <h3 className="font-heading text-base text-white uppercase tracking-wide group-hover:text-primary transition-colors">
-                {cat.title}
-              </h3>
-            </div>
-          </motion.div>
-        ))}
+                      {/* Age & Vol */}
+                      <div className="flex items-center justify-between border-t border-[#222] pt-2">
+                          <span className="text-[9px] text-gray-400 font-mono uppercase tracking-widest">{cat.age}</span>
+                          <span className="text-[9px] text-gray-600 font-mono">VOL. {String(i + 1).padStart(3, '0')}</span>
+                      </div>
+                  </div>
+                  </div>
+              </Link>
+
+              {/* Title Below */}
+              <div className="mt-3 text-center">
+                <h3 className="font-heading text-base text-white uppercase tracking-wide group-hover:text-primary transition-colors">
+                  {cat.title}
+                </h3>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
       )}
     </section>

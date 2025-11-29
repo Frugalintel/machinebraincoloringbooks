@@ -49,7 +49,9 @@ export async function middleware(request: NextRequest) {
   const mockUser = request.cookies.get(COOKIE_NAMES.MOCK_USER);
 
   if (request.nextUrl.pathname.startsWith('/profile') && !user && !mockUser) {
-    return NextResponse.redirect(new URL('/auth', request.url));
+    const redirectUrl = new URL('/auth', request.url);
+    redirectUrl.searchParams.set('next', request.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
   return response;

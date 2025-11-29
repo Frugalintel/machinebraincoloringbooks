@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Search, ShoppingCart, User as UserIcon, Menu, X, LogIn, UserPlus, Package, Settings, LogOut, ChevronDown, Shield } from "lucide-react";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
+import { useSettings } from "@/context/settings-context";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,6 +19,7 @@ const navLinks = [
 export function Navbar() {
   const { setIsCartOpen, cartCount } = useCart();
   const { user, signOut, openAuthModal, isAdmin } = useAuth();
+  const { campaign } = useSettings();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -34,20 +36,39 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Determine if banner should show
+  const showBanner = campaign.isActive && campaign.banner.enabled;
+  const bannerStyle = campaign.banner.customCss 
+    ? undefined 
+    : { 
+        backgroundColor: campaign.banner.backgroundColor || '#e63946',
+        color: campaign.banner.textColor || '#ffffff'
+      };
+
   return (
     <>
-      {/* Black Friday Banner */}
-      <Link href="/store" className="block w-full bg-[#e63946] hover:bg-red-700 transition-colors z-50">
-        <div className="container mx-auto px-4 h-8 flex items-center justify-center gap-2 text-[10px] md:text-xs font-mono uppercase tracking-widest text-white">
-            <span className="font-bold">Black Friday Event</span>
-            <span className="hidden md:inline">•</span>
-            <span>30% OFF ALL BOOKS</span>
-            <span className="hidden md:inline">•</span>
-            <span className="underline">SHOP NOW</span>
-        </div>
-      </Link>
+      {/* Global Discount Banner */}
+      {showBanner && (
+        <Link 
+            href={campaign.banner.link || "/store"} 
+            className="block w-full transition-colors z-[100] relative overflow-hidden group"
+            style={bannerStyle}
+        >
+            {campaign.banner.customCss && (
+                <style jsx>{`
+                    .custom-banner {
+                        ${campaign.banner.customCss}
+                    }
+                `}</style>
+            )}
+            <div className={`container mx-auto px-4 h-8 flex items-center justify-center gap-2 text-[10px] md:text-xs font-mono uppercase tracking-widest ${campaign.banner.customCss ? 'custom-banner' : ''}`}>
+                <span className="font-bold">{campaign.banner.text}</span>
+                <span className="hidden md:inline group-hover:underline ml-2 opacity-80">Check it out &rarr;</span>
+            </div>
+        </Link>
+      )}
 
-      <nav className="w-full border-b border-[#333] bg-[#111] z-50 sticky top-0">
+      <nav className="w-full border-b border-[#333] bg-[#111] z-[100] sticky top-0">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           
           {/* Left: Logo & Brand */}
@@ -119,10 +140,7 @@ export function Navbar() {
                                         <p className="text-[10px] text-gray-500 font-mono truncate">{user.email}</p>
                                     </div>
                                     <Link href="/profile/me" className="px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-[#151515] flex items-center gap-3 transition-colors" onClick={() => setIsProfileOpen(false)}>
-                                        <UserIcon size={14} /> My Profile
-                                    </Link>
-                                    <Link href="/profile/me" className="px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-[#151515] flex items-center gap-3 transition-colors" onClick={() => setIsProfileOpen(false)}>
-                                        <Package size={14} /> Order History
+                                        <UserIcon size={14} /> My Profile & Orders
                                     </Link>
                                     {isAdmin && (
                                         <Link href="/admin" className="px-4 py-3 text-sm text-primary hover:text-white hover:bg-primary/10 flex items-center gap-3 transition-colors border-t border-[#333]" onClick={() => setIsProfileOpen(false)}>

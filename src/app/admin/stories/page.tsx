@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Story } from "@/lib/types";
 import Link from "next/link";
-import { Plus, Search, Edit, Trash2, BookOpen, Eye, EyeOff } from "lucide-react";
+import { Plus, Search, Edit, Trash2, BookOpen } from "lucide-react";
 import { useToast } from "@/context/toast-context";
+import { logAdminAction } from "@/lib/admin-utils";
 
 export default function AdminStoriesPage() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -35,40 +36,21 @@ export default function AdminStoriesPage() {
     }
   };
 
-  const handleToggleStatus = async (story: Story) => {
-      try {
-          const newStatus = !story.is_published;
-          const { error } = await supabase
-            .from('stories')
-            .update({ is_published: newStatus })
-            .eq('id', story.id);
-
-          if (error) throw error;
-
-          setStories(stories.map(s => s.id === story.id ? { ...s, is_published: newStatus } : s));
-          success(newStatus ? "Story published." : "Story unpublished.");
-      } catch (err) {
-          toastError("Failed to update story status.");
-          console.error(err);
-      }
-  };
-
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (story: Story) => {
       if (!confirm("Are you sure you want to delete this story?")) return;
 
       try {
-          const { error, count } = await supabase
-            .from('stories')
-            .delete({ count: 'exact' })
-            .eq('id', id);
-
+          const { error } = await supabase.from('stories').delete().eq('id', story.id);
           if (error) throw error;
           
-          if (count === 0) {
-            throw new Error("Story could not be deleted. Check your permissions.");
-          }
+          await logAdminAction(
+              'delete_story',
+              'stories',
+              story.id,
+              { title: story.title }
+          );
 
-          setStories(stories.filter(s => s.id !== id));
+          setStories(stories.filter(s => s.id !== story.id));
           success("Story deleted successfully.");
       } catch (err) {
           toastError("Failed to delete story.");
@@ -85,14 +67,14 @@ export default function AdminStoriesPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h2 className="text-3xl font-heading font-bold mb-1">STORIES</h2>
-            <p className="text-gray-500 font-mono text-sm">Manage interactive lore and adventures.</p>
+            <p className="text-gray-500 font-mono text-sm">Manage interactive narratives.</p>
         </div>
         <Link 
             href="/admin/stories/new"
             className="flex items-center justify-center gap-2 bg-primary text-black px-6 py-3 rounded font-bold hover:bg-white transition-colors"
         >
             <Plus size={18} />
-            <span>CREATE STORY</span>
+            <span>ADD STORY</span>
         </Link>
       </div>
 
@@ -122,50 +104,32 @@ export default function AdminStoriesPage() {
                 </div>
             )}
             {filteredStories.map((story) => (
-                <div key={story.id} className="bg-[#111] border border-[#333] rounded-lg overflow-hidden group hover:border-primary/50 transition-colors flex flex-col">
-                    <div className="h-40 bg-[#222] relative overflow-hidden">
-                        {story.cover_url ? (
-                            <img src={story.cover_url} alt={story.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-white/10">
-                                <BookOpen size={48} />
-                            </div>
-                        )}
-                        <div className="absolute top-2 right-2 flex gap-1">
-                            <span className={`px-2 py-1 rounded text-[10px] font-mono uppercase border backdrop-blur-sm ${story.is_published ? 'bg-green-900/50 border-green-500/50 text-green-400' : 'bg-gray-900/50 border-gray-500/50 text-gray-400'}`}>
-                                {story.is_published ? 'Published' : 'Draft'}
-                            </span>
+                <div key={story.id} className="bg-[#111] border border-[#333] rounded-lg p-6 relative group hover:border-primary/50 transition-colors">
+                    <div className="flex items-start justify-between mb-4">
+                        <div className="w-12 h-12 rounded-full bg-[#222] flex items-center justify-center text-primary border border-[#333]">
+                            <BookOpen size={24} />
+                        </div>
+                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Link href={`/admin/stories/${story.id}`} className="p-2 hover:bg-[#222] rounded text-gray-400 hover:text-white">
+                                <Edit size={16} />
+                            </Link>
+                            <button 
+                                onClick={() => handleDelete(story)}
+                                className="p-2 hover:bg-red-900/20 rounded text-gray-400 hover:text-red-500"
+                            >
+                                <Trash2 size={16} />
+                            </button>
                         </div>
                     </div>
                     
-                    <div className="p-6 flex-1 flex flex-col">
-                        <h3 className="font-bold text-white text-xl mb-2">{story.title}</h3>
-                        <p className="text-sm text-gray-400 mb-6 line-clamp-3 flex-1">{story.synopsis}</p>
-                        
-                        <div className="flex items-center justify-between pt-4 border-t border-[#222]">
-                            <div className="flex items-center gap-2">
-                                <Link href={`/admin/stories/${story.id}`} className="p-2 hover:bg-[#222] rounded text-gray-400 hover:text-white" title="Edit">
-                                    <Edit size={18} />
-                                </Link>
-                                <button 
-                                    onClick={() => handleToggleStatus(story)}
-                                    className="p-2 hover:bg-[#222] rounded text-gray-400 hover:text-white"
-                                    title={story.is_published ? "Unpublish" : "Publish"}
-                                >
-                                    {story.is_published ? <Eye size={18} /> : <EyeOff size={18} />}
-                                </button>
-                                <button 
-                                    onClick={() => handleDelete(story.id)}
-                                    className="p-2 hover:bg-red-900/20 rounded text-gray-400 hover:text-red-500"
-                                    title="Delete"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                            <Link href={`/stories/${story.id}`} target="_blank" className="text-xs font-mono text-primary hover:underline">
-                                PREVIEW
-                            </Link>
-                        </div>
+                    <h3 className="font-bold text-white text-lg mb-1">{story.title}</h3>
+                    <p className="text-sm text-gray-400 mb-4 h-16 overflow-hidden line-clamp-3">{story.synopsis}</p>
+                    
+                    <div className="flex items-center justify-between pt-4 border-t border-[#222] text-xs font-mono text-gray-500 uppercase tracking-wider">
+                        <span>Nodes: {story.content?.length || 0}</span>
+                        <span className={story.is_published ? 'text-green-500' : 'text-gray-500'}>
+                            {story.is_published ? 'Published' : 'Draft'}
+                        </span>
                     </div>
                 </div>
             ))}
@@ -174,4 +138,3 @@ export default function AdminStoriesPage() {
     </div>
   );
 }
-

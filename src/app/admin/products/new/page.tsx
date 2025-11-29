@@ -9,10 +9,12 @@ import { categories } from "@/lib/store-data";
 import { ChevronLeft, Save } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/context/toast-context";
+import { logAdminAction } from "@/lib/admin-utils";
 
 export default function NewProductPage() {
   const router = useRouter();
   const { success, error: toastError } = useToast();
+  
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<Product>>({
     title: "",
@@ -49,18 +51,21 @@ export default function NewProductPage() {
     e.preventDefault();
     setLoading(true);
 
-    if (!formData.title || !formData.price) {
-        toastError("Please fill in all required fields.");
-        setLoading(false);
-        return;
-    }
-
     try {
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('products')
-            .insert([formData]);
+            .insert([formData])
+            .select('id')
+            .single();
         
         if (error) throw error;
+
+        await logAdminAction(
+            'create_product',
+            'products',
+            data.id,
+            { title: formData.title }
+        );
 
         success("Product created successfully!");
         router.push('/admin/products');
@@ -72,7 +77,7 @@ export default function NewProductPage() {
         setLoading(false);
     }
   };
-
+  
   // Predefined Tailwind colors for selection
   const colorOptions = [
     { label: "Red", value: "bg-red-600" },
@@ -90,13 +95,15 @@ export default function NewProductPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-center gap-4 mb-8">
-        <Link href="/admin/products" className="p-2 hover:bg-[#222] rounded-full transition-colors">
-            <ChevronLeft size={24} />
-        </Link>
-        <div>
-            <h2 className="text-3xl font-heading font-bold">NEW PRODUCT</h2>
-            <p className="text-gray-500 font-mono text-sm">Add a new item to the store.</p>
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+            <Link href="/admin/products" className="p-2 hover:bg-[#222] rounded-full transition-colors">
+                <ChevronLeft size={24} />
+            </Link>
+            <div>
+                <h2 className="text-3xl font-heading font-bold">NEW PRODUCT</h2>
+                <p className="text-gray-500 font-mono text-sm">Create a new listing.</p>
+            </div>
         </div>
       </div>
 
@@ -106,7 +113,7 @@ export default function NewProductPage() {
             <div className="md:col-span-1 space-y-6">
                 <div className="bg-[#111] border border-[#333] p-4 rounded-lg">
                     <label className="block text-xs font-mono uppercase tracking-widest text-gray-500 mb-4">Product Image</label>
-                    <ImageUpload onUpload={handleImageUpload} />
+                    <ImageUpload onUpload={handleImageUpload} defaultImage={formData.image_url} />
                 </div>
                 
                 <div className="bg-[#111] border border-[#333] p-4 rounded-lg">
@@ -149,7 +156,7 @@ export default function NewProductPage() {
                 <div className="bg-[#111] border border-[#333] p-6 rounded-lg space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Title <span className="text-red-500">*</span></label>
+                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Title</label>
                             <input 
                                 type="text" 
                                 name="title"
@@ -157,7 +164,6 @@ export default function NewProductPage() {
                                 value={formData.title}
                                 onChange={handleChange}
                                 className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 focus:outline-none focus:border-primary"
-                                placeholder="e.g. VINTAGE"
                             />
                         </div>
                         <div className="space-y-2">
@@ -168,7 +174,6 @@ export default function NewProductPage() {
                                 value={formData.subtitle}
                                 onChange={handleChange}
                                 className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 focus:outline-none focus:border-primary"
-                                placeholder="e.g. Vacuum Pups"
                             />
                         </div>
                     </div>
@@ -181,13 +186,12 @@ export default function NewProductPage() {
                             value={formData.description}
                             onChange={handleChange}
                             className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 focus:outline-none focus:border-primary"
-                            placeholder="Product description..."
                         />
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                          <div className="space-y-2">
-                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Price ($) <span className="text-red-500">*</span></label>
+                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Price ($)</label>
                             <input 
                                 type="number" 
                                 name="price"

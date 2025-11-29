@@ -36,14 +36,16 @@ export default function AchievementsPage() {
 
     if (!user) {
          return (
-            <main className="min-h-screen bg-black text-white font-sans flex items-center justify-center">
+            <main className="min-h-screen bg-black text-white font-sans flex flex-col">
                 <Navbar />
-                <div className="text-center space-y-4">
-                    <Lock className="w-12 h-12 text-gray-500 mx-auto" />
-                    <h1 className="text-2xl font-heading uppercase">Restricted Access</h1>
-                    <Button onClick={() => openAuthModal('login')} className="bg-primary text-black hover:bg-white uppercase tracking-widest">
-                        Login Required
-                    </Button>
+                <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center space-y-4">
+                        <Lock className="w-12 h-12 text-gray-500 mx-auto" />
+                        <h1 className="text-2xl font-heading uppercase">Restricted Access</h1>
+                        <Button onClick={() => openAuthModal('login')} className="bg-primary text-black hover:bg-white uppercase tracking-widest">
+                            Login Required
+                        </Button>
+                    </div>
                 </div>
             </main>
          );

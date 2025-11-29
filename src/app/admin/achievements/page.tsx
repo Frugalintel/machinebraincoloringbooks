@@ -4,8 +4,22 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Achievement } from "@/lib/types";
 import Link from "next/link";
-import { Plus, Search, Edit, Trash2, Trophy } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Trophy, Brush, Star, Zap, Code, Lock } from "lucide-react";
 import { useToast } from "@/context/toast-context";
+import { logAdminAction } from "@/lib/admin-utils";
+
+// Helper to map icon string to component
+const getIconComponent = (iconName: string) => {
+    switch(iconName) {
+        case 'brush': return <Brush size={24} />;
+        case 'star': return <Star size={24} />;
+        case 'zap': return <Zap size={24} />;
+        case 'code': return <Code size={24} />;
+        case 'lock': return <Lock size={24} />;
+        case 'trophy':
+        default: return <Trophy size={24} />;
+    }
+};
 
 export default function AdminAchievementsPage() {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -35,14 +49,21 @@ export default function AdminAchievementsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (achievement: Achievement) => {
       if (!confirm("Are you sure you want to delete this achievement?")) return;
 
       try {
-          const { error } = await supabase.from('achievements').delete().eq('id', id);
+          const { error } = await supabase.from('achievements').delete().eq('id', achievement.id);
           if (error) throw error;
+          
+          await logAdminAction(
+              'delete_achievement',
+              'achievements',
+              achievement.id,
+              { title: achievement.title }
+          );
 
-          setAchievements(achievements.filter(p => p.id !== id));
+          setAchievements(achievements.filter(p => p.id !== achievement.id));
           success("Achievement deleted successfully.");
       } catch (err) {
           toastError("Failed to delete achievement.");
@@ -100,15 +121,14 @@ export default function AdminAchievementsPage() {
                 <div key={achievement.id} className="bg-[#111] border border-[#333] rounded-lg p-6 relative group hover:border-primary/50 transition-colors">
                     <div className="flex items-start justify-between mb-4">
                         <div className="w-12 h-12 rounded-full bg-[#222] flex items-center justify-center text-primary border border-[#333]">
-                            {/* In a real app we'd map the icon string to a component, for now generic trophy */}
-                            <Trophy size={24} /> 
+                            {getIconComponent(achievement.icon)}
                         </div>
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Link href={`/admin/achievements/${achievement.id}`} className="p-2 hover:bg-[#222] rounded text-gray-400 hover:text-white">
                                 <Edit size={16} />
                             </Link>
                             <button 
-                                onClick={() => handleDelete(achievement.id)}
+                                onClick={() => handleDelete(achievement)}
                                 className="p-2 hover:bg-red-900/20 rounded text-gray-400 hover:text-red-500"
                             >
                                 <Trash2 size={16} />
@@ -120,7 +140,7 @@ export default function AdminAchievementsPage() {
                     <p className="text-sm text-gray-400 mb-4 h-10 overflow-hidden">{achievement.description}</p>
                     
                     <div className="flex items-center justify-between pt-4 border-t border-[#222] text-xs font-mono text-gray-500 uppercase tracking-wider">
-                        <span>Type: {achievement.icon}</span>
+                        <span>Type: {achievement.trigger_type?.replace('_', ' ')}</span>
                         <span>Target: {achievement.target_value}</span>
                     </div>
                     
@@ -136,4 +156,3 @@ export default function AdminAchievementsPage() {
     </div>
   );
 }
-

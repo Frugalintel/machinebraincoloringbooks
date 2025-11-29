@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/context/toast-context";
+import { logAdminAction } from "@/lib/admin-utils";
 
 interface AchievementFormProps {
   initialData?: Achievement;
@@ -75,12 +76,6 @@ export function AchievementForm({ initialData, isEditing = false }: AchievementF
     e.preventDefault();
     setLoading(true);
 
-    // Clean up config based on type
-    const finalConfig = { ...formData.trigger_config };
-    if (formData.trigger_type === 'purchase_product' && finalConfig.product_id) {
-         // ensure it's saved correctly
-    }
-
     try {
       if (isEditing && initialData?.id) {
         const { error } = await supabase
@@ -88,12 +83,30 @@ export function AchievementForm({ initialData, isEditing = false }: AchievementF
           .update(formData)
           .eq('id', initialData.id);
         if (error) throw error;
+        
+        await logAdminAction(
+            'update_achievement',
+            'achievements',
+            initialData.id,
+            { title: formData.title, changes: formData }
+        );
+
         success("Achievement updated!");
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('achievements')
-          .insert([formData]);
+          .insert([formData])
+          .select('id')
+          .single();
         if (error) throw error;
+        
+        await logAdminAction(
+            'create_achievement',
+            'achievements',
+            data.id,
+            { title: formData.title }
+        );
+        
         success("Achievement created!");
       }
       router.push("/admin/achievements");
@@ -278,4 +291,3 @@ export function AchievementForm({ initialData, isEditing = false }: AchievementF
     </form>
   );
 }
-

@@ -79,9 +79,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') { // PGRST116 = not found
+      if (error) {
         console.error('Error fetching profile:', error);
       }
       return data;

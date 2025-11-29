@@ -7,13 +7,30 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Product } from "@/lib/types";
+import { useSettings } from "@/context/settings-context";
+import { CAMPAIGN_TEMPLATES } from "@/lib/campaign-templates";
 
 export function Hero() {
   const [featuredProduct, setFeaturedProduct] = useState<Product | null>(null);
+  const { campaign } = useSettings();
 
   useEffect(() => {
     const fetchFeatured = async () => {
-      // Fetch the Holiday product (or fallback to newest)
+      // 1. Check if campaign has a specific featured product
+      if (campaign.isActive && campaign.featuredProductId) {
+          const { data } = await supabase
+            .from('products')
+            .select('*')
+            .eq('id', campaign.featuredProductId)
+            .single();
+          
+          if (data) {
+              setFeaturedProduct(data);
+              return;
+          }
+      }
+
+      // 2. Fallback: Fetch the Holiday product (or fallback to newest)
       const { data } = await supabase
         .from('products')
         .select('*')
@@ -34,9 +51,25 @@ export function Hero() {
       }
     };
     fetchFeatured();
-  }, []);
+  }, [campaign.isActive, campaign.featuredProductId]);
 
   const productLink = featuredProduct ? `/store/${featuredProduct.id}` : "/store";
+  const originalPrice = featuredProduct?.price || 15;
+  
+  let finalPrice = originalPrice;
+  const isDiscountEnabled = campaign.isActive && campaign.discount.enabled;
+  
+  if (isDiscountEnabled) {
+      if (campaign.discount.type === 'percentage') {
+          finalPrice = originalPrice * (1 - campaign.discount.value / 100);
+      } else if (campaign.discount.type === 'fixed') {
+          finalPrice = Math.max(0, originalPrice - campaign.discount.value);
+      }
+  }
+
+  // Determine theme or defaults
+  const theme = campaign.isActive && campaign.theme ? campaign.theme : CAMPAIGN_TEMPLATES.default;
+  const isDefault = theme.id === 'default';
 
   return (
     <section className="relative w-full border-b border-[#333] bg-[#111]">
@@ -66,8 +99,8 @@ export function Hero() {
                 </div>
                 
                 <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.9] tracking-tighter uppercase mb-6">
-                    Holiday Event<br/>
-                    <span className="text-red-500">Season of Art</span>
+                    {theme.text.heroTitle}<br/>
+                    <span className="text-primary">{theme.text.heroSubtitle}</span>
                 </h1>
                 
                 <p className="max-w-lg text-gray-400 font-sans text-lg leading-relaxed mb-8">
@@ -76,7 +109,9 @@ export function Hero() {
 
                 <div className="flex flex-col sm:flex-row gap-4">
                     <Link href="/store">
-                        <Button className="h-14 px-8 bg-primary hover:bg-white hover:text-black text-white font-heading text-xl uppercase tracking-widest rounded-none group">
+                        <Button 
+                            className="h-14 px-8 bg-primary hover:bg-white hover:text-black text-white font-heading text-xl uppercase tracking-widest rounded-none group"
+                        >
                             Shop Collection <ShoppingBag className="ml-2 w-5 h-5 group-hover:scale-110 transition-transform" />
                         </Button>
                     </Link>
@@ -138,8 +173,14 @@ export function Hero() {
                                     <p className="text-white font-heading">{featuredProduct?.title || 'Festive Sci-Fi'}</p>
                                 </div>
                                 <div className="flex flex-col items-end">
-                                    <span className="text-gray-500 line-through text-sm font-mono">${featuredProduct?.price.toFixed(2) || '15.00'}</span>
-                                    <span className="font-heading text-white text-2xl tracking-tight">${((featuredProduct?.price || 15) * 0.7).toFixed(2)}</span>
+                                    {isDiscountEnabled ? (
+                                        <>
+                                            <span className="text-gray-500 line-through text-sm font-mono">${originalPrice.toFixed(2)}</span>
+                                            <span className="font-heading text-white text-2xl tracking-tight">${finalPrice.toFixed(2)}</span>
+                                        </>
+                                    ) : (
+                                        <span className="font-heading text-white text-2xl tracking-tight">${originalPrice.toFixed(2)}</span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -150,9 +191,13 @@ export function Hero() {
                 </Link>
 
                 {/* Floating 'New Release' Tag */}
-                <div className="absolute -top-4 -right-4 bg-red-500 text-white px-4 py-2 font-heading uppercase tracking-widest text-sm shadow-lg transform rotate-3 border border-white/20 z-50">
-                    Holiday Special
-                </div>
+                {(!isDefault || campaign.isActive) && (
+                    <div 
+                        className="absolute -top-4 -right-4 bg-primary text-black px-4 py-2 font-heading uppercase tracking-widest text-sm shadow-lg transform rotate-3 border border-white/20 z-40"
+                    >
+                        {theme.text.heroTag}
+                    </div>
+                )}
             </motion.div>
 
             {/* Quick Specs */}
@@ -169,12 +214,12 @@ export function Hero() {
       
       {/* Bottom Marquee / Connector */}
       <div className="border-t border-[#333] bg-[#0a0a0a] h-10 flex items-center px-4 justify-between text-[10px] font-mono text-gray-600 uppercase tracking-widest">
-          <span className="hidden md:inline">Holiday Sale: Live Now</span>
+          <span className="hidden md:inline">{isDefault ? 'New Arrivals' : `${theme.text.storyTag} Sale: Live Now`}</span>
           <div className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors animate-bounce">
-              <span>View Holiday Collection</span>
+              <span>View {theme.text.storyTag} Collection</span>
               <ArrowDown size={10} />
           </div>
-          <span className="hidden md:inline">Limited Holiday Stock</span>
+          <span className="hidden md:inline">Limited {theme.text.storyTag} Stock</span>
       </div>
     </section>
   );

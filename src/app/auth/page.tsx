@@ -2,12 +2,10 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Terminal, Lock, User, ArrowRight, AlertCircle, Chrome, Command, Facebook, Twitter, CheckCircle } from "lucide-react";
+import { Terminal, Lock, User, ArrowRight, AlertCircle, Chrome, Command, Facebook, Twitter, CheckCircle, Loader2 } from "lucide-react";
 import { STORAGE_KEYS } from "@/lib/constants";
 
 function AuthPageContent() {
@@ -20,6 +18,7 @@ function AuthPageContent() {
   const [lastProvider, setLastProvider] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const nextUrl = searchParams.get('next') || "/profile/me";
 
   useEffect(() => {
     const emailParam = searchParams.get('email');
@@ -50,12 +49,34 @@ function AuthPageContent() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("handleAuth called", { email, password: password ? "***" : "empty", isLogin });
     setLoading(true);
     setErrorMsg("");
+    
+    // Validation for empty fields
+    if (!email || !password) {
+        setErrorMsg("Please enter both email and password.");
+        setLoading(false);
+        return;
+    }
+
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured) {
+        setErrorMsg("Database not configured. Please contact support.");
+        setLoading(false);
+        return;
+    }
     
     // Basic validation for register
     if (!isLogin && password !== confirmPassword) {
         setErrorMsg("Passwords do not match.");
+        setLoading(false);
+        return;
+    }
+
+    // Password length validation
+    if (!isLogin && password.length < 6) {
+        setErrorMsg("Password must be at least 6 characters.");
         setLoading(false);
         return;
     }
@@ -67,7 +88,11 @@ function AuthPageContent() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        router.push("/profile/me");
+        
+        // Refresh router to update server components with new auth state
+        router.refresh(); 
+        router.push(nextUrl);
+        return;
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) {
@@ -82,7 +107,10 @@ function AuthPageContent() {
         if (data.user?.email && !data.session) {
              alert("Check your email for the confirmation link!");
         } else {
-             router.push("/profile/me");
+             // Refresh router to update server components with new auth state
+             router.refresh();
+             router.push(nextUrl);
+             return;
         }
       }
     } catch (error: unknown) {
@@ -132,17 +160,17 @@ function AuthPageContent() {
     </div>
   );
 
-  const FormSection = (
+  const renderForm = () => (
     <form onSubmit={handleAuth} className="space-y-6 mb-6">
         <div className="space-y-2">
             <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
                 <User size={10} /> User ID / Email
             </label>
-            <Input 
+            <input 
                 type="email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)}
-                className={`bg-[#111] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700 ${lastProvider === 'email' && isLogin ? 'border-primary' : 'border-[#333]'}`}
+                className={`w-full bg-[#111] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700 px-3 border ${lastProvider === 'email' && isLogin ? 'border-primary' : 'border-[#333]'}`}
                 placeholder="user@machinebrain.com"
             />
             {lastProvider === 'email' && isLogin && (
@@ -153,11 +181,11 @@ function AuthPageContent() {
             <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
                 <Lock size={10} /> Security Key
             </label>
-            <Input 
+            <input 
                 type="password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-[#111] border-[#333] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700"
+                className="w-full bg-[#111] border border-[#333] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700 px-3"
                 placeholder="••••••••"
             />
         </div>
@@ -171,24 +199,30 @@ function AuthPageContent() {
                 <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
                     <CheckCircle size={10} /> Confirm Key
                 </label>
-                <Input 
+                <input 
                     type="password" 
                     value={confirmPassword} 
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-[#111] border-[#333] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700"
+                    className="w-full bg-[#111] border border-[#333] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700 px-3"
                     placeholder="••••••••"
                 />
             </motion.div>
         )}
         
-        <Button 
+        <button 
             type="submit" 
             disabled={loading}
-            className="w-full h-14 bg-primary hover:bg-white hover:text-black text-white font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group"
+            className="w-full h-14 bg-primary hover:bg-white hover:text-black text-white font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50 flex items-center justify-center"
         >
-            {loading ? "Processing..." : (isLogin ? "Access System" : "Initialize Identity")}
-            {!loading && <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />}
-        </Button>
+            {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+                <>
+                    {isLogin ? "Access System" : "Initialize Identity"}
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+            )}
+        </button>
     </form>
   );
 
@@ -228,6 +262,14 @@ function AuthPageContent() {
                 </div>
             </div>
 
+            {/* Supabase not configured warning */}
+            {!isSupabaseConfigured && (
+                <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-900/50 text-xs text-yellow-400 font-mono">
+                    <AlertCircle size={14} className="inline mr-2" />
+                    Database not configured. Authentication may not work.
+                </div>
+            )}
+
             {/* Error Message */}
             {errorMsg && (
                 <div className="mb-6 p-3 bg-red-900/20 border border-red-900/50 flex items-start gap-3 text-xs text-red-400 font-mono">
@@ -254,7 +296,7 @@ function AuthPageContent() {
 
             {isLogin ? (
                 <>
-                    {FormSection}
+                    {renderForm()}
                     <Divider text="Or access via provider" />
                     {SocialSection}
                     <div className="mt-8 text-center border-t border-[#333] pt-6">
@@ -267,7 +309,7 @@ function AuthPageContent() {
                 <>
                     {SocialSection}
                     <Divider text="Or register with email" />
-                    {FormSection}
+                    {renderForm()}
                 </>
             )}
         </div>

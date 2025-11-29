@@ -5,6 +5,7 @@ import { CartProvider } from "@/context/cart-context";
 import { AuthProvider } from "@/context/auth-context";
 import { GameProvider } from "@/context/game-context";
 import { ToastProvider } from "@/context/toast-context";
+import { SettingsProvider } from "@/context/settings-context";
 import { CartDrawer } from "@/components/cart-drawer";
 import { NewsletterModal } from "@/components/newsletter-modal";
 import { AuthModal } from "@/components/auth-modal";
@@ -40,12 +41,14 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             <GameProvider>
-              <CartProvider>
-                {children}
-                <CartDrawer />
-                <NewsletterModal />
-                <AuthModal />
-              </CartProvider>
+              <SettingsProvider>
+                <CartProvider>
+                  {children}
+                  <CartDrawer />
+                  <NewsletterModal />
+                  <AuthModal />
+                </CartProvider>
+              </SettingsProvider>
             </GameProvider>
           </ToastProvider>
         </AuthProvider>

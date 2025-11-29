@@ -73,8 +73,10 @@ export function AuthModal() {
           }
           return;
         }
-        // Success - modal will close automatically via auth state change
-        router.push("/profile/me");
+        // Success - update router and close modal (stay on current page)
+        router.refresh();
+        closeAuthModal();
+        return;
       } else {
         const { error, needsConfirmation } = await signUp(email, password);
         if (error) {
@@ -90,8 +92,10 @@ export function AuthModal() {
         if (needsConfirmation) {
           setSuccessMsg("Check your email for the confirmation link!");
         } else {
-          // Auto-confirmed, redirect
-          router.push("/profile/me");
+          // Auto-confirmed - update router and close modal
+          router.refresh();
+          closeAuthModal();
+          return;
         }
       }
     } catch (error: any) {

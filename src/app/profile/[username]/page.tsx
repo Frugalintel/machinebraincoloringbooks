@@ -312,21 +312,9 @@ export default function ProfilePage() {
                             </div>
 
                             {/* Order Rows */}
-                            {[1,2,3].map((i) => (
-                                <div key={i} className="grid grid-cols-4 p-4 border-b border-[#333] text-sm font-sans items-center hover:bg-[#151515] transition-colors cursor-pointer group">
-                                    <div className="font-mono text-white group-hover:text-primary transition-colors flex items-center gap-2">
-                                        <Box size={12} className="hidden md:block text-gray-600 group-hover:text-primary" />
-                                        #ORD-2025-00{i}
-                                    </div>
-                                    <div className="text-gray-400 font-mono text-xs">NOV 2{i}, 2025</div>
-                                    <div>
-                                        <span className="bg-[#111] text-gray-400 text-[10px] px-2 py-1 border border-[#333] uppercase tracking-widest font-mono group-hover:border-primary/30 group-hover:text-primary transition-colors">
-                                            [SHIPPED]
-                                        </span>
-                                    </div>
-                                    <div className="text-right font-bold text-white font-mono">$45.00</div>
-                                </div>
-                            ))}
+                            <div className="p-8 text-center text-gray-500 font-mono text-sm uppercase tracking-widest border-b border-[#333]">
+                                No orders found
+                            </div>
                         </div>
                     </TabsContent>
                     

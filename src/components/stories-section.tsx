@@ -7,12 +7,15 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { useCart } from "@/context/cart-context";
+import { useSettings } from "@/context/settings-context";
 import { supabase } from "@/lib/supabase";
 import { Story } from "@/lib/types";
+import { CAMPAIGN_TEMPLATES } from "@/lib/campaign-templates";
 
 export function StoriesSection() {
   const { user, openAuthModal } = useAuth();
   const { addItem, setIsCartOpen } = useCart();
+  const { campaign } = useSettings();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
   const [productIds, setProductIds] = useState<Record<string, string>>({});
@@ -58,15 +61,30 @@ export function StoriesSection() {
       e.stopPropagation();
       const productId = productIds[story.initialArtifact];
       if (!productId) return; // Can't add if no ID found
+      
+      let finalPrice = story.price;
+      const isDiscountEnabled = campaign.isActive && campaign.discount.enabled;
+      
+      if (isDiscountEnabled) {
+          if (campaign.discount.type === 'percentage') {
+              finalPrice = story.price * (1 - campaign.discount.value / 100);
+          } else if (campaign.discount.type === 'fixed') {
+              finalPrice = Math.max(0, story.price - campaign.discount.value);
+          }
+      }
 
       addItem({ 
           id: productId, 
           title: "Book", 
           subtitle: story.initialArtifact,
-          price: story.price 
+          price: finalPrice 
       });
       setIsCartOpen(true);
   };
+
+  // Determine theme or defaults
+  const theme = campaign.isActive && campaign.theme ? campaign.theme : CAMPAIGN_TEMPLATES.default;
+  const isDefault = theme.id === 'default';
 
   return (
     <section className="w-full h-full flex flex-col relative">
@@ -92,8 +110,8 @@ export function StoriesSection() {
             {/* Top: Status Bar */}
             <div className="w-full border-b border-[#333] bg-[#111] p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="font-mono text-[10px] text-green-500 uppercase tracking-widest">Archive Online</span>
+                    <div className="w-2 h-2 rounded-full animate-pulse bg-green-500"></div>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-green-500">Archive Online</span>
                 </div>
                 <div className="flex gap-4">
                     <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest hidden md:inline">Top Rated This Month</span>
@@ -109,16 +127,25 @@ export function StoriesSection() {
                     </div>
                 ) : (
                 stories.map((story) => {
-                    const isHoliday = story.title.includes("Holiday") || story.title.includes("Frozen");
-                    const themeColor = isHoliday ? "text-red-500" : "text-primary";
-                    const themeBorder = isHoliday ? "border-red-500" : "border-primary";
-                    const themeBg = isHoliday ? "bg-red-500" : "bg-primary";
+                    const isHoliday = (story.title.includes("Holiday") || story.title.includes("Frozen")) && campaign.isActive;
+                    
                     // Fallback hook since it's not in DB yet
                     const hook = story.synopsis || "A mysterious signal detected...";
                     // Parse initialArtifact from requirements or fallback
                     const initialArtifact = story.requirements?.find(r => r.type === 'product')?.name || "Archives";
                     // Mock price for now since it's not on story object directly, or fetch it
                     const price = 15.00; 
+                    
+                    let finalPrice = price;
+                    const isDiscountEnabled = campaign.isActive && campaign.discount.enabled;
+                    
+                    if (isDiscountEnabled) {
+                        if (campaign.discount.type === 'percentage') {
+                            finalPrice = price * (1 - campaign.discount.value / 100);
+                        } else if (campaign.discount.type === 'fixed') {
+                            finalPrice = Math.max(0, price - campaign.discount.value);
+                        }
+                    }
 
                     return (
                     <motion.div 
@@ -128,27 +155,27 @@ export function StoriesSection() {
                         onClick={() => toggleExpand(story.id)}
                         className={`w-full border transition-all duration-300 relative overflow-hidden cursor-pointer
                             ${expandedId === story.id 
-                                ? `bg-[#1a1a1a] ${isHoliday ? "border-red-500/50" : "border-primary/50"}` 
-                                : `bg-[#151515] border-[#333] ${isHoliday ? "hover:border-red-500/30" : "hover:border-gray-500"}`
+                                ? `bg-[#1a1a1a] border-primary/50` 
+                                : `bg-[#151515] border-[#333] hover:border-gray-500`
                             }
                         `}
                     >
                         {expandedId === story.id && (
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${themeBg}`}></div>
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
                         )}
 
                         <div className="p-4 flex items-center gap-4">
                             {/* Icon */}
                             <div className={`w-12 h-12 border flex items-center justify-center shrink-0 transition-colors
                                 ${expandedId === story.id 
-                                    ? `bg-black ${themeBorder} ${themeColor}` 
+                                    ? `bg-black border-primary text-primary` 
                                     : "bg-black border-[#333] text-white"}
                             `}>
                                 {/* Logic: Show Unlock if user is logged in (TODO: check progress). Otherwise show Lock. */}
                                 {user ? ( // Simple check for now
-                                    <Lock size={16} className={expandedId === story.id ? themeColor : "text-gray-600"} />
+                                    <Lock size={16} className={expandedId === story.id ? "text-primary" : "text-gray-600"} />
                                 ) : (
-                                    <Lock size={16} className={expandedId === story.id ? themeColor : "text-gray-600"} />
+                                    <Lock size={16} className={expandedId === story.id ? "text-primary" : "text-gray-600"} />
                                 )}
                             </div>
 
@@ -156,12 +183,12 @@ export function StoriesSection() {
                             <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-center mb-1">
                                         <div className="flex items-center gap-2">
-                                            <h4 className={`font-heading text-xl uppercase tracking-wide truncate ${expandedId === story.id ? themeColor : "text-white"}`}>
+                                            <h4 className={`font-heading text-xl uppercase tracking-wide truncate ${expandedId === story.id ? "text-primary" : "text-white"}`}>
                                                 {story.title}
                                             </h4>
                                             {isHoliday && (
-                                                <span className="text-[8px] font-mono text-red-500 uppercase tracking-widest border border-red-900/50 bg-red-900/10 px-1.5 py-0.5 rounded-sm flex items-center gap-1">
-                                                    <Star size={6} fill="currentColor" /> Holiday
+                                                <span className="text-[8px] font-mono uppercase tracking-widest border px-1.5 py-0.5 rounded-sm flex items-center gap-1 text-primary border-primary/50 bg-primary/10">
+                                                    <Star size={6} fill="currentColor" /> {theme.text.storyTag}
                                                 </span>
                                             )}
                                         </div>
@@ -178,7 +205,7 @@ export function StoriesSection() {
                             </div>
 
                             {/* Arrow */}
-                            <div className={`w-8 h-8 flex items-center justify-center transition-transform duration-300 ${expandedId === story.id ? `rotate-180 ${themeColor}` : "text-gray-500"}`}>
+                            <div className={`w-8 h-8 flex items-center justify-center transition-transform duration-300 ${expandedId === story.id ? `rotate-180 text-primary` : "text-gray-500"}`}>
                                 <ChevronDown size={16} />
                             </div>
                         </div>
@@ -196,7 +223,7 @@ export function StoriesSection() {
                                         <div className="h-px w-full bg-[#333] mb-4"></div>
                                         
                                         {/* Teaser Text */}
-                                        <div className={`bg-[#111] border-l-2 ${isHoliday ? "border-red-500/50" : "border-primary/50"} p-4 mb-6 relative`}>
+                                        <div className="bg-[#111] border-l-2 border-primary/50 p-4 mb-6 relative">
                                             <p className="text-sm font-sans text-gray-300 italic leading-relaxed">
                                                 "{hook}"
                                             </p>
@@ -210,18 +237,24 @@ export function StoriesSection() {
                                                 <div className="flex items-center justify-between p-4 border-b border-[#222]">
                                                     <div className="flex flex-col">
                                                         <div className="flex items-center gap-2 mb-1">
-                                                            <div className={`w-1.5 h-1.5 rounded-full ${isHoliday ? "bg-red-500" : "bg-primary"} animate-pulse`}></div>
+                                                            <div className="w-1.5 h-1.5 rounded-full animate-pulse bg-primary"></div>
                                                             <span className="text-[9px] text-gray-500 uppercase tracking-widest font-mono">Required Key</span>
                                                         </div>
-                                                        <Link href={productIds[initialArtifact] ? `/store/${productIds[initialArtifact]}` : "#"} className={`text-sm font-heading uppercase tracking-wide text-white hover:${themeColor} transition-colors flex items-center gap-2`}>
+                                                        <Link href={productIds[initialArtifact] ? `/store/${productIds[initialArtifact]}` : "#"} className="text-sm font-heading uppercase tracking-wide text-white transition-colors flex items-center gap-2 hover:text-primary group-hover/card:text-primary">
                                                             {initialArtifact}
-                                                            <ArrowRight size={12} className={`transition-transform duration-300 group-hover/card:translate-x-1 ${isHoliday ? "text-red-500" : "text-primary"}`} />
+                                                            <ArrowRight size={12} className="transition-transform duration-300 group-hover/card:translate-x-1 text-primary" />
                                                         </Link>
                                                     </div>
                                                     
                                                     <div className="flex flex-col items-end">
-                                                        <span className="text-[10px] text-gray-600 line-through font-mono mb-0.5">${price.toFixed(2)}</span>
-                                                        <span className="text-base font-heading text-white tracking-tight">${(price * 0.7).toFixed(2)}</span>
+                                                        {isDiscountEnabled ? (
+                                                            <>
+                                                                <span className="text-[10px] text-gray-600 line-through font-mono mb-0.5">${price.toFixed(2)}</span>
+                                                                <span className="text-base font-heading text-white tracking-tight">${finalPrice.toFixed(2)}</span>
+                                                            </>
+                                                        ) : (
+                                                            <span className="text-base font-heading text-white tracking-tight">${price.toFixed(2)}</span>
+                                                        )}
                                                     </div>
                                                 </div>
 
@@ -242,7 +275,7 @@ export function StoriesSection() {
                                             <Link href="/stories">
                                                 <Button 
                                                     variant="outline"
-                                                    className={`w-full border-[#333] bg-[#1a1a1a] text-gray-400 hover:text-white hover:${isHoliday ? "border-red-500/50" : "border-primary/50"} hover:bg-[#222] font-mono text-xs h-10 rounded-none tracking-widest uppercase transition-all shadow-none`}
+                                                    className="w-full border-[#333] bg-[#1a1a1a] text-gray-400 hover:text-white hover:bg-[#222] hover:border-primary/50 font-mono text-xs h-10 rounded-none tracking-widest uppercase transition-all shadow-none"
                                                 >
                                                     I have the code <ArrowRight className="ml-2 w-3 h-3" />
                                                 </Button>

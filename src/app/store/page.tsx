@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
+import { useSettings } from "@/context/settings-context";
 import { Plus, Filter, Grid as GridIcon, List } from "lucide-react";
 import { categories, type Category, type Product } from "@/lib/store-data";
 import { supabase } from "@/lib/supabase";
@@ -14,6 +15,7 @@ export default function StorePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { addItem } = useCart();
+  const { globalDiscount } = useSettings();
 
   useEffect(() => {
     fetchProducts();
@@ -109,7 +111,12 @@ export default function StorePage() {
 
         {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-            {filteredProducts.map((cat, i) => (
+            {filteredProducts.map((cat, i) => {
+                const finalPrice = globalDiscount.enabled 
+                    ? cat.price * (1 - globalDiscount.percentage / 100) 
+                    : cat.price;
+
+                return (
                 <motion.div
                     layout
                     key={cat.id} // Use ID as key (can be string or number)
@@ -133,7 +140,7 @@ export default function StorePage() {
                                      <button 
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            addItem({ id: cat.id, title: cat.title, price: cat.price, subtitle: cat.subtitle });
+                                            addItem({ id: cat.id, title: cat.title, price: finalPrice, subtitle: cat.subtitle });
                                         }}
                                         className="absolute top-0 right-0 w-10 h-10 bg-primary text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-white hover:text-primary shadow-lg border-l border-b border-black/20"
                                     >
@@ -156,7 +163,7 @@ export default function StorePage() {
                                     <button 
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            addItem({ id: cat.id, title: cat.title, price: cat.price, subtitle: cat.subtitle });
+                                            addItem({ id: cat.id, title: cat.title, price: finalPrice, subtitle: cat.subtitle });
                                         }}
                                         className="absolute top-0 right-0 w-10 h-10 bg-primary text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-white hover:text-primary shadow-lg border-l border-b border-black/20"
                                     >
@@ -169,8 +176,14 @@ export default function StorePage() {
                             <div className="h-1/4 bg-[#0a0a0a] p-3 border-t border-[#333] flex flex-col justify-center gap-2 relative z-10">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-gray-500 line-through text-[10px] font-mono">${cat.price.toFixed(2)}</span>
-                                        <span className="font-heading text-white text-lg tracking-tight">${(cat.price * 0.7).toFixed(2)}</span>
+                                        {globalDiscount.enabled ? (
+                                            <>
+                                                <span className="text-gray-500 line-through text-[10px] font-mono">${cat.price.toFixed(2)}</span>
+                                                <span className="font-heading text-white text-lg tracking-tight">${finalPrice.toFixed(2)}</span>
+                                            </>
+                                        ) : (
+                                            <span className="font-heading text-white text-lg tracking-tight">${cat.price.toFixed(2)}</span>
+                                        )}
                                     </div>
                                     <div className="flex flex-col items-end gap-0.5">
                                         <div className="flex gap-[2px]">
@@ -195,7 +208,8 @@ export default function StorePage() {
                         <p className="text-[10px] text-gray-600 font-mono uppercase tracking-widest mt-1">{cat.category}</p>
                     </div>
                 </motion.div>
-            ))}
+                );
+            })}
         </div>
       </div>
     </main>

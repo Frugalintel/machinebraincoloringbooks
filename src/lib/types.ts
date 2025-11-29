@@ -137,3 +137,54 @@ export interface UserCollectible {
   unlocked_at: string;
 }
 
+export interface CampaignTheme {
+  id: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+    text: string;
+  };
+  text: {
+    heroTitle: string;
+    heroSubtitle: string;
+    heroTag: string;
+    storyTag: string;
+  };
+}
+
+export interface CampaignSettings {
+  isActive: boolean;
+  name: string;
+  featuredProductId?: string;
+  
+  discount: {
+    enabled: boolean;
+    type: 'percentage' | 'fixed';
+    value: number;
+    scope: 'global' | 'category' | 'collection';
+    targetIds?: string[];
+  };
+
+  banner: {
+    enabled: boolean;
+    text: string;
+    link: string;
+    backgroundColor: string;
+    textColor: string;
+    customCss?: string; // For advanced customization
+  };
+
+  theme?: CampaignTheme;
+}
+
+// Keeping this for backwards compatibility if needed, but we should migrate
+export type GlobalDiscountSettings = CampaignSettings; 
+
+export interface SystemSettings {
+  key: string;
+  value: any;
+  updated_at?: string;
+  updated_by?: string;
+}

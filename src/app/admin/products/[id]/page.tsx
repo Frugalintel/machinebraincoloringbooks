@@ -9,6 +9,7 @@ import { categories } from "@/lib/store-data";
 import { ChevronLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/context/toast-context";
+import { logAdminAction } from "@/lib/admin-utils";
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -95,6 +96,13 @@ export default function EditProductPage() {
         
         if (error) throw error;
 
+        await logAdminAction(
+            'update_product',
+            'products',
+            id,
+            { title: formData.title, changes: formData }
+        );
+
         success("Product updated successfully!");
         router.push('/admin/products');
         router.refresh();
@@ -117,6 +125,14 @@ export default function EditProductPage() {
       try {
           const { error } = await supabase.from('products').delete().eq('id', id);
           if (error) throw error;
+
+          await logAdminAction(
+              'delete_product',
+              'products',
+              id,
+              { title: formData.title }
+          );
+
           success("Product deleted successfully.");
           router.push('/admin/products');
           router.refresh();

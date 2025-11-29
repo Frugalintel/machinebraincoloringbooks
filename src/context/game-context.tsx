@@ -51,7 +51,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       // Fetch unlocked collectibles
       const { data: unlockedCollectibles, error: collError } = await supabase
         .from('user_collectibles')
-        .select('collectible_id, set_id')
+        .select('collectible_id')
         .eq('user_id', user.id);
 
       if (collError) {
@@ -63,33 +63,37 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         .from('user_active_achievements')
         .select('achievement_ids')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (activeError && activeError.code !== 'PGRST116') {
+      if (activeError) {
         console.error('Error fetching active achievements:', activeError);
       }
 
       // Merge unlocked achievements with initial data
-      const unlockedIds = new Set(unlockedAchievements?.map(a => a.achievement_id) || []);
+      const unlockedAchIds = new Set(unlockedAchievements?.map(a => a.achievement_id) || []);
       const mergedAchievements = initialAchievements.map(ach => ({
         ...ach,
-        unlocked: unlockedIds.has(ach.id) || ach.unlocked,
+        unlocked: unlockedAchIds.has(ach.id) || ach.unlocked,
       }));
       setAchievements(mergedAchievements);
 
       // Merge unlocked collectibles with initial data
-      const collectedBySet: Record<string, string[]> = {};
-      unlockedCollectibles?.forEach(c => {
-        if (c.set_id) {
-          if (!collectedBySet[c.set_id]) collectedBySet[c.set_id] = [];
-          collectedBySet[c.set_id].push(c.collectible_id);
-        }
-      });
+      const unlockedItemIds = new Set(unlockedCollectibles?.map(c => c.collectible_id) || []);
       
-      const mergedSets = initialSets.map(set => ({
-        ...set,
-        collected: [...new Set([...set.collected, ...(collectedBySet[set.id] || [])])],
-      }));
+      const mergedSets = initialSets.map(set => {
+        // Get locally "collected" from initial data
+        const localCollected = new Set(set.collected);
+        // Add database collected items that belong to this set
+        set.items.forEach(item => {
+            if (unlockedItemIds.has(item.id)) {
+                localCollected.add(item.id);
+            }
+        });
+        return {
+            ...set,
+            collected: Array.from(localCollected)
+        };
+      });
       setCollectionSets(mergedSets);
 
       // Set active achievements
@@ -133,7 +137,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           .upsert({
             user_id: user.id,
             collectible_id: itemId,
-            set_id: setId,
+            // Removed set_id to match schema
           }, {
             onConflict: 'user_id,collectible_id'
           });

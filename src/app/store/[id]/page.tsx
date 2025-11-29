@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart, Star, Truck, ShieldCheck, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
+import { useSettings } from "@/context/settings-context";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Product } from "@/lib/types";
@@ -14,6 +15,7 @@ import { Product } from "@/lib/types";
 export default function ProductPage() {
   const { id } = useParams();
   const { addItem, setIsCartOpen } = useCart();
+  const { campaign } = useSettings();
   const router = useRouter();
   
   const [product, setProduct] = useState<Product | null>(null);
@@ -67,11 +69,22 @@ export default function ProductPage() {
     );
   }
 
+  let finalPrice = product.price;
+  const isDiscountEnabled = campaign.isActive && campaign.discount.enabled;
+  
+  if (isDiscountEnabled) {
+      if (campaign.discount.type === 'percentage') {
+          finalPrice = product.price * (1 - campaign.discount.value / 100);
+      } else if (campaign.discount.type === 'fixed') {
+          finalPrice = Math.max(0, product.price - campaign.discount.value);
+      }
+  }
+
   const handleAddToCart = () => {
     addItem({ 
         id: product.id, 
         title: product.title, 
-        price: product.price, 
+        price: finalPrice, 
         subtitle: product.subtitle || ""
     });
     setIsCartOpen(true);
@@ -190,10 +203,20 @@ export default function ProductPage() {
                     
                     <div className="flex justify-between items-end mb-6">
                          <div className="flex flex-col">
-                            <span className="text-[10px] uppercase tracking-widest text-gray-500 font-mono">Black Friday Price</span>
+                            {isDiscountEnabled ? (
+                                <span className="text-[10px] uppercase tracking-widest text-gray-500 font-mono">{campaign.name || "Special Price"}</span>
+                            ) : (
+                                <span className="text-[10px] uppercase tracking-widest text-gray-500 font-mono">Standard Price</span>
+                            )}
                             <div className="flex items-baseline gap-3">
-                                <span className="font-heading text-4xl text-white">${(product.price * 0.7).toFixed(2)}</span>
-                                <span className="font-mono text-xl text-gray-600 line-through">${product.price.toFixed(2)}</span>
+                                {isDiscountEnabled ? (
+                                    <>
+                                        <span className="font-heading text-4xl text-white">${finalPrice.toFixed(2)}</span>
+                                        <span className="font-mono text-xl text-gray-600 line-through">${product.price.toFixed(2)}</span>
+                                    </>
+                                ) : (
+                                    <span className="font-heading text-4xl text-white">${product.price.toFixed(2)}</span>
+                                )}
                             </div>
                          </div>
                          <div className="flex gap-2 text-[10px] font-mono text-green-500 items-center bg-green-900/20 px-2 py-1 border border-green-900/30">
@@ -227,4 +250,3 @@ export default function ProductPage() {
     </main>
   );
 }
-
