@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuth } from "@/context/auth-context";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -19,8 +18,10 @@ import {
   ShieldCheck,
   Menu,
   X,
-  Store
+  Store,
+  Box
 } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 import { AdminNotificationProvider } from "@/components/admin/notifications";
 
 export default function AdminLayout({
@@ -62,6 +63,7 @@ export default function AdminLayout({
     { label: "Products", href: "/admin/products", icon: ShoppingBag },
     { label: "Stories", href: "/admin/stories", icon: BookOpen },
     { label: "Achievements", href: "/admin/achievements", icon: Trophy },
+    { label: "Collectibles", href: "/admin/collectibles", icon: Box },
     { label: "Discounts", href: "/admin/discounts", icon: Tags },
     { label: "Audit Log", href: "/admin/audit", icon: ShieldCheck },
     { label: "Health", href: "/admin/health", icon: Activity },
@@ -165,16 +167,14 @@ export default function AdminLayout({
         </aside>
 
         {/* Overlay for mobile menu */}
-        {isMobileMenuOpen && (
-            <div 
+        {isMobileMenuOpen ? <div 
                 className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
                 onClick={() => setIsMobileMenuOpen(false)}
-            ></div>
-        )}
+            ></div> : null}
 
         {/* Main Content */}
         <main className="flex-1 md:ml-64 min-h-screen bg-[#050505] relative w-full">
-           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none fixed"></div>
+           <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-5 pointer-events-none fixed"></div>
            <div className="p-4 pt-20 md:p-8 md:pt-8 relative z-10">
               {children}
            </div>

@@ -3,35 +3,35 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Achievement } from "@/lib/types";
-import { AchievementForm } from "@/components/admin/achievement-form";
+import { Collectible } from "@/lib/types";
+import { CollectibleForm } from "@/components/admin/collectible-form";
 import { logger } from "@/lib/logger";
 
-export default function EditAchievementPage() {
+export default function EditCollectiblePage() {
   const params = useParams();
-  const [achievement, setAchievement] = useState<Achievement | null>(null);
+  const [collectible, setCollectible] = useState<Collectible | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAchievement = async () => {
+    const fetchCollectible = async () => {
       try {
         const { data, error } = await supabase
-          .from('achievements')
+          .from('collectibles')
           .select('*')
           .eq('id', params.id)
           .single();
         
         if (error) throw error;
-        setAchievement(data);
+        setCollectible(data);
       } catch (error) {
-        logger.error("Error fetching achievement:", error);
+        logger.error("Error fetching collectible:", error);
       } finally {
         setLoading(false);
       }
     };
 
     if (params.id) {
-        fetchAchievement();
+        fetchCollectible();
     }
   }, [params.id]);
 
@@ -43,8 +43,7 @@ export default function EditAchievementPage() {
     );
   }
 
-  if (!achievement) return <div>Achievement not found</div>;
+  if (!collectible) return <div className="text-center py-20 text-gray-500">Collectible not found</div>;
 
-  return <AchievementForm initialData={achievement} isEditing={true} />;
+  return <CollectibleForm initialData={collectible} isEditing={true} />;
 }
-

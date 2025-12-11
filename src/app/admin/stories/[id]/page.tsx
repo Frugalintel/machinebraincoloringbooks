@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { Story } from "@/lib/types";
 import { StoryForm } from "@/components/admin/story-form";
+import { logger } from "@/lib/logger";
 
 export default function EditStoryPage() {
   const params = useParams();
@@ -23,7 +24,7 @@ export default function EditStoryPage() {
         if (error) throw error;
         setStory(data);
       } catch (error) {
-        console.error(error);
+        logger.error("Error fetching story:", error);
       } finally {
         setLoading(false);
       }

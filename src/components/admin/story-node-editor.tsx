@@ -1,22 +1,253 @@
 "use client";
 
-import { useState } from "react";
-import { StoryNode } from "@/lib/types";
+import { useState, useEffect } from "react";
+import { 
+  Plus, Trash2, ArrowRight, ArrowDown, GripVertical, CheckCircle2, 
+  FileText, Image as ImageIcon, Music, Lock, Clock, QrCode, 
+  MoreVertical, Copy, Split 
+} from "lucide-react";
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { StoryNode, StoryChallenge } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, ArrowRight, AlertTriangle, Play, GripVertical, CheckCircle2, Lock, FileText, Check } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { MediaUpload } from "@/components/media-upload";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { StoryBranchingView } from "./story-branching-view";
 
 interface StoryNodeEditorProps {
   nodes: StoryNode[];
   onChange: (nodes: StoryNode[]) => void;
 }
 
-export function StoryNodeEditor({ nodes, onChange }: StoryNodeEditorProps) {
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(nodes.length > 0 ? nodes[0].id : null);
-  const [viewMode, setViewMode] = useState<'visual' | 'json'>('visual');
+// Sortable Item Component
+function SortableNodeItem({ 
+  node, 
+  index, 
+  updateNode, 
+  deleteNode, 
+  setChallengeType, 
+  updateChallengeConfig, 
+  isLast 
+}: any) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: node.id });
 
-  // Helper to update a specific node
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const hasChallenge = !!node.challenge;
+
+  return (
+    <div ref={setNodeRef} style={style} className="relative mb-6">
+       {/* Connector Line */}
+       {!isLast && (
+          <div className="absolute left-[50%] md:left-[24px] top-[100%] h-8 w-px bg-[#333] z-0 flex items-center justify-center">
+              <ArrowDown size={14} className="text-gray-600 mt-2" />
+          </div>
+      )}
+
+      <div className="relative z-10 bg-[#111] border border-[#333] rounded-lg p-4 md:p-6 group hover:border-primary/30 transition-colors">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 border-b border-[#222] pb-4 gap-4">
+              <div className="flex items-center gap-3">
+                  <div 
+                    {...attributes} 
+                    {...listeners}
+                    className="cursor-grab active:cursor-grabbing text-gray-600 hover:text-white"
+                  >
+                    <GripVertical size={20} />
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-[#222] border border-[#333] flex items-center justify-center text-xs font-mono text-gray-500 shrink-0">
+                      {index + 1}
+                  </div>
+                  <div className="flex flex-col">
+                      <span className="font-heading text-sm text-gray-300">SECTION {index + 1}</span>
+                      <span className="text-[10px] font-mono text-gray-600 uppercase hidden md:inline-block">ID: {node.id.slice(0, 8)}...</span>
+                  </div>
+              </div>
+              <button onClick={() => deleteNode(node.id)} className="text-gray-600 hover:text-red-500 transition-colors self-end md:self-auto p-2">
+                  <Trash2 size={16} />
+              </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left: Content */}
+              <div className="space-y-4">
+                  <div>
+                      <label className="text-[10px] font-mono text-gray-500 uppercase mb-2 block">Story Text</label>
+                      <textarea 
+                          value={node.content}
+                          onChange={(e) => updateNode(node.id, { content: e.target.value })}
+                          className="w-full h-32 bg-[#1a1a1a] border border-[#333] rounded p-3 text-sm text-gray-300 focus:outline-none focus:border-primary placeholder:text-gray-600 font-sans"
+                          placeholder="Once upon a time..."
+                      />
+                  </div>
+                  
+                  <div>
+                      <label className="text-[10px] font-mono text-gray-500 uppercase mb-2 block">Interactivity</label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#1a1a1a] p-1 rounded border border-[#333]">
+                          {[
+                              { id: 'none', icon: FileText, label: 'None' },
+                              { id: 'riddle', icon: Lock, label: 'Riddle' },
+                              { id: 'timer', icon: Clock, label: 'Timer' },
+                              { id: 'scan', icon: QrCode, label: 'Scan' },
+                          ].map((type) => (
+                              <button
+                                  key={type.id}
+                                  type="button"
+                                  onClick={() => setChallengeType(node.id, type.id as any)}
+                                  className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-3 sm:py-2 rounded text-[10px] uppercase font-mono transition-colors
+                                      ${(node.challenge?.type || 'none') === type.id 
+                                          ? 'bg-primary text-black font-bold' 
+                                          : 'text-gray-500 hover:text-white hover:bg-[#222]'}
+                                  `}
+                              >
+                                  <type.icon size={12} /> {type.label}
+                              </button>
+                          ))}
+                      </div>
+                  </div>
+
+                  {/* Challenge Config */}
+                  {hasChallenge ? <div className="bg-[#1a1a1a] border border-dashed border-[#333] p-4 rounded space-y-3 animate-in fade-in slide-in-from-top-2">
+                          {node.challenge?.type === 'riddle' && (
+                              <>
+                                  <Input 
+                                      placeholder="Question (e.g. What has keys...?)" 
+                                      value={node.challenge.config.question || ""}
+                                      onChange={(e) => updateChallengeConfig(node.id, 'question', e.target.value)}
+                                      className="bg-[#111] border-[#333]"
+                                  />
+                                  <Input 
+                                      placeholder="Answer (e.g. Piano)" 
+                                      value={node.challenge.config.answer || ""}
+                                      onChange={(e) => updateChallengeConfig(node.id, 'answer', e.target.value)}
+                                      className="bg-[#111] border-[#333]"
+                                  />
+                              </>
+                          )}
+                          {node.challenge?.type === 'timer' && (
+                              <div className="flex items-center gap-3">
+                                  <label className="text-xs text-gray-400">Duration (seconds):</label>
+                                  <Input 
+                                      type="number"
+                                      value={node.challenge.config.duration || 60}
+                                      onChange={(e) => updateChallengeConfig(node.id, 'duration', parseInt(e.target.value))}
+                                      className="bg-[#111] border-[#333] w-24"
+                                  />
+                              </div>
+                          )}
+                          {node.challenge?.type === 'scan' && (
+                              <Input 
+                                  placeholder="Target Code (e.g. PAGE_5)" 
+                                  value={node.challenge.config.target_code || ""}
+                                  onChange={(e) => updateChallengeConfig(node.id, 'target_code', e.target.value)}
+                                  className="bg-[#111] border-[#333]"
+                              />
+                          )}
+                      </div> : null}
+              </div>
+
+              {/* Right: Media */}
+              <div className="space-y-4">
+                  <label className="text-[10px] font-mono text-gray-500 uppercase mb-2 block">Media Assets</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <MediaUpload 
+                          type="image" 
+                          label="Scene Image"
+                          defaultUrl={node.image_url} 
+                          onUpload={(url) => updateNode(node.id, { image_url: url })} 
+                      />
+                      <MediaUpload 
+                          type="audio" 
+                          label="Background Audio"
+                          defaultUrl={node.audio_url} 
+                          onUpload={(url) => updateNode(node.id, { audio_url: url })} 
+                      />
+                  </div>
+                  
+                  {/* Choices (Simplified) */}
+                  <div className="pt-4 border-t border-[#222]">
+                      <div className="flex items-center justify-between mb-2">
+                          <label className="text-[10px] font-mono text-gray-500 uppercase">Next Step</label>
+                      </div>
+                      {node.choices.length === 0 ? (
+                           <div className="text-xs text-gray-500 italic">End of story (or configure manually)</div>
+                      ) : (
+                          <div className="space-y-2">
+                              {node.choices.map((choice: any, idx: number) => (
+                                  <div key={idx} className="flex items-center gap-2 text-xs bg-[#1a1a1a] p-2 rounded border border-[#333]">
+                                      <ArrowRight size={12} className="text-primary shrink-0" />
+                                      <span className="text-gray-300 truncate">"{choice.text}"</span>
+                                      <span className="text-gray-500">→</span>
+                                      <span className="font-mono text-gray-400 text-[10px] truncate">{choice.nextNodeId}</span>
+                                  </div>
+                              ))}
+                          </div>
+                      )}
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  );
+}
+
+export function StoryNodeEditor({ nodes, onChange }: StoryNodeEditorProps) {
+  const [viewMode, setViewMode] = useState<'builder' | 'visual' | 'json'>('builder');
+  
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  useEffect(() => {
+    if (nodes.length === 0) {
+        addNode();
+    }
+  }, []);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      const oldIndex = nodes.findIndex((n) => n.id === active.id);
+      const newIndex = nodes.findIndex((n) => n.id === over.id);
+      
+      const newNodes = arrayMove(nodes, oldIndex, newIndex);
+      
+      // Optional: Auto-relink if in pure linear mode? 
+      // For now, let's keep links as is to preserve logic, or we can prompt.
+      // Assuming linear builder primarily for linear stories.
+      
+      onChange(newNodes);
+    }
+  };
+
   const updateNode = (id: string, updates: Partial<StoryNode>) => {
     const newNodes = nodes.map(node => 
       node.id === id ? { ...node, ...updates } : node
@@ -24,257 +255,215 @@ export function StoryNodeEditor({ nodes, onChange }: StoryNodeEditorProps) {
     onChange(newNodes);
   };
 
-  // Add a new node
-  const addNode = () => {
+  const addNode = (template: 'text' | 'choice' | 'riddle' | 'timer' | 'scan' | 'end' = 'text') => {
     const id = `node-${nodes.length + 1}-${Math.random().toString(36).substr(2, 4)}`;
+    
+    // Auto-link previous node to this new one if in builder mode
+    const updatedNodes = [...nodes];
+    if (viewMode === 'builder' && nodes.length > 0) {
+        const lastNode = updatedNodes[updatedNodes.length - 1];
+        if (!lastNode.choices || lastNode.choices.length === 0) {
+            updatedNodes[updatedNodes.length - 1] = {
+                ...lastNode,
+                choices: [{ text: "Continue", nextNodeId: id }]
+            };
+        }
+    }
+
     const newNode: StoryNode = {
       id,
       content: "",
       choices: [],
-      type: 'text'
+      type: template === 'riddle' || template === 'timer' || template === 'scan' ? 'challenge' : 
+            template === 'choice' ? 'choice' : 
+            template === 'end' ? 'ending' : 'text'
     };
-    onChange([...nodes, newNode]);
-    setSelectedNodeId(id);
+
+    if (template === 'riddle') {
+       newNode.challenge = { type: 'riddle', config: { question: "", answer: "" } };
+    } else if (template === 'timer') {
+       newNode.challenge = { type: 'timer', config: { duration: 60 } };
+    } else if (template === 'scan') {
+       newNode.challenge = { type: 'scan', config: { target_code: "" } };
+    } else if (template === 'choice') {
+       newNode.content = "Make your choice...";
+       newNode.choices = [
+           { text: "Option A", nextNodeId: "" },
+           { text: "Option B", nextNodeId: "" }
+       ];
+    }
+    
+    onChange([...updatedNodes, newNode]);
   };
 
-  // Delete a node
   const deleteNode = (id: string) => {
-    if (confirm("Are you sure? This might break links from other nodes.")) {
+    if (confirm("Delete this section?")) {
       const newNodes = nodes.filter(n => n.id !== id);
       onChange(newNodes);
-      if (selectedNodeId === id) {
-        setSelectedNodeId(newNodes.length > 0 ? newNodes[0].id : null);
-      }
     }
   };
 
-  // Add a choice to a node
-  const addChoice = (nodeId: string) => {
-    const node = nodes.find(n => n.id === nodeId);
-    if (!node) return;
+  const setChallengeType = (nodeId: string, type: 'none' | 'riddle' | 'timer' | 'scan') => {
+      const node = nodes.find(n => n.id === nodeId);
+      if (!node) return;
 
-    const newChoice = { text: "", nextNodeId: "" };
-    updateNode(nodeId, { choices: [...(node.choices || []), newChoice] });
+      if (type === 'none') {
+          const { challenge, ...rest } = node;
+          updateNode(nodeId, { ...rest, type: 'text' });
+      } else {
+          const defaultConfigs: Record<string, any> = {
+              'riddle': { question: "What has keys but no locks?", answer: "Piano" },
+              'timer': { duration: 60 },
+              'scan': { target_code: "CLUE_1" }
+          };
+
+          const newChallenge: StoryChallenge = {
+              type: type as any,
+              config: defaultConfigs[type]
+          };
+
+          updateNode(nodeId, { 
+              challenge: newChallenge,
+              type: 'challenge'
+          });
+      }
   };
 
-  // Update a choice
-  const updateChoice = (nodeId: string, choiceIndex: number, field: 'text' | 'nextNodeId', value: string) => {
-    const node = nodes.find(n => n.id === nodeId);
-    if (!node || !node.choices) return;
+  const updateChallengeConfig = (nodeId: string, field: string, value: any) => {
+      const node = nodes.find(n => n.id === nodeId);
+      if (!node || !node.challenge) return;
 
-    const newChoices = [...node.choices];
-    newChoices[choiceIndex] = { ...newChoices[choiceIndex], [field]: value };
-    updateNode(nodeId, { choices: newChoices });
+      updateNode(nodeId, {
+          challenge: {
+              ...node.challenge,
+              config: {
+                  ...node.challenge.config,
+                  [field]: value
+              }
+          }
+      });
   };
-
-  // Remove a choice
-  const removeChoice = (nodeId: string, choiceIndex: number) => {
-    const node = nodes.find(n => n.id === nodeId);
-    if (!node || !node.choices) return;
-
-    const newChoices = node.choices.filter((_, i) => i !== choiceIndex);
-    updateNode(nodeId, { choices: newChoices });
-  };
-
-  const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
   return (
-    <div className="flex flex-col gap-4 h-[600px] border border-[#333] rounded-lg overflow-hidden bg-[#0a0a0a]">
+    <div className="flex flex-col gap-4 min-h-[60vh] md:min-h-[600px] bg-[#0a0a0a]">
       {/* Toolbar */}
-      <div className="flex items-center justify-between p-4 border-b border-[#333] bg-[#111]">
-        <div className="flex items-center gap-2">
-            <div className="flex bg-[#222] rounded p-1">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-[#333] bg-[#111] rounded-t-lg gap-4">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex bg-[#222] rounded p-1 flex-1 sm:flex-none justify-center sm:justify-start overflow-x-auto">
                 <button
-                    onClick={() => setViewMode('visual')}
-                    className={`px-3 py-1 text-xs font-mono rounded transition-colors ${viewMode === 'visual' ? 'bg-primary text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                    type="button"
+                    onClick={() => setViewMode('builder')}
+                    className={`px-3 py-1 text-xs font-mono rounded transition-colors whitespace-nowrap ${viewMode === 'builder' ? 'bg-primary text-black font-bold' : 'text-gray-400 hover:text-white'}`}
                 >
-                    VISUAL
+                    EASY BUILDER
                 </button>
                 <button
+                    type="button"
+                    onClick={() => setViewMode('visual')}
+                    className={`px-3 py-1 text-xs font-mono rounded transition-colors whitespace-nowrap ${viewMode === 'visual' ? 'bg-primary text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                >
+                    VISUAL GRAPH
+                </button>
+                <button
+                    type="button"
                     onClick={() => setViewMode('json')}
-                    className={`px-3 py-1 text-xs font-mono rounded transition-colors ${viewMode === 'json' ? 'bg-primary text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                    className={`px-3 py-1 text-xs font-mono rounded transition-colors whitespace-nowrap ${viewMode === 'json' ? 'bg-primary text-black font-bold' : 'text-gray-400 hover:text-white'}`}
                 >
                     JSON
                 </button>
             </div>
-            <span className="text-xs text-gray-500 font-mono ml-2">
-                {nodes.length} Nodes
+            <span className="text-xs text-gray-500 font-mono ml-2 hidden sm:inline">
+                {nodes.length} Sections
             </span>
         </div>
-        <Button onClick={addNode} size="sm" className="bg-[#222] hover:bg-primary hover:text-black border border-[#333] text-xs font-mono">
-            <Plus size={14} className="mr-2" /> ADD NODE
-        </Button>
       </div>
 
-      {viewMode === 'json' ? (
-        <textarea 
-            value={JSON.stringify(nodes, null, 2)}
-            onChange={(e) => {
-                try {
-                    onChange(JSON.parse(e.target.value));
-                } catch (err) {
-                    // ignore parse errors while typing
-                }
-            }}
-            className="flex-1 w-full bg-[#0a0a0a] text-green-500 font-mono text-sm p-4 focus:outline-none resize-none"
-        />
-      ) : (
-        <div className="flex flex-1 overflow-hidden">
-            {/* Sidebar: Node List */}
-            <div className="w-64 border-r border-[#333] overflow-y-auto bg-[#111]">
-                {nodes.map(node => (
-                    <div 
-                        key={node.id}
-                        onClick={() => setSelectedNodeId(node.id)}
-                        className={`p-3 border-b border-[#222] cursor-pointer hover:bg-[#1a1a1a] transition-colors relative group
-                            ${selectedNodeId === node.id ? 'bg-[#1a1a1a] border-l-2 border-l-primary' : 'border-l-2 border-l-transparent'}
-                        `}
-                    >
-                        <div className="flex items-center justify-between mb-1">
-                            <span className={`text-xs font-mono font-bold uppercase truncate
-                                ${node.id === 'start' ? 'text-green-500' : (node.type === 'ending' ? 'text-red-500' : 'text-blue-400')}
-                            `}>
-                                {node.id === 'start' && <Play size={10} className="inline mr-1" />}
-                                {node.id}
-                            </span>
-                            {selectedNodeId === node.id && (
-                                <button onClick={(e) => { e.stopPropagation(); deleteNode(node.id); }} className="text-gray-600 hover:text-red-500">
-                                    <Trash2 size={12} />
-                                </button>
-                            )}
-                        </div>
-                        <p className="text-[10px] text-gray-500 line-clamp-2 font-mono leading-relaxed">
-                            {node.content || <span className="italic opacity-50">No content...</span>}
-                        </p>
-                    </div>
-                ))}
-            </div>
+      <div className="flex-1 overflow-y-auto bg-[#0a0a0a] border border-t-0 border-[#333] rounded-b-lg h-[60vh] md:h-[600px]">
+        {viewMode === 'builder' && (
+             <div className="space-y-6 p-4">
+                <DndContext 
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext 
+                    items={nodes.map(n => n.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {nodes.map((node, index) => (
+                      <SortableNodeItem 
+                        key={node.id} 
+                        node={node} 
+                        index={index} 
+                        isLast={index === nodes.length - 1}
+                        updateNode={updateNode}
+                        deleteNode={deleteNode}
+                        setChallengeType={setChallengeType}
+                        updateChallengeConfig={updateChallengeConfig}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
 
-            {/* Main Panel: Node Editor */}
-            <div className="flex-1 overflow-y-auto bg-[#0a0a0a] p-6">
-                {selectedNode ? (
-                    <div className="max-w-2xl mx-auto space-y-6">
-                        
-                        {/* Header Info */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-[10px] font-mono text-gray-500 uppercase">Node ID</label>
-                                <Input 
-                                    value={selectedNode.id}
-                                    onChange={(e) => updateNode(selectedNode.id, { id: e.target.value })}
-                                    className="bg-[#151515] border-[#333] font-mono text-xs h-9"
-                                    disabled={selectedNode.id === 'start'} // Lock start node ID
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-[10px] font-mono text-gray-500 uppercase">Type</label>
-                                <div className="flex bg-[#151515] rounded border border-[#333] h-9 p-1">
-                                    <button 
-                                        onClick={() => updateNode(selectedNode.id, { type: 'text' })}
-                                        className={`flex-1 text-[10px] uppercase font-mono rounded flex items-center justify-center gap-1 transition-colors
-                                            ${selectedNode.type !== 'ending' ? 'bg-[#333] text-white' : 'text-gray-500 hover:text-gray-300'}
-                                        `}
-                                    >
-                                        <FileText size={12} /> Text
-                                    </button>
-                                    <button 
-                                        onClick={() => updateNode(selectedNode.id, { type: 'ending' })}
-                                        className={`flex-1 text-[10px] uppercase font-mono rounded flex items-center justify-center gap-1 transition-colors
-                                            ${selectedNode.type === 'ending' ? 'bg-red-900/30 text-red-400' : 'text-gray-500 hover:text-gray-300'}
-                                        `}
-                                    >
-                                        <CheckCircle2 size={12} /> Ending
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                <div className="sticky bottom-4 z-20 flex justify-center pb-4 pt-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button className="bg-primary text-black hover:bg-white w-full md:w-auto md:px-12 h-14 shadow-lg shadow-primary/20 font-bold uppercase tracking-widest text-sm rounded-full">
+                                <Plus size={18} className="mr-2" /> Add Next Section
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-[#1a1a1a] border-[#333] text-white w-56">
+                            <DropdownMenuItem onClick={() => addNode('text')} className="focus:bg-[#333] cursor-pointer">
+                                <FileText size={14} className="mr-2" /> Narrative Block
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => addNode('choice')} className="focus:bg-[#333] cursor-pointer">
+                                <Split size={14} className="mr-2" /> Branching Choice
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => addNode('riddle')} className="focus:bg-[#333] cursor-pointer">
+                                <Lock size={14} className="mr-2" /> Riddle Challenge
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => addNode('timer')} className="focus:bg-[#333] cursor-pointer">
+                                <Clock size={14} className="mr-2" /> Timer Challenge
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => addNode('scan')} className="focus:bg-[#333] cursor-pointer">
+                                <QrCode size={14} className="mr-2" /> Scan Challenge
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => addNode('end')} className="focus:bg-[#333] cursor-pointer text-primary">
+                                <CheckCircle2 size={14} className="mr-2" /> Story Ending
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+             </div>
+        )}
+        
+        {viewMode === 'json' && (
+            <textarea 
+                value={JSON.stringify(nodes, null, 2)}
+                onChange={(e) => {
+                    try {
+                        onChange(JSON.parse(e.target.value));
+                    } catch (err) {
+                        // ignore parse errors
+                    }
+                }}
+                className="w-full h-full bg-[#0a0a0a] text-green-500 font-mono text-sm p-4 focus:outline-none resize-none"
+            />
+        )}
 
-                        {/* Content */}
-                        <div className="space-y-1">
-                            <label className="text-[10px] font-mono text-gray-500 uppercase">Narrative Content</label>
-                            <textarea 
-                                value={selectedNode.content}
-                                onChange={(e) => updateNode(selectedNode.id, { content: e.target.value })}
-                                className="w-full min-h-[120px] bg-[#151515] border border-[#333] rounded p-3 text-sm text-gray-300 focus:outline-none focus:border-primary placeholder:text-gray-600 font-sans leading-relaxed"
-                                placeholder="Write the story segment here..."
-                            />
-                        </div>
-
-                        {/* Image URL */}
-                        <div className="space-y-1">
-                            <label className="text-[10px] font-mono text-gray-500 uppercase">Image URL (Optional)</label>
-                            <Input 
-                                value={selectedNode.image_url || ""}
-                                onChange={(e) => updateNode(selectedNode.id, { image_url: e.target.value })}
-                                className="bg-[#151515] border-[#333] font-mono text-xs h-9"
-                                placeholder="https://..."
-                            />
-                        </div>
-
-                        {/* Choices Section */}
-                        {selectedNode.type !== 'ending' && (
-                            <div className="space-y-3 pt-4 border-t border-[#222]">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-mono text-gray-500 uppercase">Choices ({selectedNode.choices?.length || 0})</label>
-                                    <Button onClick={() => addChoice(selectedNode.id)} size="sm" variant="outline" className="h-6 text-[10px] uppercase border-[#333] hover:bg-[#222]">
-                                        <Plus size={10} className="mr-1" /> Add Choice
-                                    </Button>
-                                </div>
-
-                                <div className="space-y-3">
-                                    {(!selectedNode.choices || selectedNode.choices.length === 0) && (
-                                        <div className="p-4 border border-dashed border-[#333] rounded bg-[#111/50] text-center">
-                                            <p className="text-xs text-gray-500 font-mono">No choices defined. This will be a dead end unless it's an ending.</p>
-                                        </div>
-                                    )}
-
-                                    {selectedNode.choices?.map((choice, idx) => (
-                                        <div key={idx} className="flex gap-2 items-start bg-[#151515] p-3 rounded border border-[#333] group hover:border-[#444] transition-colors">
-                                            <div className="mt-2 text-gray-600">
-                                                <ArrowRight size={14} />
-                                            </div>
-                                            <div className="flex-1 space-y-2">
-                                                <Input 
-                                                    value={choice.text}
-                                                    onChange={(e) => updateChoice(selectedNode.id, idx, 'text', e.target.value)}
-                                                    className="bg-[#0a0a0a] border-[#333] h-8 text-xs"
-                                                    placeholder="Choice text (e.g. 'Open the door')"
-                                                />
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] text-gray-500 font-mono">GO TO:</span>
-                                                    <select 
-                                                        value={choice.nextNodeId}
-                                                        onChange={(e) => updateChoice(selectedNode.id, idx, 'nextNodeId', e.target.value)}
-                                                        className="flex-1 bg-[#0a0a0a] border border-[#333] rounded h-8 text-xs px-2 text-gray-300 focus:outline-none focus:border-primary font-mono"
-                                                    >
-                                                        <option value="">Select Node...</option>
-                                                        {nodes.map(n => (
-                                                            <option key={n.id} value={n.id}>
-                                                                {n.id} {n.id === 'start' ? '(Start)' : ''} {n.type === 'ending' ? '(Ending)' : ''}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <button onClick={() => removeChoice(selectedNode.id, idx)} className="text-gray-600 hover:text-red-500 p-1">
-                                                <Trash2 size={14} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-gray-600 space-y-4 opacity-50">
-                        <GripVertical size={48} />
-                        <p className="font-mono text-sm uppercase tracking-widest">Select a node to edit</p>
-                    </div>
-                )}
-            </div>
-        </div>
-      )}
+        {viewMode === 'visual' && (
+             <StoryBranchingView 
+                nodes={nodes} 
+                onChange={onChange}
+                onSelectNode={(id) => {
+                    // Could scroll to it in builder or open a modal
+                    // For now, switch to builder and scroll
+                    setViewMode('builder');
+                    // setTimeout(() => document.getElementById(id)?.scrollIntoView(), 100);
+                }}
+             />
+        )}
+      </div>
     </div>
   );
 }
-

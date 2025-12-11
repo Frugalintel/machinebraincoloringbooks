@@ -2,25 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Search, Edit, Trash2, Trophy, Brush, Star, Zap, Code, Lock, LayoutGrid, List } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Box, LayoutGrid, List, Gem } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { Achievement } from "@/lib/types";
+import { Collectible } from "@/lib/types";
 import { useToast } from "@/context/toast-context";
 import { logAdminAction } from "@/lib/admin-utils";
 import { logger } from "@/lib/logger";
-
-// Helper to map icon string to component
-const getIconComponent = (iconName: string) => {
-    switch(iconName) {
-        case 'brush': return <Brush size={20} />;
-        case 'star': return <Star size={20} />;
-        case 'zap': return <Zap size={20} />;
-        case 'code': return <Code size={20} />;
-        case 'lock': return <Lock size={20} />;
-        case 'trophy':
-        default: return <Trophy size={20} />;
-    }
-};
 
 const getRarityStyles = (rarity?: string) => {
     switch(rarity?.toLowerCase()) {
@@ -72,75 +59,76 @@ const getRarityStyles = (rarity?: string) => {
     }
 };
 
-export default function AdminAchievementsPage() {
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
+export default function AdminCollectiblesPage() {
+  const [collectibles, setCollectibles] = useState<Collectible[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { success, error: toastError } = useToast();
 
   useEffect(() => {
-    fetchAchievements();
+    fetchCollectibles();
   }, []);
 
-  const fetchAchievements = async () => {
+  const fetchCollectibles = async () => {
     setIsLoading(true);
     try {
         const { data, error } = await supabase
-            .from('achievements')
+            .from('collectibles')
             .select('*')
             .order('created_at', { ascending: false });
         
         if (!error && data) {
-            setAchievements(data);
+            setCollectibles(data);
         }
     } catch (error) {
-        logger.error("Error fetching achievements:", error);
+        logger.error("Error fetching collectibles:", error);
     } finally {
         setIsLoading(false);
     }
   };
 
-  const handleDelete = async (achievement: Achievement) => {
-      if (!confirm("Are you sure you want to delete this achievement?")) return;
+  const handleDelete = async (collectible: Collectible) => {
+      if (!confirm("Are you sure you want to delete this collectible?")) return;
 
       try {
-          const { error } = await supabase.from('achievements').delete().eq('id', achievement.id);
+          const { error } = await supabase.from('collectibles').delete().eq('id', collectible.id);
           if (error) throw error;
           
           await logAdminAction(
-              'delete_achievement',
-              'achievements',
-              achievement.id,
-              { title: achievement.title }
+              'delete_collectible',
+              'collectibles',
+              collectible.id,
+              { name: collectible.name }
           );
 
-          setAchievements(achievements.filter(p => p.id !== achievement.id));
-          success("Achievement deleted successfully.");
+          setCollectibles(collectibles.filter(c => c.id !== collectible.id));
+          success("Collectible deleted successfully.");
       } catch (err) {
-          toastError("Failed to delete achievement.");
-          logger.error("Error deleting achievement:", err);
+          toastError("Failed to delete collectible.");
+          logger.error("Error deleting collectible:", err);
       }
   };
 
-  const filteredAchievements = achievements.filter(a => 
-    a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    a.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCollectibles = collectibles.filter(c => 
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (c.lore && c.lore.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (c.type && c.type.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h2 className="text-3xl font-heading font-bold mb-1">ACHIEVEMENTS</h2>
-            <p className="text-gray-500 font-mono text-sm">Manage unlockable player badges.</p>
+            <h2 className="text-3xl font-heading font-bold mb-1">COLLECTIBLES</h2>
+            <p className="text-gray-500 font-mono text-sm">Manage digital artifacts and collectible items.</p>
         </div>
         <Link 
-            href="/admin/achievements/new"
+            href="/admin/collectibles/new"
             className="flex items-center justify-center gap-2 bg-primary text-black px-6 py-3 rounded font-bold hover:bg-white transition-colors"
         >
             <Plus size={18} />
-            <span>ADD ACHIEVEMENT</span>
+            <span>ADD COLLECTIBLE</span>
         </Link>
       </div>
 
@@ -149,7 +137,7 @@ export default function AdminAchievementsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
             <input 
                 type="text" 
-                placeholder="Search achievements..." 
+                placeholder="Search collectibles..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#222] border border-[#333] rounded py-2 pl-10 pr-4 text-white focus:outline-none focus:border-primary"
@@ -176,70 +164,71 @@ export default function AdminAchievementsPage() {
       {isLoading ? (
         <div className="text-center py-20">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-500 font-mono">Loading achievements...</p>
+            <p className="text-gray-500 font-mono">Loading collectibles...</p>
         </div>
       ) : (
         <>
-            {filteredAchievements.length === 0 && (
+            {filteredCollectibles.length === 0 && (
                 <div className="col-span-full p-20 text-center text-gray-500 bg-[#111] border border-[#333] rounded-lg border-dashed">
-                    <Trophy size={48} className="mx-auto text-gray-700 mb-4" />
-                    <p className="font-heading text-lg text-gray-400">No achievements found</p>
+                    <Box size={48} className="mx-auto text-gray-700 mb-4" />
+                    <p className="font-heading text-lg text-gray-400">No collectibles found</p>
+                    <p className="text-sm text-gray-600 mt-2">Create your first collectible to get started.</p>
                 </div>
             )}
 
             {viewMode === 'grid' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {filteredAchievements.map((achievement) => {
-                        const styles = getRarityStyles(achievement.rarity);
+                    {filteredCollectibles.map((collectible) => {
+                        const styles = getRarityStyles(collectible.rarity);
                         return (
-                            <div key={achievement.id} className={`group relative border rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${styles.bg} ${styles.border} ${styles.glow}`}>
+                            <div key={collectible.id} className={`group relative border rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${styles.bg} ${styles.border} ${styles.glow}`}>
                                 {/* Colored Accent Bar */}
                                 <div className={`absolute top-0 left-0 w-full h-1 ${styles.accent}`}></div>
                                 
-                                <Link href={`/admin/achievements/${achievement.id}`} className="block h-full p-4 pt-5 pb-14">
+                                <Link href={`/admin/collectibles/${collectible.id}`} className="block h-full p-4 pt-5 pb-14">
                                     <div className="flex items-start gap-4">
-                                        {/* Compact Icon Box */}
+                                        {/* Icon Box */}
                                         <div className={`w-14 h-14 rounded-xl flex shrink-0 items-center justify-center border-2 ${styles.icon}`}>
-                                            {getIconComponent(achievement.icon)}
+                                            {collectible.image_url ? (
+                                                <img src={collectible.image_url} alt={collectible.name} className="w-10 h-10 object-cover rounded" />
+                                            ) : (
+                                                <Gem size={20} />
+                                            )}
                                         </div>
                                         
                                         <div className="min-w-0 flex-1">
-                                            <h3 className={`font-heading font-bold text-sm mb-0.5 truncate pr-6 ${styles.titleColor}`}>{achievement.title}</h3>
+                                            <h3 className={`font-heading font-bold text-sm mb-0.5 truncate pr-6 ${styles.titleColor}`}>{collectible.name}</h3>
                                             <p className={`text-[10px] font-mono uppercase tracking-wide mb-1 ${styles.text}`}>
-                                                {achievement.trigger_type?.replace('_', ' ')}
+                                                {collectible.type || 'Artifact'}
                                             </p>
                                             <span className={`inline-block text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${styles.text} border-current bg-black/30`}>
-                                                {achievement.rarity || 'Common'}
+                                                {collectible.rarity || 'Common'}
                                             </span>
                                         </div>
-
-                                        {achievement.is_secret ? <div className="absolute top-5 right-4">
-                                                <span title="Secret"><Lock size={12} className="text-purple-400" /></span>
-                                            </div> : null}
                                     </div>
 
                                     <p className="text-xs text-gray-400 line-clamp-2 mt-3 min-h-[2.5em]">
-                                        {achievement.description}
+                                        {collectible.lore || 'No lore available.'}
                                     </p>
 
                                     <div className="flex items-center justify-between pt-3 border-t border-white/10 mt-3">
                                         <span className="text-[10px] text-gray-500 font-mono uppercase">
-                                            Target
+                                            {collectible.generation || 'Gen-0'}
                                         </span>
-                                        <span className={`text-sm font-bold font-mono ${styles.text}`}>
-                                            {achievement.target_value}
+                                        <span className={`text-[10px] font-mono ${styles.text}`}>
+                                            {collectible.found_in || 'Unknown'}
                                         </span>
                                     </div>
                                 </Link>
 
-                                {/* Actions Footer - Slides up on hover */}
+                                {/* Actions Footer */}
                                 <div className="absolute bottom-0 left-0 right-0 bg-[#1a1a1a] border-t border-[#333] p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 flex justify-end items-center z-40">
                                     <div className="flex gap-2">
-                                        <Link href={`/admin/achievements/${achievement.id}`} className="p-2 hover:bg-[#333] rounded text-gray-400 hover:text-white transition-colors">
+                                        <Link href={`/admin/collectibles/${collectible.id}`} className="p-2 hover:bg-[#333] rounded text-gray-400 hover:text-white transition-colors">
                                             <Edit size={16} />
                                         </Link>
                                         <button 
-                                            onClick={(e) => { e.preventDefault(); handleDelete(achievement); }}
+                                            onClick={(e) => { e.preventDefault(); handleDelete(collectible); }}
                                             className="p-2 hover:bg-red-900/20 rounded text-gray-400 hover:text-red-500 transition-colors"
                                         >
                                             <Trash2 size={16} />
@@ -256,50 +245,54 @@ export default function AdminAchievementsPage() {
                         <table className="w-full text-left border-collapse">
                             <thead className="bg-[#1a1a1a] text-gray-500 font-mono text-xs uppercase tracking-widest">
                                 <tr>
-                                    <th className="p-4 font-normal">Icon</th>
-                                    <th className="p-4 font-normal">Title</th>
-                                    <th className="p-4 font-normal">Description</th>
-                                    <th className="p-4 font-normal">Trigger</th>
+                                    <th className="p-4 font-normal">Image</th>
+                                    <th className="p-4 font-normal">Name</th>
+                                    <th className="p-4 font-normal">Type</th>
                                     <th className="p-4 font-normal">Rarity</th>
+                                    <th className="p-4 font-normal">Generation</th>
+                                    <th className="p-4 font-normal">Location</th>
                                     <th className="p-4 font-normal text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#333]">
-                                {filteredAchievements.map((achievement) => {
-                                    const styles = getRarityStyles(achievement.rarity);
+                                {filteredCollectibles.map((collectible) => {
+                                    const styles = getRarityStyles(collectible.rarity);
                                     
                                     return (
-                                        <tr key={achievement.id} className="group hover:bg-[#161616] transition-colors">
+                                        <tr key={collectible.id} className="group hover:bg-[#161616] transition-colors">
                                             <td className="p-4">
-                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border ${styles.icon.replace('text-', 'text-opacity-80 ')}`}>
-                                                    {getIconComponent(achievement.icon)}
+                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border ${styles.icon}`}>
+                                                    {collectible.image_url ? (
+                                                        <img src={collectible.image_url} alt={collectible.name} className="w-8 h-8 object-cover rounded" />
+                                                    ) : (
+                                                        <Gem size={16} />
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="p-4">
-                                                <div className="font-heading font-bold text-white text-sm">{achievement.title}</div>
-                                                {achievement.is_secret ? <span className="text-[9px] uppercase text-purple-400 tracking-wider">Secret</span> : null}
-                                            </td>
-                                            <td className="p-4 max-w-xs">
-                                                <p className="text-xs text-gray-400 truncate">{achievement.description}</p>
+                                                <div className="font-heading font-bold text-white text-sm">{collectible.name}</div>
                                             </td>
                                             <td className="p-4">
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs text-white font-mono uppercase">{achievement.trigger_type?.replace('_', ' ')}</span>
-                                                    <span className="text-[10px] text-gray-500 font-mono">Target: {achievement.target_value}</span>
-                                                </div>
+                                                <span className="text-xs text-gray-400 font-mono uppercase">{collectible.type || 'Artifact'}</span>
                                             </td>
                                             <td className="p-4">
                                                 <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded border bg-opacity-10 ${styles.text} border-current`}>
-                                                    {achievement.rarity || 'Common'}
+                                                    {collectible.rarity || 'Common'}
                                                 </span>
+                                            </td>
+                                            <td className="p-4">
+                                                <span className="text-xs text-gray-500 font-mono">{collectible.generation || 'Gen-0'}</span>
+                                            </td>
+                                            <td className="p-4">
+                                                <span className="text-xs text-gray-400">{collectible.found_in || 'Unknown'}</span>
                                             </td>
                                             <td className="p-4 text-right">
                                                 <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <Link href={`/admin/achievements/${achievement.id}`} className="p-2 hover:bg-[#333] rounded text-gray-400 hover:text-white transition-colors">
+                                                    <Link href={`/admin/collectibles/${collectible.id}`} className="p-2 hover:bg-[#333] rounded text-gray-400 hover:text-white transition-colors">
                                                         <Edit size={16} />
                                                     </Link>
                                                     <button 
-                                                        onClick={() => handleDelete(achievement)}
+                                                        onClick={() => handleDelete(collectible)}
                                                         className="p-2 hover:bg-red-900/20 rounded text-gray-400 hover:text-red-500 transition-colors"
                                                     >
                                                         <Trash2 size={16} />

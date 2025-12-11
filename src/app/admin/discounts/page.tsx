@@ -1,75 +1,152 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Plus, Trash2, X, RefreshCw, Loader2, Tag, LayoutTemplate } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { PromoCode, CampaignSettings, CampaignTheme, Product } from "@/lib/types";
-import { Plus, Trash2, X, AlertTriangle, Save, Wand2, Search } from "lucide-react";
+import { PromoCode, Product, CampaignSettings } from "@/lib/types";
 import { useToast } from "@/context/toast-context";
-import { useSettings } from "@/context/settings-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CAMPAIGN_TEMPLATES } from "@/lib/campaign-templates";
 import { logAdminAction } from "@/lib/admin-utils";
+import { CampaignCard } from "@/components/admin/campaign-card";
+import { logger } from "@/lib/logger";
 
 export default function DiscountsPage() {
-  const [codes, setCodes] = useState<PromoCode[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
+  const router = useRouter();
   const { success, error: toastError } = useToast();
-  const { campaign, updateCampaign, isLoading: isSettingsLoading } = useSettings();
   
-  // Local campaign state for editing
-  const [localCampaign, setLocalCampaign] = useState<CampaignSettings>(campaign);
+  const [activeTab, setActiveTab] = useState("campaigns");
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Campaign State
+  const [campaigns, setCampaigns] = useState<{ id: string; name: string; is_active: boolean; settings: Record<string, unknown>; created_at: string }[]>([]);
+  const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
 
-  // Sync local state when campaign loads
-  useEffect(() => {
-    if (campaign) {
-        setLocalCampaign(campaign);
-    }
-  }, [campaign]);
-
-  // New code state
+  // Promo Code State
+  const [codes, setCodes] = useState<PromoCode[]>([]);
+  const [isCreatingCode, setIsCreatingCode] = useState(false);
   const [newCode, setNewCode] = useState<Partial<PromoCode>>({
       code: "",
       discount_percent: 10,
       usage_limit: 100,
-      is_active: true
+      is_active: true,
+      valid_until: ""
   });
 
   useEffect(() => {
-    fetchCodes();
-    fetchProducts();
+    fetchData();
+    
+    // Subscribe to campaign changes (e.g. if activated from another window)
+    const channel = supabase
+      .channel('admin_discounts_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'campaigns' }, fetchData)
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const fetchCodes = async () => {
+  const fetchData = async () => {
     setIsLoading(true);
+    await Promise.all([fetchCampaigns(), fetchCodes()]);
+    setIsLoading(false);
+  };
+
+  const fetchCampaigns = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('campaigns')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        setCampaigns(data || []);
+    } catch (error) {
+        logger.error("Error fetching campaigns:", error);
+    }
+  };
+
+  const fetchCodes = async () => {
     try {
         const { data, error } = await supabase
             .from('promo_codes')
             .select('*')
             .order('created_at', { ascending: false });
-        
         if (data) setCodes(data);
-        if (error) console.error("Error", error);
     } catch (error) {
-        console.error("Error fetching codes:", error);
-    } finally {
-        setIsLoading(false);
+        logger.error("Error fetching codes:", error);
     }
   };
 
-  const fetchProducts = async () => {
+  // --- Campaign Actions ---
+
+  const handleCreateCampaign = async () => {
+      setIsCreatingCampaign(true);
       try {
           const { data, error } = await supabase
-            .from('products')
-            .select('id, title, subtitle')
-            .eq('is_published', true)
-            .order('title', { ascending: true });
+            .from('campaigns')
+            .insert([{
+                name: "New Campaign",
+                is_active: false,
+                settings: {
+                    theme: { name: 'Default', colors: { background: '#000', primary: '#fff', text: '#fff' } }
+                }
+            }])
+            .select()
+            .single();
           
-          if (data) setProducts(data as Product[]);
+          if (error) throw error;
+          
+          success("Campaign created!");
+          router.push(`/admin/discounts/${data.id}`);
       } catch (error) {
-          console.error("Error fetching products:", error);
+          logger.error("Error creating campaign:", error);
+          toastError(error instanceof Error ? error.message : "Failed to create campaign");
+      } finally {
+          setIsCreatingCampaign(false);
       }
+  };
+
+  const handleActivateCampaign = async (id: string) => {
+      try {
+          // Use the RPC function to ensure atomic switch
+          const { error } = await supabase.rpc('activate_campaign', { target_campaign_id: id });
+          if (error) throw error;
+          
+          await fetchCampaigns(); // Refresh list to update UI
+          success("Campaign activated!");
+      } catch (error) {
+          logger.error("Error activating campaign:", error);
+          // Fallback if RPC doesn't exist yet (for safety during migration)
+          await fallbackActivate(id);
+      }
+  };
+
+  const fallbackActivate = async (id: string) => {
+      // Manual implementation of activation if RPC fails
+      await supabase.from('campaigns').update({ is_active: false }).neq('id', '00000000-0000-0000-0000-000000000000'); // Deactivate all
+      await supabase.from('campaigns').update({ is_active: true }).eq('id', id);
+      await fetchCampaigns();
+      success("Campaign activated (fallback)");
+  };
+
+  const handleDeleteCampaign = async (id: string) => {
+      if (!confirm("Are you sure? This cannot be undone.")) return;
+      try {
+          const { error } = await supabase.from('campaigns').delete().eq('id', id);
+          if (error) throw error;
+          
+          setCampaigns(campaigns.filter(c => c.id !== id));
+          success("Campaign deleted.");
+      } catch (error) {
+          toastError(error instanceof Error ? error.message : "Failed to delete campaign");
+      }
+  };
+
+  // --- Promo Code Actions ---
+
+  const generateRandomCode = () => {
+      const prefix = "SALE";
+      const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+      setNewCode(prev => ({ ...prev, code: `${prefix}${randomPart}` }));
   };
 
   const handleCreateCode = async (e: React.FormEvent) => {
@@ -81,102 +158,33 @@ export default function DiscountsPage() {
             .select();
           
           if (error) throw error;
-          
-          await logAdminAction(
-              'create_promo_code',
-              'promo_codes',
-              data[0].id,
-              { code: newCode.code, discount: newCode.discount_percent }
-          );
-
+          await logAdminAction('create_promo_code', 'promo_codes', data[0].id, { code: newCode.code });
           if (data) setCodes([...data, ...codes]);
-          setIsCreating(false);
+          setIsCreatingCode(false);
           setNewCode({ code: "", discount_percent: 10, usage_limit: 100, is_active: true });
           success("Promo code created successfully.");
-      } catch (error: any) {
-          console.error("Error creating code:", error);
-          toastError(error.message || "Failed to create code");
+      } catch (error) {
+          toastError(error instanceof Error ? error.message : "Failed to create code");
       }
   };
 
   const toggleCodeStatus = async (id: string, currentStatus: boolean) => {
       try {
-          const { error } = await supabase
-            .from('promo_codes')
-            .update({ is_active: !currentStatus })
-            .eq('id', id);
-          
+          const { error } = await supabase.from('promo_codes').update({ is_active: !currentStatus }).eq('id', id);
           if (error) throw error;
-          
-          const code = codes.find(c => c.id === id);
-          await logAdminAction(
-              !currentStatus ? 'activate_promo_code' : 'deactivate_promo_code',
-              'promo_codes',
-              id,
-              { code: code?.code }
-          );
-
           setCodes(codes.map(c => c.id === id ? { ...c, is_active: !currentStatus } : c));
           success(`Promo code ${!currentStatus ? 'activated' : 'disabled'}.`);
-      } catch (error) {
-          console.error("Error updating status:", error);
-          toastError("Failed to update status.");
-      }
+      } catch (error) { toastError("Failed to update status."); }
   };
-  
+
   const deleteCode = async (id: string) => {
       if(!confirm("Delete this promo code?")) return;
       try {
-          const code = codes.find(c => c.id === id);
           const { error } = await supabase.from('promo_codes').delete().eq('id', id);
           if (error) throw error;
-          
-          await logAdminAction(
-              'delete_promo_code',
-              'promo_codes',
-              id,
-              { code: code?.code }
-          );
-
           setCodes(codes.filter(c => c.id !== id));
           success("Promo code deleted.");
-      } catch (error) {
-          console.error("Error deleting code:", error);
-          toastError("Failed to delete code.");
-      }
-  }
-
-  const handleSaveCampaign = async () => {
-      const { error } = await updateCampaign(localCampaign);
-      if (error) {
-          toastError("Failed to save campaign settings.");
-      } else {
-          await logAdminAction(
-              'update_campaign',
-              'settings',
-              null,
-              { name: localCampaign.name, active: localCampaign.isActive }
-          );
-          success("Campaign updated successfully.");
-      }
-  };
-
-  const applyTemplate = (templateKey: string) => {
-      const template = CAMPAIGN_TEMPLATES[templateKey];
-      if (!template) return;
-
-      setLocalCampaign(prev => ({
-          ...prev,
-          name: template.text.heroTitle,
-          theme: template,
-          banner: {
-              ...prev.banner,
-              text: `${template.text.heroTitle} • ${template.text.heroTag}`,
-              backgroundColor: template.colors.primary,
-              textColor: template.colors.text
-          }
-      }));
-      success(`Applied ${templateKey.replace('_', ' ')} template.`);
+      } catch (error) { toastError("Failed to delete code."); }
   };
 
   return (
@@ -188,301 +196,66 @@ export default function DiscountsPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="campaigns" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-[#111] border border-[#333] mb-6">
-            <TabsTrigger value="campaigns" className="data-[state=active]:bg-primary data-[state=active]:text-black font-mono uppercase tracking-wider text-xs">Global Campaigns</TabsTrigger>
-            <TabsTrigger value="codes" className="data-[state=active]:bg-primary data-[state=active]:text-black font-mono uppercase tracking-wider text-xs">Promo Codes</TabsTrigger>
+            <TabsTrigger value="campaigns" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-black font-mono uppercase tracking-wider text-xs">
+                <LayoutTemplate size={14} /> Global Campaigns
+            </TabsTrigger>
+            <TabsTrigger value="codes" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-black font-mono uppercase tracking-wider text-xs">
+                <Tag size={14} /> Promo Codes
+            </TabsTrigger>
         </TabsList>
 
         <TabsContent value="campaigns" className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
             
-            {/* Campaign Overview */}
-            <div className="bg-[#111] border border-[#333] p-6 rounded-lg">
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                            Store Campaign
-                            {localCampaign.isActive && <span className="text-[10px] bg-green-900/20 text-green-500 px-2 py-0.5 rounded border border-green-900/50 uppercase tracking-widest">Active</span>}
-                        </h3>
-                        <p className="text-gray-500 text-sm mt-1">Configure global sales and banners.</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input 
-                            type="checkbox" 
-                            checked={localCampaign.isActive}
-                            onChange={(e) => setLocalCampaign({...localCampaign, isActive: e.target.checked})}
-                            className="sr-only peer" 
-                        />
-                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
-                </div>
-
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Campaign Name</label>
-                            <input 
-                                type="text" 
-                                value={localCampaign.name}
-                                onChange={(e) => setLocalCampaign({...localCampaign, name: e.target.value})}
-                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 text-white focus:outline-none focus:border-primary"
-                                placeholder="Summer Sale"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                                <Wand2 size={12} className="text-primary" /> Template Preset
-                            </label>
-                            <select 
-                                onChange={(e) => applyTemplate(e.target.value)}
-                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 text-white focus:outline-none focus:border-primary"
-                                defaultValue=""
-                            >
-                                <option value="" disabled>Select a holiday template...</option>
-                                {Object.keys(CAMPAIGN_TEMPLATES).map((key) => (
-                                    <option key={key} value={key}>
-                                        {key.replace(/_/g, ' ').toUpperCase()}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-xs font-mono uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                            <Search size={12} className="text-primary" /> Featured Product (Hero)
-                        </label>
-                        <select 
-                            value={localCampaign.featuredProductId || ""}
-                            onChange={(e) => setLocalCampaign({...localCampaign, featuredProductId: e.target.value || undefined})}
-                            className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 text-white focus:outline-none focus:border-primary"
-                        >
-                            <option value="">Default (Newest / Holiday)</option>
-                            {products.map((p) => (
-                                <option key={p.id} value={p.id}>
-                                    {p.title} {p.subtitle ? `- ${p.subtitle}` : ''}
-                                </option>
-                            ))}
-                        </select>
-                        <p className="text-[10px] text-gray-500">This product will be highlighted in the Hero section when the campaign is active.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Discount Settings */}
-                <div className="bg-[#111] border border-[#333] p-6 rounded-lg space-y-6">
-                    <div className="flex items-center justify-between pb-4 border-b border-[#222]">
-                        <h4 className="font-heading text-lg">Discount Rules</h4>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <span className={`text-xs font-mono uppercase ${localCampaign.discount.enabled ? 'text-white' : 'text-gray-600'}`}>Enable</span>
-                            <input 
-                                type="checkbox"
-                                className="accent-primary"
-                                checked={localCampaign.discount.enabled}
-                                onChange={(e) => setLocalCampaign({
-                                    ...localCampaign, 
-                                    discount: { ...localCampaign.discount, enabled: e.target.checked }
-                                })}
-                            />
-                        </label>
-                    </div>
-
-                    <div className={`space-y-4 transition-opacity ${localCampaign.discount.enabled ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Type</label>
-                                <select 
-                                    value={localCampaign.discount.type}
-                                    onChange={(e) => setLocalCampaign({
-                                        ...localCampaign,
-                                        discount: { ...localCampaign.discount, type: e.target.value as 'percentage' | 'fixed' }
-                                    })}
-                                    className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 text-white focus:outline-none focus:border-primary"
-                                >
-                                    <option value="percentage">Percentage (%)</option>
-                                    <option value="fixed">Fixed Amount ($)</option>
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Value</label>
-                                <input 
-                                    type="number"
-                                    min="0"
-                                    value={localCampaign.discount.value}
-                                    onChange={(e) => setLocalCampaign({
-                                        ...localCampaign,
-                                        discount: { ...localCampaign.discount, value: parseFloat(e.target.value) || 0 }
-                                    })}
-                                    className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 text-white focus:outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Scope</label>
-                            <div className="grid grid-cols-3 gap-2">
-                                {['global', 'category', 'collection'].map((scope) => (
-                                    <button
-                                        key={scope}
-                                        onClick={() => setLocalCampaign({
-                                            ...localCampaign,
-                                            discount: { ...localCampaign.discount, scope: scope as any }
-                                        })}
-                                        className={`px-2 py-2 text-[10px] font-mono uppercase border rounded transition-colors ${
-                                            localCampaign.discount.scope === scope
-                                            ? 'bg-primary text-black border-primary font-bold'
-                                            : 'bg-[#222] text-gray-400 border-[#333] hover:border-gray-500'
-                                        }`}
-                                    >
-                                        {scope}
-                                    </button>
-                                ))}
-                            </div>
-                            {localCampaign.discount.scope !== 'global' && (
-                                <p className="text-[10px] text-yellow-500 pt-1">
-                                    <AlertTriangle size={10} className="inline mr-1" />
-                                    Target selection coming soon. Currently applies globally.
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Banner Settings */}
-                <div className="bg-[#111] border border-[#333] p-6 rounded-lg space-y-6">
-                    <div className="flex items-center justify-between pb-4 border-b border-[#222]">
-                        <h4 className="font-heading text-lg">Banner Configuration</h4>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <span className={`text-xs font-mono uppercase ${localCampaign.banner.enabled ? 'text-white' : 'text-gray-600'}`}>Enable</span>
-                            <input 
-                                type="checkbox"
-                                className="accent-primary"
-                                checked={localCampaign.banner.enabled}
-                                onChange={(e) => setLocalCampaign({
-                                    ...localCampaign, 
-                                    banner: { ...localCampaign.banner, enabled: e.target.checked }
-                                })}
-                            />
-                        </label>
-                    </div>
-
-                    <div className={`space-y-4 transition-opacity ${localCampaign.banner.enabled ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Banner Text</label>
-                            <input 
-                                type="text" 
-                                value={localCampaign.banner.text}
-                                onChange={(e) => setLocalCampaign({
-                                    ...localCampaign,
-                                    banner: { ...localCampaign.banner, text: e.target.value }
-                                })}
-                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 text-white focus:outline-none focus:border-primary"
-                                placeholder="Black Friday Sale • 50% OFF"
-                            />
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Background Color</label>
-                                <div className="flex gap-2">
-                                    <input 
-                                        type="color" 
-                                        value={localCampaign.banner.backgroundColor}
-                                        onChange={(e) => setLocalCampaign({
-                                            ...localCampaign,
-                                            banner: { ...localCampaign.banner, backgroundColor: e.target.value }
-                                        })}
-                                        className="h-10 w-10 p-0 border-0 rounded overflow-hidden cursor-pointer"
-                                    />
-                                    <input 
-                                        type="text" 
-                                        value={localCampaign.banner.backgroundColor}
-                                        onChange={(e) => setLocalCampaign({
-                                            ...localCampaign,
-                                            banner: { ...localCampaign.banner, backgroundColor: e.target.value }
-                                        })}
-                                        className="flex-1 bg-[#222] border border-[#333] rounded px-3 py-2 text-xs font-mono"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Text Color</label>
-                                <div className="flex gap-2">
-                                    <input 
-                                        type="color" 
-                                        value={localCampaign.banner.textColor}
-                                        onChange={(e) => setLocalCampaign({
-                                            ...localCampaign,
-                                            banner: { ...localCampaign.banner, textColor: e.target.value }
-                                        })}
-                                        className="h-10 w-10 p-0 border-0 rounded overflow-hidden cursor-pointer"
-                                    />
-                                    <input 
-                                        type="text" 
-                                        value={localCampaign.banner.textColor}
-                                        onChange={(e) => setLocalCampaign({
-                                            ...localCampaign,
-                                            banner: { ...localCampaign.banner, textColor: e.target.value }
-                                        })}
-                                        className="flex-1 bg-[#222] border border-[#333] rounded px-3 py-2 text-xs font-mono"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Link URL</label>
-                            <input 
-                                type="text" 
-                                value={localCampaign.banner.link}
-                                onChange={(e) => setLocalCampaign({
-                                    ...localCampaign,
-                                    banner: { ...localCampaign.banner, link: e.target.value }
-                                })}
-                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 text-white focus:outline-none focus:border-primary"
-                            />
-                        </div>
-
-                        <div className="space-y-2 pt-2 border-t border-[#222]">
-                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500 flex justify-between">
-                                <span>Advanced CSS (Optional)</span>
-                                <span className="text-[9px] bg-[#222] px-1 rounded text-primary">MAX CUSTOM</span>
-                            </label>
-                            <textarea 
-                                value={localCampaign.banner.customCss || ''}
-                                onChange={(e) => setLocalCampaign({
-                                    ...localCampaign,
-                                    banner: { ...localCampaign.banner, customCss: e.target.value }
-                                })}
-                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 text-white font-mono text-xs focus:outline-none focus:border-primary min-h-[80px]"
-                                placeholder="background: linear-gradient(90deg, red, blue); font-weight: 900;"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex justify-end pt-4">
+            {/* Action Bar */}
+            <div className="flex justify-end">
                 <button 
-                    onClick={handleSaveCampaign}
-                    disabled={isSettingsLoading}
-                    className="flex items-center gap-2 bg-primary text-black px-8 py-3 rounded font-bold hover:bg-white transition-colors disabled:opacity-50"
+                    onClick={handleCreateCampaign}
+                    disabled={isCreatingCampaign}
+                    className="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded font-bold hover:bg-white transition-colors disabled:opacity-50"
                 >
-                    {isSettingsLoading ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-black"></div>
-                    ) : (
-                        <Save size={18} />
-                    )}
-                    <span>SAVE CAMPAIGN</span>
+                    {isCreatingCampaign ? <Loader2 className="animate-spin" size={16} /> : <Plus size={16} />}
+                    <span>NEW CAMPAIGN</span>
                 </button>
             </div>
+
+            {isLoading && campaigns.length === 0 ? (
+                <div className="flex justify-center py-20">
+                    <Loader2 className="animate-spin text-primary" size={32} />
+                </div>
+            ) : campaigns.length === 0 ? (
+                <div className="text-center py-20 bg-[#111] border border-[#333] rounded-xl border-dashed">
+                    <LayoutTemplate size={48} className="mx-auto text-gray-700 mb-4" />
+                    <h3 className="text-lg font-bold text-gray-400">No Campaigns Found</h3>
+                    <p className="text-gray-600 text-sm mt-2 mb-6">Create your first marketing campaign to get started.</p>
+                    <button onClick={handleCreateCampaign} className="text-primary hover:underline text-sm font-mono uppercase">Create Now</button>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {campaigns.map(campaign => (
+                        <CampaignCard 
+                            key={campaign.id}
+                            id={campaign.id}
+                            name={campaign.name}
+                            isActive={campaign.is_active}
+                            settings={{
+                                ...(campaign.settings as Omit<CampaignSettings, 'name' | 'isActive'>),
+                                name: campaign.name,
+                                isActive: campaign.is_active
+                            } as CampaignSettings}
+                            onActivate={handleActivateCampaign}
+                            onDelete={handleDeleteCampaign}
+                        />
+                    ))}
+                </div>
+            )}
         </TabsContent>
 
         <TabsContent value="codes" className="animate-in fade-in slide-in-from-bottom-4">
             <div className="flex justify-end mb-4">
                 <button 
-                    onClick={() => setIsCreating(true)}
+                    onClick={() => setIsCreatingCode(true)}
                     className="flex items-center justify-center gap-2 bg-primary text-black px-6 py-3 rounded font-bold hover:bg-white transition-colors"
                 >
                     <Plus size={18} />
@@ -490,23 +263,27 @@ export default function DiscountsPage() {
                 </button>
             </div>
 
-            {isCreating && (
-                <div className="bg-[#111] border border-[#333] p-6 rounded-lg mb-6">
+            {isCreatingCode ? <div className="bg-[#111] border border-[#333] p-6 rounded-lg mb-6 animate-in fade-in slide-in-from-top-2">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="font-bold text-xl">Create New Code</h3>
-                        <button onClick={() => setIsCreating(false)}><X size={20} /></button>
+                        <button onClick={() => setIsCreatingCode(false)}><X size={20} /></button>
                     </div>
-                    <form onSubmit={handleCreateCode} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <form onSubmit={handleCreateCode} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                         <div className="space-y-2">
                             <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Code Name</label>
-                            <input 
-                                type="text" 
-                                required
-                                value={newCode.code}
-                                onChange={e => setNewCode({...newCode, code: e.target.value.toUpperCase()})}
-                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 font-mono uppercase"
-                                placeholder="SUMMER2025"
-                            />
+                            <div className="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    required
+                                    value={newCode.code}
+                                    onChange={e => setNewCode({...newCode, code: e.target.value.toUpperCase()})}
+                                    className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 font-mono uppercase focus:outline-none focus:border-primary"
+                                    placeholder="SUMMER2025"
+                                />
+                                <button type="button" onClick={generateRandomCode} className="p-2 bg-[#222] border border-[#333] rounded hover:text-white text-gray-400" title="Generate Random">
+                                    <RefreshCw size={18} />
+                                </button>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Discount %</label>
@@ -516,7 +293,7 @@ export default function DiscountsPage() {
                                 min="1" max="100"
                                 value={newCode.discount_percent}
                                 onChange={e => setNewCode({...newCode, discount_percent: parseInt(e.target.value) || 0})}
-                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2"
+                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 focus:outline-none focus:border-primary"
                             />
                         </div>
                         <div className="space-y-2">
@@ -526,72 +303,124 @@ export default function DiscountsPage() {
                                 min="0"
                                 value={newCode.usage_limit}
                                 onChange={e => setNewCode({...newCode, usage_limit: parseInt(e.target.value) || 0})}
-                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2"
+                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 focus:outline-none focus:border-primary"
                             />
                         </div>
-                        <button type="submit" className="bg-white text-black font-bold px-4 py-2 rounded h-10 hover:bg-gray-200">
-                            CREATE
+                        <div className="space-y-2">
+                            <label className="text-xs font-mono uppercase tracking-widest text-gray-500">Valid Until</label>
+                            <input 
+                                type="date" 
+                                value={newCode.valid_until || ""}
+                                onChange={e => setNewCode({...newCode, valid_until: e.target.value})}
+                                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 focus:outline-none focus:border-primary text-white scheme-dark"
+                            />
+                        </div>
+                        <button type="submit" className="bg-white text-black font-bold px-4 py-2 rounded h-10 hover:bg-gray-200 uppercase tracking-wider">
+                            Create Code
                         </button>
                     </form>
-                </div>
-            )}
+                </div> : null}
 
-            {isLoading ? (
-                <div className="text-center py-20">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-gray-500 font-mono">Loading discounts...</p>
-                </div>
-            ) : (
-                <div className="bg-[#111] border border-[#333] rounded-lg overflow-hidden">
-                    <table className="w-full text-left border-collapse">
-                        <thead className="bg-[#1a1a1a] text-gray-500 font-mono text-xs uppercase tracking-widest">
+            {/* Promo Codes List (Existing Layout) */}
+             <div className="hidden md:block bg-[#111] border border-[#333] rounded-lg overflow-hidden">
+                <table className="w-full text-left border-collapse">
+                    <thead className="bg-[#1a1a1a] text-gray-500 font-mono text-xs uppercase tracking-widest">
+                        <tr>
+                            <th className="p-4 font-normal">Code</th>
+                            <th className="p-4 font-normal">Discount</th>
+                            <th className="p-4 font-normal">Usage</th>
+                            <th className="p-4 font-normal">Expires</th>
+                            <th className="p-4 font-normal">Status</th>
+                            <th className="p-4 font-normal text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#333]">
+                        {codes.length === 0 && (
                             <tr>
-                                <th className="p-4 font-normal">Code</th>
-                                <th className="p-4 font-normal">Discount</th>
-                                <th className="p-4 font-normal">Usage</th>
-                                <th className="p-4 font-normal">Status</th>
-                                <th className="p-4 font-normal text-right">Actions</th>
+                                <td colSpan={6} className="p-8 text-center text-gray-500">No promo codes active.</td>
                             </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[#333]">
-                            {codes.length === 0 && (
-                                <tr>
-                                    <td colSpan={5} className="p-8 text-center text-gray-500">No promo codes active.</td>
-                                </tr>
-                            )}
-                            {codes.map((code) => (
-                                <tr key={code.id} className="hover:bg-[#1a1a1a] transition-colors">
-                                    <td className="p-4 font-mono font-bold text-lg">{code.code}</td>
-                                    <td className="p-4 text-green-500 font-bold">{code.discount_percent}% OFF</td>
-                                    <td className="p-4 font-mono text-sm text-gray-400">
-                                        {code.usage_count} / {code.usage_limit || '∞'}
-                                    </td>
-                                    <td className="p-4">
-                                        <button 
-                                            onClick={() => toggleCodeStatus(code.id, code.is_active)}
-                                            className={`text-[10px] uppercase border px-2 py-1 rounded font-bold transition-colors ${
-                                                code.is_active 
-                                                ? 'border-green-900 text-green-500 bg-green-900/10' 
-                                                : 'border-red-900 text-red-500 bg-red-900/10'
-                                            }`}
-                                        >
-                                            {code.is_active ? 'Active' : 'Disabled'}
-                                        </button>
-                                    </td>
-                                    <td className="p-4 text-right">
-                                        <button 
-                                            onClick={() => deleteCode(code.id)}
-                                            className="p-2 hover:bg-red-900/20 rounded text-gray-400 hover:text-red-500 transition-colors"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                        )}
+                        {codes.map((code) => (
+                            <tr key={code.id} className="hover:bg-[#1a1a1a] transition-colors">
+                                <td className="p-4 font-mono font-bold text-lg">{code.code}</td>
+                                <td className="p-4 text-green-500 font-bold">{code.discount_percent}% OFF</td>
+                                <td className="p-4 font-mono text-sm text-gray-400">
+                                    {code.usage_count} / {code.usage_limit || '∞'}
+                                </td>
+                                <td className="p-4 font-mono text-sm text-gray-400">
+                                    {code.valid_until ? new Date(code.valid_until).toLocaleDateString() : 'Never'}
+                                </td>
+                                <td className="p-4">
+                                    <button 
+                                        onClick={() => toggleCodeStatus(code.id, code.is_active)}
+                                        className={`text-[10px] uppercase border px-2 py-1 rounded font-bold transition-colors ${
+                                            code.is_active 
+                                            ? 'border-green-900 text-green-500 bg-green-900/10' 
+                                            : 'border-red-900 text-red-500 bg-red-900/10'
+                                        }`}
+                                    >
+                                        {code.is_active ? 'Active' : 'Disabled'}
+                                    </button>
+                                </td>
+                                <td className="p-4 text-right">
+                                    <button 
+                                        onClick={() => deleteCode(code.id)}
+                                        className="p-2 hover:bg-red-900/20 rounded text-gray-400 hover:text-red-500 transition-colors"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Mobile Card Stack */}
+            <div className="md:hidden space-y-4">
+                {codes.map((code) => (
+                    <div key={code.id} className="relative bg-[#111] border-2 border-dashed border-[#333] rounded-lg p-4 space-y-4 overflow-hidden group">
+                        <div className="absolute top-1/2 -left-3 w-6 h-6 bg-black rounded-full transform -translate-y-1/2 border-r-2 border-dashed border-[#333]"></div>
+                        <div className="absolute top-1/2 -right-3 w-6 h-6 bg-black rounded-full transform -translate-y-1/2 border-l-2 border-dashed border-[#333]"></div>
+
+                        <div className="flex justify-between items-start pl-2 pr-2">
+                            <div>
+                                <div className="font-mono font-bold text-2xl text-white tracking-widest">{code.code}</div>
+                                <div className="text-green-500 font-bold text-sm uppercase">{code.discount_percent}% OFF TICKET</div>
+                            </div>
+                            <button 
+                                onClick={() => toggleCodeStatus(code.id, code.is_active)}
+                                className={`text-[10px] uppercase border px-2 py-1 rounded font-bold ${
+                                    code.is_active 
+                                    ? 'border-green-900 text-green-500 bg-green-900/10' 
+                                    : 'border-red-900 text-red-500 bg-red-900/10'
+                                }`}
+                            >
+                                {code.is_active ? 'Active' : 'Disabled'}
+                            </button>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2 text-xs font-mono text-gray-500 border-t-2 border-dotted border-[#333] pt-3 pl-2 pr-2">
+                            <div>
+                                <span className="block text-[9px] uppercase tracking-widest mb-1 text-gray-600">Usage Limit</span>
+                                <span className="text-white">{code.usage_count}</span> / {code.usage_limit || '∞'}
+                            </div>
+                            <div className="text-right">
+                                <span className="block text-[9px] uppercase tracking-widest mb-1 text-gray-600">Valid Until</span>
+                                {code.valid_until ? new Date(code.valid_until).toLocaleDateString() : 'Forever'}
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => deleteCode(code.id)}
+                            className="w-full flex items-center justify-center gap-2 p-2 bg-red-900/10 hover:bg-red-900/20 text-red-500 rounded text-xs font-bold uppercase transition-colors border border-red-900/20"
+                        >
+                            <Trash2 size={14} /> Tear Up Ticket
+                        </button>
+                    </div>
+                ))}
+            </div>
+
         </TabsContent>
       </Tabs>
     </div>

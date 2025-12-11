@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { logger } from "./logger";
 
 /**
  * Logs an administrative action to the database.
@@ -13,7 +14,7 @@ export async function logAdminAction(
   action: string,
   resource: string,
   targetId?: string | null,
-  details: Record<string, any> = {}
+  details: Record<string, unknown> = {}
 ) {
   try {
     const { error } = await supabase.rpc('log_admin_action', {
@@ -24,10 +25,10 @@ export async function logAdminAction(
     });
 
     if (error) {
-      console.error('Failed to log admin action:', error);
+      logger.error('Failed to log admin action:', error);
     }
   } catch (err) {
-    console.error('Unexpected error logging admin action:', err);
+    logger.error('Unexpected error logging admin action:', err);
   }
 }
 

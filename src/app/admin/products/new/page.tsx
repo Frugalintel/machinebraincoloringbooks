@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronLeft, Save } from "lucide-react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { Product } from "@/lib/types";
 import { ImageUpload } from "@/components/image-upload";
 import { categories } from "@/lib/store-data";
-import { ChevronLeft, Save } from "lucide-react";
-import Link from "next/link";
 import { useToast } from "@/context/toast-context";
 import { logAdminAction } from "@/lib/admin-utils";
+import { logger } from "@/lib/logger";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -70,9 +71,9 @@ export default function NewProductPage() {
         success("Product created successfully!");
         router.push('/admin/products');
         router.refresh();
-    } catch (error: any) {
-        console.error("Error creating product:", error);
-        toastError(error.message || "Failed to create product.");
+    } catch (error) {
+        logger.error("Error creating product:", error);
+        toastError(error instanceof Error ? error.message : "Failed to create product.");
     } finally {
         setLoading(false);
     }

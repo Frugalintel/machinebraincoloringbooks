@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { Activity, Database, Server, Wifi, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface HealthStatus {
   service: string;
@@ -19,10 +19,6 @@ export default function HealthPage() {
     { service: 'Auth Service', status: 'degraded', message: 'Checking...' },
   ]);
 
-  useEffect(() => {
-    checkHealth();
-  }, []);
-
   const checkHealth = async () => {
     // 1. Check Database
     const startDb = performance.now();
@@ -30,7 +26,7 @@ export default function HealthPage() {
     const dbLatency = Math.round(performance.now() - startDb);
     
     // 2. Check Auth (session check)
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const { error: authError } = await supabase.auth.getSession();
 
     // 3. Check Storage (list buckets)
     const startStorage = performance.now();
@@ -63,6 +59,10 @@ export default function HealthPage() {
     ]);
   };
 
+  useEffect(() => {
+    checkHealth();
+  }, []);
+
   return (
     <div className="space-y-8">
       <div>
@@ -72,13 +72,13 @@ export default function HealthPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {statuses.map((status) => (
-            <div key={status.service} className={`bg-[#111] border p-6 rounded-lg flex items-center gap-6 ${
-                status.status === 'healthy' ? 'border-green-900/30' : 
-                status.status === 'down' ? 'border-red-900/30' : 'border-yellow-900/30'
+            <div key={status.service} className={`bg-[#111] border p-6 rounded-xl flex items-center gap-6 transition-all duration-300 hover:shadow-lg ${
+                status.status === 'healthy' ? 'border-[#333] hover:border-green-900/50' : 
+                status.status === 'down' ? 'border-red-900/30 hover:border-red-900/50' : 'border-yellow-900/30 hover:border-yellow-900/50'
             }`}>
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                    status.status === 'healthy' ? 'bg-green-900/20 text-green-500' : 
-                    status.status === 'down' ? 'bg-red-900/20 text-red-500' : 'bg-yellow-900/20 text-yellow-500'
+                <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${
+                    status.status === 'healthy' ? 'bg-green-900/10 text-green-500' : 
+                    status.status === 'down' ? 'bg-red-900/10 text-red-500' : 'bg-yellow-900/10 text-yellow-500'
                 }`}>
                     {status.service.includes('Database') ? <Database size={32} /> :
                      status.service.includes('Storage') ? <Server size={32} /> :
@@ -97,9 +97,7 @@ export default function HealthPage() {
                             {status.status}
                         </span>
                     </div>
-                    {status.latency && (
-                        <p className="text-xs text-gray-500 mt-1 font-mono">Latency: {status.latency}ms</p>
-                    )}
+                    {status.latency ? <p className="text-xs text-gray-500 mt-1 font-mono">Latency: {status.latency}ms</p> : null}
                     <p className="text-xs text-gray-600 mt-1">{status.message}</p>
                 </div>
             </div>

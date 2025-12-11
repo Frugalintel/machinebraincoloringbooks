@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { formatDistanceToNow } from "date-fns";
 import { Shield, Search, Filter, RefreshCw, ChevronLeft, ChevronRight, User as UserIcon, Calendar, Activity, Database, ChevronDown, ChevronUp } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface AdminLog {
   id: string;
@@ -11,7 +11,7 @@ interface AdminLog {
   action: string;
   target_resource: string;
   target_id: string;
-  details: any;
+  details: Record<string, unknown>;
   created_at: string;
   admin_email?: string; 
 }
@@ -20,7 +20,7 @@ const ITEMS_PER_PAGE = 20;
 
 const ActionBadge = ({ action }: { action: string }) => {
     let color = 'bg-gray-800 text-gray-400 border-gray-700';
-    let icon = <Activity size={12} />;
+    const icon = <Activity size={12} />;
 
     if (action.includes('delete')) {
         color = 'bg-red-950/40 text-red-400 border-red-900/50';
@@ -40,7 +40,7 @@ const ActionBadge = ({ action }: { action: string }) => {
     );
 };
 
-const DetailsCell = ({ details }: { details: any }) => {
+const DetailsCell = ({ details }: { details: Record<string, unknown> }) => {
     const [expanded, setExpanded] = useState(false);
     const jsonString = JSON.stringify(details, null, 2);
     const summary = JSON.stringify(details).substring(0, 40);
@@ -55,11 +55,9 @@ const DetailsCell = ({ details }: { details: any }) => {
                 <span className="truncate max-w-[150px] md:max-w-[200px]">{expanded ? 'Hide Details' : summary + (jsonString.length > 40 ? '...' : '')}</span>
             </div>
             
-            {expanded && (
-                <div className="absolute top-6 right-0 md:left-0 z-50 w-[280px] md:w-[300px] bg-[#0a0a0a] border border-[#333] rounded p-3 shadow-xl text-xs font-mono text-gray-300 overflow-auto max-h-[200px]">
+            {expanded ? <div className="absolute top-6 right-0 md:left-0 z-50 w-[280px] md:w-[300px] bg-[#0a0a0a] border border-[#333] rounded p-3 shadow-xl text-xs font-mono text-gray-300 overflow-auto max-h-[200px]">
                     <pre className="whitespace-pre-wrap">{jsonString}</pre>
-                </div>
-            )}
+                </div> : null}
         </div>
     );
 };
@@ -71,10 +69,6 @@ export default function AuditLogPage() {
   const [filterAction, setFilterAction] = useState("all");
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-
-  useEffect(() => {
-    fetchLogs();
-  }, [page, filterAction]);
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -88,7 +82,7 @@ export default function AuditLogPage() {
         query = query.ilike('action', `%${filterAction}%`);
     }
 
-    const { data: logsData, error } = await query;
+    const { data: logsData } = await query;
 
     if (logsData) {
         if (logsData.length < ITEMS_PER_PAGE) {
@@ -111,6 +105,10 @@ export default function AuditLogPage() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    fetchLogs();
+  }, [page, filterAction]);
+
   const filteredLogs = logs.filter(log => 
     searchTerm === "" ||
     log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -125,26 +123,24 @@ export default function AuditLogPage() {
         <p className="text-gray-500 font-mono text-sm">Monitor administrative activity and security events.</p>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center gap-4 bg-[#111] p-1.5 rounded-xl border border-[#222]">
+      <div className="flex flex-col md:flex-row items-center gap-4 bg-[#111] p-4 rounded-xl border border-[#333]">
          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={16} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
             <input 
                 type="text" 
                 placeholder="Search logs..." 
-                className="w-full bg-transparent border-none focus:ring-0 pl-10 pr-4 py-2 text-sm text-white placeholder:text-gray-600 font-medium"
+                className="w-full bg-[#222] border border-[#333] rounded px-4 py-2 pl-10 text-white focus:outline-none focus:border-primary placeholder:text-gray-600 font-medium"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
          </div>
          
-         <div className="h-6 w-[1px] bg-[#333] hidden md:block"></div>
-
-         <div className="flex items-center gap-2 w-full md:w-auto px-2">
+         <div className="flex items-center gap-2 w-full md:w-auto">
              <div className="relative flex-1 md:flex-none">
                  <select 
                     value={filterAction}
                     onChange={(e) => { setFilterAction(e.target.value); setPage(0); }}
-                    className="w-full md:w-auto bg-[#1a1a1a] hover:bg-[#222] border border-[#333] rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none appearance-none pr-8 cursor-pointer transition-colors font-mono uppercase"
+                    className="w-full md:w-auto bg-[#222] border border-[#333] rounded px-4 py-2 text-white focus:outline-none appearance-none pr-8 cursor-pointer transition-colors font-mono uppercase text-xs"
                  >
                      <option value="all">All Actions</option>
                      <option value="create">Create</option>
@@ -152,23 +148,23 @@ export default function AuditLogPage() {
                      <option value="delete">Delete</option>
                      <option value="publish">Publish</option>
                  </select>
-                 <Filter size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                 <Filter size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
              </div>
              
              <button 
                 onClick={() => { setPage(0); fetchLogs(); }}
-                className="p-1.5 hover:bg-[#222] rounded-lg text-gray-500 hover:text-white transition-colors"
+                className="p-2 bg-[#222] hover:bg-[#333] border border-[#333] rounded text-gray-400 hover:text-white transition-colors"
                 title="Refresh"
              >
-                <RefreshCw size={16} />
+                <RefreshCw size={18} />
              </button>
          </div>
       </div>
 
-      <div className="border border-[#222] rounded-xl overflow-hidden bg-[#0a0a0a]">
+      <div className="bg-[#111] border border-[#333] rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm min-w-[800px] table-fixed">
-                <thead className="bg-[#111] text-gray-500 font-mono text-[10px] uppercase tracking-wider border-b border-[#222]">
+            <table className="w-full text-left text-sm min-w-[800px] table-fixed border-collapse">
+                <thead className="bg-[#1a1a1a] text-gray-500 font-mono text-[10px] uppercase tracking-wider">
                     <tr>
                         <th className="p-4 w-[180px] font-medium">Timestamp</th>
                         <th className="p-4 w-[200px] font-medium">Actor</th>
@@ -177,7 +173,7 @@ export default function AuditLogPage() {
                         <th className="p-4 font-medium">Details</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1a1a1a]">
+                <tbody className="divide-y divide-[#333]">
                     {loading ? (
                         <tr>
                             <td colSpan={5} className="p-12 text-center text-gray-500">
@@ -195,7 +191,7 @@ export default function AuditLogPage() {
                         </tr>
                     ) : (
                         filteredLogs.map((log) => (
-                            <tr key={log.id} className="hover:bg-[#111] transition-colors group">
+                            <tr key={log.id} className="hover:bg-[#1a1a1a] transition-colors group">
                                 <td className="p-4">
                                     <div className="flex flex-col">
                                         <span className="text-gray-300 font-medium text-xs">

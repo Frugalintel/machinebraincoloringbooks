@@ -18,7 +18,34 @@ import {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
-export function RevenueChart({ data }: { data: any[] }) {
+interface KPICardProps {
+  title: string;
+  value: string | number;
+  icon: React.ComponentType<{ size: number }>;
+  color: string;
+  bg: string;
+}
+
+export function KPICard({ title, value, icon: Icon, color, bg }: KPICardProps) {
+    return (
+        <div className="bg-[#111] border border-[#333] p-6 rounded-xl relative overflow-hidden group hover:border-gray-500 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300">
+            <div className={`absolute top-4 right-4 p-2 rounded-lg ${bg} ${color}`}>
+                <Icon size={20} />
+            </div>
+            <div>
+                <p className="text-gray-500 text-xs font-mono uppercase tracking-widest mb-1">{title}</p>
+                <h3 className="text-3xl font-bold font-heading text-white">{value}</h3>
+            </div>
+        </div>
+    );
+}
+
+interface RevenueDataPoint {
+  date: string;
+  revenue: number;
+}
+
+export function RevenueChart({ data }: { data: RevenueDataPoint[] }) {
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -50,7 +77,7 @@ export function RevenueChart({ data }: { data: any[] }) {
           <Tooltip 
             contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '4px' }}
             itemStyle={{ color: '#fff' }}
-            formatter={(value: any) => [`$${value}`, 'Revenue']}
+            formatter={(value: number) => [`$${value}`, 'Revenue']}
           />
           <Area 
             type="monotone" 
@@ -65,7 +92,13 @@ export function RevenueChart({ data }: { data: any[] }) {
   );
 }
 
-export function CategoryChart({ data }: { data: any[] }) {
+interface CategoryDataPoint {
+  name: string;
+  value: number;
+  [key: string]: string | number;
+}
+
+export function CategoryChart({ data }: { data: CategoryDataPoint[] }) {
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -79,7 +112,7 @@ export function CategoryChart({ data }: { data: any[] }) {
             fill="#8884d8"
             dataKey="value"
             nameKey="name"
-            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            label={({ name, percent }) => `${name} ${(percent ? percent * 100 : 0).toFixed(0)}%`}
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -95,7 +128,12 @@ export function CategoryChart({ data }: { data: any[] }) {
   );
 }
 
-export function UserGrowthChart({ data }: { data: any[] }) {
+interface UserGrowthDataPoint {
+  name: string;
+  users: number;
+}
+
+export function UserGrowthChart({ data }: { data: UserGrowthDataPoint[] }) {
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -128,4 +166,3 @@ export function UserGrowthChart({ data }: { data: any[] }) {
     </div>
   );
 }
-
