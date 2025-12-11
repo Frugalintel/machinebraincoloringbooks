@@ -46,8 +46,7 @@ export function NewsletterModal() {
 
   return (
     <AnimatePresence>
-      {isOpen && (
-        <>
+      {isOpen ? <>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -64,7 +63,7 @@ export function NewsletterModal() {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg z-[101] p-4"
           >
-            <div className="bg-[#0a0a0a] border border-[#333] shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden">
+            <div className="bg-[#0a0a0a] border border-[#222] shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden">
                 {/* Close Button */}
                 <div className="absolute top-2 right-2 z-20">
                     <button onClick={handleDismiss} className="p-2 text-gray-500 hover:text-white transition-colors bg-[#0a0a0a] rounded-full hover:bg-[#222]">
@@ -76,8 +75,8 @@ export function NewsletterModal() {
                 <div className="flex flex-col">
                     
                     {/* Image/Banner Area */}
-                    <div className="h-32 bg-[#111] relative overflow-hidden flex items-center justify-center border-b border-[#333]">
-                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
+                    <div className="h-32 bg-[#111] relative overflow-hidden flex items-center justify-center border-b border-[#222]">
+                        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10"></div>
                         <div className="absolute inset-0 pointer-events-none" 
                              style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,79,0,0.1) 0%, transparent 50%)' }}>
                         </div>
@@ -113,7 +112,7 @@ export function NewsletterModal() {
                                         </button>
                                         <button 
                                             onClick={() => handleSocialMock('Apple')}
-                                            className="w-full h-12 bg-[#222] hover:bg-[#333] text-white font-bold flex items-center justify-center gap-3 transition-colors border border-[#333] rounded-none uppercase tracking-wide text-xs"
+                                            className="w-full h-12 bg-[#222] hover:bg-[#333] text-white font-bold flex items-center justify-center gap-3 transition-colors border border-[#222] rounded-none uppercase tracking-wide text-xs"
                                         >
                                             <Command size={18} /> Continue with Apple
                                         </button>
@@ -121,7 +120,7 @@ export function NewsletterModal() {
 
                                     <div className="relative py-2">
                                         <div className="absolute inset-0 flex items-center">
-                                            <span className="w-full border-t border-[#333]" />
+                                            <span className="w-full border-t border-[#222]" />
                                         </div>
                                         <div className="relative flex justify-center text-[10px] uppercase font-mono">
                                             <span className="bg-[#0a0a0a] px-2 text-gray-600">Or enter email</span>
@@ -134,7 +133,7 @@ export function NewsletterModal() {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="EMAIL_ADDRESS"
-                                            className="bg-[#111] border-[#333] text-white font-mono text-xs h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
+                                            className="bg-[#111] border-[#222] text-white font-mono text-base md:text-xs h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
                                             required
                                         />
                                         <Button type="submit" className="bg-primary hover:bg-white hover:text-black text-white h-12 px-6 rounded-none">
@@ -178,7 +177,7 @@ export function NewsletterModal() {
                                         <div className="flex justify-between gap-4">
                                             <button 
                                                 onClick={() => handleAuthAction('login')}
-                                                className="flex-1 flex items-center justify-center gap-2 text-xs font-mono uppercase text-gray-400 hover:text-white border border-[#333] h-10 hover:border-white transition-colors"
+                                                className="flex-1 flex items-center justify-center gap-2 text-xs font-mono uppercase text-gray-400 hover:text-white border border-[#222] h-10 hover:border-white transition-colors"
                                             >
                                                 <LogIn size={12} /> Login
                                             </button>
@@ -197,8 +196,7 @@ export function NewsletterModal() {
                 </div>
             </div>
           </motion.div>
-        </>
-      )}
+        </> : null}
     </AnimatePresence>
   );
 }

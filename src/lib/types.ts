@@ -47,6 +47,14 @@ export interface PromoCode {
   is_active: boolean;
 }
 
+export interface AchievementTriggerConfig {
+  product_id?: string;
+  category?: string;
+  threshold?: number;
+  code?: string;
+  [key: string]: string | number | boolean | undefined;
+}
+
 export interface Achievement {
   id: string;
   title: string;
@@ -55,7 +63,9 @@ export interface Achievement {
   target_value: number;
   is_secret: boolean;
   trigger_type?: string;
-  trigger_config?: any;
+  trigger_config?: AchievementTriggerConfig;
+  rarity?: 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary';
+  custom_color?: string;
   created_at?: string;
 }
 
@@ -72,12 +82,34 @@ export interface StoryReward {
   description: string;
 }
 
+export interface StoryChallenge {
+  type: 'riddle' | 'timer' | 'input' | 'scan';
+  config: {
+    question?: string;
+    answer?: string;
+    duration?: number;
+    target_code?: string;
+    failure_node_id?: string;
+  };
+}
+
 export interface StoryNode {
   id: string;
   content: string;
   choices: { text: string; nextNodeId: string }[];
   image_url?: string;
-  type?: 'text' | 'choice' | 'ending';
+  audio_url?: string;
+  type?: 'text' | 'choice' | 'ending' | 'challenge';
+  challenge?: StoryChallenge;
+  position?: { x: number; y: number };
+}
+
+export interface FrameworkConfig {
+  id: string;
+  name: string;
+  description: string;
+  defaultVariables: Record<string, string>;
+  generate: (variables: Record<string, string>) => Story;
 }
 
 export interface Story {
@@ -90,7 +122,20 @@ export interface Story {
   rewards: StoryReward[];
   code_needed?: string;
   is_published: boolean;
+  difficulty?: number;
+  estimated_minutes?: number;
+  tags?: string[];
   created_at?: string;
+}
+
+export interface StoryAnalytics {
+  id: string;
+  story_id: string;
+  user_id?: string;
+  event_type: 'start' | 'node_complete' | 'choice' | 'complete' | 'abandon';
+  node_id?: string;
+  metadata?: Record<string, unknown>;
+  created_at: string;
 }
 
 export interface BookCode {
@@ -135,10 +180,12 @@ export interface UserCollectible {
   user_id: string;
   collectible_id: string;
   unlocked_at: string;
+  last_polished_at?: string;
 }
 
 export interface CampaignTheme {
   id: string;
+  name?: string;
   colors: {
     primary: string;
     secondary: string;
@@ -152,6 +199,13 @@ export interface CampaignTheme {
     heroTag: string;
     storyTag: string;
   };
+  fonts?: {
+    heading?: string;
+    body?: string;
+  };
+  texture?: 'noise' | 'grid' | 'dots' | 'scanlines' | 'none';
+  animation?: 'none' | 'pulse' | 'marquee' | 'glitch';
+  fontMode?: 'default' | 'mono' | 'serif';
 }
 
 export interface CampaignSettings {
@@ -173,6 +227,8 @@ export interface CampaignSettings {
     link: string;
     backgroundColor: string;
     textColor: string;
+    backgroundImage?: string;
+    pattern?: 'none' | 'caution' | 'grid' | 'dots' | 'gradient';
     customCss?: string; // For advanced customization
   };
 
@@ -180,11 +236,98 @@ export interface CampaignSettings {
 }
 
 // Keeping this for backwards compatibility if needed, but we should migrate
-export type GlobalDiscountSettings = CampaignSettings; 
+export interface GlobalDiscountSettings {
+  enabled: boolean;
+  percentage: number;
+  label: string;
+}
 
 export interface SystemSettings {
   key: string;
-  value: any;
+  value: string | number | boolean | Record<string, unknown>;
   updated_at?: string;
   updated_by?: string;
+}
+
+// Admin Activity Types
+export interface AdminActivity {
+  id: string;
+  admin_id: string;
+  action: string;
+  resource: string;
+  target_id?: string;
+  details: Record<string, unknown>;
+  created_at: string;
+}
+
+// Database row types for direct queries
+export interface DatabaseProduct {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  price: number;
+  discount_percent: number;
+  category: string;
+  difficulty: number;
+  age: string;
+  color: string;
+  accent: string;
+  image_url?: string;
+  is_published: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DatabaseStoryProgress {
+  story_id: string;
+  stories?: {
+    title: string;
+  };
+}
+
+export interface DatabaseRevenueData {
+  date: string;
+  revenue: number;
+}
+
+export interface DatabaseCategoryData {
+  category: string;
+  count: string | number;
+}
+
+export interface SelectOption {
+  id: string;
+  title: string;
+}
+
+export interface Profile {
+  id: string;
+  display_name?: string;
+  avatar_url?: string;
+  is_admin?: boolean;
+}
+
+export interface Review {
+  id: string;
+  product_id: string;
+  user_id: string;
+  rating: number;
+  title?: string;
+  comment?: string;
+  is_verified_purchase: boolean;
+  helpful_count: number;
+  created_at: string;
+  updated_at: string;
+  // Joined from profiles
+  user?: {
+    display_name?: string;
+    avatar_url?: string;
+  };
+}
+
+export interface ProductRating {
+  product_id: string;
+  average_rating: number;
+  review_count: number;
 }

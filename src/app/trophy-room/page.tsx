@@ -1,20 +1,34 @@
 "use client";
 
-import { Navbar } from "@/components/navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Trophy, Lock, Unlock, Scan, Box, Star, ArrowLeft, Loader2 } from "lucide-react";
+import { Trophy, Lock, Unlock, Scan, Star, ArrowLeft, Loader2 } from "lucide-react";
+import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGame } from "@/context/game-context";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/context/toast-context";
-import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { logger } from "@/lib/logger";
+
+// Dynamic import for Three.js to avoid SSR issues
+const TrophyCanvas = dynamic(
+  () => import('@/components/three').then((m) => m.TrophyCanvas),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full min-h-[100px] bg-[#111] animate-pulse flex items-center justify-center">
+        <div className="w-8 h-8 border border-primary/30 rounded-full animate-spin" />
+      </div>
+    )
+  }
+);
 
 export default function TrophyRoomPage() {
   const { user, openAuthModal } = useAuth();
-  const { collectionSets, unlockItem } = useGame();
+  const { collectionSets, unlockItem, collectibleTimestamps } = useGame();
   const { success, error: toastError } = useToast();
   const [code, setCode] = useState("");
   const [unlockedReward, setUnlockedReward] = useState<string | null>(null);
@@ -71,7 +85,7 @@ export default function TrophyRoomPage() {
             .insert([{ user_id: user.id, code_id: codeData.id }]);
 
         if (redeemError) {
-            console.error("Redeem error:", redeemError);
+            logger.error("Redeem error:", redeemError);
             toastError("Failed to redeem code. Please try again.");
             setLoading(false);
             return;
@@ -106,7 +120,7 @@ export default function TrophyRoomPage() {
                 // If we can't find the set locally, we can't update local UI correctly without a refresh.
                 // But we already inserted into user_codes.
                 // We should ensure unlockItem works even if set not found? No, it relies on sets.
-                console.warn("Unlocked item not found in local sets:", codeData.unlocks_id);
+                logger.warn("Unlocked item not found in local sets:", { unlocks_id: codeData.unlocks_id });
                 success("Code accepted. Collection updated.");
             }
         } else {
@@ -116,7 +130,7 @@ export default function TrophyRoomPage() {
         setCode("");
 
     } catch (error) {
-        console.error("Claim error:", error);
+        logger.error("Claim error:", error);
         toastError("An error occurred.");
     } finally {
         setLoading(false);
@@ -126,7 +140,6 @@ export default function TrophyRoomPage() {
   if (!user) {
     return (
        <main className="min-h-screen bg-black text-white font-sans flex flex-col">
-           <Navbar />
            <div className="flex-1 flex items-center justify-center">
                <div className="text-center space-y-4">
                    <Lock className="w-12 h-12 text-gray-500 mx-auto" />
@@ -142,11 +155,10 @@ export default function TrophyRoomPage() {
 
   return (
     <main className="min-h-screen bg-black text-white font-sans">
-      <Navbar />
       
       {/* Header Banner */}
       <div className="bg-[#111] border-b border-[#333] py-12 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
           <div className="container mx-auto px-4 md:px-6 relative z-10">
               <div className="mb-6">
                     <Link href="/profile/me">
@@ -196,11 +208,9 @@ export default function TrophyRoomPage() {
                                     <span className="text-primary">[{set.collected.length}/{set.total}]</span>
                                 </div>
                             </div>
-                            {isComplete && (
-                                <div className="bg-primary text-black px-4 py-2 font-heading uppercase tracking-widest text-sm animate-pulse">
+                            {isComplete ? <div className="bg-primary text-black px-4 py-2 font-heading uppercase tracking-widest text-sm animate-pulse">
                                     Set Complete
-                                </div>
-                            )}
+                                </div> : null}
                         </div>
 
                         {/* Items Grid */}
@@ -212,17 +222,25 @@ export default function TrophyRoomPage() {
                                         <div className={`aspect-square border ${isCollected ? "border-primary/50 bg-[#151515]" : "border-[#333] border-dashed bg-transparent"} relative flex flex-col items-center justify-center p-4 group/item transition-all hover:border-primary cursor-pointer h-full`}>
                                         {isCollected ? (
                                             <>
-                                                <div className={`w-16 h-16 rounded-full ${item.image} blur-xl opacity-20 absolute`}></div>
-                                                    <Box className="w-8 h-8 text-white mb-2 relative z-10 group-hover/item:scale-110 transition-transform" />
-                                                    <span className="text-[10px] font-mono text-gray-400 uppercase text-center relative z-10 group-hover/item:text-white transition-colors">{item.name}</span>
-                                                <div className="absolute top-2 right-2 text-primary">
+                                                <div className="absolute inset-0 z-0">
+                                                    <TrophyCanvas 
+                                                        size="small" 
+                                                        rarity={item.rarity} 
+                                                        autoRotate={true}
+                                                        isInteractive={false}
+                                                        unlockedAt={collectibleTimestamps[item.id]?.unlockedAt}
+                                                        lastPolishedAt={collectibleTimestamps[item.id]?.lastPolishedAt}
+                                                    />
+                                                </div>
+                                                <span className="absolute bottom-2 left-0 right-0 text-[10px] font-mono text-gray-400 uppercase text-center z-10 group-hover/item:text-white transition-colors">{item.name}</span>
+                                                <div className="absolute top-2 right-2 text-primary z-10">
                                                     <Star size={10} fill="currentColor" />
                                                 </div>
                                             </>
                                         ) : (
                                             <>
-                                                    <Lock className="w-6 h-6 text-gray-700 mb-2 group-hover/item:text-gray-500 transition-colors" />
-                                                    <span className="text-[10px] font-mono text-gray-700 uppercase text-center group-hover/item:text-gray-500 transition-colors">Locked</span>
+                                                <Lock className="w-6 h-6 text-gray-700 mb-2 group-hover/item:text-gray-500 transition-colors" />
+                                                <span className="text-[10px] font-mono text-gray-700 uppercase text-center group-hover/item:text-gray-500 transition-colors">Locked</span>
                                             </>
                                         )}
                                     </div>
@@ -265,35 +283,34 @@ export default function TrophyRoomPage() {
 
             {/* Reward Preview */}
             <AnimatePresence>
-                {unlockedReward && (
-                    <motion.div 
+                {unlockedReward ? <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         className="bg-gradient-to-b from-[#111] to-[#000] border border-primary/50 p-8 text-center relative overflow-hidden"
                     >
-                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+                        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-overlay"></div>
                         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,79,0,0.15),transparent)] animate-pulse"></div>
                         
                         <Trophy size={48} className="mx-auto text-primary mb-4" />
                         <h3 className="font-heading text-2xl text-white uppercase tracking-wide mb-2">Unlocked</h3>
                         <p className="text-primary font-mono text-sm uppercase tracking-widest mb-6">{unlockedReward}</p>
                         
-                        <div className="w-full aspect-square bg-[#0a0a0a] border border-[#333] relative flex items-center justify-center mb-4 group cursor-pointer">
-                            {/* 3D Model Placeholder */}
-                            <div className="w-32 h-32 border-[1px] border-primary/30 rounded-full animate-[spin_10s_linear_infinite] flex items-center justify-center">
-                                <div className="w-24 h-24 border-[1px] border-white/20 rotate-45 flex items-center justify-center">
-                                    <div className="w-16 h-16 bg-primary/20 blur-md"></div>
-                                </div>
-                            </div>
-                            <div className="absolute bottom-4 text-[10px] font-mono text-gray-500 uppercase">Interactive Model</div>
+                        <div className="w-full aspect-square bg-[#0a0a0a] border border-[#333] relative mb-4 overflow-hidden">
+                            {/* 3D Trophy Model */}
+                            <TrophyCanvas 
+                                size="large" 
+                                rarity="Legendary" 
+                                autoRotate={true}
+                                isInteractive={true}
+                            />
+                            <div className="absolute bottom-4 left-0 right-0 text-center text-[10px] font-mono text-gray-500 uppercase pointer-events-none">Drag to Rotate</div>
                         </div>
 
                         <Button className="w-full border border-primary text-primary hover:bg-primary hover:text-black bg-transparent font-heading uppercase tracking-widest text-xs h-10 rounded-none">
                             View in 3D
                         </Button>
-                    </motion.div>
-                )}
+                    </motion.div> : null}
             </AnimatePresence>
         </div>
 

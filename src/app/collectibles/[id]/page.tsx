@@ -1,18 +1,47 @@
 "use client";
 
-import { Navbar } from "@/components/navbar";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Lock, Trophy, User, Calendar, MapPin, Share2, Shield, Info, Scan, Box, ChevronRight, Zap, ExternalLink } from "lucide-react";
+import { ArrowLeft, Lock, Trophy, User, MapPin, Shield, Info, Scan, Box, ChevronRight, Zap, Sparkles, CloudSnow, Sun, Leaf, CloudRain } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { collectionSets, achievements } from "@/lib/game-data";
 import { useAuth } from "@/context/auth-context";
+import { useGame } from "@/context/game-context";
+import { getTrophyEntropy, getCurrentSeason, getEntropyDescription, getSeasonDisplayInfo } from "@/lib/trophy-utils";
+
+// Dynamic import for Three.js to avoid SSR issues
+const TrophyCanvas = dynamic(
+  () => import('@/components/three').then((m) => m.TrophyCanvas),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full min-h-[400px] bg-[#111] animate-pulse flex items-center justify-center">
+        <div className="w-16 h-16 border-2 border-primary/30 rounded-full animate-spin" />
+      </div>
+    )
+  }
+);
+
+// Season icon component
+function SeasonIcon({ season, size = 14 }: { season: string; size?: number }) {
+  switch (season) {
+    case 'Spring': return <CloudRain size={size} />;
+    case 'Summer': return <Sun size={size} />;
+    case 'Fall': return <Leaf size={size} />;
+    case 'Winter': return <CloudSnow size={size} />;
+    default: return <Sun size={size} />;
+  }
+}
 
 export default function CollectibleDetail() {
   const { id } = useParams();
   const { user, openAuthModal } = useAuth();
+  const { collectibleTimestamps, polishCollectible, collectionSets: userCollectionSets } = useGame();
   const router = useRouter();
+  const [isPolishing, setIsPolishing] = useState(false);
   
   // Find the collectible in the sets
   let collectible = null;
@@ -45,9 +74,19 @@ export default function CollectibleDetail() {
     ? achievements.find(a => a.id === collectible.relatedAchievementId)
     : null;
 
-  // Mock progress data for demo purposes if user is logged in
-  const isUnlocked = false; // In a real app, check user state
-  const unlockDate = "N/A";
+  // Check if user has collected this item
+  const userSet = userCollectionSets.find(s => s.id === parentSet?.id);
+  const isUnlocked = userSet?.collected.includes(collectible.id) || false;
+  
+  // Get timestamps for entropy calculation
+  const timestamps = collectibleTimestamps[collectible.id];
+  const entropy = getTrophyEntropy(timestamps?.unlockedAt, timestamps?.lastPolishedAt);
+  const entropyDescription = getEntropyDescription(entropy);
+  const entropyPercent = Math.round(entropy * 100);
+  
+  // Get current season
+  const currentSeason = getCurrentSeason();
+  const seasonInfo = getSeasonDisplayInfo(currentSeason);
   
   // Rarity colors
   const rarityColors = {
@@ -64,17 +103,26 @@ export default function CollectibleDetail() {
     if (!user) {
         openAuthModal('register');
     } else if (relatedAchievement) {
-        // Direct link to specific achievement hash
         router.push(`/achievements#${relatedAchievement.id}`);
+    }
+  };
+
+  const handlePolish = async () => {
+    if (!user || !isUnlocked || isPolishing) return;
+    
+    setIsPolishing(true);
+    try {
+      await polishCollectible(collectible.id);
+    } finally {
+      setIsPolishing(false);
     }
   };
 
   return (
     <main className="min-h-screen bg-black text-white font-sans selection:bg-primary selection:text-black flex flex-col">
-      <Navbar />
       
       {/* Breadcrumb / Header */}
-      <div className="border-b border-[#333] bg-[#0a0a0a] pt-32 pb-6">
+      <div className="border-b border-[#222] bg-[#0a0a0a] pt-32 pb-6">
           <div className="container mx-auto px-4 md:px-6 flex items-center gap-4 text-[10px] md:text-xs font-mono text-gray-500 uppercase tracking-widest">
                 <Link href="/collectibles" className="hover:text-primary flex items-center gap-2 transition-colors">
                     <ArrowLeft size={12} /> VAULT
@@ -91,29 +139,43 @@ export default function CollectibleDetail() {
             
             {/* Left: Visuals */}
             <div className="lg:col-span-5 flex flex-col gap-6">
-                <div className="relative aspect-square w-full bg-[#111] border border-[#333] p-8 md:p-16 flex items-center justify-center group overflow-hidden rounded-sm shadow-2xl">
+                <div className="relative aspect-square w-full bg-[#111] border border-[#222] overflow-hidden rounded-sm shadow-2xl">
                     {/* Background Effects */}
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
-                    <div className={`absolute inset-0 bg-gradient-to-br from-black via-[#0a0a0a] to-[#111]`}></div>
+                    <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none z-10"></div>
                     
-                    {/* Glowing Orb/Effect behind item */}
-                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 ${collectible.image.replace('bg-', 'bg-')}/10 blur-[60px] rounded-full animate-pulse`}></div>
-
-        <motion.div 
-                        initial={{ scale: 0.8, opacity: 0, rotateY: 15 }}
-                        animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+                    {/* Three.js Trophy Viewport with entropy and season */}
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         transition={{ duration: 0.8 }}
-                        className="relative z-10 w-full h-full flex items-center justify-center perspective-1000"
-        >
-                         {/* Placeholder for actual 3D model or high-res image */}
-                         <div className={`w-48 h-48 md:w-64 md:h-64 rounded-full ${collectible.image} shadow-[0_0_50px_rgba(0,0,0,0.5)] border-4 border-white/10 flex items-center justify-center backdrop-blur-sm relative`}>
-                            <div className="w-3/4 h-3/4 border border-white/20 rounded-full animate-spin-slow"></div>
-                            {/* Inner core */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 bg-white/10 blur-xl rounded-full"></div>
-            </div>
-        </motion.div>
+                        className="absolute inset-0"
+                    >
+                        <TrophyCanvas 
+                            size="large" 
+                            rarity={collectible.rarity} 
+                            isInteractive={true}
+                            autoRotate={true}
+                            unlockedAt={timestamps?.unlockedAt}
+                            lastPolishedAt={timestamps?.lastPolishedAt}
+                        />
+                    </motion.div>
 
-                    {/* Status Badge */}
+                    {/* Season Badge - Top Left */}
+                    <div className="absolute top-6 left-6 z-20">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-black/60 border border-white/10 text-white text-[10px] font-mono uppercase tracking-widest rounded-full backdrop-blur-sm">
+                            <SeasonIcon season={currentSeason} size={12} />
+                            <span>{seasonInfo.name}</span>
+                            <span className="text-gray-500">•</span>
+                            <span className="text-primary">{seasonInfo.effect}</span>
+                        </div>
+                    </div>
+
+                    {/* Interaction Hint */}
+                    <div className="absolute bottom-4 left-0 right-0 text-center text-[10px] font-mono text-gray-500 uppercase tracking-widest z-20 pointer-events-none">
+                        Drag to Rotate • Scroll to Zoom
+                    </div>
+
+                    {/* Status Badge - Top Right */}
                     <div className="absolute top-6 right-6 z-20">
                         {user && isUnlocked ? (
                              <div className="flex items-center gap-2 px-3 py-1 bg-green-900/20 border border-green-500/30 text-green-500 text-[10px] font-mono uppercase tracking-widest rounded-full">
@@ -127,8 +189,64 @@ export default function CollectibleDetail() {
                     </div>
                 </div>
 
+                {/* Entropy/Condition Panel */}
+                {user && isUnlocked && (
+                    <div className="bg-[#0a0a0a] border border-[#222] p-4">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                                <Sparkles size={14} className="text-primary" />
+                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Trophy Condition</span>
+                            </div>
+                            <span className={`text-[10px] font-mono uppercase tracking-widest ${
+                                entropy < 0.25 ? 'text-green-400' :
+                                entropy < 0.5 ? 'text-yellow-400' :
+                                entropy < 0.75 ? 'text-orange-400' :
+                                'text-red-400'
+                            }`}>
+                                {entropyDescription}
+                            </span>
+                        </div>
+                        
+                        {/* Entropy Progress Bar */}
+                        <div className="h-2 bg-[#222] w-full overflow-hidden rounded-full mb-3">
+                            <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: `${100 - entropyPercent}%` }}
+                                transition={{ duration: 0.5 }}
+                                className={`h-full ${
+                                    entropy < 0.25 ? 'bg-green-500' :
+                                    entropy < 0.5 ? 'bg-yellow-500' :
+                                    entropy < 0.75 ? 'bg-orange-500' :
+                                    'bg-red-500'
+                                }`}
+                            />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                            <span className="text-[9px] font-mono text-gray-600">
+                                {entropyPercent}% wear accumulated
+                            </span>
+                            
+                            {/* Polish Button */}
+                            <Button
+                                onClick={handlePolish}
+                                disabled={isPolishing || entropy < 0.1}
+                                size="sm"
+                                className={`h-8 text-[9px] uppercase tracking-widest font-mono ${
+                                    entropy < 0.1 
+                                        ? 'bg-[#222] text-gray-600 cursor-not-allowed' 
+                                        : 'bg-primary/20 text-primary border border-primary/30 hover:bg-primary hover:text-black'
+                                }`}
+                            >
+                                <Sparkles size={10} className="mr-1" />
+                                {isPolishing ? 'Polishing...' : entropy < 0.1 ? 'Pristine' : 'Polish Trophy'}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Technical Specs Grid */}
-                <div className="grid grid-cols-3 gap-px bg-[#333] border border-[#333]">
+                <div className="grid grid-cols-3 gap-px bg-[#333] border border-[#222]">
                     <div className="bg-[#0f0f0f] p-4 flex flex-col gap-1 items-center text-center">
                         <Scan size={14} className="text-gray-500 mb-1" />
                         <span className="text-[9px] text-gray-500 uppercase tracking-widest font-mono">Format</span>
@@ -191,7 +309,7 @@ export default function CollectibleDetail() {
                      
                      <div 
                         onClick={handleAchievementClick}
-                        className={`bg-[#0a0a0a] border border-[#333] p-6 hover:border-primary transition-colors group cursor-pointer relative overflow-hidden`}
+                        className={`bg-[#0a0a0a] border border-[#222] p-6 hover:border-primary transition-colors group cursor-pointer relative overflow-hidden`}
                      >
                          <div className="absolute top-0 left-0 w-1 h-full bg-primary/50 group-hover:bg-primary transition-colors"></div>
                          <div className="flex justify-between items-start gap-4">
@@ -203,20 +321,16 @@ export default function CollectibleDetail() {
                                      {collectible.requirement}
                                  </p>
                                  
-                                 {relatedAchievement && (
-                                     <div className="mt-4 flex items-center gap-2 text-[10px] text-primary uppercase tracking-widest font-mono">
+                                 {relatedAchievement ? <div className="mt-4 flex items-center gap-2 text-[10px] text-primary uppercase tracking-widest font-mono">
                                          <span>View Mission Intel</span>
                                          <ArrowLeft size={10} className="rotate-180 group-hover:translate-x-1 transition-transform" />
-                                     </div>
-                                 )}
+                                     </div> : null}
                              </div>
                              
                              <div className="flex flex-col items-end gap-2">
-                                {relatedAchievement && (
-                                    <div className="bg-[#151515] p-2 rounded border border-[#333] group-hover:border-primary/30 transition-colors">
+                                {relatedAchievement ? <div className="bg-[#151515] p-2 rounded border border-[#222] group-hover:border-primary/30 transition-colors">
                                         <Trophy className="w-6 h-6 text-gray-500 group-hover:text-white transition-colors" />
-                                    </div>
-                                )}
+                                    </div> : null}
                                 {!user && (
                                     <span className="text-[9px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 uppercase tracking-widest">
                                         Login to Track
@@ -241,7 +355,7 @@ export default function CollectibleDetail() {
                         )}
             </div>
 
-                    <div className="border border-[#333] bg-[#0a0a0a] relative overflow-hidden group">
+                    <div className="border border-[#222] bg-[#0a0a0a] relative overflow-hidden group">
                         
                         {/* GUEST VIEW: BLURRED PREVIEW WITH CTA */}
                         {!user && (
@@ -270,7 +384,7 @@ export default function CollectibleDetail() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
                                     <span className="block text-[10px] text-gray-500 uppercase tracking-widest font-mono mb-3">Status</span>
-                                    <div className="flex items-center gap-3 p-3 bg-[#151515] border border-[#333]">
+                                    <div className="flex items-center gap-3 p-3 bg-[#151515] border border-[#222]">
                                         {isUnlocked ? (
                                             <>
                                                 <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
@@ -293,19 +407,16 @@ export default function CollectibleDetail() {
                                         </div>
                                         <div>
                                             <p className="text-sm text-white font-medium leading-snug">{collectible.requirement}</p>
-                                            {relatedAchievement && (
-                                                <div className="mt-2 text-xs text-gray-500 font-mono">
+                                            {relatedAchievement ? <div className="mt-2 text-xs text-gray-500 font-mono">
                                                     Linked: <span className="text-gray-300">{relatedAchievement.title}</span>
-                                                </div>
-                                            )}
+                                                </div> : null}
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Progress Visual for Related Achievement */}
-                            {relatedAchievement && (
-                                <div className="mt-8 pt-6 border-t border-[#333]">
+                            {relatedAchievement ? <div className="mt-8 pt-6 border-t border-[#222]">
                                     <div className="flex justify-between items-end mb-2">
                                         <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Mission Progress</span>
                                         <span className="text-[10px] text-primary font-mono">30%</span>
@@ -320,8 +431,7 @@ export default function CollectibleDetail() {
                                             View Mission Details <ArrowLeft className="rotate-180" size={10} />
                                          </Link>
                                     </div>
-                                </div>
-                            )}
+                                </div> : null}
                         </div>
                     </div>
                 </div>

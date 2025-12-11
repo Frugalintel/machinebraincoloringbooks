@@ -1,11 +1,10 @@
 "use client";
 
-import { Navbar } from "@/components/navbar";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Search, Package, Truck, CheckCircle, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function OrderLookupPage() {
   const [orderId, setOrderId] = useState("");
@@ -28,7 +27,6 @@ export default function OrderLookupPage() {
 
   return (
     <main className="min-h-screen bg-black text-white font-sans">
-      <Navbar />
       
       <div className="container mx-auto px-4 md:px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]">
         
@@ -114,7 +112,7 @@ export default function OrderLookupPage() {
                             <Input 
                                 value={orderId}
                                 onChange={(e) => setOrderId(e.target.value)}
-                                className="bg-[#111] border-[#333] text-white font-mono text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
+                                className="bg-[#111] border-[#333] text-white font-mono text-base md:text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
                                 placeholder="ORD-XXXX-XXXX"
                                 required
                             />
@@ -127,7 +125,7 @@ export default function OrderLookupPage() {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="bg-[#111] border-[#333] text-white font-mono text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
+                                className="bg-[#111] border-[#333] text-white font-mono text-base md:text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
                                 placeholder="billing@email.com"
                                 required
                             />

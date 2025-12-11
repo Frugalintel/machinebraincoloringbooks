@@ -1,10 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { ArrowRight, Lock, Unlock, ChevronDown, ShoppingCart, Play, Star } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
@@ -18,7 +18,7 @@ export function StoriesSection() {
   const { campaign } = useSettings();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
-  const [productIds, setProductIds] = useState<Record<string, string>>({});
+  const [productMap, setProductMap] = useState<Record<string, { id: string; image_url?: string }>>({});
 
   useEffect(() => {
     const fetchStories = async () => {
@@ -39,13 +39,13 @@ export function StoriesSection() {
             if (reqProductNames.length > 0) {
                  const { data: prodData } = await supabase
                     .from('products')
-                    .select('id, title')
+                    .select('id, title, image_url')
                     .in('title', reqProductNames);
                  
                  if (prodData) {
-                     const map: Record<string, string> = {};
-                     prodData.forEach((p: any) => map[p.title] = p.id);
-                     setProductIds(map);
+                     const map: Record<string, { id: string; image_url?: string }> = {};
+                     prodData.forEach((p: { id: string; title: string; image_url?: string }) => map[p.title] = { id: p.id, image_url: p.image_url });
+                     setProductMap(map);
                  }
             }
         }
@@ -57,27 +57,28 @@ export function StoriesSection() {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  const handleQuickAdd = (e: React.MouseEvent, story: any) => {
+  const handleQuickAdd = (e: React.MouseEvent, storyProduct: { initialArtifact: string; price: number }) => {
       e.stopPropagation();
-      const productId = productIds[story.initialArtifact];
-      if (!productId) return; // Can't add if no ID found
+      const product = productMap[storyProduct.initialArtifact];
+      if (!product) return; // Can't add if no product found
       
-      let finalPrice = story.price;
+      let finalPrice = storyProduct.price;
       const isDiscountEnabled = campaign.isActive && campaign.discount.enabled;
       
       if (isDiscountEnabled) {
           if (campaign.discount.type === 'percentage') {
-              finalPrice = story.price * (1 - campaign.discount.value / 100);
+              finalPrice = storyProduct.price * (1 - campaign.discount.value / 100);
           } else if (campaign.discount.type === 'fixed') {
-              finalPrice = Math.max(0, story.price - campaign.discount.value);
+              finalPrice = Math.max(0, storyProduct.price - campaign.discount.value);
           }
       }
 
       addItem({ 
-          id: productId, 
+          id: product.id, 
           title: "Book", 
-          subtitle: story.initialArtifact,
-          price: finalPrice 
+          subtitle: storyProduct.initialArtifact,
+          price: finalPrice,
+          image: product.image_url
       });
       setIsCartOpen(true);
   };
@@ -97,7 +98,7 @@ export function StoriesSection() {
       </div>
 
       {/* Main Card */}
-      <div className="flex-1 border border-[#333] bg-[#0a0a0a] relative group overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.3)] flex flex-col">
+      <div className="flex-1 border border-[#222] bg-[#0a0a0a] relative group overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.3)] flex flex-col">
          
          {/* Background Grid - Global */}
          <div className="absolute inset-0 opacity-10 pointer-events-none" 
@@ -108,7 +109,7 @@ export function StoriesSection() {
          <div className="relative z-10 flex flex-col h-full">
             
             {/* Top: Status Bar */}
-            <div className="w-full border-b border-[#333] bg-[#111] p-4 flex items-center justify-between">
+            <div className="w-full border-b border-[#222] bg-[#111] p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full animate-pulse bg-green-500"></div>
                     <span className="font-mono text-[10px] uppercase tracking-widest text-green-500">Archive Online</span>
@@ -156,7 +157,7 @@ export function StoriesSection() {
                         className={`w-full border transition-all duration-300 relative overflow-hidden cursor-pointer
                             ${expandedId === story.id 
                                 ? `bg-[#1a1a1a] border-primary/50` 
-                                : `bg-[#151515] border-[#333] hover:border-gray-500`
+                                : `bg-[#151515] border-[#222] hover:border-gray-500`
                             }
                         `}
                     >
@@ -169,7 +170,7 @@ export function StoriesSection() {
                             <div className={`w-12 h-12 border flex items-center justify-center shrink-0 transition-colors
                                 ${expandedId === story.id 
                                     ? `bg-black border-primary text-primary` 
-                                    : "bg-black border-[#333] text-white"}
+                                    : "bg-black border-[#222] text-white"}
                             `}>
                                 {/* Logic: Show Unlock if user is logged in (TODO: check progress). Otherwise show Lock. */}
                                 {user ? ( // Simple check for now
@@ -186,11 +187,9 @@ export function StoriesSection() {
                                             <h4 className={`font-heading text-xl uppercase tracking-wide truncate ${expandedId === story.id ? "text-primary" : "text-white"}`}>
                                                 {story.title}
                                             </h4>
-                                            {isHoliday && (
-                                                <span className="text-[8px] font-mono uppercase tracking-widest border px-1.5 py-0.5 rounded-sm flex items-center gap-1 text-primary border-primary/50 bg-primary/10">
+                                            {isHoliday ? <span className="text-[8px] font-mono uppercase tracking-widest border px-1.5 py-0.5 rounded-sm flex items-center gap-1 text-primary border-primary/50 bg-primary/10">
                                                     <Star size={6} fill="currentColor" /> {theme.text.storyTag}
-                                                </span>
-                                            )}
+                                                </span> : null}
                                         </div>
                                         <span className={`text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 border
                                             ${!user 
@@ -232,7 +231,7 @@ export function StoriesSection() {
                                         {/* Action Area */}
                                         <div className="flex flex-col gap-3">
                                             {/* Step 1: Buy the Key */}
-                                            <div className="flex flex-col bg-[#0a0a0a] border border-[#333] hover:border-gray-500 transition-colors relative group/card">
+                                            <div className="flex flex-col bg-[#0a0a0a] border border-[#222] hover:border-gray-500 transition-colors relative group/card">
                                                 {/* Top: Visual & Info */}
                                                 <div className="flex items-center justify-between p-4 border-b border-[#222]">
                                                     <div className="flex flex-col">
@@ -240,7 +239,7 @@ export function StoriesSection() {
                                                             <div className="w-1.5 h-1.5 rounded-full animate-pulse bg-primary"></div>
                                                             <span className="text-[9px] text-gray-500 uppercase tracking-widest font-mono">Required Key</span>
                                                         </div>
-                                                        <Link href={productIds[initialArtifact] ? `/store/${productIds[initialArtifact]}` : "#"} className="text-sm font-heading uppercase tracking-wide text-white transition-colors flex items-center gap-2 hover:text-primary group-hover/card:text-primary">
+                                                        <Link href={productMap[initialArtifact] ? `/store/${productMap[initialArtifact].id}` : "#"} className="text-sm font-heading uppercase tracking-wide text-white transition-colors flex items-center gap-2 hover:text-primary group-hover/card:text-primary">
                                                             {initialArtifact}
                                                             <ArrowRight size={12} className="transition-transform duration-300 group-hover/card:translate-x-1 text-primary" />
                                                         </Link>
@@ -275,7 +274,7 @@ export function StoriesSection() {
                                             <Link href="/stories">
                                                 <Button 
                                                     variant="outline"
-                                                    className="w-full border-[#333] bg-[#1a1a1a] text-gray-400 hover:text-white hover:bg-[#222] hover:border-primary/50 font-mono text-xs h-10 rounded-none tracking-widest uppercase transition-all shadow-none"
+                                                    className="w-full border-[#222] bg-[#1a1a1a] text-gray-400 hover:text-white hover:bg-[#222] hover:border-primary/50 font-mono text-xs h-10 rounded-none tracking-widest uppercase transition-all shadow-none"
                                                 >
                                                     I have the code <ArrowRight className="ml-2 w-3 h-3" />
                                                 </Button>
@@ -291,7 +290,7 @@ export function StoriesSection() {
             </div>
 
             {/* Bottom: Controls & Info */}
-            <div className="border-t border-[#333] bg-[#111] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="border-t border-[#222] bg-[#111] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="space-y-2 max-w-lg">
                     <h3 className="font-heading text-2xl text-white uppercase tracking-wide flex items-center gap-2">
                         How It Works

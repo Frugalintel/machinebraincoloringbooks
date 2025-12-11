@@ -1,64 +1,59 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useCart } from "@/context/cart-context";
-import { useSettings } from "@/context/settings-context";
 import Link from "next/link";
 import { Plus, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-
-interface Product {
-  id: string;
-  title: string;
-  subtitle: string;
-  price: number;
-  difficulty: number;
-  age: string;
-  category: string;
-  color: string;
-  accent: string;
-  image_url?: string;
-}
+import { useCart } from "@/context/cart-context";
+import { useSettings } from "@/context/settings-context";
+import { useAuth } from "@/context/auth-context";
+import { fetchPublishedProducts } from "@/lib/products";
+import { Product } from "@/lib/types";
+import { logger } from "@/lib/logger";
+import { calculatePrice, formatPrice } from "@/lib/pricing";
 
 export function StoreSection() {
   const { addItem } = useCart();
   const { campaign } = useSettings();
+  const { isLoading: isAuthLoading } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await fetchPublishedProducts(4);
+      
+      if (!error && data) {
+        setProducts(data);
+      }
+    } catch (error) {
+      logger.error("Error loading products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch - wait for auth
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('is_published', true)
-          .order('created_at', { ascending: false })
-          .limit(4);
-        
-        if (!error && data) {
-          setProducts(data.map((p: any) => ({
-            id: p.id,
-            title: p.title,
-            subtitle: p.subtitle || "",
-            price: p.price,
-            difficulty: p.difficulty || 1,
-            age: p.age || "All Ages",
-            category: p.category,
-            color: p.color || "bg-gray-800",
-            accent: p.accent || "bg-blue-500",
-            image_url: p.image_url
-          })));
-        }
-      } catch (error) {
-        console.error("Error loading products:", error);
-      } finally {
-        setLoading(false);
+    if (!isAuthLoading) {
+      fetchProducts();
+    }
+  }, [isAuthLoading]);
+
+  // Refetch when tab becomes visible (handles mobile tab switching)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && products.length === 0) {
+        fetchProducts();
       }
     };
-    fetchProducts();
-  }, []);
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [products.length]);
 
   return (
     <section className="w-full relative">
@@ -103,16 +98,8 @@ export function StoreSection() {
       ) : (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8">
         {products.map((cat, i) => {
-          let finalPrice = cat.price;
-          const isDiscountEnabled = campaign.isActive && campaign.discount.enabled;
-          
-          if (isDiscountEnabled) {
-              if (campaign.discount.type === 'percentage') {
-                  finalPrice = cat.price * (1 - campaign.discount.value / 100);
-              } else if (campaign.discount.type === 'fixed') {
-                  finalPrice = Math.max(0, cat.price - campaign.discount.value);
-              }
-          }
+          // Use centralized pricing utility
+          const priceInfo = calculatePrice(cat, campaign?.isActive ? campaign : null);
 
           return (
             <motion.div
@@ -145,14 +132,20 @@ export function StoreSection() {
                               <div className={`w-10 h-10 bg-white/10 rounded-full backdrop-blur-md`}></div>
                           </div>
                           {/* Dither Pattern */}
-                          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-multiply"></div>
+                          <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-40 mix-blend-multiply"></div>
                       </div>
 
                       {/* Quick Add Button Overlay (Inside Image Container) */}
                       <button 
                           onClick={(e) => {
                               e.preventDefault(); // Prevent navigation
-                              addItem({ id: cat.id, title: cat.title, price: finalPrice, subtitle: cat.subtitle });
+                              addItem({ 
+                                  id: cat.id, 
+                                  title: cat.title, 
+                                  price: priceInfo.finalPrice, 
+                                  subtitle: cat.subtitle,
+                                  image: cat.image_url 
+                              });
                           }}
                           className="absolute top-0 right-0 w-10 h-10 bg-primary text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-white hover:text-primary shadow-lg border-l border-b border-black/20"
                       >
@@ -161,17 +154,17 @@ export function StoreSection() {
                   </div>
                       
                   {/* Cover Bottom: Data Block */}
-                  <div className="bg-[#0a0a0a] p-3 border-t border-[#333] flex flex-col justify-center relative z-10">
+                  <div className="bg-[#0a0a0a] p-3 border-t border-[#222] flex flex-col justify-center relative z-10">
                       {/* Price & Difficulty */}
                       <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                              {isDiscountEnabled ? (
+                              {priceInfo.hasDiscount ? (
                                 <>
-                                  <span className="text-gray-500 line-through text-[10px] font-mono">${cat.price.toFixed(2)}</span>
-                                  <span className="font-heading text-white text-lg tracking-tight">${finalPrice.toFixed(2)}</span>
+                                  <span className="text-gray-500 line-through text-[10px] font-mono">{formatPrice(priceInfo.originalPrice)}</span>
+                                  <span className="font-heading text-white text-lg tracking-tight">{formatPrice(priceInfo.finalPrice)}</span>
                                 </>
                               ) : (
-                                <span className="font-heading text-white text-lg tracking-tight">${cat.price.toFixed(2)}</span>
+                                <span className="font-heading text-white text-lg tracking-tight">{formatPrice(priceInfo.originalPrice)}</span>
                               )}
                           </div>
                           <div className="flex flex-col items-end gap-0.5">

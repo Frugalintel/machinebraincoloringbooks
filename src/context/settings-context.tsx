@@ -2,13 +2,14 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { CampaignSettings } from "@/lib/types";
+import { CampaignSettings, GlobalDiscountSettings } from "@/lib/types";
 import { CAMPAIGN_TEMPLATES } from "@/lib/campaign-templates";
+import { logger } from "@/lib/logger";
 
 // Default settings
 const DEFAULT_CAMPAIGN: CampaignSettings = {
   isActive: false,
-  name: "New Campaign",
+  name: "Default Campaign",
   discount: {
     enabled: false,
     type: 'percentage',
@@ -17,7 +18,7 @@ const DEFAULT_CAMPAIGN: CampaignSettings = {
   },
   banner: {
     enabled: false,
-    text: "Special Offer!",
+    text: "Welcome to Machine Brain",
     link: "/store",
     backgroundColor: "#e63946",
     textColor: "#ffffff"
@@ -28,60 +29,66 @@ const DEFAULT_CAMPAIGN: CampaignSettings = {
 
 type SettingsContextType = {
   campaign: CampaignSettings;
+  globalDiscount: GlobalDiscountSettings;
   isLoading: boolean;
   refreshSettings: () => Promise<void>;
-  updateCampaign: (settings: CampaignSettings) => Promise<{ error: any }>;
+  updateCampaign: (settings: CampaignSettings) => Promise<{ error: string | null }>;
+  updateGlobalDiscount: (settings: GlobalDiscountSettings) => Promise<{ error: string | null }>;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [campaign, setCampaign] = useState<CampaignSettings>(DEFAULT_CAMPAIGN);
+  const [activeCampaignId, setActiveCampaignId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchSettings = useCallback(async () => {
     try {
+      // 1. Try to fetch the active campaign from the new 'campaigns' table
       const { data, error } = await supabase
-        .from('system_settings')
-        .select('value')
-        .eq('key', 'global_discount') // Keeping the same key for migration simplicity or rename key in DB? 
-                                      // Let's stick to 'global_discount' key but structure it as CampaignSettings.
-                                      // If the old structure is there, we need to adapt it.
+        .from('campaigns')
+        .select('*')
+        .eq('is_active', true)
+        .order('updated_at', { ascending: false })
+        .limit(1)
         .single();
       
-      if (data && data.value) {
-        // Migration check: if old structure, adapt it
-        if ('percentage' in data.value && !('discount' in data.value)) {
-             const old = data.value as any;
+      if (data) {
+        setActiveCampaignId(data.id);
+        // Merge DB columns and JSON settings
+        setCampaign({
+            ...DEFAULT_CAMPAIGN,
+            ...data.settings,
+            name: data.name,
+            isActive: true 
+        });
+      } else {
+         // Fallback: Check if we still have the old 'system_settings' (migration fallback)
+         // Or just use default.
+         // Let's try to read system_settings just in case the migration hasn't run yet
+         // to avoid breaking the site completely during transition.
+         const { data: legacyData } = await supabase
+            .from('system_settings')
+            .select('value')
+            .eq('key', 'global_discount')
+            .single();
+
+         if (legacyData && legacyData.value) {
+             // Legacy adaptation logic
+             const old = legacyData.value as { enabled?: boolean; percentage?: number; label?: string; isActive?: boolean; name?: string };
              setCampaign({
                  ...DEFAULT_CAMPAIGN,
-                 isActive: old.enabled,
-                 name: old.label || "Legacy Campaign",
-                 discount: {
-                     enabled: old.enabled,
-                     type: 'percentage',
-                     value: old.percentage,
-                     scope: 'global'
-                 },
-                 banner: {
-                     ...DEFAULT_CAMPAIGN.banner,
-                     enabled: old.enabled, // Assume banner on if discount on for legacy
-                     text: `${old.label || 'Special Offer'} • ${old.percentage}% OFF`,
-                 }
+                 // Map legacy properties to current structure
+                 isActive: old.enabled ?? old.isActive ?? false,
+                 name: old.label ?? old.name ?? "Campaign",
              });
-        } else {
-            // Ensure theme defaults if missing from saved data
-            setCampaign({
-                ...DEFAULT_CAMPAIGN,
-                ...data.value,
-                theme: data.value.theme || CAMPAIGN_TEMPLATES.default
-            });
-        }
-      } else if (error && error.code !== 'PGRST116') {
-        console.error("Error fetching settings:", error);
+         } else {
+             setCampaign(DEFAULT_CAMPAIGN);
+         }
       }
     } catch (error) {
-      console.error("Error fetching settings:", error);
+      logger.error("Error fetching settings:", error);
     } finally {
       setIsLoading(false);
     }
@@ -90,30 +97,13 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     fetchSettings();
     
+    // Subscribe to changes in 'campaigns' table
     const channel = supabase
-      .channel('settings_changes')
+      .channel('campaigns_changes')
       .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'system_settings', filter: "key=eq.global_discount" }, 
-        (payload) => {
-          if (payload.new && (payload.new as any).value) {
-             const val = (payload.new as any).value;
-             // Apply same migration logic here if needed, but presumably updates will come from new UI
-             if ('percentage' in val && !('discount' in val)) {
-                 setCampaign({
-                     ...DEFAULT_CAMPAIGN,
-                     isActive: val.enabled,
-                     name: val.label,
-                     discount: { enabled: val.enabled, type: 'percentage', value: val.percentage, scope: 'global' },
-                     banner: { ...DEFAULT_CAMPAIGN.banner, enabled: val.enabled, text: `${val.label} • ${val.percentage}% OFF` }
-                 });
-             } else {
-                 setCampaign({
-                     ...DEFAULT_CAMPAIGN,
-                     ...val,
-                     theme: val.theme || CAMPAIGN_TEMPLATES.default
-                 });
-             }
-          }
+        { event: '*', schema: 'public', table: 'campaigns' }, 
+        () => {
+          fetchSettings(); // Refresh if any campaign changes (especially active status)
         }
       )
       .subscribe();
@@ -124,28 +114,49 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   }, [fetchSettings]);
 
   const updateCampaign = async (settings: CampaignSettings) => {
+    // This context method is now mostly for the legacy 'updateGlobalDiscount' flow
+    // or if a component tries to update the *active* campaign directly.
+    // Ideally, we should use the specific campaign editor.
+    // For compatibility, if we have an activeCampaignId, update it.
+    
     try {
-      const { error } = await supabase
-        .from('system_settings')
-        .upsert({ 
-          key: 'global_discount', 
-          value: settings,
-          updated_at: new Date().toISOString()
-        });
-      
-      if (error) throw error;
-      
-      setCampaign(settings);
-      return { error: null };
+        if (activeCampaignId) {
+            const { name, isActive, ...jsonSettings } = settings;
+            const { error } = await supabase
+                .from('campaigns')
+                .update({
+                    name,
+                    is_active: isActive,
+                    settings: jsonSettings,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', activeCampaignId);
+            return { error: error?.message || null };
+        } else {
+            logger.warn("No active campaign to update via context.");
+            return { error: "No active campaign" };
+        }
     } catch (error) {
-      console.error("Error updating settings:", error);
-      return { error };
+      return { error: error instanceof Error ? error.message : "Unknown error" };
     }
+  };
+
+  const updateGlobalDiscount = async (settings: GlobalDiscountSettings) => {
+    const newCampaign: CampaignSettings = {
+      ...campaign,
+      isActive: settings.enabled,
+      name: settings.label,
+      discount: {
+        ...campaign.discount,
+        enabled: settings.enabled,
+        value: settings.percentage
+      }
+    };
+    return updateCampaign(newCampaign);
   };
 
   const value = useMemo(() => ({
     campaign,
-    // Alias for backward compatibility if components use globalDiscount
     globalDiscount: { 
         enabled: campaign.isActive && campaign.discount.enabled, 
         percentage: campaign.discount.value, 
@@ -153,12 +164,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     },
     isLoading,
     refreshSettings: fetchSettings,
-    updateCampaign
+    updateCampaign,
+    updateGlobalDiscount
   }), [campaign, isLoading, fetchSettings]);
 
-  // Temporary type assertion to satisfy the interface while we migrate components
   return (
-    <SettingsContext.Provider value={value as any}>
+    <SettingsContext.Provider value={value}>
       {children}
     </SettingsContext.Provider>
   );

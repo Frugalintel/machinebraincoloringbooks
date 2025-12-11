@@ -1,92 +1,28 @@
 "use client";
 
-import { Navbar } from "@/components/navbar";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
+import { Settings, Box, Terminal, Trophy, Shield, Lock, Scan, Plus, Sparkles } from "lucide-react";
+import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings, Box, Terminal, Trophy, Star, Shield, Zap, Lock, Scan, ChevronDown, Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/auth-context";
 import { useGame } from "@/context/game-context";
-import Link from "next/link";
-import { useState } from "react";
+import { AchievementCard } from "@/components/achievements/achievement-card";
+import type { CollectibleItem } from "@/lib/game-data";
 
-// Icons map for achievements
-const iconMap: Record<string, React.ReactNode> = {
-    "brush": <Star className="w-5 h-5" />,
-    "trophy": <Trophy className="w-5 h-5" />,
-    "zap": <Zap className="w-5 h-5" />,
-    "star": <Star className="w-5 h-5" />,
-    "code": <Terminal className="w-5 h-5" />
-};
-
-function AchievementTile({ ach }: { ach: any }) {
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    return (
-        <motion.div 
-            layout
-            onClick={() => setIsExpanded(!isExpanded)}
-            className={`p-4 border ${ach.unlocked ? "border-primary/30 bg-[#111]" : "border-[#333] bg-[#0a0a0a] opacity-60"} relative group transition-all hover:bg-[#151515] cursor-pointer overflow-hidden`}
-        >
-            <motion.div layout="position" className="flex items-start gap-4">
-                <div className={`w-12 h-12 flex-shrink-0 flex items-center justify-center border ${ach.unlocked ? "border-primary text-primary bg-primary/10" : "border-[#333] text-gray-600 bg-[#050505]"}`}>
-                    {ach.unlocked ? iconMap[ach.icon] : <Lock size={16} />}
-                </div>
-                <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                        <motion.h4 layout="position" className={`font-heading text-lg uppercase ${ach.unlocked ? "text-white" : "text-gray-500"}`}>{ach.title}</motion.h4>
-                        {ach.unlocked && <span className="text-[10px] font-mono text-primary border border-primary/30 px-1">UNLOCKED</span>}
-                    </div>
-                    <motion.p layout="position" className="text-xs text-gray-500 font-mono mt-1 uppercase tracking-wide">{ach.description}</motion.p>
-                    
-                    {!ach.unlocked && ach.progress && (
-                        <motion.div layout="position" className="mt-3">
-                            <div className="flex justify-between text-[8px] font-mono text-gray-500 uppercase mb-1">
-                                <span>Progress</span>
-                                <span>{ach.progress}</span>
-                            </div>
-                            <div className="h-1 bg-[#222] w-full">
-                                <div className="h-full bg-gray-600 w-1/3"></div>
-                            </div>
-                        </motion.div>
-                    )}
-                </div>
-            </motion.div>
-
-            <AnimatePresence>
-                {isExpanded && (
-                    <motion.div 
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden"
-                    >
-                         <div className="mt-4 pt-4 border-t border-[#333] grid grid-cols-2 gap-4">
-                            {ach.details?.map((detail: any, i: number) => (
-                                <div key={i}>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest">{detail.label}</p>
-                                    <p className="text-sm font-mono text-white">{detail.value}</p>
-                                </div>
-                            )) || <p className="text-xs text-gray-500 font-mono col-span-2">No details available.</p>}
-                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-             {/* Expand indicator */}
-             <motion.div layout className={`absolute bottom-2 right-2 text-primary/50 transition-opacity ${isExpanded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                 <ChevronDown size={14} className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
-             </motion.div>
-        </motion.div>
-    );
-}
+// Dynamic import for 3D trophy canvas
+const TrophyCanvas = dynamic(
+  () => import('@/components/three').then((m) => m.TrophyCanvas),
+  { ssr: false }
+);
 
 export default function ProfilePage() {
   const { username } = useParams();
   const { user, signOut, openAuthModal } = useAuth();
-  const { collectionSets, achievements, activeAchievementIds } = useGame();
+  const { collectionSets, achievements, activeAchievementIds, collectibleTimestamps } = useGame();
   
   const isCurrentUser = username === "me" || (user && username === user.id);
   const displayName = isCurrentUser && user ? `USER_${user.initials}` : (username === "me" ? "GUEST" : username);
@@ -97,12 +33,11 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-black text-white font-sans">
-      <Navbar />
       
       {/* Header Banner */}
       <div className="h-64 md:h-80 bg-[#111] relative overflow-hidden border-b border-[#333]">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#222,black)] opacity-50"></div>
-          <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none"></div>
+          <div className="absolute inset-0 opacity-10 bg-[url('/textures/noise.svg')] pointer-events-none"></div>
           
           {/* Grid Lines */}
           <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
@@ -125,11 +60,9 @@ export default function ProfilePage() {
                 <div className="absolute -inset-2 border border-[#333] pointer-events-none z-0"></div>
                 <div className="absolute -bottom-4 -right-4 w-24 h-24 border-r border-b border-primary/50 pointer-events-none"></div>
 
-                {isCurrentUser && (
-                    <div className="absolute bottom-2 right-2 bg-primary text-black p-2 hover:bg-white transition-colors cursor-pointer z-20 border border-black">
+                {isCurrentUser ? <div className="absolute bottom-2 right-2 bg-primary text-black p-2 hover:bg-white transition-colors cursor-pointer z-20 border border-black">
                         <Settings className="w-4 h-4" />
-                    </div>
-                )}
+                    </div> : null}
             </motion.div>
             
             <div className="flex-1 mb-4">
@@ -182,7 +115,11 @@ export default function ProfilePage() {
                     <div className="grid gap-4">
                         {displayedAchievements.length > 0 ? (
                             displayedAchievements.map((ach) => (
-                                <AchievementTile key={ach.id} ach={ach} />
+                                <AchievementCard 
+                                    key={ach.id} 
+                                    achievement={ach} 
+                                    variant="profile"
+                                />
                             ))
                         ) : (
                             <div className="p-8 border border-dashed border-[#333] text-center">
@@ -219,6 +156,55 @@ export default function ProfilePage() {
                     </Link>
                     </div>
 
+                    {/* Featured Trophy Showcase */}
+                    <div className="border border-[#333] bg-gradient-to-b from-[#111] to-[#0a0a0a] p-6 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-amber-500 to-transparent"></div>
+                        
+                        <div className="flex items-center gap-2 text-primary font-mono text-[10px] uppercase tracking-widest mb-4 relative z-10">
+                            <Sparkles size={12} />
+                            <span>Featured Trophy</span>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center relative z-10">
+                            {/* 3D Trophy Viewport */}
+                            <div className="relative aspect-square max-w-[200px] mx-auto bg-[#0a0a0a] border border-[#222] overflow-hidden">
+                                <TrophyCanvas 
+                                    size="small" 
+                                    rarity={collectionSets.reduce((acc, set) => acc + set.collected.length, 0) >= 10 ? "Legendary" : collectionSets.reduce((acc, set) => acc + set.collected.length, 0) >= 5 ? "Epic" : "Common"}
+                                    autoRotate={true}
+                                    isInteractive={false}
+                                />
+                            </div>
+                            
+                            {/* Trophy Stats */}
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono mb-1">Collection Rank</p>
+                                    <p className="font-heading text-xl text-white uppercase">
+                                        {collectionSets.reduce((acc, set) => acc + set.collected.length, 0) >= 10 ? "Legendary Collector" : 
+                                         collectionSets.reduce((acc, set) => acc + set.collected.length, 0) >= 5 ? "Epic Collector" : "Novice Collector"}
+                                    </p>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div>
+                                        <p className="font-heading text-2xl text-primary">{collectionSets.reduce((acc, set) => acc + set.collected.length, 0)}</p>
+                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Collected</p>
+                                    </div>
+                                    <div>
+                                        <p className="font-heading text-2xl text-gray-600">{collectionSets.reduce((acc, set) => acc + (set.total - set.collected.length), 0)}</p>
+                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Remaining</p>
+                                    </div>
+                                </div>
+                                <Link href="/trophy-room">
+                                    <Button variant="outline" size="sm" className="w-full h-10 text-[10px] font-mono uppercase tracking-widest rounded-none border-primary/50 text-primary hover:bg-primary hover:text-black">
+                                        <Trophy size={14} className="mr-2" /> View Trophy Room
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="grid gap-6">
                         {collectionSets.map((set) => {
                             const progress = (set.collected.length / set.total) * 100;
@@ -235,12 +221,19 @@ export default function ProfilePage() {
                                     
                                     {/* Mini Grid of Items */}
                                     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                                        {set.items.map((item) => {
+                                        {set.items.map((item: CollectibleItem) => {
                                             const isCollected = set.collected.includes(item.id);
                                             return (
-                                                <div key={item.id} className={`w-12 h-12 flex-shrink-0 border ${isCollected ? "border-primary/30 bg-[#151515]" : "border-[#222] bg-black"} flex items-center justify-center relative`}>
+                                                <div key={item.id} className={`w-12 h-12 flex-shrink-0 border ${isCollected ? "border-primary/30 bg-[#0a0a0a]" : "border-[#222] bg-black"} flex items-center justify-center relative overflow-hidden`}>
                                                     {isCollected ? (
-                                                        <div className={`w-8 h-8 rounded-full ${item.image} opacity-50 blur-sm`}></div>
+                                                        <TrophyCanvas 
+                                                            size="small" 
+                                                            rarity={item.rarity} 
+                                                            autoRotate={true} 
+                                                            isInteractive={false}
+                                                            unlockedAt={collectibleTimestamps[item.id]?.unlockedAt}
+                                                            lastPolishedAt={collectibleTimestamps[item.id]?.lastPolishedAt}
+                                                        />
                                                     ) : (
                                                         <Lock size={10} className="text-[#333]" />
                                                     )}
@@ -257,7 +250,7 @@ export default function ProfilePage() {
         ) : (
             <div className="mb-24 p-12 border border-[#333] bg-[#0a0a0a] relative overflow-hidden text-center group">
                  {/* Locked State Visuals */}
-                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
+                 <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-5 pointer-events-none"></div>
                  <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
                      <Lock className="w-64 h-64 text-gray-500" />
                  </div>

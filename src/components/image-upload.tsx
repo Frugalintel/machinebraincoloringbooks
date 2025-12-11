@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Upload, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/context/toast-context";
+import { logger } from "@/lib/logger";
 
 interface ImageUploadProps {
   onUpload: (url: string) => void;
@@ -44,9 +45,9 @@ export function ImageUpload({ onUpload, defaultImage, bucket = 'products' }: Ima
       setImage(data.publicUrl);
       onUpload(data.publicUrl);
 
-    } catch (error: any) {
-      console.error('Error uploading image:', error);
-      toastError(error.message || 'Error uploading image');
+    } catch (error: unknown) {
+      logger.error('Error uploading image:', error);
+      toastError(error instanceof Error ? error.message : 'Error uploading image');
     } finally {
       setUploading(false);
     }

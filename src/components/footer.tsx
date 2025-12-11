@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
 
 const footerLinks = {
@@ -24,12 +25,18 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith('/auth') || pathname.startsWith('/admin') || pathname === '/scan') {
+      return null;
+  }
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <footer className="border-t border-[#333] bg-[#0a0a0a] text-gray-500 font-sans">
+    <footer className="border-t border-[#222] bg-[#0a0a0a] text-gray-500 font-sans">
       {/* Top Grid */}
       <div className="container mx-auto px-4 md:px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-12">
         
@@ -54,7 +61,7 @@ export function Footer() {
         {/* Links Columns */}
         {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-                <h4 className="text-xs font-mono text-white uppercase tracking-widest mb-6 border-b border-[#333] pb-2 inline-block">
+                <h4 className="text-xs font-mono text-white uppercase tracking-widest mb-6 border-b border-[#222] pb-2 inline-block">
                     {category}
                 </h4>
                 <ul className="space-y-3">
@@ -71,7 +78,7 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-[#333] bg-[#111]">
+      <div className="border-t border-[#222] bg-[#111]">
           <div className="container mx-auto px-4 md:px-6 h-12 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest">
               <span>© 2025 Machine Brain Inc.</span>
               

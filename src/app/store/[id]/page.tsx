@@ -1,28 +1,38 @@
 "use client";
 
-import { Navbar } from "@/components/navbar";
 import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ShoppingCart, Star, Truck, ShieldCheck, Share2 } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Star, Truck, ShieldCheck, Share2, Trophy, Box } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
-import { useEffect, useState } from "react";
+import { useAuth } from "@/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { Product } from "@/lib/types";
+import { ReviewsSection } from "@/components/reviews-section";
+import { calculatePrice, formatPrice } from "@/lib/pricing";
+
+// Dynamic import for 3D trophy canvas
+const TrophyCanvas = dynamic(
+  () => import('@/components/three').then((m) => m.TrophyCanvas),
+  { ssr: false }
+);
 
 export default function ProductPage() {
   const { id } = useParams();
   const { addItem, setIsCartOpen } = useCart();
   const { campaign } = useSettings();
+  const { isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
+    if (id && !isAuthLoading) {
         const fetchProduct = async () => {
             const { data, error } = await supabase
                 .from('products')
@@ -42,7 +52,7 @@ export default function ProductPage() {
         };
         fetchProduct();
     }
-  }, [id]);
+  }, [id, isAuthLoading]);
 
   if (loading) {
       return (
@@ -69,33 +79,25 @@ export default function ProductPage() {
     );
   }
 
-  let finalPrice = product.price;
-  const isDiscountEnabled = campaign.isActive && campaign.discount.enabled;
-  
-  if (isDiscountEnabled) {
-      if (campaign.discount.type === 'percentage') {
-          finalPrice = product.price * (1 - campaign.discount.value / 100);
-      } else if (campaign.discount.type === 'fixed') {
-          finalPrice = Math.max(0, product.price - campaign.discount.value);
-      }
-  }
+  // Use centralized pricing utility
+  const priceInfo = calculatePrice(product, campaign.isActive ? campaign : null);
 
   const handleAddToCart = () => {
     addItem({ 
         id: product.id, 
         title: product.title, 
-        price: finalPrice, 
-        subtitle: product.subtitle || ""
+        price: priceInfo.finalPrice, 
+        subtitle: product.subtitle || "",
+        image: product.image_url
     });
     setIsCartOpen(true);
   };
 
   return (
     <main className="min-h-screen bg-black text-white font-sans">
-      <Navbar />
       
       {/* Breadcrumb / Header */}
-      <div className="border-b border-[#333] bg-[#0a0a0a] py-4">
+      <div className="border-b border-[#222] bg-[#0a0a0a] py-4">
           <div className="container mx-auto px-4 md:px-6 flex items-center gap-4 text-[10px] md:text-xs font-mono text-gray-500 uppercase tracking-widest">
                 <button onClick={() => router.back()} className="hover:text-primary flex items-center gap-2 transition-colors">
                     <ArrowLeft size={12} /> BACK
@@ -112,9 +114,9 @@ export default function ProductPage() {
             
             {/* Left: Visuals */}
             <div className="lg:col-span-7">
-                <div className="relative aspect-[3/4] md:aspect-square w-full bg-[#111] border border-[#333] p-8 md:p-16 flex items-center justify-center group overflow-hidden">
+                <div className="relative aspect-[3/4] md:aspect-square w-full bg-[#111] border border-[#222] p-8 md:p-16 flex items-center justify-center group overflow-hidden">
                     {/* Background Effects */}
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
+                    <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay"></div>
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1a1a1a_0%,#000_100%)] opacity-50"></div>
                     
                     {/* Book Mockup - Large */}
@@ -141,7 +143,7 @@ export default function ProductPage() {
                                 <div className={`w-32 h-32 rounded-full border-[4px] border-white/20 flex items-center justify-center relative z-10`}>
                                     <div className={`w-20 h-20 bg-white/10 rounded-full backdrop-blur-md`}></div>
                                 </div>
-                                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-multiply"></div>
+                                <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-40 mix-blend-multiply"></div>
                             </div>
                             </>
                             )}
@@ -156,7 +158,7 @@ export default function ProductPage() {
                     </motion.div>
 
                     {/* Zoom/Interaction Hint */}
-                    <div className="absolute bottom-4 right-4 text-[10px] font-mono text-gray-600 uppercase tracking-widest border border-[#333] px-2 py-1">
+                    <div className="absolute bottom-4 right-4 text-[10px] font-mono text-gray-600 uppercase tracking-widest border border-[#222] px-2 py-1">
                         Fig 1.1 — Front Cover
                     </div>
                 </div>
@@ -164,7 +166,7 @@ export default function ProductPage() {
 
             {/* Right: Details */}
             <div className="lg:col-span-5 flex flex-col h-full">
-                <div className="border-b border-[#333] pb-8 mb-8">
+                <div className="border-b border-[#222] pb-8 mb-8">
                     <div className="flex items-center gap-4 mb-4">
                         <div className="h-8 w-2 bg-primary"></div>
                         <h1 className="font-heading text-5xl md:text-6xl font-bold uppercase leading-none text-white">{product.title}</h1>
@@ -198,24 +200,63 @@ export default function ProductPage() {
                     </div>
                 </div>
 
-                <div className="mt-auto bg-[#111] border border-[#333] p-6 md:p-8 relative">
+                {/* Collectible Trophy Bonus */}
+                <div className="mb-8 border border-[#333] bg-gradient-to-r from-[#111] to-[#0a0a0a] p-4 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+                    <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary via-amber-500 to-transparent"></div>
+                    
+                    <div className="flex items-start gap-4 relative z-10">
+                        {/* Mini 3D Trophy Preview */}
+                        <div className="w-20 h-20 flex-shrink-0 bg-[#0a0a0a] border border-[#222] overflow-hidden">
+                            <TrophyCanvas 
+                                size="small" 
+                                rarity={product.difficulty >= 4 ? "Epic" : product.difficulty >= 3 ? "Rare" : "Common"}
+                                autoRotate={true}
+                                isInteractive={false}
+                            />
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 text-primary font-mono text-[10px] uppercase tracking-widest mb-1">
+                                <Trophy size={10} />
+                                <span>Includes Digital Collectible</span>
+                            </div>
+                            <p className="text-white font-heading text-sm uppercase mb-1">Exclusive 3D Trophy</p>
+                            <p className="text-gray-500 text-xs font-mono">
+                                Complete pages to unlock unique trophies for your collection
+                            </p>
+                        </div>
+                        
+                        <div className="flex-shrink-0">
+                            <span className={`text-[10px] font-mono uppercase tracking-widest px-2 py-1 border ${
+                                product.difficulty >= 4 ? "border-purple-500/50 text-purple-400 bg-purple-500/10" :
+                                product.difficulty >= 3 ? "border-blue-500/50 text-blue-400 bg-blue-500/10" :
+                                "border-gray-500/50 text-gray-400 bg-gray-500/10"
+                            }`}>
+                                {product.difficulty >= 4 ? "Epic" : product.difficulty >= 3 ? "Rare" : "Common"}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-auto bg-[#111] border border-[#222] p-6 md:p-8 relative">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent"></div>
                     
                     <div className="flex justify-between items-end mb-6">
                          <div className="flex flex-col">
-                            {isDiscountEnabled ? (
+                            {priceInfo.hasDiscount ? (
                                 <span className="text-[10px] uppercase tracking-widest text-gray-500 font-mono">{campaign.name || "Special Price"}</span>
                             ) : (
                                 <span className="text-[10px] uppercase tracking-widest text-gray-500 font-mono">Standard Price</span>
                             )}
                             <div className="flex items-baseline gap-3">
-                                {isDiscountEnabled ? (
+                                {priceInfo.hasDiscount ? (
                                     <>
-                                        <span className="font-heading text-4xl text-white">${finalPrice.toFixed(2)}</span>
-                                        <span className="font-mono text-xl text-gray-600 line-through">${product.price.toFixed(2)}</span>
+                                        <span className="font-heading text-4xl text-white">{formatPrice(priceInfo.finalPrice)}</span>
+                                        <span className="font-mono text-xl text-gray-600 line-through">{formatPrice(priceInfo.originalPrice)}</span>
                                     </>
                                 ) : (
-                                    <span className="font-heading text-4xl text-white">${product.price.toFixed(2)}</span>
+                                    <span className="font-heading text-4xl text-white">{formatPrice(priceInfo.originalPrice)}</span>
                                 )}
                             </div>
                          </div>
@@ -246,6 +287,9 @@ export default function ProductPage() {
             </div>
 
         </div>
+
+        {/* Reviews Section */}
+        <ReviewsSection productId={product.id} productTitle={product.title} />
       </div>
     </main>
   );

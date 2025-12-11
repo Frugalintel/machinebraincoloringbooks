@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { STORAGE_KEYS, getUserStorageKey } from "@/lib/constants";
 import { useAuth } from "@/context/auth-context";
+import { logger } from "@/lib/logger";
 
 export type CartItem = {
   id: string | number;
@@ -28,11 +29,12 @@ type CartContextType = {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Helper to get user-specific storage key
   const getCartKey = useCallback(() => {
@@ -40,12 +42,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return getUserStorageKey(STORAGE_KEYS.CART, user.id);
   }, [user?.id]);
 
-  // Load cart when user changes
+  // Load cart when user changes or app initializes
   useEffect(() => {
     setIsMounted(true);
     
-    // Reload cart when user changes
-    if (user?.id !== currentUserId) {
+    // Wait for auth to finish loading before initializing cart
+    if (authLoading) return;
+
+    // Reload cart when user changes or first load
+    if (user?.id !== currentUserId || !isInitialized) {
       setCurrentUserId(user?.id || null);
       
       const cartKey = user?.id 
@@ -57,22 +62,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         try {
           setItems(JSON.parse(savedCart));
         } catch (e) {
-          console.error("Failed to parse cart", e);
+          logger.error("Failed to parse cart", e);
           setItems([]);
         }
       } else {
+        // If switching users, we might want to clear or merge?
+        // For now, simple switch: empty if nothing saved.
         setItems([]);
       }
+      setIsInitialized(true);
     }
-  }, [user?.id, currentUserId]);
+  }, [user?.id, currentUserId, authLoading, isInitialized]);
 
   // Save cart when items change
   useEffect(() => {
-    if (isMounted) {
+    if (isInitialized) {
       const cartKey = getCartKey();
       localStorage.setItem(cartKey, JSON.stringify(items));
     }
-  }, [items, isMounted, getCartKey]);
+  }, [items, isInitialized, getCartKey]);
 
   const addItem = useCallback((newItem: Omit<CartItem, "quantity">) => {
     setItems((prev) => {

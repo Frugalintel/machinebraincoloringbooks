@@ -1,9 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { User as SupabaseUser, Session } from "@supabase/supabase-js";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { Profile } from "@/lib/types";
+import { logger } from "@/lib/logger";
 
 type User = {
   email: string;
@@ -35,14 +37,6 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Hardcoded admin emails - UPDATE THIS WITH YOUR ACTUAL ADMIN EMAILS
-const ADMIN_EMAILS = [
-  'jaydensaxton.c@outlook.com',
-  'jayden@example.com',
-  'demo@machinebrain.com',
-  // Add your real admin email here
-];
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -54,19 +48,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return email.substring(0, 2).toUpperCase();
   };
 
-  const getUserRole = (email: string): 'user' | 'admin' => {
-    return ADMIN_EMAILS.includes(email.toLowerCase()) ? 'admin' : 'user';
-  };
-
   // Convert Supabase user to our User type
-  const formatUser = useCallback((supabaseUser: SupabaseUser | null, profile?: any): User | null => {
+  // Role is now determined by the is_admin flag in the profiles table
+  const formatUser = useCallback((supabaseUser: SupabaseUser | null, profile?: Profile): User | null => {
     if (!supabaseUser?.email) return null;
     
     return {
       email: supabaseUser.email,
       id: supabaseUser.id,
       initials: getInitials(supabaseUser.email),
-      role: getUserRole(supabaseUser.email),
+      role: profile?.is_admin ? 'admin' : 'user',
       displayName: profile?.display_name || undefined,
       avatarUrl: profile?.avatar_url || undefined,
     };
@@ -82,63 +73,89 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle();
       
       if (error) {
-        console.error('Error fetching profile:', error);
+        logger.error('Error fetching profile:', error);
       }
       return data;
     } catch (err) {
-      console.error('Error fetching profile:', err);
+      logger.error('Error fetching profile:', err);
       return null;
     }
   }, []);
 
-  // Initialize auth state
-  useEffect(() => {
+    // Initialize auth state
+    useEffect(() => {
     if (!isSupabaseConfigured) {
-      console.warn('Supabase not configured. Authentication will not work.');
+      logger.warn('Supabase not configured. Authentication will not work.');
       setIsLoading(false);
       return;
     }
 
-    // Get initial session
+    let mounted = true;
+
     const initAuth = async () => {
       try {
+        // Setup listener first to catch any events during initialization
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+          if (!mounted) return;
+          
+          if (newSession?.user) {
+            setSession(newSession);
+            // Only fetch profile if we have a user and session changed significantly
+            // or if we don't have a user set yet
+            const profile = await fetchProfile(newSession.user.id);
+            if (mounted) {
+              setUser(formatUser(newSession.user, profile));
+            }
+          } else {
+            if (mounted) {
+              setSession(null);
+              setUser(null);
+            }
+          }
+          
+          // Close modal on successful auth
+          if (event === 'SIGNED_IN' && mounted) {
+             setAuthModal(prev => ({ ...prev, isOpen: false }));
+          }
+          
+          if (mounted) setIsLoading(false);
+        });
+
+        // Get initial session to ensure we have state before first render if possible
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         
-        if (initialSession?.user) {
-          setSession(initialSession);
-          const profile = await fetchProfile(initialSession.user.id);
-          setUser(formatUser(initialSession.user, profile));
+        if (mounted) {
+            if (initialSession?.user) {
+                setSession(initialSession);
+                const profile = await fetchProfile(initialSession.user.id);
+                if (mounted) {
+                    setUser(formatUser(initialSession.user, profile));
+                }
+            }
+            // Even if no initial session, we're done loading the initial check
+            // However, onAuthStateChange might fire INITIAL_SESSION right after.
+            // We'll let onAuthStateChange handle the final isLoading=false usually,
+            // but if there's no session, we need to ensure loading stops.
+            if (!initialSession) {
+                setIsLoading(false);
+            }
         }
+
+        return () => {
+          subscription.unsubscribe();
+        };
       } catch (error) {
-        console.error('Auth initialization error:', error);
-      } finally {
-        setIsLoading(false);
+        logger.error('Auth initialization error:', error);
+        if (mounted) setIsLoading(false);
+        return () => {};
       }
     };
 
-    initAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      console.log('Auth state changed:', event);
-      
-      setSession(newSession);
-      
-      if (newSession?.user) {
-        const profile = await fetchProfile(newSession.user.id);
-        setUser(formatUser(newSession.user, profile));
-      } else {
-        setUser(null);
-      }
-
-      // Close modal on successful auth
-      if (event === 'SIGNED_IN') {
-        setAuthModal(prev => ({ ...prev, isOpen: false }));
-      }
-    });
+    const cleanupPromise = initAuth();
 
     return () => {
-      subscription.unsubscribe();
+      mounted = false;
+      cleanupPromise.then(cleanup => cleanup && cleanup());
     };
   }, [formatUser, fetchProfile]);
 
@@ -180,10 +197,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    router.push("/");
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      logger.error("Error signing out:", error);
+    } finally {
+      // Always clear local state and redirect, even if server request fails
+      setUser(null);
+      setSession(null);
+      router.push("/");
+      router.refresh();
+    }
   }, [router]);
 
   const openAuthModal = useCallback((view: 'login' | 'register' = 'login', email?: string) => {

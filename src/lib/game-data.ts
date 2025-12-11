@@ -11,6 +11,8 @@ export interface CollectibleItem {
   generation: string;
   foundIn: string;
   relatedAchievementId?: string;
+  unlocksStoryId?: string;        // Completing this collectible unlocks a story
+  grantedByStoryId?: string;      // Which story grants this collectible as a reward
 }
 
 export interface CollectionSet {
@@ -32,11 +34,15 @@ export interface Achievement {
   title: string;
   description: string;
   unlocked: boolean;
-  icon: 'brush' | 'trophy' | 'zap' | 'star' | 'code';
+  icon: 'brush' | 'trophy' | 'zap' | 'star' | 'code' | 'medal' | 'crown' | 'gem' | 'rocket' | 'sword' | 'shield' | 'map' | 'lock' | 'heart' | 'smile' | 'terminal';
   date?: string;
   progress?: string;
   type?: string;
   details: AchievementDetail[];
+  rarity?: string;
+  custom_color?: string;
+  grantsCollectibleId?: string;      // Unlocking this achievement grants a collectible
+  requiresStoryCompletion?: string;  // Requires a story to be completed to unlock
 }
 
 export const collectionSets: CollectionSet[] = [
@@ -90,7 +96,8 @@ export const collectionSets: CollectionSet[] = [
             rarity: "Legendary",
             type: "Temporal",
             generation: "Gen-X",
-            foundIn: "Sector 0: The Void"
+            foundIn: "Sector 0: The Void",
+            unlocksStoryId: "story-quantum-origins"  // Collecting this unlocks a special story
         }, 
     ]
   },
@@ -154,7 +161,8 @@ export const collectionSets: CollectionSet[] = [
             rarity: "Legendary",
             type: "Station",
             generation: "Mk-V",
-            foundIn: "Galactic Center"
+            foundIn: "Galactic Center",
+            grantedByStoryId: "story-galactic-conquest"  // Granted as reward from completing this story
         },
     ]
   }
@@ -167,6 +175,7 @@ export const achievements: Achievement[] = [
         description: "Submitted your first colored page.",
         unlocked: true,
         icon: "brush",
+        rarity: "Common",
         date: "2025-11-01",
         details: [{ label: "Account Created", value: "2025-10-25" }, { label: "Submission ID", value: "#SUB-8821" }, { label: "Time", value: "14:32 UTC" }]
     },
@@ -176,8 +185,10 @@ export const achievements: Achievement[] = [
         description: "Completed your first collectible set.",
         unlocked: false,
         icon: "trophy",
+        rarity: "Rare",
         progress: "3/4 Items",
-        details: [{ label: "Vacuum Pups", value: "3/4 Collected" }, { label: "Nearest Goal", value: "Vacuum Pups (1 left)" }]
+        details: [{ label: "Vacuum Pups", value: "3/4 Collected" }, { label: "Nearest Goal", value: "Vacuum Pups (1 left)" }],
+        grantsCollectibleId: "gamma-scout"  // Completing first set grants access to the Gamma-Scout
     },
     {
         id: "ach-03",
@@ -185,6 +196,7 @@ export const achievements: Achievement[] = [
         description: "Submitted 5 pages in a single day.",
         unlocked: false,
         icon: "zap",
+        rarity: "Epic",
         progress: "2/5 Pages",
         details: [{ label: "Current Session", value: "2 Pages" }, { label: "Best Streak", value: "3 Pages (Nov 12)" }]
     },
@@ -194,6 +206,7 @@ export const achievements: Achievement[] = [
         description: "Submitted 50 colored pages total.",
         unlocked: false,
         icon: "star",
+        rarity: "Legendary",
         progress: "12/50 Pages",
         details: [{ label: "Total Submissions", value: "12" }, { label: "Rank", value: "Novice" }]
     },
@@ -203,6 +216,7 @@ export const achievements: Achievement[] = [
         description: "Joined during the beta phase.",
         unlocked: true,
         icon: "code",
+        rarity: "Uncommon",
         date: "2025-10-25",
         details: [{ label: "Beta Wave", value: "Wave 1" }, { label: "User ID", value: "0001-ALPHA" }]
     },
@@ -212,6 +226,7 @@ export const achievements: Achievement[] = [
         description: "Color 10 Cyberpunk themed pages.",
         unlocked: false,
         icon: "brush",
+        rarity: "Rare",
         progress: "4/10 Pages",
         details: [{ label: "Theme", value: "Cyberpunk" }, { label: "Progress", value: "40%" }]
     },
@@ -221,6 +236,7 @@ export const achievements: Achievement[] = [
         description: "Use the pixel brush on 20 different regions.",
         unlocked: false,
         icon: "brush",
+        rarity: "Uncommon",
         progress: "15/20 Regions",
         details: [{ label: "Tool Used", value: "Pixel Brush" }]
     },
@@ -411,7 +427,8 @@ export const achievements: Achievement[] = [
         unlocked: false,
         icon: "trophy",
         progress: "0/5 Sets",
-        details: [{ label: "Sets", value: "0" }]
+        details: [{ label: "Sets", value: "0" }],
+        requiresStoryCompletion: "story-vault-access"  // Must complete a story first
     },
     {
         id: "ach-29",

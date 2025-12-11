@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { Terminal, Lock, User, ArrowRight, AlertCircle, Chrome, Command, Facebook, Twitter, CheckCircle, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Terminal, Lock, User, ArrowRight, AlertCircle, Chrome, Command, Facebook, Twitter, CheckCircle, X, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
@@ -98,8 +98,8 @@ export function AuthModal() {
           return;
         }
       }
-    } catch (error: any) {
-      setErrorMsg(error.message || "An authentication error occurred.");
+    } catch (error: unknown) {
+      setErrorMsg(error instanceof Error ? error.message : "An authentication error occurred.");
     } finally {
       setLoading(false);
     }
@@ -115,7 +115,7 @@ export function AuthModal() {
       <button 
         type="button"
         onClick={() => handleSocialAuth(provider)} 
-        className="h-12 border bg-[#111] hover:bg-white hover:text-black transition-all flex items-center justify-center group border-[#333] text-gray-400 hover:border-white"
+        className="h-12 border bg-[#111] hover:bg-white hover:text-black transition-all flex items-center justify-center group border-[#222] text-gray-400 hover:border-white"
       >
         <Icon size={18} className="mr-2" />
         <span className="text-xs font-heading uppercase tracking-wider">{label}</span>
@@ -135,7 +135,7 @@ export function AuthModal() {
   const Divider = ({ text }: { text: string }) => (
     <div className="relative py-2 mb-6">
       <div className="absolute inset-0 flex items-center">
-        <span className="w-full border-t border-[#333]" />
+        <span className="w-full border-t border-[#222]" />
       </div>
       <div className="relative flex justify-center text-[10px] uppercase font-mono">
         <span className="bg-[#0a0a0a] px-2 text-gray-600">{text}</span>
@@ -153,7 +153,7 @@ export function AuthModal() {
           type="email" 
           value={email} 
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-[#111] border-[#333] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700"
+          className="bg-[#111] border-[#222] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
           placeholder="you@example.com"
           disabled={loading}
         />
@@ -166,7 +166,7 @@ export function AuthModal() {
           type="password" 
           value={password} 
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-[#111] border-[#333] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700"
+          className="bg-[#111] border-[#222] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
           placeholder="••••••••"
           disabled={loading}
         />
@@ -185,7 +185,7 @@ export function AuthModal() {
             type="password" 
             value={confirmPassword} 
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="bg-[#111] border-[#333] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700"
+            className="bg-[#111] border-[#222] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
             placeholder="••••••••"
             disabled={loading}
           />
@@ -211,8 +211,7 @@ export function AuthModal() {
 
   return (
     <AnimatePresence>
-      {authModal.isOpen && (
-        <>
+      {authModal.isOpen ? <>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -229,7 +228,7 @@ export function AuthModal() {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-[101] p-4"
           >
-            <div className="bg-[#0a0a0a] border border-[#333] shadow-2xl relative">
+            <div className="bg-[#0a0a0a] border border-[#222] shadow-2xl relative">
               <div className="h-2 w-full bg-primary"></div>
               
               {/* Close Button */}
@@ -256,22 +255,18 @@ export function AuthModal() {
                   </div>
                 )}
 
-                {errorMsg && (
-                  <div className="mb-6 p-3 bg-red-900/20 border border-red-900/50 flex items-start gap-3 text-xs text-red-400 font-mono">
+                {errorMsg ? <div className="mb-6 p-3 bg-red-900/20 border border-red-900/50 flex items-start gap-3 text-xs text-red-400 font-mono">
                     <AlertCircle size={14} className="mt-0.5 flex-shrink-0" />
                     <span>{errorMsg}</span>
-                  </div>
-                )}
+                  </div> : null}
 
-                {successMsg && (
-                  <div className="mb-6 p-3 bg-green-900/20 border border-green-900/50 flex items-start gap-3 text-xs text-green-400 font-mono">
+                {successMsg ? <div className="mb-6 p-3 bg-green-900/20 border border-green-900/50 flex items-start gap-3 text-xs text-green-400 font-mono">
                     <CheckCircle size={14} className="mt-0.5 flex-shrink-0" />
                     <span>{successMsg}</span>
-                  </div>
-                )}
+                  </div> : null}
 
                 {/* Tabs */}
-                <div className="flex mb-8 border-b border-[#333]">
+                <div className="flex mb-8 border-b border-[#222]">
                   <button
                     onClick={() => { setIsLogin(true); setErrorMsg(""); setSuccessMsg(""); }}
                     className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-white" : "border-transparent text-gray-600 hover:text-gray-400"}`}
@@ -291,7 +286,7 @@ export function AuthModal() {
                     {FormSection}
                     <Divider text="Or access via provider" />
                     {SocialSection}
-                    <div className="mt-4 text-center border-t border-[#333] pt-4">
+                    <div className="mt-4 text-center border-t border-[#222] pt-4">
                       <button onClick={() => {}} className="text-[10px] text-gray-600 hover:text-primary transition-colors uppercase tracking-widest font-mono">
                         Forgot Password?
                       </button>
@@ -307,8 +302,7 @@ export function AuthModal() {
               </div>
             </div>
           </motion.div>
-        </>
-      )}
+        </> : null}
     </AnimatePresence>
   );
 }

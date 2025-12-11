@@ -13,20 +13,20 @@ export function CollectiblesSection() {
         </h2>
       </div>
 
-      <div className="flex-1 border border-[#333] bg-[#151515] p-6 md:p-10 flex flex-col gap-8 relative shadow-[0_0_50px_rgba(0,0,0,0.3)]">
+      <div className="flex-1 border border-[#222] bg-[#151515] p-6 md:p-10 flex flex-col gap-8 relative shadow-[0_0_50px_rgba(0,0,0,0.3)]">
         
         {/* Print Artifacts: Registration Marks */}
-        <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-[#333] opacity-50"></div>
-        <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-[#333] opacity-50"></div>
-        <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-[#333] opacity-50"></div>
-        <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-[#333] opacity-50"></div>
+        <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-[#222] opacity-50"></div>
+        <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-[#222] opacity-50"></div>
+        <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-[#222] opacity-50"></div>
+        <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-[#222] opacity-50"></div>
 
         {/* Top Grid - Badges */}
         <div className="grid grid-cols-2 gap-6">
            {/* Circle Badge */}
            <motion.div 
              whileHover={{ scale: 1.05 }}
-             className="bg-[#1a1a1a] p-6 flex items-center justify-center border border-[#333] aspect-square cursor-pointer group"
+             className="bg-[#1a1a1a] p-6 flex items-center justify-center border border-[#222] aspect-square cursor-pointer group"
            >
               <div className="w-24 h-24 rounded-full border-4 border-dashed border-[#4a4a4a] bg-[#1e3a8a] flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:border-primary transition-colors">
                  <div className="w-20 h-20 rounded-full border-2 border-white/20 flex items-center justify-center">
@@ -38,7 +38,7 @@ export function CollectiblesSection() {
            {/* Shield Badge */}
            <motion.div 
              whileHover={{ scale: 1.05 }}
-             className="bg-[#1a1a1a] p-6 flex items-center justify-center border border-[#333] aspect-square cursor-pointer group"
+             className="bg-[#1a1a1a] p-6 flex items-center justify-center border border-[#222] aspect-square cursor-pointer group"
            >
               <div className="w-24 h-28 bg-[#c2410c] flex items-center justify-center relative shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:bg-primary transition-colors" 
                    style={{ clipPath: "polygon(50% 0, 100% 25%, 100% 85%, 50% 100%, 0 85%, 0 25%)" }}>
@@ -61,7 +61,7 @@ export function CollectiblesSection() {
             whileHover={{ y: -5 }}
             className="border border-primary/30 p-8 bg-[#1a1a1a] relative overflow-hidden group cursor-pointer"
         >
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
+            <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay"></div>
             
             {/* Embroidered Texture Effect */}
             <div className="border-4 border-primary p-6 text-center relative bg-[#111] shadow-inner">
@@ -82,9 +82,9 @@ export function CollectiblesSection() {
                  </div>
              </div>
 
-             <div className="bg-[#e5e5e5] p-8 flex items-center justify-center border border-[#333] aspect-[16/9] relative overflow-hidden group cursor-pointer">
+             <div className="bg-[#e5e5e5] p-8 flex items-center justify-center border border-[#222] aspect-[16/9] relative overflow-hidden group cursor-pointer">
                  {/* Canvas Texture */}
-                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-multiply"></div>
+                 <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-multiply"></div>
                  
                  <motion.div 
                     whileHover={{ scale: 1.05, rotate: -2 }}

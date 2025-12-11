@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, ShoppingCart, User as UserIcon, Menu, X, LogIn, UserPlus, Package, Settings, LogOut, ChevronDown, Shield } from "lucide-react";
+import { Search, ShoppingCart, User as UserIcon, Menu, X, LogIn, UserPlus, Package, Settings, LogOut, ChevronDown, Shield, Scan } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
 import { useSettings } from "@/context/settings-context";
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { name: "Store", href: "/store" },
@@ -36,8 +36,14 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Check if we should hide the navbar
+  if (pathname.startsWith('/auth') || pathname.startsWith('/admin') || pathname === '/scan') {
+      return null;
+  }
+
   // Determine if banner should show
   const showBanner = campaign.isActive && campaign.banner.enabled;
+  const theme = campaign.theme || { animation: 'none' };
   const bannerStyle = campaign.banner.customCss 
     ? undefined 
     : { 
@@ -47,28 +53,90 @@ export function Navbar() {
 
   return (
     <>
-      {/* Global Discount Banner */}
-      {showBanner && (
-        <Link 
-            href={campaign.banner.link || "/store"} 
-            className="block w-full transition-colors z-[100] relative overflow-hidden group"
-            style={bannerStyle}
-        >
-            {campaign.banner.customCss && (
-                <style jsx>{`
-                    .custom-banner {
-                        ${campaign.banner.customCss}
-                    }
-                `}</style>
-            )}
-            <div className={`container mx-auto px-4 h-8 flex items-center justify-center gap-2 text-[10px] md:text-xs font-mono uppercase tracking-widest ${campaign.banner.customCss ? 'custom-banner' : ''}`}>
-                <span className="font-bold">{campaign.banner.text}</span>
-                <span className="hidden md:inline group-hover:underline ml-2 opacity-80">Check it out &rarr;</span>
-            </div>
-        </Link>
-      )}
+      {/* Safe Area Mask (Fixed) - Must be above body::before texture overlay (z-9999) */}
+      <div 
+        className="fixed top-0 left-0 right-0 bg-[#111] z-[10001] pointer-events-none" 
+        style={{ 
+          backgroundColor: '#111111', 
+          height: 'calc(env(safe-area-inset-top) + 1px)',
+          transform: 'translateZ(0)' 
+        }} 
+      />
+      
+      {/* Safe Area Spacer (Scrolls) */}
+      <div className="h-[env(safe-area-inset-top)] w-full bg-[#111]" style={{ backgroundColor: '#111111' }} />
 
-      <nav className="w-full border-b border-[#333] bg-[#111] z-[100] sticky top-0">
+      {/* Global Discount Banner */}
+      {showBanner ? <Link 
+            href={campaign.banner.link || "/store"} 
+            className={`block w-full transition-colors z-[10000] relative overflow-hidden group ${
+                theme.animation === 'pulse' ? 'animate-pulse' : ''
+            } ${campaign.banner.pattern ? `pattern-${campaign.banner.pattern}` : ''}`}
+            style={{
+                ...bannerStyle,
+                backgroundImage: campaign.banner.backgroundImage ? `url(${campaign.banner.backgroundImage})` : undefined,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+            }}
+        >
+            {/* Animation & Pattern Styles */}
+            <style jsx>{`
+                @keyframes marquee {
+                    0% { transform: translateX(100%); }
+                    100% { transform: translateX(-100%); }
+                }
+                @keyframes glitch {
+                    0% { transform: translate(0); }
+                    20% { transform: translate(-2px, 2px); }
+                    40% { transform: translate(-2px, -2px); }
+                    60% { transform: translate(2px, 2px); }
+                    80% { transform: translate(2px, -2px); }
+                    100% { transform: translate(0); }
+                }
+                .animate-marquee {
+                    animation: marquee 15s linear infinite;
+                    white-space: nowrap;
+                    display: inline-block;
+                    min-width: 100%;
+                }
+                .animate-glitch {
+                    animation: glitch 0.5s cubic-bezier(.25, .46, .45, .94) infinite;
+                }
+                /* Patterns */
+                .pattern-caution {
+                    background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px);
+                }
+                .pattern-grid {
+                    background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+                    background-size: 10px 10px;
+                }
+                .pattern-dots {
+                    background-image: radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px);
+                    background-size: 8px 8px;
+                }
+                .pattern-gradient {
+                    background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                }
+                .custom-banner {
+                    ${campaign.banner.customCss || ''}
+                }
+            `}</style>
+            
+            {/* Overlay for readability if image is used */}
+            {campaign.banner.backgroundImage ? <div className="absolute inset-0 bg-black/40 -z-10"></div> : null}
+
+            <div className={`container mx-auto px-4 h-8 flex items-center justify-center gap-2 text-[10px] md:text-xs font-mono uppercase tracking-widest ${campaign.banner.customCss ? 'custom-banner' : ''}`}>
+                <div className={
+                    theme.animation === 'marquee' ? 'animate-marquee w-full text-center' : 
+                    theme.animation === 'glitch' ? 'animate-glitch' : ''
+                }>
+                    <span className="font-bold">{campaign.banner.text}</span>
+                    <span className="hidden md:inline group-hover:underline ml-2 opacity-80">Check it out &rarr;</span>
+                </div>
+            </div>
+        </Link> : null}
+
+      <nav className="w-full border-b border-[#222] bg-[#111] z-[10000] sticky top-[env(safe-area-inset-top)] isolate" style={{ backgroundColor: '#111111', transform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}>
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           
           {/* Left: Logo & Brand */}
@@ -105,7 +173,7 @@ export function Navbar() {
           <div className="flex items-center gap-4">
               {/* Desktop Search */}
               <div className="hidden md:flex items-center">
-                  <div className="bg-[#222] h-10 flex items-center px-4 gap-3 text-gray-400 font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors cursor-pointer border border-[#333]">
+                  <div className="bg-[#222] h-10 flex items-center px-4 gap-3 text-gray-400 font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors cursor-pointer border border-[#222]">
                       <span className="text-xs">Search</span>
                       <Search size={14} strokeWidth={3} />
                   </div>
@@ -115,7 +183,7 @@ export function Navbar() {
               <div className="relative hidden md:block" ref={profileRef}>
                   <button 
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className={`flex items-center justify-center w-10 h-10 border border-[#333] transition-colors ${isProfileOpen || user ? "bg-primary text-black border-primary hover:bg-white" : "hover:bg-primary hover:border-primary hover:text-black text-white"}`}
+                    className={`flex items-center justify-center w-10 h-10 border border-[#222] transition-colors ${isProfileOpen || user ? "bg-primary text-black border-primary hover:bg-white" : "hover:bg-primary hover:border-primary hover:text-black text-white"}`}
                   >
                       {user ? (
                           <span className="font-heading font-bold text-sm tracking-wide">{user.initials}</span>
@@ -125,54 +193,53 @@ export function Navbar() {
                   </button>
 
                   <AnimatePresence>
-                    {isProfileOpen && (
-                        <motion.div
+                    {isProfileOpen ? <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
-                            className="absolute top-12 right-0 w-56 bg-[#0a0a0a] border border-[#333] shadow-2xl z-50 flex flex-col"
+                            className="absolute top-12 right-0 w-56 bg-[#0a0a0a] border border-[#222] shadow-2xl z-50 flex flex-col"
                         >
                             <div className="h-1 w-full bg-primary"></div>
                             {user ? (
                                 <>
-                                    <div className="p-4 border-b border-[#333]">
+                                    <div className="p-4 border-b border-[#222]">
                                         <p className="text-white font-heading uppercase">User_{user.initials}</p>
                                         <p className="text-[10px] text-gray-500 font-mono truncate">{user.email}</p>
                                     </div>
                                     <Link href="/profile/me" className="px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-[#151515] flex items-center gap-3 transition-colors" onClick={() => setIsProfileOpen(false)}>
                                         <UserIcon size={14} /> My Profile & Orders
                                     </Link>
-                                    {isAdmin && (
-                                        <Link href="/admin" className="px-4 py-3 text-sm text-primary hover:text-white hover:bg-primary/10 flex items-center gap-3 transition-colors border-t border-[#333]" onClick={() => setIsProfileOpen(false)}>
+                                    {isAdmin ? <Link href="/admin" className="px-4 py-3 text-sm text-primary hover:text-white hover:bg-primary/10 flex items-center gap-3 transition-colors border-t border-[#222]" onClick={() => setIsProfileOpen(false)}>
                                             <Shield size={14} /> Admin Panel
-                                        </Link>
-                                    )}
-                                    <button onClick={() => { signOut(); setIsProfileOpen(false); }} className="px-4 py-3 text-sm text-red-500 hover:bg-red-900/20 hover:text-red-400 flex items-center gap-3 transition-colors text-left w-full border-t border-[#333]">
+                                        </Link> : null}
+                                    <button onClick={() => { signOut(); setIsProfileOpen(false); }} className="px-4 py-3 text-sm text-red-500 hover:bg-red-900/20 hover:text-red-400 flex items-center gap-3 transition-colors text-left w-full border-t border-[#222]">
                                         <LogOut size={14} /> Disconnect
                                     </button>
                                 </>
                             ) : (
                                 <>
-                                    <button onClick={() => { openAuthModal('login'); setIsProfileOpen(false); }} className="px-4 py-3 text-sm text-white hover:bg-[#151515] flex items-center gap-3 transition-colors border-b border-[#333] w-full text-left">
+                                    <button onClick={() => { openAuthModal('login'); setIsProfileOpen(false); }} className="px-4 py-3 text-sm text-white hover:bg-[#151515] flex items-center gap-3 transition-colors border-b border-[#222] w-full text-left">
                                         <LogIn size={14} className="text-primary" /> 
                                         <span className="font-heading uppercase tracking-wider">Login</span>
                                     </button>
                                     <button onClick={() => { openAuthModal('register'); setIsProfileOpen(false); }} className="px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-[#151515] flex items-center gap-3 transition-colors w-full text-left">
                                         <UserPlus size={14} /> Register
                                     </button>
-                                    <Link href="/orders/lookup" className="px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-[#151515] flex items-center gap-3 transition-colors border-t border-[#333]" onClick={() => setIsProfileOpen(false)}>
+                                    <Link href="/orders/lookup" className="px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-[#151515] flex items-center gap-3 transition-colors border-t border-[#222]" onClick={() => setIsProfileOpen(false)}>
                                         <Search size={14} /> Order Lookup
                                     </Link>
                                 </>
                             )}
-                        </motion.div>
-                    )}
+                        </motion.div> : null}
                   </AnimatePresence>
               </div>
 
               {/* Cart Trigger */}
-              <button 
-                  onClick={() => setIsCartOpen(true)}
+          <Link href="/scan" className="text-gray-400 hover:text-white transition-colors">
+            <Scan size={20} />
+          </Link>
+          <button 
+            onClick={() => setIsCartOpen(true)}
                   className="relative bg-primary h-10 flex items-center px-4 gap-2 text-black font-bold uppercase tracking-wider hover:bg-white transition-colors cursor-pointer"
               >
                   <span className="hidden md:inline text-xs">CART</span>
@@ -197,23 +264,22 @@ export function Navbar() {
 
       {/* Mobile Menu Drawer */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
-            <>
+        {isMobileMenuOpen ? <>
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] lg:hidden"
+                    className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[10001] lg:hidden"
                 />
                 <motion.div
                     initial={{ x: "-100%" }}
                     animate={{ x: 0 }}
                     exit={{ x: "-100%" }}
                     transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                    className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-[#111] border-r border-[#333] z-[70] lg:hidden flex flex-col"
+                    className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-[#111] border-r border-[#222] z-[10002] lg:hidden flex flex-col pt-[env(safe-area-inset-top)]"
                 >
-                    <div className="p-6 border-b border-[#333] flex justify-between items-center">
+                    <div className="p-6 border-b border-[#222] flex justify-between items-center">
                          <h2 className="font-heading text-2xl text-white uppercase">Menu</h2>
                          <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-white">
                              <X size={24} />
@@ -240,11 +306,9 @@ export function Navbar() {
                                 <Link href="/profile/me" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-mono uppercase text-white flex items-center gap-4">
                                     <UserIcon size={20} /> My Profile
                                 </Link>
-                                {isAdmin && (
-                                    <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-mono uppercase text-primary flex items-center gap-4">
+                                {isAdmin ? <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-mono uppercase text-primary flex items-center gap-4">
                                         <Shield size={20} /> Admin Panel
-                                    </Link>
-                                )}
+                                    </Link> : null}
                                 <button onClick={() => { signOut(); setIsMobileMenuOpen(false); }} className="text-lg font-mono uppercase text-red-500 flex items-center gap-4">
                                     <LogOut size={20} /> Logout
                                 </button>
@@ -264,12 +328,11 @@ export function Navbar() {
                         )}
                     </div>
 
-                    <div className="p-6 border-t border-[#333] text-[10px] text-gray-600 font-mono uppercase tracking-widest">
+                    <div className="p-6 border-t border-[#222] text-[10px] text-gray-600 font-mono uppercase tracking-widest">
                         Machine Brain © 2025
                     </div>
                 </motion.div>
-            </>
-        )}
+            </> : null}
       </AnimatePresence>
     </>
   );

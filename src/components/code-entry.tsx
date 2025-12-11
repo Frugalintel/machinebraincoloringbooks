@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/lib/supabase";
 import { Lock, Unlock, Loader2, Check, X } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/context/toast-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { logger } from "@/lib/logger";
 
 export function CodeEntry() {
   const { user, openAuthModal } = useAuth();
@@ -78,7 +79,7 @@ export function CodeEntry() {
           }]);
 
         if (insertError) {
-          console.error('Error saving story progress:', insertError);
+          logger.error('Error saving story progress:', insertError);
           setResult("error");
           setResultMessage("Failed to unlock story. Please try again.");
           return;
@@ -114,7 +115,7 @@ export function CodeEntry() {
         .insert([{ user_id: user.id, code_id: codeData.id }]);
 
       if (redeemError) {
-        console.error("Redeem error:", redeemError);
+        logger.error("Redeem error:", redeemError);
         setResult("error");
         setResultMessage("Failed to redeem code. Please try again.");
         return;
@@ -160,7 +161,7 @@ export function CodeEntry() {
       success(unlockMsg);
 
     } catch (err) {
-      console.error(err);
+      logger.error("Code entry error:", err);
       setResult("error");
       setResultMessage("System error. Try again.");
     } finally {
@@ -200,8 +201,7 @@ export function CodeEntry() {
       </form>
 
       <AnimatePresence>
-        {resultMessage && (
-          <motion.div
+        {resultMessage ? <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -211,8 +211,7 @@ export function CodeEntry() {
           >
             {result === 'error' && <span className="mr-2">⚠</span>}
             {resultMessage}
-          </motion.div>
-        )}
+          </motion.div> : null}
       </AnimatePresence>
     </div>
   );

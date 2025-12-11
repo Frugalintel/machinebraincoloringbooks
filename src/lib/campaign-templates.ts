@@ -15,7 +15,67 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       heroSubtitle: "Explore the Collection",
       heroTag: "Featured",
       storyTag: "Sci-Fi"
-    }
+    },
+    texture: "dots",
+    animation: "none",
+    fontMode: "default"
+  },
+  cyberpunk: {
+    id: "cyberpunk",
+    colors: {
+      primary: "#0ff", // Cyan
+      secondary: "#f0f", // Magenta
+      accent: "#ff0", // Yellow
+      background: "#050505", // Black
+      text: "#0ff"
+    },
+    text: {
+      heroTitle: "NEON CITY",
+      heroSubtitle: "System Override",
+      heroTag: "Cyber Week",
+      storyTag: "Hacked"
+    },
+    texture: "grid",
+    animation: "glitch",
+    fontMode: "mono"
+  },
+  retro_wave: {
+    id: "retro_wave",
+    colors: {
+      primary: "#ff0099", // Hot Pink
+      secondary: "#4900ff", // Deep Purple
+      accent: "#00fff0", // Aqua
+      background: "#120024", // Dark Purple
+      text: "#ffffff"
+    },
+    text: {
+      heroTitle: "RETRO WAVE",
+      heroSubtitle: "Sunset Drive",
+      heroTag: "Radical Sale",
+      storyTag: "Vintage"
+    },
+    texture: "scanlines",
+    animation: "pulse",
+    fontMode: "default"
+  },
+  minimal: {
+    id: "minimal",
+    colors: {
+      primary: "#ffffff", // White
+      secondary: "#000000", // Black
+      accent: "#333333", // Dark Gray
+      background: "#ffffff", // White BG
+      text: "#000000" // Black Text
+    },
+    text: {
+      heroTitle: "Essentials",
+      heroSubtitle: "Less is More",
+      heroTag: "Collection",
+      storyTag: "Pure"
+    },
+    texture: "none",
+    animation: "none",
+    fontMode: "serif"
   },
   christmas: {
     id: "christmas",
@@ -31,7 +91,10 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       heroSubtitle: "Season of Art",
       heroTag: "Holiday Special",
       storyTag: "Holiday"
-    }
+    },
+    texture: "dots",
+    animation: "pulse",
+    fontMode: "serif"
   },
   new_years: {
     id: "new_years",
@@ -47,7 +110,10 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       heroSubtitle: "New Beginnings",
       heroTag: "Limited Edition",
       storyTag: "Special"
-    }
+    },
+    texture: "noise",
+    animation: "none",
+    fontMode: "default"
   },
   valentines: {
     id: "valentines",
@@ -63,7 +129,10 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       heroSubtitle: "Share the Love",
       heroTag: "Sweet Deal",
       storyTag: "Romance"
-    }
+    },
+    texture: "dots",
+    animation: "pulse",
+    fontMode: "serif"
   },
   july_4th: {
     id: "july_4th",
@@ -79,7 +148,10 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       heroSubtitle: "Summer Freedom",
       heroTag: "Summer Sale",
       storyTag: "Patriot"
-    }
+    },
+    texture: "noise",
+    animation: "marquee",
+    fontMode: "default"
   },
   halloween: {
     id: "halloween",
@@ -88,14 +160,17 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#9333ea", // Purple
       accent: "#22c55e", // Green (Slime)
       background: "#1a0b2e", // Dark Purple
-      text: "#f97316"
+      text: "#ffffff" // White Text for contrast
     },
     text: {
       heroTitle: "Spooky Season",
       heroSubtitle: "Haunted Art",
       heroTag: "Trick or Treat",
       storyTag: "Horror"
-    }
+    },
+    texture: "noise",
+    animation: "glitch",
+    fontMode: "default"
   },
   thanksgiving: {
     id: "thanksgiving",
@@ -111,7 +186,10 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       heroSubtitle: "Harvest Festival",
       heroTag: "Autumn Special",
       storyTag: "Seasonal"
-    }
+    },
+    texture: "dots",
+    animation: "none",
+    fontMode: "serif"
   },
   black_friday: {
     id: "black_friday",
@@ -127,7 +205,10 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       heroSubtitle: "Mega Sale",
       heroTag: "Door Buster",
       storyTag: "Event"
-    }
+    },
+    texture: "scanlines",
+    animation: "glitch",
+    fontMode: "mono"
   }
 };
 

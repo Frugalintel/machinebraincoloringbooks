@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Oswald, Rajdhani } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/cart-context";
@@ -9,6 +9,9 @@ import { SettingsProvider } from "@/context/settings-context";
 import { CartDrawer } from "@/components/cart-drawer";
 import { NewsletterModal } from "@/components/newsletter-modal";
 import { AuthModal } from "@/components/auth-modal";
+import { EnvironmentIndicator } from "@/components/environment-indicator";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 const oswald = Oswald({
   variable: "--font-oswald",
@@ -28,6 +31,14 @@ export const metadata: Metadata = {
   description: "Vintage Sci-Fi Coloring Books and Collectibles.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#111111",
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,10 +54,13 @@ export default function RootLayout({
             <GameProvider>
               <SettingsProvider>
                 <CartProvider>
+                  <Navbar />
                   {children}
+                  <Footer />
                   <CartDrawer />
                   <NewsletterModal />
                   <AuthModal />
+                  <EnvironmentIndicator />
                 </CartProvider>
               </SettingsProvider>
             </GameProvider>

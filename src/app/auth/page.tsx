@@ -2,10 +2,10 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Terminal, Lock, User, ArrowRight, AlertCircle, Chrome, Command, Facebook, Twitter, CheckCircle, Loader2 } from "lucide-react";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { STORAGE_KEYS } from "@/lib/constants";
 
 function AuthPageContent() {
@@ -49,7 +49,6 @@ function AuthPageContent() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("handleAuth called", { email, password: password ? "***" : "empty", isLogin });
     setLoading(true);
     setErrorMsg("");
     
@@ -129,9 +128,7 @@ function AuthPageContent() {
             onClick={() => handleSocialMock(provider)} 
             className={`h-12 border bg-[#111] hover:bg-white hover:text-black transition-all flex items-center justify-center group relative ${isLastUsed ? "border-primary text-white" : "border-[#333] text-gray-400 hover:border-white"}`}
         >
-            {isLastUsed && (
-                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] bg-primary text-black px-1.5 font-mono uppercase tracking-wide">Last Used</span>
-            )}
+            {isLastUsed ? <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] bg-primary text-black px-1.5 font-mono uppercase tracking-wide">Last Used</span> : null}
             <Icon size={18} className={`mr-2 ${isLastUsed ? "text-primary group-hover:text-black" : ""}`} />
             <span className="text-xs font-heading uppercase tracking-wider">{label}</span>
         </button>
@@ -170,12 +167,10 @@ function AuthPageContent() {
                 type="email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full bg-[#111] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700 px-3 border ${lastProvider === 'email' && isLogin ? 'border-primary' : 'border-[#333]'}`}
+                className={`w-full bg-[#111] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3 border ${lastProvider === 'email' && isLogin ? 'border-primary' : 'border-[#333]'}`}
                 placeholder="user@machinebrain.com"
             />
-            {lastProvider === 'email' && isLogin && (
-                <div className="text-[9px] text-primary uppercase tracking-widest font-mono text-right">Last Used Method</div>
-            )}
+            {lastProvider === 'email' && isLogin ? <div className="text-[9px] text-primary uppercase tracking-widest font-mono text-right">Last Used Method</div> : null}
         </div>
         <div className="space-y-2">
             <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
@@ -185,7 +180,7 @@ function AuthPageContent() {
                 type="password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#111] border border-[#333] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700 px-3"
+                className="w-full bg-[#111] border border-[#333] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3"
                 placeholder="••••••••"
             />
         </div>
@@ -203,7 +198,7 @@ function AuthPageContent() {
                     type="password" 
                     value={confirmPassword} 
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full bg-[#111] border border-[#333] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-sm placeholder:text-gray-700 px-3"
+                    className="w-full bg-[#111] border border-[#333] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3"
                     placeholder="••••••••"
                 />
             </motion.div>
@@ -232,7 +227,7 @@ function AuthPageContent() {
       <div className="absolute inset-0 pointer-events-none opacity-10" 
            style={{ backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
       </div>
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
       
       {/* Main Container */}
       <motion.div
@@ -271,12 +266,10 @@ function AuthPageContent() {
             )}
 
             {/* Error Message */}
-            {errorMsg && (
-                <div className="mb-6 p-3 bg-red-900/20 border border-red-900/50 flex items-start gap-3 text-xs text-red-400 font-mono">
+            {errorMsg ? <div className="mb-6 p-3 bg-red-900/20 border border-red-900/50 flex items-start gap-3 text-xs text-red-400 font-mono">
                     <AlertCircle size={14} className="mt-0.5 shrink-0" />
                     <span>{errorMsg}</span>
-                </div>
-            )}
+                </div> : null}
 
             {/* Toggle Tabs */}
             <div className="flex mb-8 border-b border-[#333]">
