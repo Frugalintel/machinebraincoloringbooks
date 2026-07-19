@@ -8,17 +8,19 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#1e293b",
       accent: "#f59e0b",
       background: "#0a0a0a",
-      text: "#ffffff"
+      text: "#ffffff",
     },
     text: {
-      heroTitle: "New Arrivals",
-      heroSubtitle: "Explore the Collection",
-      heroTag: "Featured",
-      storyTag: "Sci-Fi"
+      heroTitle: "New Books",
+      heroSubtitle: "Just dropped",
+      heroTag: "New",
+      storyTag: "Sci-Fi",
+      heroDescription:
+        "We make sci-fi coloring books. Each one has a hidden code inside. Enter it to read the story behind the art.",
     },
     texture: "dots",
     animation: "none",
-    fontMode: "default"
+    fontMode: "default",
   },
   cyberpunk: {
     id: "cyberpunk",
@@ -27,17 +29,17 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#f0f", // Magenta
       accent: "#ff0", // Yellow
       background: "#050505", // Black
-      text: "#0ff"
+      text: "#0ff",
     },
     text: {
       heroTitle: "NEON CITY",
       heroSubtitle: "System Override",
       heroTag: "Cyber Week",
-      storyTag: "Hacked"
+      storyTag: "Hacked",
     },
     texture: "grid",
     animation: "glitch",
-    fontMode: "mono"
+    fontMode: "mono",
   },
   retro_wave: {
     id: "retro_wave",
@@ -46,17 +48,17 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#4900ff", // Deep Purple
       accent: "#00fff0", // Aqua
       background: "#120024", // Dark Purple
-      text: "#ffffff"
+      text: "#ffffff",
     },
     text: {
       heroTitle: "RETRO WAVE",
       heroSubtitle: "Sunset Drive",
       heroTag: "Radical Sale",
-      storyTag: "Vintage"
+      storyTag: "Vintage",
     },
     texture: "scanlines",
     animation: "pulse",
-    fontMode: "default"
+    fontMode: "default",
   },
   minimal: {
     id: "minimal",
@@ -65,17 +67,17 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#000000", // Black
       accent: "#333333", // Dark Gray
       background: "#ffffff", // White BG
-      text: "#000000" // Black Text
+      text: "#000000", // Black Text
     },
     text: {
       heroTitle: "Essentials",
       heroSubtitle: "Less is More",
       heroTag: "Collection",
-      storyTag: "Pure"
+      storyTag: "Pure",
     },
     texture: "none",
     animation: "none",
-    fontMode: "serif"
+    fontMode: "serif",
   },
   christmas: {
     id: "christmas",
@@ -84,17 +86,19 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#166534", // Green
       accent: "#fbbf24", // Gold
       background: "#0f172a", // Dark Blueish
-      text: "#ffffff"
+      text: "#ffffff",
     },
     text: {
       heroTitle: "Holiday Event",
       heroSubtitle: "Season of Art",
       heroTag: "Holiday Special",
-      storyTag: "Holiday"
+      storyTag: "Holiday",
+      heroDescription:
+        "Celebrate the season with our exclusive holiday coloring collection. The perfect digital detox gift featuring festive sci-fi landscapes.",
     },
     texture: "dots",
     animation: "pulse",
-    fontMode: "serif"
+    fontMode: "serif",
   },
   new_years: {
     id: "new_years",
@@ -103,17 +107,17 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#000000",
       accent: "#e5e7eb", // Silver
       background: "#000000",
-      text: "#fbbf24"
+      text: "#fbbf24",
     },
     text: {
       heroTitle: "New Year",
       heroSubtitle: "New Beginnings",
       heroTag: "Limited Edition",
-      storyTag: "Special"
+      storyTag: "Special",
     },
     texture: "noise",
     animation: "none",
-    fontMode: "default"
+    fontMode: "default",
   },
   valentines: {
     id: "valentines",
@@ -122,17 +126,17 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#be123c", // Red
       accent: "#fce7f3", // Light Pink
       background: "#3e0818", // Dark Pink/Red
-      text: "#ffffff"
+      text: "#ffffff",
     },
     text: {
       heroTitle: "Valentine's",
       heroSubtitle: "Share the Love",
       heroTag: "Sweet Deal",
-      storyTag: "Romance"
+      storyTag: "Romance",
     },
     texture: "dots",
     animation: "pulse",
-    fontMode: "serif"
+    fontMode: "serif",
   },
   july_4th: {
     id: "july_4th",
@@ -141,17 +145,17 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#3b82f6", // Blue
       accent: "#ffffff", // White
       background: "#1e3a8a", // Dark Blue
-      text: "#ffffff"
+      text: "#ffffff",
     },
     text: {
       heroTitle: "Independence",
       heroSubtitle: "Summer Freedom",
       heroTag: "Summer Sale",
-      storyTag: "Patriot"
+      storyTag: "Patriot",
     },
     texture: "noise",
     animation: "marquee",
-    fontMode: "default"
+    fontMode: "default",
   },
   halloween: {
     id: "halloween",
@@ -160,17 +164,17 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#9333ea", // Purple
       accent: "#22c55e", // Green (Slime)
       background: "#1a0b2e", // Dark Purple
-      text: "#ffffff" // White Text for contrast
+      text: "#ffffff", // White Text for contrast
     },
     text: {
       heroTitle: "Spooky Season",
       heroSubtitle: "Haunted Art",
       heroTag: "Trick or Treat",
-      storyTag: "Horror"
+      storyTag: "Horror",
     },
     texture: "noise",
     animation: "glitch",
-    fontMode: "default"
+    fontMode: "default",
   },
   thanksgiving: {
     id: "thanksgiving",
@@ -179,17 +183,17 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#78350f", // Brown
       accent: "#f59e0b", // Yellow
       background: "#451a03", // Dark Brown
-      text: "#ffffff"
+      text: "#ffffff",
     },
     text: {
       heroTitle: "Thanksgiving",
       heroSubtitle: "Harvest Festival",
       heroTag: "Autumn Special",
-      storyTag: "Seasonal"
+      storyTag: "Seasonal",
     },
     texture: "dots",
     animation: "none",
-    fontMode: "serif"
+    fontMode: "serif",
   },
   black_friday: {
     id: "black_friday",
@@ -198,17 +202,16 @@ export const CAMPAIGN_TEMPLATES: Record<string, CampaignTheme> = {
       secondary: "#000000",
       accent: "#ffffff",
       background: "#000000",
-      text: "#ffffff"
+      text: "#ffffff",
     },
     text: {
       heroTitle: "Black Friday",
       heroSubtitle: "Mega Sale",
       heroTag: "Door Buster",
-      storyTag: "Event"
+      storyTag: "Event",
     },
     texture: "scanlines",
     animation: "glitch",
-    fontMode: "mono"
-  }
+    fontMode: "mono",
+  },
 };
-

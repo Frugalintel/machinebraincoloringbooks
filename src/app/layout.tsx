@@ -7,7 +7,6 @@ import { GameProvider } from "@/context/game-context";
 import { ToastProvider } from "@/context/toast-context";
 import { SettingsProvider } from "@/context/settings-context";
 import { CartDrawer } from "@/components/cart-drawer";
-import { NewsletterModal } from "@/components/newsletter-modal";
 import { AuthModal } from "@/components/auth-modal";
 import { EnvironmentIndicator } from "@/components/environment-indicator";
 import { Navbar } from "@/components/navbar";
@@ -27,8 +26,8 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  title: "MACHINE BRAIN | Coloring Books",
-  description: "Vintage Sci-Fi Coloring Books and Collectibles.",
+  title: "Machine Brain | Sci-Fi Coloring Books",
+  description: "Sci-fi coloring books with hidden stories inside.",
 };
 
 export const viewport: Viewport = {
@@ -58,7 +57,6 @@ export default function RootLayout({
                   {children}
                   <Footer />
                   <CartDrawer />
-                  <NewsletterModal />
                   <AuthModal />
                   <EnvironmentIndicator />
                 </CartProvider>

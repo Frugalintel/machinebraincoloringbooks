@@ -4,18 +4,24 @@
  * In development, it provides formatted console output.
  */
 
-type LogLevel = 'info' | 'warn' | 'error' | 'debug';
+type LogLevel = "info" | "warn" | "error" | "debug";
 
 interface LogData {
   [key: string]: unknown;
 }
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = process.env.NODE_ENV === "development";
 
-function formatMessage(level: LogLevel, message: string, data?: LogData): string {
+function formatMessage(
+  level: LogLevel,
+  message: string,
+  data?: LogData,
+): string {
   const timestamp = new Date().toISOString();
   const prefix = `[${timestamp}] [${level.toUpperCase()}]`;
-  return data ? `${prefix} ${message} ${JSON.stringify(data)}` : `${prefix} ${message}`;
+  return data
+    ? `${prefix} ${message} ${JSON.stringify(data)}`
+    : `${prefix} ${message}`;
 }
 
 export const logger = {
@@ -23,9 +29,9 @@ export const logger = {
    * Log informational messages (only in development)
    */
   info: (message: string, data?: LogData): void => {
-    if (isDevelopment && typeof window !== 'undefined') {
+    if (isDevelopment && typeof window !== "undefined") {
       // eslint-disable-next-line no-console
-      console.info(formatMessage('info', message, data));
+      console.info(formatMessage("info", message, data));
     }
   },
 
@@ -33,9 +39,8 @@ export const logger = {
    * Log warning messages
    */
   warn: (message: string, data?: LogData): void => {
-    if (isDevelopment && typeof window !== 'undefined') {
-       
-      console.warn(formatMessage('warn', message, data));
+    if (isDevelopment && typeof window !== "undefined") {
+      console.warn(formatMessage("warn", message, data));
     }
     // In production, warnings could be sent to monitoring service
   },
@@ -51,12 +56,11 @@ export const logger = {
         : { error }),
     };
 
-    if (typeof window !== 'undefined') {
-       
-      console.error(formatMessage('error', message, errorData));
+    if (typeof window !== "undefined") {
+      console.error(formatMessage("error", message, errorData));
     }
 
-    // TODO: In production, send to error tracking service (Sentry)
+    // Future: Sentry.captureException(error, { extra: errorData });
     // if (!isDevelopment) {
     //   Sentry.captureException(error, { extra: errorData });
     // }
@@ -66,9 +70,9 @@ export const logger = {
    * Log debug messages (only in development)
    */
   debug: (message: string, data?: LogData): void => {
-    if (isDevelopment && typeof window !== 'undefined') {
+    if (isDevelopment && typeof window !== "undefined") {
       // eslint-disable-next-line no-console
-      console.debug(formatMessage('debug', message, data));
+      console.debug(formatMessage("debug", message, data));
     }
   },
 };
