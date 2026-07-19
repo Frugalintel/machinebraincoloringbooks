@@ -115,7 +115,7 @@ export function CollectiblesSection() {
                 {displayCollectible ? (
                   <div className="w-full h-full">
                     <TrophyCanvas
-                      size="medium"
+                      size="large"
                       rarity={displayCollectible.rarity}
                       autoRotate={true}
                       isInteractive={true}
@@ -177,11 +177,11 @@ export function CollectiblesSection() {
                           className={`
                           px-2 py-1 text-[10px] font-mono uppercase tracking-widest border
                           ${
-                            displayCollectible.rarity === "legendary"
+                            displayCollectible.rarity === "Legendary"
                               ? "border-amber-500 text-amber-500 bg-amber-500/10"
-                              : displayCollectible.rarity === "epic"
+                              : displayCollectible.rarity === "Epic"
                                 ? "border-purple-500 text-purple-500 bg-purple-500/10"
-                                : displayCollectible.rarity === "rare"
+                                : displayCollectible.rarity === "Rare"
                                   ? "border-blue-500 text-blue-500 bg-blue-500/10"
                                   : "border-gray-700 text-gray-500 bg-gray-500/10"
                           }

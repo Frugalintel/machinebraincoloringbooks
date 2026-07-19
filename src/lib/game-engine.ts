@@ -8,7 +8,8 @@
  * are "invitations" that enhance but never require engagement.
  */
 
-import type { Achievement, CollectionSet } from "./types";
+import type { Achievement } from "./types";
+import type { CollectionSet } from "./game-data";
 import {
   getAchievementCategoryBonus,
   calculatePenaltyReduction,
