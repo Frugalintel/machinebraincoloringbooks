@@ -137,7 +137,7 @@ export function Hero() {
   return (
     <section
       aria-labelledby="home-hero-heading"
-      className="relative w-full min-h-[100svh] overflow-hidden bg-[#0a0a0a]"
+      className="relative w-full min-h-[calc(100svh-5rem)] overflow-hidden bg-[#0a0a0a]"
       style={{ "--hero-accent": accentColor } as CSSProperties}
     >
       <div className="absolute inset-0 overflow-hidden bg-[#080808]">
@@ -149,7 +149,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.12 }}
-          className="hero-ken-burns hero-stage-perspective absolute inset-0 flex items-center justify-center pr-0 sm:justify-end sm:pr-[6%] lg:pr-[10%]"
+          className="hero-stage-perspective absolute inset-0 flex items-center justify-center pr-0 sm:justify-end sm:pr-[6%] lg:pr-[10%]"
         >
           <Link
             href={productLink}
@@ -184,7 +184,7 @@ export function Hero() {
         />
       </div>
 
-      <div className="pointer-events-none absolute bottom-20 right-5 z-10 sm:bottom-12 sm:right-10 lg:bottom-14 lg:right-16">
+      <div className="pointer-events-none absolute bottom-16 right-5 z-10 sm:bottom-10 sm:right-10 lg:bottom-12 lg:right-16">
         <Link
           href={productLink}
           className="pointer-events-auto block border border-white/20 bg-black/85 px-4 py-3 backdrop-blur-sm transition-colors hover:border-(--hero-accent)/60"
@@ -222,7 +222,7 @@ export function Hero() {
         </div>
       ) : null}
 
-      <div className="relative z-20 flex min-h-[100svh] w-full items-center pb-28 sm:pb-24">
+      <div className="relative z-20 flex min-h-[calc(100svh-5rem)] w-full items-center pb-28 sm:pb-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
