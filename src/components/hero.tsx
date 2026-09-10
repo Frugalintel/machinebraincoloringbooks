@@ -1,25 +1,63 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, ShoppingBag, Star } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import Link from "next/link";
 import { type CSSProperties, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
-import { Product } from "@/lib/types";
 import { useSettings } from "@/context/settings-context";
 import { CAMPAIGN_TEMPLATES } from "@/lib/campaign-templates";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
+import { supabase } from "@/lib/supabase";
+import { type CampaignTheme, type Product } from "@/lib/types";
+
+export const HERO_FALLBACK_COVER = "/covers/hero-example.jpg";
 
 const DEFAULT_HERO_COPY = {
   eyebrow: "Machine Brain Coloring Books",
   title: "Color",
   subtitle: "The Machine",
   description:
-    "Premium sci-fi coloring books with thick paper, hidden unlocks, and collectible digital rewards.",
+    "Sci-fi coloring books with hidden stories inside. Thick paper, unlock codes, and collectible digital rewards.",
 };
 
 const HERO_STATS = ["100+ pages", "Hidden code", "Free shipping"];
+
+const GRID_TEXTURE: CSSProperties = {
+  backgroundImage:
+    "linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)",
+  backgroundSize: "40px 40px",
+  opacity: 0.1,
+};
+
+function getTextureStyle(texture: CampaignTheme["texture"]): CSSProperties {
+  switch (texture) {
+    case "grid":
+      return GRID_TEXTURE;
+    case "dots":
+      return {
+        backgroundImage: "radial-gradient(#444 1px, transparent 1px)",
+        backgroundSize: "20px 20px",
+        opacity: 0.2,
+      };
+    case "scanlines":
+      return {
+        backgroundImage:
+          "repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px)",
+        opacity: 0.3,
+      };
+    case "noise":
+      return { backgroundImage: "url('/textures/noise.svg')", opacity: 0.1 };
+    case "none":
+    case undefined:
+      return GRID_TEXTURE;
+    default: {
+      const _exhaustive: never = texture;
+      void _exhaustive;
+      return GRID_TEXTURE;
+    }
+  }
+}
 
 export function Hero() {
   const [featuredProduct, setFeaturedProduct] = useState<Product | null>(null);
@@ -67,8 +105,10 @@ export function Hero() {
   const productLink = featuredProduct
     ? `/store/${featuredProduct.id}`
     : "/store";
+  const coverSrc = featuredProduct?.image_url || HERO_FALLBACK_COVER;
+  const featuredTitle = featuredProduct?.title || "Festive Sci-Fi";
+  const featuredCategory = featuredProduct?.category || "Featured Release";
 
-  // Use centralized pricing utility
   const priceInfo = calculatePrice(
     {
       price: featuredProduct?.price || 15,
@@ -77,7 +117,6 @@ export function Hero() {
     campaign.isActive ? campaign : null,
   );
 
-  // Determine theme or defaults
   const theme =
     campaign.isActive && campaign.theme
       ? campaign.theme
@@ -95,202 +134,163 @@ export function Hero() {
     ? theme.text.heroTag
     : DEFAULT_HERO_COPY.eyebrow;
 
-  // Texture Styles
-  const getTextureStyle = () => {
-    switch (theme.texture) {
-      case "grid":
-        return {
-          backgroundImage:
-            "linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-          opacity: 0.1,
-        };
-      case "dots":
-        return {
-          backgroundImage: "radial-gradient(#444 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
-          opacity: 0.2,
-        };
-      case "scanlines":
-        return {
-          backgroundImage:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px)",
-          opacity: 0.3,
-        };
-      case "noise":
-        return { backgroundImage: "url('/textures/noise.svg')", opacity: 0.1 };
-      case "none":
-      default:
-        return {
-          backgroundImage:
-            "linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-          opacity: 0.1,
-        };
-    }
-  };
-
   return (
     <section
-      className="relative w-full overflow-hidden border-b border-[#222] bg-[#0a0a0a]"
+      aria-labelledby="home-hero-heading"
+      className="relative w-full min-h-[100svh] overflow-hidden bg-[#0a0a0a]"
       style={{ "--hero-accent": accentColor } as CSSProperties}
     >
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={getTextureStyle()}
-      />
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_78%_34%,rgba(255,79,0,0.18),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_45%)]" />
+      <div className="absolute inset-0 overflow-hidden bg-[#080808]">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={getTextureStyle(theme.texture)}
+        />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.12 }}
+          className="hero-ken-burns hero-stage-perspective absolute inset-0 flex items-center justify-center pr-0 sm:justify-end sm:pr-[6%] lg:pr-[10%]"
+        >
+          <Link
+            href={productLink}
+            className="hero-book-3d group"
+            aria-label={`View ${featuredTitle}`}
+          >
+            <span className="hero-book-shadow" aria-hidden />
+            <span className="hero-book-spine" aria-hidden />
+            <span className="hero-book-pages" aria-hidden />
+            <span className="hero-book-top" aria-hidden />
+            <span className="hero-book-front">
+              {/* next/image is avoided here because product URLs can be local Supabase or arbitrary uploads. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coverSrc}
+                alt={`${featuredTitle} cover`}
+                className="h-full w-full object-cover"
+              />
+              <span className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/50 via-black/5 to-black/15" />
+            </span>
+          </Link>
+        </motion.div>
+        <div className="pointer-events-none absolute inset-0 bg-[url('/textures/noise.svg')] opacity-[0.06] mix-blend-overlay" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-[#0a0a0a] via-[#0a0a0a]/88 to-transparent lg:w-[55%]" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-linear-to-l from-[#080808]/35 to-transparent" />
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at 72% 48%, color-mix(in srgb, var(--hero-accent) 10%, transparent), transparent 50%)",
+          }}
+        />
+      </div>
 
-      <div className="relative grid min-h-[78vh] grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)]">
+      <div className="pointer-events-none absolute bottom-20 right-5 z-10 sm:bottom-12 sm:right-10 lg:bottom-14 lg:right-16">
+        <Link
+          href={productLink}
+          className="pointer-events-auto block border border-white/20 bg-black/85 px-4 py-3 backdrop-blur-sm transition-colors hover:border-(--hero-accent)/60"
+        >
+          <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+            {featuredCategory}
+          </p>
+          <div className="mt-1 flex items-end justify-between gap-8">
+            <p className="font-heading text-lg leading-none text-white">
+              {featuredTitle}
+            </p>
+            <div className="flex flex-col items-end">
+              {priceInfo.hasDiscount ? (
+                <>
+                  <span className="font-mono text-sm text-zinc-500 line-through">
+                    {formatPrice(priceInfo.originalPrice)}
+                  </span>
+                  <span className="font-heading text-2xl tracking-tight text-white">
+                    {formatPrice(priceInfo.finalPrice)}
+                  </span>
+                </>
+              ) : (
+                <span className="font-heading text-2xl tracking-tight text-white">
+                  {formatPrice(priceInfo.originalPrice)}
+                </span>
+              )}
+            </div>
+          </div>
+        </Link>
+      </div>
+
+      {!isDefault || campaign.isActive ? (
+        <div className="absolute right-6 top-6 z-30 rotate-3 border border-white/20 bg-(--hero-accent) px-3 py-1.5 font-heading text-xs uppercase tracking-widest text-black shadow-lg sm:right-10 sm:top-8 sm:px-4 sm:py-2 sm:text-sm">
+          {theme.text.heroTag}
+        </div>
+      ) : null}
+
+      <div className="relative z-20 flex min-h-[100svh] w-full items-center pb-28 sm:pb-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="flex flex-col justify-center px-4 py-16 md:px-10 md:py-20 lg:px-16"
+          className="hero-hud-scan relative w-full max-w-[88rem] px-5 py-16 sm:px-8 md:px-12 lg:w-[38%] lg:max-w-none lg:px-16"
         >
-          <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.32em] text-(--hero-accent)">
-            {heroEyebrow}
-          </p>
-
-          <h1 className="mb-6 max-w-5xl font-heading text-6xl font-bold uppercase leading-[0.82] tracking-[-0.07em] text-white md:text-8xl lg:text-9xl">
-            {heroTitle}
-            <br />
-            <span className="text-(--hero-accent)">{heroSubtitle}</span>
-          </h1>
-
-          <p className="max-w-xl text-base leading-relaxed text-gray-400 md:text-xl">
-            {heroDescription}
-          </p>
-
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button
-              asChild
-              className="h-14 px-8 bg-(--hero-accent) text-white hover:bg-white hover:text-black font-heading text-lg uppercase tracking-widest rounded-none group"
+          <div
+            className="absolute top-0 hidden h-full w-px bg-linear-to-b from-transparent via-(--hero-accent)/50 to-transparent lg:block"
+            style={{ left: "calc(100% - 1px)" }}
+            aria-hidden
+          />
+          <div className="flex max-w-xl flex-col border border-[#222]/80 bg-[#0a0a0a]/55 p-6 backdrop-blur-[2px] sm:p-8 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.28em] text-(--hero-accent) sm:text-xs">
+              {heroEyebrow}
+            </p>
+            <h1
+              id="home-hero-heading"
+              className="font-heading text-[clamp(2.75rem,7vw+0.6rem,5.5rem)] font-bold uppercase leading-[0.9] tracking-[-0.04em] text-white"
             >
-              <Link href="/store">
-                Browse Books
-                <ShoppingBag className="ml-2 h-5 w-5 transition-transform group-hover:scale-110" />
+              <span className="block">{heroTitle}</span>
+              <span className="mt-1 block text-(--hero-accent)">
+                {heroSubtitle}
+              </span>
+            </h1>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-zinc-300 sm:text-lg sm:leading-7">
+              {heroDescription}
+            </p>
+            <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-6">
+              <Button
+                asChild
+                className="h-12 min-h-12 w-full rounded-none bg-(--hero-accent) px-7 font-heading text-base uppercase tracking-[0.18em] text-white hover:bg-white hover:text-black sm:w-auto sm:px-8"
+              >
+                <Link href="/store">Browse Books</Link>
+              </Button>
+              <Link
+                href="/stories"
+                className="inline-flex min-h-12 items-center justify-center px-1 font-heading text-sm uppercase tracking-[0.22em] text-zinc-400 underline-offset-4 transition-colors hover:text-white hover:underline"
+              >
+                Read Stories
               </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-14 px-8 border-[#2a2a2a] bg-transparent text-gray-400 hover:border-white hover:bg-transparent hover:text-white font-heading text-lg uppercase tracking-widest rounded-none"
-            >
-              <Link href="/stories">Read Stories</Link>
-            </Button>
+            </div>
+            <ul className="mt-9 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#222] pt-6">
+              {HERO_STATS.map((stat) => (
+                <li
+                  key={stat}
+                  className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500"
+                >
+                  {stat}
+                </li>
+              ))}
+            </ul>
           </div>
         </motion.div>
-
-        <div className="relative flex items-center justify-center border-t border-[#222] bg-[#080808]/80 px-8 py-14 lg:border-l lg:border-t-0 lg:px-12">
-          <div className="absolute inset-0 pointer-events-none bg-[url('/textures/noise.svg')] opacity-5 mix-blend-overlay" />
-          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-size-[22px_22px]" />
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.15 }}
-            className="relative w-full max-w-[300px] lg:max-w-[340px]"
-          >
-            <Link
-              href={productLink}
-              className="group block"
-              aria-label={`View ${featuredProduct?.title || "featured book"}`}
-            >
-              <div className="relative aspect-3/4 bg-[#111] shadow-2xl transition-transform duration-500 ease-out group-hover:-translate-y-1">
-                <div className="absolute -left-4 top-3 bottom-3 w-4 origin-right -skew-y-6 border-l border-y border-[#222] bg-[#050505]" />
-
-                <div
-                  className={`absolute inset-0 ${featuredProduct?.color || "bg-[#e63946]"} flex flex-col overflow-hidden border border-[#2a2a2a]`}
-                >
-                  <div className="absolute inset-0 z-20 pointer-events-none border-r border-white/10" />
-                  {featuredProduct?.image_url ? (
-                    <>
-                      {/* next/image is avoided here because product URLs can be local Supabase or arbitrary uploads. */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={featuredProduct.image_url}
-                        alt={`${featuredProduct.title} cover`}
-                        className="absolute inset-0 h-full w-full object-cover opacity-90"
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/10 to-black/20" />
-                    </>
-                  ) : (
-                    <>
-                      <div className="relative z-10 flex h-16 items-center justify-center border-b border-black/10 bg-black/20 backdrop-blur-sm">
-                        <span className="font-heading text-2xl uppercase tracking-tighter text-white/90">
-                          {featuredProduct?.subtitle || "Cosmic Xmas"}
-                        </span>
-                      </div>
-                      <div className="relative flex flex-1 items-center justify-center p-8">
-                        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-30 mix-blend-multiply" />
-                        <div className="relative z-10 flex h-40 w-40 items-center justify-center rounded-full border-4 border-white/20">
-                          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/10 backdrop-blur-md">
-                            <Star className="h-12 w-12 text-white" />
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  <div className="relative z-20 mt-auto flex min-h-24 items-end justify-between gap-4 bg-black/85 p-4">
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-widest text-gray-500">
-                        {featuredProduct?.category || "Featured Release"}
-                      </p>
-                      <p className="font-heading text-lg leading-none text-white">
-                        {featuredProduct?.title || "Festive Sci-Fi"}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      {priceInfo.hasDiscount ? (
-                        <>
-                          <span className="font-mono text-sm text-gray-500 line-through">
-                            {formatPrice(priceInfo.originalPrice)}
-                          </span>
-                          <span className="font-heading text-2xl tracking-tight text-white">
-                            {formatPrice(priceInfo.finalPrice)}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="font-heading text-2xl tracking-tight text-white">
-                          {formatPrice(priceInfo.originalPrice)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute inset-0 z-30 pointer-events-none bg-linear-to-tr from-transparent via-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-              </div>
-            </Link>
-
-            {!isDefault || campaign.isActive ? (
-              <div className="absolute -right-4 -top-4 z-40 rotate-3 border border-white/20 bg-(--hero-accent) px-4 py-2 font-heading text-sm uppercase tracking-widest text-black shadow-lg">
-                {theme.text.heroTag}
-              </div>
-            ) : null}
-          </motion.div>
-        </div>
       </div>
 
-      <div className="relative flex h-12 items-center justify-between border-t border-[#222] bg-[#0a0a0a] px-4 font-mono text-[10px] uppercase tracking-widest text-gray-600 md:px-10 lg:px-16">
-        <div className="hidden gap-6 md:flex">
-          {HERO_STATS.map((stat) => (
-            <span key={stat}>{stat}</span>
-          ))}
-        </div>
+      <div className="absolute bottom-4 left-5 z-20 sm:left-8 md:left-12 lg:left-16">
         <button
+          type="button"
           onClick={() =>
             document
               .getElementById("store-section")
               ?.scrollIntoView({ behavior: "smooth" })
           }
-          className="mx-auto flex cursor-pointer items-center gap-2 transition-colors hover:text-white md:mx-0"
+          className="inline-flex min-h-11 cursor-pointer items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500 transition-colors hover:text-white"
           aria-label={`View ${theme.text.storyTag} collection`}
         >
           <span>View {theme.text.storyTag} Collection</span>
-          <ArrowDown size={10} />
+          <ArrowDown size={12} />
         </button>
       </div>
     </section>
