@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Oswald, Rajdhani } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { CartProvider } from "@/context/cart-context";
 import { AuthProvider } from "@/context/auth-context";
@@ -64,6 +65,7 @@ export default function RootLayout({
             </GameProvider>
           </ToastProvider>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
