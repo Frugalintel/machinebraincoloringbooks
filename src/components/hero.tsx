@@ -186,7 +186,7 @@ export function Hero() {
               </Button>
               <Link
                 href="/stories"
-                className="inline-flex min-h-12 items-center justify-center px-1 font-heading text-sm uppercase tracking-[0.22em] text-zinc-500 underline-offset-4 transition-colors hover:text-white hover:underline"
+                className="inline-flex min-h-12 items-center justify-center px-1 font-heading text-sm uppercase tracking-[0.22em] text-zinc-400 underline-offset-4 transition-colors hover:text-white hover:underline"
               >
                 Read Stories
               </Link>
