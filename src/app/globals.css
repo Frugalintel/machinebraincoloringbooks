@@ -359,3 +359,168 @@
     }
   }
 }
+
+/* Cinema Bleed hero — 3D hardcover + stage motion */
+@keyframes hero-hud-scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 0.28;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+.hero-book-front img {
+  animation: hero-cover-drift 22s ease-in-out infinite;
+}
+
+@keyframes hero-cover-drift {
+  0%,
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.06) translate(-1.2%, -0.6%);
+  }
+}
+
+.hero-hud-scan::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--hero-accent, #ff4f00),
+    transparent
+  );
+  animation: hero-hud-scan 7s linear infinite;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.hero-stage-perspective {
+  perspective: 1400px;
+  perspective-origin: 62% 48%;
+  transform-style: preserve-3d;
+}
+
+.hero-book-3d {
+  position: relative;
+  width: min(68vw, 300px);
+  aspect-ratio: 3 / 4;
+  transform-style: preserve-3d;
+  transform: rotateY(-14deg) rotateX(3deg) skewY(-0.5deg);
+}
+
+@media (min-width: 1024px) {
+  .hero-book-3d {
+    width: min(42vw, 420px);
+    transform: rotateY(-24deg) rotateX(5deg) skewY(-0.8deg);
+  }
+}
+
+.hero-book-front {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #111;
+  box-shadow:
+    inset 8px 0 16px -8px rgba(255, 255, 255, 0.12),
+    inset -1px 0 0 rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+  transform: translateZ(18px);
+}
+
+.hero-book-front::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    transparent 18%,
+    transparent 72%,
+    rgba(0, 0, 0, 0.22) 100%
+  );
+}
+
+.hero-book-spine {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: -18px;
+  width: 18px;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
+  border-left: 1px solid #111;
+  background: linear-gradient(90deg, #030303 0%, #050505 52%, #2a2a2a 100%);
+  transform-origin: right center;
+  transform: skewY(-6deg);
+  box-shadow:
+    1px 0 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 12px rgba(0, 0, 0, 0.65);
+}
+
+.hero-book-pages {
+  position: absolute;
+  top: 6px;
+  right: -10px;
+  bottom: 6px;
+  width: 10px;
+  background: repeating-linear-gradient(
+    to right,
+    #f3ebe0 0px,
+    #f3ebe0 1px,
+    #e8dcc8 1px,
+    #e8dcc8 2px
+  );
+  transform-origin: left center;
+  transform: skewY(4deg);
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+.hero-book-top {
+  position: absolute;
+  top: -6px;
+  right: 8px;
+  left: 2px;
+  height: 8px;
+  background: linear-gradient(180deg, #efe6d8 0%, #d9ceb8 100%);
+  transform-origin: bottom center;
+  transform: skewX(-48deg);
+  opacity: 0.85;
+}
+
+.hero-book-shadow {
+  position: absolute;
+  right: -8%;
+  bottom: -12%;
+  left: 4%;
+  height: 18%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.28) 42%,
+    transparent 74%
+  );
+  filter: blur(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-book-front img,
+  .hero-hud-scan::after {
+    animation: none;
+  }
+}
