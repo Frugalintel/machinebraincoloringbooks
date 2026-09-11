@@ -360,71 +360,19 @@
   }
 }
 
-/* Cinema Bleed hero — 3D hardcover + stage motion */
-@keyframes hero-hud-scan {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  10%,
-  90% {
-    opacity: 0.28;
-  }
-  100% {
-    transform: translateY(100vh);
-    opacity: 0;
-  }
-}
-
-.hero-book-front img {
-  animation: hero-cover-drift 22s ease-in-out infinite;
-}
-
-@keyframes hero-cover-drift {
-  0%,
-  100% {
-    transform: scale(1) translate(0, 0);
-  }
-  50% {
-    transform: scale(1.06) translate(-1.2%, -0.6%);
-  }
-}
-
-.hero-hud-scan::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--hero-accent, #ff4f00),
-    transparent
-  );
-  animation: hero-hud-scan 7s linear infinite;
-  pointer-events: none;
-  opacity: 0.35;
-}
-
-.hero-stage-perspective {
-  perspective: 1400px;
-  perspective-origin: 62% 48%;
-  transform-style: preserve-3d;
-}
-
+/* Featured hero card — 3D hardcover sitting in the layout, not behind a HUD */
 .hero-book-3d {
   position: relative;
-  width: min(68vw, 300px);
+  width: min(78vw, 320px);
   aspect-ratio: 3 / 4;
   transform-style: preserve-3d;
-  transform: rotateY(-14deg) rotateX(3deg) skewY(-0.5deg);
+  transform: rotateY(-8deg) rotateX(2deg);
 }
 
 @media (min-width: 1024px) {
   .hero-book-3d {
-    width: min(42vw, 420px);
-    transform: rotateY(-24deg) rotateX(5deg) skewY(-0.8deg);
+    width: min(38vw, 420px);
+    transform: rotateY(-10deg) rotateX(3deg);
   }
 }
 
@@ -518,9 +466,7 @@
   filter: blur(12px);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hero-book-front img,
-  .hero-hud-scan::after {
-    animation: none;
-  }
+.hero-cover-stage {
+  perspective: 1400px;
+  perspective-origin: 50% 45%;
 }

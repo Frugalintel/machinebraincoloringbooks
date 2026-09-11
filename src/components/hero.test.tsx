@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Hero, HERO_FALLBACK_COVER } from "@/components/hero";
+import { Hero } from "@/components/hero";
+import { HERO_FALLBACK_COVER } from "@/lib/hero-card";
 import type { Product } from "@/lib/types";
 
 vi.mock("@/context/settings-context", () => ({
@@ -85,13 +86,16 @@ describe("Hero", () => {
     expect(screen.getByText("Free shipping")).toBeInTheDocument();
   });
 
-  it("uses the local cover fallback when featuredProduct.image_url is missing", () => {
+  it("uses the local cover fallback and catalog holiday badge when image_url is missing", () => {
     render(<Hero />);
 
-    const cover = screen.getByRole("img", { name: /festive sci-fi cover/i });
+    const cover = screen.getByRole("img");
     expect(cover).toHaveAttribute("src", HERO_FALLBACK_COVER);
-    expect(screen.getByText("Featured Release")).toBeInTheDocument();
-    expect(screen.getByText("$15.00")).toBeInTheDocument();
+    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("HOLIDAY");
+    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("$15.00");
+    expect(screen.getByTestId("hero-price-badge")).not.toHaveTextContent(
+      "HOLIDAYHOLIDAY",
+    );
   });
 
   it("prefers featuredProduct.image_url when the catalog returns a cover", async () => {
@@ -100,16 +104,34 @@ describe("Hero", () => {
     render(<Hero />);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("img", { name: /neon circuit cover/i }),
-      ).toHaveAttribute("src", featuredProduct.image_url);
+      expect(screen.getByRole("img")).toHaveAttribute(
+        "src",
+        featuredProduct.image_url,
+      );
     });
 
-    expect(screen.getByText("SCI-FI")).toBeInTheDocument();
-    expect(screen.getByText("Neon Circuit")).toBeInTheDocument();
-    expect(screen.getByText("$24.00")).toBeInTheDocument();
+    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("SCI-FI");
+    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("$24.00");
+    expect(screen.getByTestId("hero-price-badge")).not.toHaveTextContent(
+      "Neon Circuit",
+    );
     expect(
       screen.getByRole("link", { name: /neon circuit cover/i }),
     ).toHaveAttribute("href", "/store/book-42");
+  });
+
+  it("accepts CMS overrides on the Hero wrapper", () => {
+    render(
+      <Hero
+        headlineWhite="Ink"
+        headlineAccent="The Relay"
+        featureChips={[{ label: "Limited drop" }]}
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: /ink\s+the relay/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Limited drop")).toBeInTheDocument();
   });
 });
