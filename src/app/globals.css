@@ -363,16 +363,22 @@
 /* Featured hero card — 3D hardcover sitting in the layout, not behind a HUD */
 .hero-book-3d {
   position: relative;
-  width: min(78vw, 320px);
+  width: min(58vw, 230px);
   aspect-ratio: 3 / 4;
   transform-style: preserve-3d;
-  transform: rotateY(-8deg) rotateX(2deg);
+  transform: rotateY(-6deg) rotateX(2deg);
+}
+
+@media (min-width: 640px) {
+  .hero-book-3d {
+    width: min(52vw, 300px);
+  }
 }
 
 @media (min-width: 1024px) {
   .hero-book-3d {
-    width: min(38vw, 420px);
-    transform: rotateY(-10deg) rotateX(3deg);
+    width: min(34vw, 400px);
+    transform: rotateY(-8deg) rotateX(3deg);
   }
 }
 
