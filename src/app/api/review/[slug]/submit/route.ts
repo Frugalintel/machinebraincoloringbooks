@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isReviewCookieValid, unauthorizedJson } from "@/lib/review/auth";
-import { buildSubmissionPayload } from "@/lib/review/payload";
 import { parseReviewSlug } from "@/lib/review/paths";
+import { insertSubmissionWithRetry } from "@/lib/review/submit";
 import { createReviewSupabase } from "@/lib/review/supabase";
 import type { ReviewDraft } from "@/lib/review/types";
 
@@ -28,40 +28,27 @@ export async function POST(
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
   if (!draft || !Array.isArray(draft.order)) {
-    return NextResponse.json({ error: "payload.order is required" }, { status: 400 });
-  }
-
-  const supabase = createReviewSupabase();
-  const { data: latest, error: latestError } = await supabase
-    .from("book_review_submissions")
-    .select("version")
-    .eq("book_slug", slug)
-    .order("version", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (latestError) {
     return NextResponse.json(
-      { error: latestError.message },
-      { status: 500 },
+      { error: "payload.order is required" },
+      { status: 400 },
     );
   }
 
-  const version = (latest?.version ?? 0) + 1;
-  const payload = buildSubmissionPayload(draft);
-  const { data, error } = await supabase
-    .from("book_review_submissions")
-    .insert({
-      book_slug: slug,
-      version,
-      payload,
-    })
-    .select("id, book_slug, version, created_at")
-    .single();
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  const result = await insertSubmissionWithRetry(
+    createReviewSupabase(),
+    slug,
+    draft,
+  );
+  if (!result.ok) {
+    return NextResponse.json(
+      { error: result.error },
+      { status: result.status },
+    );
   }
 
-  return NextResponse.json({ ok: true, submission: data, payload });
+  return NextResponse.json({
+    ok: true,
+    submission: result.submission,
+    payload: result.payload,
+  });
 }

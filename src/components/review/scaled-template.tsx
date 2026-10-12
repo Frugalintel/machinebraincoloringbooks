@@ -40,7 +40,7 @@ export function ScaledTemplate({
         ref={frameRef}
         title={title}
         srcDoc={srcdoc}
-        sandbox="allow-scripts allow-same-origin"
+        sandbox="allow-scripts"
         className="absolute left-0 top-0 origin-top-left border-0"
         style={{
           width,

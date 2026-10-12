@@ -50,11 +50,9 @@ export function mergeDraft(
     deleted: Array.isArray(stored.deleted)
       ? stored.deleted.filter((id) => knownIds.has(id))
       : [],
-    flags:
-      stored.flags && typeof stored.flags === "object" ? stored.flags : {},
-    inserts: storedInserts.filter(
-      (item): item is ReviewInsert =>
-        Boolean(item && typeof item.id === "string"),
+    flags: stored.flags && typeof stored.flags === "object" ? stored.flags : {},
+    inserts: storedInserts.filter((item): item is ReviewInsert =>
+      Boolean(item && typeof item.id === "string"),
     ),
     fields: {
       ...base.fields,
@@ -98,6 +96,23 @@ export function normalizeFlags(
 
 export function draftStorageKey(slug: string): string {
   return `book-review-draft:${slug}`;
+}
+
+export function parseStoredDraft(
+  raw: string | null,
+): Partial<ReviewDraft> | null {
+  if (!raw) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return null;
+    }
+    return parsed as Partial<ReviewDraft>;
+  } catch {
+    return null;
+  }
 }
 
 export function moveId(order: string[], id: string, delta: number): string[] {

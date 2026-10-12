@@ -37,6 +37,9 @@ signed URLs in batches (`createSignedUrls`, 1 hour).
 - `/review/*` shows a password form until a signed `review_session` cookie is
   set. `POST /api/review/login` compares `REVIEW_PASSWORD` in constant time
   and sets an httpOnly, Secure (production), SameSite=Lax HMAC cookie.
+  Failed logins are stored as HMAC-hashed IPs in
+  `public.book_review_login_attempts` (service role only). Five failures in
+  15 minutes return 429.
 - `src/proxy.ts` blocks `/api/review/*` without that cookie, except login,
   logout, and the token submissions API.
 - `GET /api/review/[slug]/submissions` authenticates with
@@ -52,7 +55,9 @@ Submit writes `public.book_review_submissions` as
   "order": ["p01", "insert-…"],
   "deleted": [],
   "flags": { "p01": { "flag": true, "note": "check line weight" } },
-  "inserts": [{ "after": "p04", "description": "new garden gate", "id": "insert-…" }],
+  "inserts": [
+    { "after": "p04", "description": "new garden gate", "id": "insert-…" }
+  ],
   "fields": { "cover": {}, "title": {} },
   "uploads": ["books/<slug>/uploads/…"],
   "submitted_at": "2026-10-12T00:00:00.000Z"
@@ -71,5 +76,11 @@ Server-only (no `NEXT_PUBLIC_`):
 - `REVIEW_API_TOKEN`
 
 The submissions table already exists (`unique(book_slug, version)`), with RLS
-enabled and only `service_role` granted. Review reads and writes go through
-the service role on the server.
+enabled and only `service_role` granted. Concurrent submits retry on
+Postgres `23505` by re-reading `max(version)+1` (up to 3 tries). Review
+reads and writes go through the service role on the server.
+
+`public.book_review_login_attempts` is added by
+`supabase/migrations/20261012192600_book_review_login_attempts.sql` with
+REVOKE for `anon`/`authenticated`, GRANT to `service_role` only, RLS
+enabled, and a `service_role` policy.

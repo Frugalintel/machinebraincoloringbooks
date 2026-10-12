@@ -4,6 +4,7 @@ import {
   createDraftFromBook,
   mergeDraft,
   moveId,
+  parseStoredDraft,
 } from "@/lib/review/payload";
 import type { ReviewBookPayload } from "@/lib/review/types";
 
@@ -83,5 +84,12 @@ describe("review payload", () => {
     const payload = buildSubmissionPayload(createDraftFromBook(book), "stamp");
     expect(payload.submitted_at).toBe("stamp");
     expect(payload.order).toEqual(["p01", "p02"]);
+  });
+
+  it("discards corrupt localStorage drafts", () => {
+    expect(parseStoredDraft(null)).toBeNull();
+    expect(parseStoredDraft("{not-json")).toBeNull();
+    expect(parseStoredDraft("[]")).toBeNull();
+    expect(parseStoredDraft('{"order":["p01"]}')?.order).toEqual(["p01"]);
   });
 });

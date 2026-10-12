@@ -29,7 +29,14 @@ import {
   RotateCcw,
   Trash2,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { FieldEditor } from "@/components/review/field-editor";
 import {
   CoverWrapPreview,
@@ -43,6 +50,7 @@ import {
   draftStorageKey,
   mergeDraft,
   moveId,
+  parseStoredDraft,
 } from "@/lib/review/payload";
 import { renderTemplateSrcdoc } from "@/lib/review/template";
 import type {
@@ -118,6 +126,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
   const [insertOpen, setInsertOpen] = useState(false);
   const [insertAfter, setInsertAfter] = useState<string | null>(null);
   const [insertDescription, setInsertDescription] = useState("");
+  const insertDescriptionRef = useRef<HTMLTextAreaElement>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -130,6 +139,12 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
   );
 
   useDebouncedDraft(slug, draft);
+
+  useEffect(() => {
+    if (insertOpen) {
+      insertDescriptionRef.current?.focus();
+    }
+  }, [insertOpen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -154,7 +169,10 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
         setSignedUrls(payload.signedUrls);
         const base = createDraftFromBook(payload);
         const raw = window.localStorage.getItem(draftStorageKey(slug));
-        const stored = raw ? (JSON.parse(raw) as Partial<ReviewDraft>) : null;
+        const stored = parseStoredDraft(raw);
+        if (raw && !stored) {
+          window.localStorage.removeItem(draftStorageKey(slug));
+        }
         setDraft(mergeDraft(base, stored));
       } catch (loadError) {
         if (!cancelled) {
@@ -174,9 +192,12 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
     };
   }, [slug]);
 
-  const updateDraft = useCallback((updater: (current: ReviewDraft) => ReviewDraft) => {
-    setDraft((current) => (current ? updater(current) : current));
-  }, []);
+  const updateDraft = useCallback(
+    (updater: (current: ReviewDraft) => ReviewDraft) => {
+      setDraft((current) => (current ? updater(current) : current));
+    },
+    [],
+  );
 
   const coverSrcdoc = useMemo(() => {
     if (!book || !draft) {
@@ -231,15 +252,14 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
       if (oldIndex === -1 || newIndex === -1) {
         return current;
       }
-      return { ...current, order: arrayMove(current.order, oldIndex, newIndex) };
+      return {
+        ...current,
+        order: arrayMove(current.order, oldIndex, newIndex),
+      };
     });
   };
 
-  const changeField = (
-    group: string,
-    key: string,
-    value: ReviewFieldValue,
-  ) => {
+  const changeField = (group: string, key: string, value: ReviewFieldValue) => {
     updateDraft((current) => ({
       ...current,
       fields: {
@@ -352,9 +372,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
     };
     updateDraft((current) => {
       const nextOrder = [...current.order];
-      const afterIndex = insert.after
-        ? nextOrder.indexOf(insert.after)
-        : -1;
+      const afterIndex = insert.after ? nextOrder.indexOf(insert.after) : -1;
       nextOrder.splice(afterIndex + 1, 0, insert.id);
       return {
         ...current,
@@ -431,21 +449,24 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
               {book.title}
             </h1>
             <p className="font-mono text-xs text-muted-foreground">
-              {book.slug} · {book.trim.page_count} pages · {book.trim.in.join("×")}
+              {book.slug} · {book.trim.page_count} pages ·{" "}
+              {book.trim.in.join("×")}
               in
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={downloadJson}
-            >
+            <Button type="button" variant="outline" onClick={downloadJson}>
               <Download size={16} />
               Download JSON
             </Button>
-            <Button type="button" onClick={() => void submit()} disabled={submitting}>
-              {submitting ? <Loader2 className="animate-spin" size={16} /> : null}
+            <Button
+              type="button"
+              onClick={() => void submit()}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : null}
               Submit
             </Button>
             <form action="/api/review/logout" method="post">
@@ -526,6 +547,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
               <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground">
                 New page description
                 <textarea
+                  ref={insertDescriptionRef}
                   value={insertDescription}
                   onChange={(event) => setInsertDescription(event.target.value)}
                   rows={3}
@@ -739,28 +761,34 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
               Soft-deleted pages stay in the payload until you undo them.
             </p>
             <ul className="space-y-2">
-              {draft.deleted.map((id) => (
-                <li
-                  key={id}
-                  className="flex items-center justify-between rounded border border-[#333] bg-[#111] px-3 py-2"
-                >
-                  <span className="font-mono text-sm">{id}</span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      updateDraft((current) => ({
-                        ...current,
-                        deleted: current.deleted.filter((item) => item !== id),
-                      }))
-                    }
+              {draft.deleted.map((id) => {
+                const insert = draft.inserts.find((item) => item.id === id);
+                const label = insert?.description.trim() || id;
+                return (
+                  <li
+                    key={id}
+                    className="flex items-center justify-between rounded border border-[#333] bg-[#111] px-3 py-2"
                   >
-                    <RotateCcw size={14} />
-                    Undo
-                  </Button>
-                </li>
-              ))}
+                    <span className="font-mono text-sm">{label}</span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        updateDraft((current) => ({
+                          ...current,
+                          deleted: current.deleted.filter(
+                            (item) => item !== id,
+                          ),
+                        }))
+                      }
+                    >
+                      <RotateCcw size={14} />
+                      Undo
+                    </Button>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ) : null}

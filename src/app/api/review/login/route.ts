@@ -4,6 +4,15 @@ import {
   getReviewPassword,
   verifyReviewPassword,
 } from "@/lib/review/auth";
+import { REVIEW_LOGIN_WINDOW_MS } from "@/lib/review/constants";
+import {
+  clientIpFromRequest,
+  countRecentLoginFailures,
+  hashLoginIp,
+  isOverLoginFailureLimit,
+  recordLoginFailure,
+} from "@/lib/review/login-rate-limit";
+import { createReviewSupabase } from "@/lib/review/supabase";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,6 +22,19 @@ function safeNextPath(value: string | null): string {
     return value;
   }
   return "/review";
+}
+
+function rateLimitedResponse() {
+  const retryAfter = Math.ceil(REVIEW_LOGIN_WINDOW_MS / 1000);
+  return NextResponse.json(
+    {
+      error: `Too many failed login attempts. Try again in ${Math.ceil(REVIEW_LOGIN_WINDOW_MS / 60000)} minutes.`,
+    },
+    {
+      status: 429,
+      headers: { "Retry-After": String(retryAfter) },
+    },
+  );
 }
 
 export async function POST(request: NextRequest) {
@@ -41,7 +63,51 @@ export async function POST(request: NextRequest) {
     nextPath = safeNextPath(String(form.get("next") ?? ""));
   }
 
+  const ipHash = hashLoginIp(clientIpFromRequest(request), password);
+  let supabase: ReturnType<typeof createReviewSupabase>;
+  try {
+    supabase = createReviewSupabase();
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "Supabase is not configured",
+      },
+      { status: 500 },
+    );
+  }
+
+  try {
+    const failures = await countRecentLoginFailures(supabase, ipHash);
+    if (isOverLoginFailureLimit(failures)) {
+      return rateLimitedResponse();
+    }
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to check login rate limit",
+      },
+      { status: 500 },
+    );
+  }
+
   if (!verifyReviewPassword(submitted, password)) {
+    try {
+      await recordLoginFailure(supabase, ipHash);
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to record login attempt",
+        },
+        { status: 500 },
+      );
+    }
     if (contentType.includes("application/json")) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }

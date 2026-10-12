@@ -6,13 +6,8 @@ export const REVIEW_COOKIE_PAYLOAD = "book-review-ok";
 export const REVIEW_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const REVIEW_SIGNED_URL_BATCH = 100;
 export const REVIEW_UPLOAD_MAX_BYTES = 8 * 1024 * 1024;
-export const REVIEW_IMAGE_MIME = new Set([
-  "image/png",
-  "image/jpeg",
-  "image/webp",
-  "image/gif",
-  "image/svg+xml",
-]);
+export const REVIEW_LOGIN_MAX_FAILURES = 5;
+export const REVIEW_LOGIN_WINDOW_MS = 15 * 60 * 1000;
 
 export const GOOGLE_FONTS_STYLESHEET =
   "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap";
