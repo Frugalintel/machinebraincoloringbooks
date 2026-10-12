@@ -30,6 +30,7 @@ export function Footer() {
   if (
     pathname.startsWith("/auth") ||
     pathname.startsWith("/admin") ||
+    pathname.startsWith("/review") ||
     pathname === "/scan"
   ) {
     return null;
