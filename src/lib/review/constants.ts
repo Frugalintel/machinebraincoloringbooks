@@ -7,6 +7,7 @@ export const REVIEW_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const REVIEW_SIGNED_URL_BATCH = 100;
 export const REVIEW_UPLOAD_MAX_BYTES = 8 * 1024 * 1024;
 export const REVIEW_LOGIN_MAX_FAILURES = 5;
+export const REVIEW_LOGIN_GLOBAL_MAX_FAILURES = 50;
 export const REVIEW_LOGIN_WINDOW_MS = 15 * 60 * 1000;
 
 export const GOOGLE_FONTS_STYLESHEET =

@@ -7,10 +7,11 @@ import {
 import { REVIEW_LOGIN_WINDOW_MS } from "@/lib/review/constants";
 import {
   clientIpFromRequest,
+  countRecentGlobalLoginFailures,
   countRecentLoginFailures,
   hashLoginIp,
-  isOverLoginFailureLimit,
   recordLoginFailure,
+  shouldBlockLoginAttempts,
 } from "@/lib/review/login-rate-limit";
 import { createReviewSupabase } from "@/lib/review/supabase";
 
@@ -78,8 +79,11 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const failures = await countRecentLoginFailures(supabase, ipHash);
-    if (isOverLoginFailureLimit(failures)) {
+    const [failures, globalFailures] = await Promise.all([
+      countRecentLoginFailures(supabase, ipHash),
+      countRecentGlobalLoginFailures(supabase),
+    ]);
+    if (shouldBlockLoginAttempts(failures, globalFailures)) {
       return rateLimitedResponse();
     }
   } catch (error) {
