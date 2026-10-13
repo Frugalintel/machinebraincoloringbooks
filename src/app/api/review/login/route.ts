@@ -5,6 +5,7 @@ import {
   verifyReviewPassword,
 } from "@/lib/review/auth";
 import { REVIEW_LOGIN_WINDOW_MS } from "@/lib/review/constants";
+import { prefersHtmlLoginError } from "@/lib/review/login-errors";
 import {
   clientIpFromRequest,
   countRecentGlobalLoginFailures,
@@ -25,15 +26,23 @@ function safeNextPath(value: string | null): string {
   return "/review";
 }
 
-function rateLimitedResponse() {
+function rateLimitedResponse(request: NextRequest, nextPath: string) {
   const retryAfter = Math.ceil(REVIEW_LOGIN_WINDOW_MS / 1000);
+  const headers = { "Retry-After": String(retryAfter) };
+  if (prefersHtmlLoginError(request)) {
+    const url = new URL(nextPath, request.url);
+    url.searchParams.set("error", "locked");
+    const response = NextResponse.redirect(url, 303);
+    response.headers.set("Retry-After", String(retryAfter));
+    return response;
+  }
   return NextResponse.json(
     {
       error: `Too many failed login attempts. Try again in ${Math.ceil(REVIEW_LOGIN_WINDOW_MS / 60000)} minutes.`,
     },
     {
       status: 429,
-      headers: { "Retry-After": String(retryAfter) },
+      headers,
     },
   );
 }
@@ -84,7 +93,7 @@ export async function POST(request: NextRequest) {
       countRecentGlobalLoginFailures(supabase),
     ]);
     if (shouldBlockLoginAttempts(failures, globalFailures)) {
-      return rateLimitedResponse();
+      return rateLimitedResponse(request, nextPath);
     }
   } catch (error) {
     return NextResponse.json(
