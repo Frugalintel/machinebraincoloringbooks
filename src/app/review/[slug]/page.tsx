@@ -4,6 +4,7 @@ import { ReviewLoginForm } from "@/app/review/[slug]/login-form";
 import { ReviewWorkspace } from "@/components/review/review-workspace";
 import { getReviewPassword, verifyReviewCookie } from "@/lib/review/auth";
 import { REVIEW_COOKIE_NAME } from "@/lib/review/constants";
+import { reviewLoginErrorFromQuery } from "@/lib/review/login-errors";
 import { parseReviewSlug } from "@/lib/review/paths";
 
 export const dynamic = "force-dynamic";
@@ -26,14 +27,16 @@ export default async function ReviewSlugPage({
   const cookieStore = await cookies();
   const authed = Boolean(
     password &&
-      verifyReviewCookie(
-        cookieStore.get(REVIEW_COOKIE_NAME)?.value,
-        password,
-      ),
+    verifyReviewCookie(cookieStore.get(REVIEW_COOKIE_NAME)?.value, password),
   );
 
   if (!authed) {
-    return <ReviewLoginForm slug={slug} error={query.error === "1"} />;
+    return (
+      <ReviewLoginForm
+        slug={slug}
+        error={reviewLoginErrorFromQuery(query.error)}
+      />
+    );
   }
 
   return <ReviewWorkspace slug={slug} />;
