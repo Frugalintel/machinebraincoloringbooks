@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { BrandLockup } from "@/components/mark";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
 import { useSettings } from "@/context/settings-context";
@@ -221,17 +222,17 @@ export function Navbar() {
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           {/* Left: Logo & Brand */}
           <div className="flex items-center gap-8 md:gap-12">
-            <Link href="/" className="flex min-w-0 flex-col leading-none group">
-              <div className="flex items-center gap-2">
-                <span className="whitespace-nowrap font-heading font-bold text-[16px] md:text-[18px] lg:text-[20px] uppercase tracking-[0.02em] text-cream group-hover:text-primary transition-colors">
-                  Machine Brain
+            <BrandLockup
+              layout="horizontal"
+              markSize={48}
+              ink="cream"
+              wordmarkClassName="text-[16px] md:text-[18px] lg:text-[20px]"
+              subtitle={
+                <span className="font-label mt-1 tracking-[0.08em] text-fg-muted">
+                  Coloring Books
                 </span>
-                <div className="w-2 h-2 md:w-3 md:h-3 bg-primary shrink-0 group-hover:bg-cream transition-colors"></div>
-              </div>
-              <span className="font-label mt-1 tracking-[0.08em] text-fg-muted">
-                Coloring Books
-              </span>
-            </Link>
+              }
+            />
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-8">
