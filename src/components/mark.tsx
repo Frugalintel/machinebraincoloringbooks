@@ -8,7 +8,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export type MarkProps = {
-  /** Rendered CSS-pixel size. Full mark-v6 is used only at ≥ 48. */
+  /** Rendered CSS-pixel size. Full mark-v6 at ≥ 48; S3 SVG below. */
   size: number;
   ink?: MarkInk;
   /** When true (lockups with a visible wordmark), alt is empty. */
@@ -17,8 +17,8 @@ export type MarkProps = {
 };
 
 /**
- * Official Machine Brain mark. Renders nothing below 48 px until the
- * rebuilt small cut lands (callers keep today's wordmark in that case).
+ * Official Machine Brain mark. Full mark-v6 at ≥ 48 px; S3 small cut
+ * below 48 px. Renders nothing for non-positive sizes.
  */
 export function Mark({
   size,
@@ -95,8 +95,8 @@ function WordmarkTag({
 }
 
 /**
- * Mark + Inter 700 "Machine Brain" lockup. Below 48 px the mark is omitted
- * so the existing wordmark-only treatment remains.
+ * Mark + Inter 700 "Machine Brain" lockup. Uses the S3 small cut below
+ * 48 px and the full mark-v6 at 48 px and up.
  */
 export function BrandLockup({
   layout,

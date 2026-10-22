@@ -17,6 +17,10 @@ import {
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BrandLockup } from "@/components/mark";
+import {
+  HEADER_MARK_SIZE_DESKTOP_PX,
+  HEADER_MARK_SIZE_MOBILE_PX,
+} from "@/lib/mark";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
 import { useSettings } from "@/context/settings-context";
@@ -224,8 +228,21 @@ export function Navbar() {
           <div className="flex items-center gap-8 md:gap-12">
             <BrandLockup
               layout="horizontal"
-              markSize={48}
+              markSize={HEADER_MARK_SIZE_MOBILE_PX}
               ink="cream"
+              className="lg:hidden"
+              wordmarkClassName="text-[16px] md:text-[18px] lg:text-[20px]"
+              subtitle={
+                <span className="font-label mt-1 tracking-[0.08em] text-fg-muted">
+                  Coloring Books
+                </span>
+              }
+            />
+            <BrandLockup
+              layout="horizontal"
+              markSize={HEADER_MARK_SIZE_DESKTOP_PX}
+              ink="cream"
+              className="hidden lg:inline-flex"
               wordmarkClassName="text-[16px] md:text-[18px] lg:text-[20px]"
               subtitle={
                 <span className="font-label mt-1 tracking-[0.08em] text-fg-muted">

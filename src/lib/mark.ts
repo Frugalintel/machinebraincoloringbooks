@@ -1,11 +1,16 @@
 /**
  * Machine Brain mark-v6 (V5 line brain) asset rules.
  *
- * Full mark only, at rendered size ≥ 48 CSS px. The small-cut files are
- * pending a Studio rebuild — do not ship S3/S4 assets from this pass.
+ * Full mark-v6 at rendered size ≥ 48 CSS px. S3 "Terminal clean" SVG
+ * below 48 px. Single ink only: cream on dark, ink on light.
  */
 
 export const FULL_MARK_MIN_PX = 48;
+
+/** Header lockup: S3 small cut on viewports below `lg`. */
+export const HEADER_MARK_SIZE_MOBILE_PX = 32;
+/** Header lockup: full mark-v6 from the `lg` breakpoint up. */
+export const HEADER_MARK_SIZE_DESKTOP_PX = FULL_MARK_MIN_PX;
 
 /** mark-v6 viewBox is 1000×1000. Each corner registration arm is 150 units. */
 export const MARK_VIEWBOX_PX = 1000;
@@ -18,7 +23,7 @@ export type MarkInk = "cream" | "ink";
 export type MarkCut = "full" | "small";
 
 export type MarkAsset = {
-  cut: "full";
+  cut: MarkCut;
   ink: MarkInk;
   src: string;
 };
@@ -39,10 +44,8 @@ function assertMarkInk(ink: MarkInk): MarkInk {
  * Pick the official mark file for a CSS-pixel render size.
  *
  * ≥ 48 px → full mark-v6 SVG in the requested ink.
- * < 48 px → null. Callers must keep the existing wordmark-only treatment.
- *
- * TODO(F3-small): when Studio delivers the rebuilt small cut, return that
- * asset here (hand-fitted 16/24/32, vector master for other sizes < 48).
+ * > 0 and < 48 px → S3 small-cut SVG in the requested ink.
+ * non-finite / ≤ 0 → null.
  */
 export function resolveMarkAsset(
   sizePx: number,
@@ -50,8 +53,16 @@ export function resolveMarkAsset(
 ): MarkAsset | null {
   const resolvedInk = assertMarkInk(ink);
 
-  if (!Number.isFinite(sizePx) || sizePx < FULL_MARK_MIN_PX) {
+  if (!Number.isFinite(sizePx) || sizePx <= 0) {
     return null;
+  }
+
+  if (sizePx < FULL_MARK_MIN_PX) {
+    return {
+      cut: "small",
+      ink: resolvedInk,
+      src: `/brand/mb-mark-S3-small-${resolvedInk}.svg`,
+    };
   }
 
   return {

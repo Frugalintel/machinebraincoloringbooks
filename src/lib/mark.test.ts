@@ -3,6 +3,8 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   FULL_MARK_MIN_PX,
+  HEADER_MARK_SIZE_DESKTOP_PX,
+  HEADER_MARK_SIZE_MOBILE_PX,
   MARK_CORNER_ARM_RATIO,
   markClearSpacePx,
   resolveMarkAsset,
@@ -29,11 +31,40 @@ describe("resolveMarkAsset", () => {
     expect(resolveMarkAsset(80)?.ink).toBe("cream");
   });
 
-  it("returns null below 48 px so callers keep the wordmark-only fallback", () => {
-    expect(resolveMarkAsset(47, "cream")).toBeNull();
-    expect(resolveMarkAsset(32, "ink")).toBeNull();
-    expect(resolveMarkAsset(24)).toBeNull();
-    expect(resolveMarkAsset(16)).toBeNull();
+  it("uses the S3 cream SVG just below the 48 px boundary", () => {
+    expect(resolveMarkAsset(47, "cream")).toEqual({
+      cut: "small",
+      ink: "cream",
+      src: "/brand/mb-mark-S3-small-cream.svg",
+    });
+  });
+
+  it("uses the S3 ink SVG below 48 px on light surfaces", () => {
+    expect(resolveMarkAsset(32, "ink")).toEqual({
+      cut: "small",
+      ink: "ink",
+      src: "/brand/mb-mark-S3-small-ink.svg",
+    });
+  });
+
+  it("uses the S3 cream SVG at the official 16/24/32 sizes", () => {
+    for (const size of [16, 24, 32]) {
+      expect(resolveMarkAsset(size, "cream")).toEqual({
+        cut: "small",
+        ink: "cream",
+        src: "/brand/mb-mark-S3-small-cream.svg",
+      });
+    }
+  });
+
+  it("maps the header mobile/desktop sizes across the 48 px boundary", () => {
+    expect(HEADER_MARK_SIZE_MOBILE_PX).toBe(32);
+    expect(HEADER_MARK_SIZE_DESKTOP_PX).toBe(48);
+    expect(resolveMarkAsset(HEADER_MARK_SIZE_MOBILE_PX)?.cut).toBe("small");
+    expect(resolveMarkAsset(HEADER_MARK_SIZE_DESKTOP_PX)?.cut).toBe("full");
+  });
+
+  it("rejects non-positive and non-finite sizes", () => {
     expect(resolveMarkAsset(0)).toBeNull();
     expect(resolveMarkAsset(-1)).toBeNull();
     expect(resolveMarkAsset(Number.NaN)).toBeNull();
@@ -50,14 +81,38 @@ describe("markClearSpacePx", () => {
 });
 
 describe("shipped brand assets", () => {
-  it("includes only full mark-v6 files (no small-cut / S4)", () => {
+  it("includes official full mark-v6 and S3 small-cut files only (no S4)", () => {
     const brandDir = join(process.cwd(), "public/brand");
     expect(existsSync(brandDir)).toBe(true);
-    const files = readdirSync(brandDir);
-    expect(files.sort()).toEqual([
-      "mb-mark-full-cream.svg",
-      "mb-mark-full-ink.svg",
-    ]);
-    expect(files.some((name) => /s4|small/i.test(name))).toBe(false);
+    const files = readdirSync(brandDir).sort();
+    expect(files).toEqual(
+      [
+        "mb-mark-S3-small-16px-cream.png",
+        "mb-mark-S3-small-16px-cream@2x.png",
+        "mb-mark-S3-small-16px-ink.png",
+        "mb-mark-S3-small-16px-ink@2x.png",
+        "mb-mark-S3-small-24px-cream.png",
+        "mb-mark-S3-small-24px-cream@2x.png",
+        "mb-mark-S3-small-24px-ink.png",
+        "mb-mark-S3-small-24px-ink@2x.png",
+        "mb-mark-S3-small-32px-cream.png",
+        "mb-mark-S3-small-32px-cream@2x.png",
+        "mb-mark-S3-small-32px-ink.png",
+        "mb-mark-S3-small-32px-ink@2x.png",
+        "mb-mark-S3-small-cream.svg",
+        "mb-mark-S3-small-ink.svg",
+        "mb-mark-full-128px-cream.png",
+        "mb-mark-full-128px-ink.png",
+        "mb-mark-full-256px-cream.png",
+        "mb-mark-full-256px-ink.png",
+        "mb-mark-full-48px-cream.png",
+        "mb-mark-full-48px-ink.png",
+        "mb-mark-full-64px-cream.png",
+        "mb-mark-full-64px-ink.png",
+        "mb-mark-full-cream.svg",
+        "mb-mark-full-ink.svg",
+      ].sort(),
+    );
+    expect(files.some((name) => /s4|pixel-fit/i.test(name))).toBe(false);
   });
 });

@@ -22,8 +22,26 @@ describe("Mark", () => {
     );
   });
 
-  it("renders nothing below 48 px (small-cut seam / wordmark fallback)", () => {
-    const { container } = render(<Mark size={32} ink="cream" />);
+  it("renders the S3 small cut just below 48 px", () => {
+    render(<Mark size={47} ink="cream" />);
+
+    const img = screen.getByRole("img", { name: "Machine Brain" });
+    expect(img).toHaveAttribute("src", "/brand/mb-mark-S3-small-cream.svg");
+    expect(img).toHaveAttribute("width", "47");
+    expect(img).toHaveAttribute("height", "47");
+  });
+
+  it("renders the S3 ink SVG below 48 px on light surfaces", () => {
+    render(<Mark size={32} ink="ink" />);
+
+    expect(screen.getByRole("img", { name: "Machine Brain" })).toHaveAttribute(
+      "src",
+      "/brand/mb-mark-S3-small-ink.svg",
+    );
+  });
+
+  it("renders nothing for non-positive sizes", () => {
+    const { container } = render(<Mark size={0} ink="cream" />);
     expect(container).toBeEmptyDOMElement();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
@@ -50,12 +68,15 @@ describe("BrandLockup", () => {
     expect(link).toHaveTextContent("Machine Brain");
   });
 
-  it("falls back to the wordmark only when the mark would be below 48 px", () => {
-    render(<BrandLockup layout="horizontal" markSize={24} />);
+  it("keeps the S3 small cut beside the wordmark below 48 px", () => {
+    render(<BrandLockup layout="horizontal" markSize={32} />);
 
     const link = screen.getByRole("link", { name: "Machine Brain" });
     expect(link).toHaveAttribute("href", "/");
-    expect(link.querySelector("img")).toBeNull();
+    expect(link.querySelector("img")).toHaveAttribute(
+      "src",
+      "/brand/mb-mark-S3-small-cream.svg",
+    );
     expect(link).toHaveTextContent("Machine Brain");
   });
 
