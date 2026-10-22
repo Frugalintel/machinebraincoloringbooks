@@ -187,7 +187,7 @@ export function AchievementForm({
           <ArrowLeft size={20} className="text-fg-muted" />
         </Link>
         <div>
-          <h1 className="text-3xl font-display font-bold text-cream">
+          <h1 className="text-3xl font-heading font-bold text-cream">
             {isEditing ? "EDIT ACHIEVEMENT" : "NEW ACHIEVEMENT"}
           </h1>
           <p className="text-fg-muted font-mono text-sm">
@@ -414,7 +414,7 @@ export function AchievementForm({
                     <span>Achievement Unlocked</span>
                     <span className="opacity-50">{formData.rarity}</span>
                   </h4>
-                  <p className="text-cream font-bold text-base truncate font-display tracking-wide">
+                  <p className="text-cream font-bold text-base truncate font-heading tracking-wide">
                     {formData.title || "Untitled"}
                   </p>
                   <p className="text-xs text-fg-muted truncate">
@@ -451,7 +451,7 @@ export function AchievementForm({
 
       {/* Trigger Configuration */}
       <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
-        <h3 className="font-display text-xl text-cream">Unlock Logic</h3>
+        <h3 className="font-heading text-xl text-cream">Unlock Logic</h3>
 
         <div className="space-y-2">
           <label className="text-sm font-mono text-fg-muted uppercase">

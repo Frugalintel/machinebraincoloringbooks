@@ -64,7 +64,7 @@ export function SoftGateModal({
                   <div className="flex items-center gap-2 text-signal text-[10px] font-mono uppercase tracking-widest mb-2">
                     <Lock size={12} /> Gate Encountered
                   </div>
-                  <h3 className="font-display text-xl text-cream uppercase">
+                  <h3 className="font-heading text-xl text-cream uppercase">
                     {nodeTitle || "Locked Content"}
                   </h3>
                   {storyTitle ? (
@@ -125,7 +125,7 @@ export function SoftGateModal({
                     <Unlock size={18} />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-display text-cream uppercase">
+                    <h4 className="font-heading text-cream uppercase">
                       Skip with XP
                     </h4>
                     <p className="text-[10px] text-fg-muted font-mono uppercase">

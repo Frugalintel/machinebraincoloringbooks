@@ -147,7 +147,7 @@ export default function CampaignEditorPage({
             <ArrowLeft size={24} />
           </Link>
           <div>
-            <h1 className="text-3xl font-display font-bold text-cream">
+            <h1 className="text-3xl font-heading font-bold text-cream">
               Edit Campaign
             </h1>
             <p className="text-fg-muted font-mono text-xs uppercase tracking-widest mt-1">
@@ -592,7 +592,7 @@ export default function CampaignEditorPage({
               {/* Banner */}
               {campaign.banner.enabled ? (
                 <div
-                  className={`w-full py-1 text-center text-[10px] font-bold font-display uppercase tracking-widest relative z-20 overflow-hidden ${
+                  className={`w-full py-1 text-center text-[10px] font-bold font-heading uppercase tracking-widest relative z-20 overflow-hidden ${
                     campaign.theme?.animation === "pulse" ? "animate-pulse" : ""
                   } ${campaign.banner.pattern ? `pattern-${campaign.banner.pattern}` : ""}`}
                   style={{
@@ -624,7 +624,7 @@ export default function CampaignEditorPage({
 
               {/* Mock Navbar */}
               <div className="h-12 bg-background/80 backdrop-blur-sm border-b border-line flex items-center justify-between px-4 relative z-10">
-                <div className="font-display font-bold text-cream text-sm">
+                <div className="font-heading font-bold text-cream text-sm">
                   MACHINE BRAIN
                 </div>
                 <div className="flex gap-2">
@@ -655,7 +655,7 @@ export default function CampaignEditorPage({
                     {campaign.name.toUpperCase()}
                   </div>
                   <div
-                    className="text-2xl font-display font-bold text-cream uppercase"
+                    className="text-2xl font-heading font-bold text-cream uppercase"
                     style={{ fontFamily: campaign.theme?.fonts?.heading }}
                   >
                     EXPLORE

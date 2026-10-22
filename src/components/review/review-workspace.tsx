@@ -397,7 +397,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
   if (error || !book || !draft) {
     return (
       <main className="mx-auto max-w-xl px-6 py-16">
-        <h1 className="font-display text-2xl uppercase">Review unavailable</h1>
+        <h1 className="font-heading text-2xl uppercase">Review unavailable</h1>
         <p className="mt-3 text-sm text-destructive">
           {error || "Book data is missing."}
         </p>
@@ -415,7 +415,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
           <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
             {heading}
           </p>
-          <h2 className="font-display text-xl uppercase">{matter.id}</h2>
+          <h2 className="font-heading text-xl uppercase">{matter.id}</h2>
         </div>
       </div>
       <ScaledTemplate
@@ -445,7 +445,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
             <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
               Book review
             </p>
-            <h1 className="font-display text-xl uppercase md:text-2xl">
+            <h1 className="font-heading text-xl uppercase md:text-2xl">
               {book.title}
             </h1>
             <p className="font-mono text-xs text-muted-foreground">
@@ -490,7 +490,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
             <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
               Cover
             </p>
-            <h2 className="font-display text-xl uppercase">
+            <h2 className="font-heading text-xl uppercase">
               Front · spine · back
             </h2>
             <p className="text-xs text-muted-foreground">
@@ -525,7 +525,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
               <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
                 Pages
               </p>
-              <h2 className="font-display text-xl uppercase">
+              <h2 className="font-heading text-xl uppercase">
                 Color · line art
               </h2>
             </div>
@@ -591,7 +591,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                     <SortablePageCard key={id} id={id}>
                       <div className="w-full space-y-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <h3 className="font-display text-lg uppercase">
+                          <h3 className="font-heading text-lg uppercase">
                             {page
                               ? `Page ${page.number}`
                               : insert
@@ -756,7 +756,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
 
         {draft.deleted.length > 0 ? (
           <section className="space-y-3">
-            <h2 className="font-display text-xl uppercase">Deleted</h2>
+            <h2 className="font-heading text-xl uppercase">Deleted</h2>
             <p className="text-sm text-muted-foreground">
               Soft-deleted pages stay in the payload until you undo them.
             </p>

@@ -191,7 +191,7 @@ export default function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-display font-bold mb-1">PRODUCTS</h2>
+          <h2 className="text-3xl font-heading font-bold mb-1">PRODUCTS</h2>
           <p className="text-fg-muted font-mono text-sm">
             Manage your store catalog.
           </p>
@@ -432,7 +432,7 @@ export default function AdminProductsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {filteredProducts.length === 0 && (
                 <div className="col-span-full p-20 text-center text-fg-muted bg-surface-1 border border-line rounded-lg border-dashed">
-                  <p className="font-display text-xl mb-2">No products found</p>
+                  <p className="font-heading text-xl mb-2">No products found</p>
                   <p className="text-xs font-mono">Try adjusting your search</p>
                 </div>
               )}
@@ -497,7 +497,7 @@ export default function AdminProductsPage() {
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-16 h-16 rounded-full border-2 border-cream/10 flex items-center justify-center bg-cream/5 backdrop-blur-sm">
-                            <span className="font-display text-2xl text-fg-faint">
+                            <span className="font-heading text-2xl text-fg-faint">
                               {product.title.substring(0, 2)}
                             </span>
                           </div>
@@ -514,7 +514,7 @@ export default function AdminProductsPage() {
                             <p className="text-[10px] font-mono text-primary uppercase tracking-widest mb-1">
                               {product.category}
                             </p>
-                            <h3 className="font-display text-lg font-bold text-cream leading-tight mb-1 truncate pr-2">
+                            <h3 className="font-heading text-lg font-bold text-cream leading-tight mb-1 truncate pr-2">
                               {product.title}
                             </h3>
                             <p className="text-xs text-fg-muted truncate">

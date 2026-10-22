@@ -45,7 +45,7 @@ export function KPICard({ title, value, icon: Icon, color, bg }: KPICardProps) {
         <p className="text-fg-muted text-xs font-mono uppercase tracking-widest mb-1">
           {title}
         </p>
-        <h3 className="text-3xl font-bold font-display text-cream">{value}</h3>
+        <h3 className="text-3xl font-bold font-heading text-cream">{value}</h3>
       </div>
     </div>
   );

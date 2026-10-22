@@ -106,7 +106,7 @@ export default function AdminAchievementsPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-display font-bold mb-1">ACHIEVEMENTS</h2>
+          <h2 className="text-3xl font-heading font-bold mb-1">ACHIEVEMENTS</h2>
           <p className="text-fg-muted font-mono text-sm">
             Manage unlockable player badges.
           </p>
@@ -162,7 +162,7 @@ export default function AdminAchievementsPage() {
           {filteredAchievements.length === 0 && (
             <div className="col-span-full p-20 text-center text-fg-muted bg-surface-1 border border-line rounded-lg border-dashed">
               <Trophy size={48} className="mx-auto text-fg-faint mb-4" />
-              <p className="font-display text-lg text-fg-muted">
+              <p className="font-heading text-lg text-fg-muted">
                 No achievements found
               </p>
             </div>
@@ -196,7 +196,7 @@ export default function AdminAchievementsPage() {
 
                         <div className="min-w-0 flex-1">
                           <h3
-                            className={`font-display font-bold text-sm mb-0.5 truncate pr-6 ${styles.titleColor}`}
+                            className={`font-heading font-bold text-sm mb-0.5 truncate pr-6 ${styles.titleColor}`}
                           >
                             {achievement.title}
                           </h3>
@@ -292,7 +292,7 @@ export default function AdminAchievementsPage() {
                             </div>
                           </td>
                           <td className="p-4">
-                            <div className="font-display font-bold text-cream text-sm">
+                            <div className="font-heading font-bold text-cream text-sm">
                               {achievement.title}
                             </div>
                             {achievement.is_secret ? (

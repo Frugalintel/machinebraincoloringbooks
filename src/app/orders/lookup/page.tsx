@@ -32,7 +32,7 @@ export default function OrderLookupPage() {
       <div className="container mx-auto px-4 md:px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]">
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
-            <h1 className="font-display text-4xl md:text-5xl font-bold uppercase tracking-tighter mb-4">
+            <h1 className="font-display text-title uppercase mb-4">
               Order Tracking
             </h1>
             <p className="text-fg-muted font-mono text-xs uppercase tracking-widest">
@@ -62,7 +62,7 @@ export default function OrderLookupPage() {
                     <span className="text-fg-muted text-xs font-mono uppercase">
                       Order ID
                     </span>
-                    <span className="text-cream font-display tracking-wide">
+                    <span className="text-cream font-heading tracking-wide">
                       {orderId || "#ORD-8829"}
                     </span>
                   </div>
@@ -109,7 +109,7 @@ export default function OrderLookupPage() {
                 <Button
                   onClick={() => setStatus("idle")}
                   variant="outline"
-                  className="w-full border-line hover:border-cream hover:text-cream text-fg-muted font-display uppercase tracking-widest h-12 rounded-none mt-4"
+                  className="w-full border-line hover:border-cream hover:text-cream text-fg-muted font-heading uppercase tracking-widest h-12 rounded-none mt-4"
                 >
                   Track Another
                 </Button>
@@ -157,7 +157,7 @@ export default function OrderLookupPage() {
                 <Button
                   type="submit"
                   disabled={status === "loading"}
-                  className="w-full h-12 bg-primary hover:bg-cream hover:text-ink text-cream font-display text-xl tracking-[0.2em] rounded-none uppercase transition-all group"
+                  className="w-full h-12 bg-primary hover:bg-cream hover:text-ink text-cream font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all group"
                 >
                   {status === "loading"
                     ? "Searching Database..."

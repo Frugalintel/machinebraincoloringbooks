@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
 import { useAuth } from "@/context/auth-context";
-import { fetchPublishedProducts } from "@/lib/products";
+import { fetchPublishedProducts, productsOrCatalog } from "@/lib/products";
 import { Product } from "@/lib/types";
 import { logger } from "@/lib/logger";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
@@ -23,9 +23,7 @@ export function StoreSection() {
     try {
       const { data, error } = await fetchPublishedProducts(4);
 
-      if (!error && data) {
-        setProducts(data);
-      }
+      setProducts(productsOrCatalog(!error ? data : null, 4));
     } catch (error) {
       logger.error("Error loading products:", error);
     } finally {
@@ -62,10 +60,8 @@ export function StoreSection() {
         <div className="flex items-center gap-4">
           <div className="h-8 w-4 bg-primary"></div>
           <div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tighter text-cream leading-none">
-              BOOKS
-            </h2>
-            <span className="font-sans text-[10px] text-fg-muted tracking-[0.3em] uppercase block mt-1">
+            <h2 className="font-heading text-h2 text-cream">Books</h2>
+            <span className="font-label mt-1 block tracking-[0.08em] text-fg-muted">
               Our latest releases
             </span>
           </div>
@@ -73,7 +69,7 @@ export function StoreSection() {
         <div className="flex items-center gap-6">
           <Link
             href="/store"
-            className="flex items-center gap-2 text-xs font-mono text-primary hover:text-cream uppercase tracking-widest transition-colors group"
+            className="flex items-center gap-2 text-sm font-medium uppercase tracking-[0.04em] text-primary hover:text-cream transition-colors group"
           >
             See all books{" "}
             <ArrowRight
@@ -134,7 +130,7 @@ export function StoreSection() {
                     >
                       {/* Top Strip: Title */}
                       <div className="absolute top-0 left-0 right-0 h-8 bg-background/40 flex items-center justify-center border-b border-background/10 backdrop-blur-sm z-10">
-                        <span className="font-display text-fg-secondary text-sm tracking-widest uppercase">
+                        <span className="font-label tracking-[0.08em] text-fg-secondary">
                           {cat.subtitle}
                         </span>
                       </div>
@@ -186,12 +182,12 @@ export function StoreSection() {
                               <span className="text-fg-muted line-through text-[10px] font-mono">
                                 {formatPrice(priceInfo.originalPrice)}
                               </span>
-                              <span className="font-display text-cream text-lg tracking-tight">
+                              <span className="price text-cream text-[18px] md:text-[22px]">
                                 {formatPrice(priceInfo.finalPrice)}
                               </span>
                             </>
                           ) : (
-                            <span className="font-display text-cream text-lg tracking-tight">
+                            <span className="price text-cream text-[18px] md:text-[22px]">
                               {formatPrice(priceInfo.originalPrice)}
                             </span>
                           )}
@@ -210,10 +206,10 @@ export function StoreSection() {
 
                       {/* Age & Vol */}
                       <div className="flex items-center justify-between border-t border-line pt-2">
-                        <span className="text-[9px] text-fg-muted font-mono uppercase tracking-widest">
+                        <span className="font-label tracking-[0.08em] text-fg-muted">
                           {cat.age}
                         </span>
-                        <span className="text-[9px] text-fg-faint font-mono">
+                        <span className="font-label tracking-[0.08em] text-fg-faint">
                           VOL. {String(i + 1).padStart(3, "0")}
                         </span>
                       </div>
@@ -223,7 +219,7 @@ export function StoreSection() {
 
                 {/* Title Below */}
                 <div className="mt-3 text-center">
-                  <h3 className="font-display text-base text-cream uppercase tracking-wide group-hover:text-primary transition-colors">
+                  <h3 className="font-heading text-h3 text-cream group-hover:text-primary transition-colors">
                     {cat.title}
                   </h3>
                 </div>

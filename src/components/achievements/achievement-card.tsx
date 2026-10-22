@@ -72,7 +72,7 @@ export function AchievementCard({
         </div>
         <div className="flex-1">
           <h4
-            className={`font-display font-bold text-sm mb-0.5 ${isCompleted ? styles.titleColor : "text-cream"}`}
+            className={`font-heading font-bold text-sm mb-0.5 ${isCompleted ? styles.titleColor : "text-cream"}`}
           >
             {achievement.title}
           </h4>
@@ -132,7 +132,7 @@ export function AchievementCard({
 
           <div className="min-w-0 flex-1">
             <h3
-              className={`font-display font-bold text-sm mb-0.5 truncate pr-6 ${
+              className={`font-heading font-bold text-sm mb-0.5 truncate pr-6 ${
                 isCompleted
                   ? styles.titleColor
                   : isActive

@@ -129,7 +129,7 @@ function ReviewCard({
           <div className="flex items-center gap-3 mb-3">
             <StarRating rating={review.rating} size="sm" />
             {review.title ? (
-              <span className="font-display text-cream uppercase tracking-wide text-sm">
+              <span className="font-heading text-cream uppercase tracking-wide text-sm">
                 {review.title}
               </span>
             ) : null}
@@ -215,7 +215,7 @@ function ReviewForm({
     >
       <div className="flex items-center gap-4 mb-6">
         <div className="h-8 w-1 bg-primary"></div>
-        <h3 className="font-display text-xl uppercase tracking-wide text-cream">
+        <h3 className="font-heading text-xl uppercase tracking-wide text-cream">
           {existingReview ? "Edit Your Review" : "Write a Review"}
         </h3>
       </div>
@@ -267,7 +267,7 @@ function ReviewForm({
           <Button
             type="submit"
             disabled={rating === 0 || isSubmitting}
-            className="h-12 px-8 bg-primary hover:bg-cream hover:text-ink text-ink font-display uppercase tracking-widest rounded-none transition-all disabled:opacity-50"
+            className="h-12 px-8 bg-primary hover:bg-cream hover:text-ink text-ink font-heading uppercase tracking-widest rounded-none transition-all disabled:opacity-50"
           >
             {isSubmitting ? (
               <span className="animate-pulse">Submitting...</span>
@@ -397,7 +397,7 @@ export function ReviewsSection({
         <div>
           <div className="flex items-center gap-4 mb-2">
             <div className="h-8 w-2 bg-primary"></div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold uppercase tracking-tight text-cream">
+            <h2 className="font-heading text-h2 text-cream">
               Customer Reviews
             </h2>
           </div>
@@ -410,7 +410,7 @@ export function ReviewsSection({
         {rating && rating.review_count > 0 ? (
           <div className="flex items-center gap-6 bg-background border border-line px-6 py-4">
             <div className="text-center">
-              <div className="font-display text-4xl text-cream">
+              <div className="font-heading text-4xl text-cream">
                 {rating.average_rating.toFixed(1)}
               </div>
               <div className="text-[10px] font-mono text-fg-muted uppercase tracking-widest">
@@ -462,7 +462,7 @@ export function ReviewsSection({
           </p>
           <Button
             onClick={() => openAuthModal("login")}
-            className="h-10 px-6 bg-primary hover:bg-cream hover:text-ink text-ink font-display uppercase tracking-widest rounded-none"
+            className="h-10 px-6 bg-primary hover:bg-cream hover:text-ink text-ink font-heading uppercase tracking-widest rounded-none"
           >
             Sign In
           </Button>

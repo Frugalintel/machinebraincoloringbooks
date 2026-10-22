@@ -62,7 +62,7 @@ export function ReviewLoginForm({
       <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
         Private QA
       </p>
-      <h1 className="mt-3 font-display text-3xl uppercase tracking-tight">
+      <h1 className="mt-3 font-heading text-3xl uppercase tracking-tight">
         Unlock review
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
@@ -94,7 +94,7 @@ export function ReviewLoginForm({
         <button
           type="submit"
           disabled={pending}
-          className="h-11 w-full rounded-md bg-primary font-display uppercase tracking-wide text-ink"
+          className="h-11 w-full rounded-md bg-primary font-heading uppercase tracking-wide text-ink"
         >
           Unlock
         </button>

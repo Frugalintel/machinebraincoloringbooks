@@ -6,7 +6,7 @@ export default function ReviewIndexPage() {
       <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
         Private QA
       </p>
-      <h1 className="mt-3 font-display text-3xl uppercase tracking-tight">
+      <h1 className="mt-3 font-heading text-3xl uppercase tracking-tight">
         Book review
       </h1>
       <p className="mt-4 text-sm text-muted-foreground">

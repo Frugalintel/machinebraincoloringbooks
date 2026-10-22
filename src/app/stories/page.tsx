@@ -125,7 +125,7 @@ export default function StoriesPage() {
                 <BookOpen size={14} />
                 <span>{ADVENTURES_COPY.pillarName}</span>
               </div>
-              <h1 className="font-display text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+              <h1 className="font-display text-title uppercase text-cream mb-4">
                 Adventures
               </h1>
               <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-md">
@@ -254,7 +254,7 @@ export default function StoriesPage() {
                       <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
                         <h3
                           className={`
-                          font-display text-3xl md:text-4xl font-bold text-cream uppercase tracking-tight leading-none
+                          font-heading text-3xl md:text-4xl font-bold text-cream tracking-tight leading-none
                           transition-transform duration-500 ease-out
                           ${isHovered ? "translate-y-0" : "translate-y-1"}
                         `}

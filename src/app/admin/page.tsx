@@ -180,7 +180,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-display font-bold mb-1">DASHBOARD</h2>
+        <h2 className="text-3xl font-heading font-bold mb-1">DASHBOARD</h2>
         <p className="text-fg-muted font-mono text-sm">
           Welcome back, {user?.email?.split("@")[0] || "Admin"}. System Status:{" "}
           <span className="text-success">ONLINE</span>.
@@ -207,7 +207,7 @@ export default function AdminDashboard() {
                 </span>
               </div>
               <div>
-                <h3 className="text-3xl font-bold font-display mb-1 text-cream">
+                <h3 className="text-3xl font-bold font-heading mb-1 text-cream">
                   {loading ? "..." : stat.value}
                 </h3>
                 <p className="text-fg-muted text-xs font-mono uppercase tracking-widest">
@@ -223,7 +223,7 @@ export default function AdminDashboard() {
         {/* Recent Activity - Takes 2 cols */}
         <div className="lg:col-span-2 bg-surface-1 border border-line rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-display font-bold text-lg text-cream">
+            <h3 className="font-heading font-bold text-lg text-cream">
               Recent Activity
             </h3>
             <Link
@@ -290,7 +290,7 @@ export default function AdminDashboard() {
         {/* Quick Actions - Takes 1 col */}
         <div className="space-y-6">
           <div className="bg-surface-1 border border-line rounded-xl p-6">
-            <h3 className="font-display font-bold text-lg text-cream mb-6">
+            <h3 className="font-heading font-bold text-lg text-cream mb-6">
               Quick Actions
             </h3>
             <div className="space-y-3">
@@ -361,7 +361,7 @@ export default function AdminDashboard() {
 
           <div className="bg-gradient-to-br from-primary/20 to-purple-500/20 border border-cream/10 rounded-xl p-6 relative overflow-hidden">
             <div className="relative z-10">
-              <h3 className="font-display font-bold text-cream mb-2">
+              <h3 className="font-heading font-bold text-cream mb-2">
                 Need Help?
               </h3>
               <p className="text-xs text-fg-secondary mb-4 leading-relaxed">

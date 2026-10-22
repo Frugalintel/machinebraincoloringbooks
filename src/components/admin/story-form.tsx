@@ -166,7 +166,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
             <ArrowLeft size={20} className="text-fg-muted" />
           </Link>
           <div>
-            <h1 className="text-2xl md:text-3xl font-display font-bold text-cream leading-tight uppercase">
+            <h1 className="text-2xl md:text-3xl font-heading font-bold text-cream leading-tight uppercase">
               {isEditing ? "EDIT ADVENTURE" : "NEW ADVENTURE"}
             </h1>
             <p className="text-fg-muted font-mono text-xs md:text-sm">
@@ -245,7 +245,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
                 {/* Content Info */}
                 <div className="absolute bottom-0 left-0 right-0 p-5 z-30">
                   <div className="mb-3">
-                    <h3 className="font-display text-xl font-bold text-cream leading-tight mb-1 truncate">
+                    <h3 className="font-heading text-xl font-bold text-cream leading-tight mb-1 truncate">
                       {formData.title || "Adventure Title"}
                     </h3>
                     <p className="text-xs text-fg-muted line-clamp-2">
@@ -292,7 +292,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
           </div>
 
           <div className="bg-surface-1 border border-line p-6 rounded-lg space-y-6">
-            <h3 className="font-display text-lg border-b border-line pb-2 mb-4">
+            <h3 className="font-heading text-lg border-b border-line pb-2 mb-4">
               Meta Information
             </h3>
 
@@ -396,7 +396,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
           </div>
 
           <div className="bg-surface-1 border border-line p-6 rounded-lg space-y-4">
-            <h3 className="font-display text-lg border-b border-line pb-2">
+            <h3 className="font-heading text-lg border-b border-line pb-2">
               Access & Rewards
             </h3>
 
@@ -440,7 +440,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="The Mystery of..."
-                className="bg-surface-2 border-line text-lg font-display"
+                className="bg-surface-2 border-line text-lg font-heading"
                 required
               />
             </div>
@@ -463,7 +463,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
           {/* Node Editor */}
           <div className="bg-surface-1 border border-line rounded-lg overflow-hidden">
             <div className="p-4 border-b border-line bg-surface-1">
-              <h3 className="font-display text-xl">Adventure Content</h3>
+              <h3 className="font-heading text-xl">Adventure Content</h3>
             </div>
 
             <div className="p-4">

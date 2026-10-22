@@ -169,7 +169,7 @@ function AuthPageContent() {
           size={18}
           className={`mr-2 ${isLastUsed ? "text-primary group-hover:text-ink" : ""}`}
         />
-        <span className="text-xs font-display uppercase tracking-wider">
+        <span className="text-sm font-medium uppercase tracking-[0.06em]">
           {label}
         </span>
       </button>
@@ -192,8 +192,8 @@ function AuthPageContent() {
       <div className="absolute inset-0 flex items-center">
         <span className="w-full border-t border-line" />
       </div>
-      <div className="relative flex justify-center text-[10px] uppercase font-mono">
-        <span className="bg-background px-2 text-fg-faint">{text}</span>
+      <div className="relative flex justify-center font-label tracking-[0.08em] text-fg-faint">
+        <span className="bg-background px-2">{text}</span>
       </div>
     </div>
   );
@@ -201,14 +201,14 @@ function AuthPageContent() {
   const renderForm = () => (
     <form onSubmit={handleAuth} className="space-y-6 mb-6">
       <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
+        <label className="font-label flex items-center gap-2 tracking-[0.10em] text-fg-muted">
           <User size={10} /> Email
         </label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className={`w-full bg-background text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted px-3 border ${lastProvider === "email" && isLogin ? "border-primary" : "border-line"}`}
+          className={`w-full bg-background text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-sans text-base placeholder:text-fg-muted px-3 border ${lastProvider === "email" && isLogin ? "border-primary" : "border-line"}`}
           placeholder="user@machinebrain.com"
         />
         {lastProvider === "email" && isLogin ? (
@@ -218,14 +218,14 @@ function AuthPageContent() {
         ) : null}
       </div>
       <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
+        <label className="font-label flex items-center gap-2 tracking-[0.10em] text-fg-muted">
           <Lock size={10} /> Password
         </label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-background border border-line text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted px-3"
+          className="w-full bg-background border border-line text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-sans text-base placeholder:text-fg-muted px-3"
           placeholder="••••••••"
         />
       </div>
@@ -236,14 +236,14 @@ function AuthPageContent() {
           animate={{ opacity: 1, height: "auto" }}
           className="space-y-2 overflow-hidden"
         >
-          <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
+          <label className="font-label flex items-center gap-2 tracking-[0.10em] text-fg-muted">
             <CheckCircle size={10} /> Confirm Password
           </label>
           <input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full bg-background border border-line text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted px-3"
+            className="w-full bg-background border border-line text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-sans text-base placeholder:text-fg-muted px-3"
             placeholder="••••••••"
           />
         </motion.div>
@@ -252,7 +252,7 @@ function AuthPageContent() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-display text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50 flex items-center justify-center"
+        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading font-semibold text-sm tracking-[0.06em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50 flex items-center justify-center"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -297,13 +297,13 @@ function AuthPageContent() {
 
           <div className="text-center mb-8">
             <Link href="/" className="inline-block group">
-              <h1 className="font-display text-4xl font-bold text-cream mb-2 transition-colors uppercase tracking-tighter group-hover:text-primary">
+              <h1 className="font-display text-title uppercase text-cream mb-2 transition-colors group-hover:text-primary">
                 Machine
                 <br />
                 Brain
               </h1>
             </Link>
-            <div className="flex items-center justify-center gap-2 tracking-widest text-[10px] font-mono uppercase mt-2 text-primary">
+            <div className="flex items-center justify-center gap-2 font-label mt-2 tracking-[0.08em] text-primary">
               <Terminal size={12} />
               <span>{isLogin ? "Sign in" : "Create account"}</span>
             </div>
@@ -355,7 +355,7 @@ function AuthPageContent() {
               <div className="mt-8 text-center border-t border-line pt-6">
                 <button
                   onClick={() => {}}
-                  className="text-[10px] text-fg-faint hover:text-primary transition-colors uppercase tracking-widest font-mono"
+                  className="text-sm font-medium uppercase tracking-[0.04em] text-fg-faint hover:text-primary transition-colors"
                 >
                   Forgot Password?
                 </button>

@@ -108,13 +108,13 @@ export function PillarScore({
                 key={score}
                 initial={{ scale: 1.2, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className={`font-display ${sizeConfig.score} ${config.color}`}
+                className={`font-heading ${sizeConfig.score} ${config.color}`}
               >
                 {score.toLocaleString()}
               </motion.span>
             ) : (
               <span
-                className={`font-display ${sizeConfig.score} ${config.color}`}
+                className={`font-heading ${sizeConfig.score} ${config.color}`}
               >
                 {score.toLocaleString()}
               </span>

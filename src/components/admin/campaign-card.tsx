@@ -76,7 +76,7 @@ export function CampaignCard({
           <div className="absolute inset-0 flex items-center justify-center pt-6">
             <div className="text-center">
               <div
-                className="text-2xl font-display font-bold opacity-30"
+                className="text-2xl font-heading font-bold opacity-30"
                 style={{ color: primaryColor }}
               >
                 {settings.theme?.name || "THEME"}
@@ -90,7 +90,7 @@ export function CampaignCard({
 
         {/* Card Body */}
         <div className="p-5">
-          <h3 className="text-lg font-bold text-cream mb-1 truncate font-display">
+          <h3 className="text-lg font-bold text-cream mb-1 truncate font-heading">
             {name}
           </h3>
           <div className="flex gap-2 text-[10px] text-fg-muted font-mono uppercase tracking-wider mb-4">

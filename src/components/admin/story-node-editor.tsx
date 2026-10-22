@@ -91,7 +91,7 @@ function SortableNodeItem({
               {index + 1}
             </div>
             <div className="flex flex-col">
-              <span className="font-display text-sm text-fg-secondary">
+              <span className="font-heading text-sm text-fg-secondary">
                 SECTION {index + 1}
               </span>
               <span className="text-[10px] font-mono text-fg-faint uppercase hidden md:inline-block">

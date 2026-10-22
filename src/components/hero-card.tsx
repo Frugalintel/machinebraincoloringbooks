@@ -93,31 +93,31 @@ export function HeroCard({
           data-testid="hero-copy"
           className="flex w-full max-w-xl flex-col items-center text-center lg:max-w-none lg:flex-1 lg:items-start lg:text-left"
         >
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.32em] text-(--hero-accent) sm:mb-5 sm:text-[11px]">
+          <p className="font-label mb-3 text-primary tracking-[0.12em] text-(--hero-accent) sm:mb-5">
             {brandEyebrow}
           </p>
           <h1
             id="home-hero-heading"
-            className="font-display text-[clamp(2.15rem,8.4vw,4.6rem)] font-bold uppercase leading-[0.94] tracking-[-0.02em] text-cream"
+            className="font-display text-hero uppercase text-cream"
           >
             <span className="block">{headlineWhite}</span>
             <span className="mt-1 block text-(--hero-accent)">
               {headlineAccent}
             </span>
           </h1>
-          <p className="mt-4 max-w-md text-[14px] leading-relaxed text-fg-muted sm:mt-6 sm:text-base sm:leading-7">
+          <p className="mt-4 max-w-md text-base leading-relaxed text-fg-muted sm:mt-6 sm:leading-7">
             {subcopy}
           </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:gap-4 lg:items-start">
             <Button
               asChild
-              className="h-11 rounded-md bg-(--hero-accent) px-8 font-display text-sm uppercase tracking-[0.2em] text-ink hover:bg-cream hover:text-ink sm:h-12 sm:text-base"
+              className="h-11 rounded-md bg-(--hero-accent) px-8 font-heading font-semibold text-sm uppercase tracking-[0.06em] text-ink hover:bg-cream hover:text-ink sm:h-12"
             >
               <Link href={primaryCta.href}>{primaryCta.label}</Link>
             </Button>
             <Link
               href={secondaryCta.href}
-              className="inline-flex min-h-10 items-center font-display text-xs uppercase tracking-[0.24em] text-fg-muted transition-colors hover:text-cream sm:min-h-11 sm:text-sm"
+              className="inline-flex min-h-10 items-center font-medium text-sm uppercase tracking-[0.04em] text-fg-muted transition-colors hover:text-cream sm:min-h-11"
             >
               {secondaryCta.label}
             </Link>
@@ -132,7 +132,7 @@ export function HeroCard({
                       aria-hidden
                     />
                   ) : null}
-                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-fg-muted sm:text-[11px]">
+                  <span className="font-label tracking-[0.08em] text-fg-muted">
                     {chip.label}
                   </span>
                 </li>
@@ -169,15 +169,15 @@ export function HeroCard({
               data-testid="hero-price-badge"
               className="pointer-events-none absolute right-0 bottom-4 z-30 rounded-xl bg-cream px-4 py-3 text-left text-ink shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:bottom-6 lg:-right-2 lg:bottom-10"
             >
-              <span className="block font-mono text-[10px] uppercase tracking-[0.22em] text-ink/60">
+              <span className="font-label block tracking-[0.08em] text-ink/60">
                 {badgeLabel}
               </span>
               {originalPrice ? (
-                <span className="mt-1 block font-mono text-xs text-ink/60 line-through">
+                <span className="price-inline mt-1 block text-base text-ink/60 line-through">
                   {originalPrice}
                 </span>
               ) : null}
-              <span className="mt-1 block font-display text-[1.75rem] leading-none tracking-tight">
+              <span className="price mt-1 block text-[1.5rem] leading-none">
                 {price}
               </span>
             </span>
@@ -187,7 +187,7 @@ export function HeroCard({
 
       <Link
         href={collectionLink.href}
-        className="absolute bottom-5 left-1/2 z-20 inline-flex min-h-11 -translate-x-1/2 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-fg-muted transition-colors hover:text-cream sm:text-[11px] lg:left-16 lg:translate-x-0"
+        className="absolute bottom-5 left-1/2 z-20 inline-flex min-h-11 -translate-x-1/2 items-center gap-2 font-medium text-sm uppercase tracking-[0.04em] text-fg-muted transition-colors hover:text-cream lg:left-16 lg:translate-x-0"
       >
         <span>{collectionLink.label}</span>
         <ArrowDown size={12} />

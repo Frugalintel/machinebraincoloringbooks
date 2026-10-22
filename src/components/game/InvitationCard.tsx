@@ -156,7 +156,7 @@ export function InvitationCard({
             <Icon size={24} />
           </div>
           <div className="flex-1">
-            <h3 className="font-display text-xl text-cream uppercase tracking-wide mb-1">
+            <h3 className="font-heading text-xl text-cream uppercase tracking-wide mb-1">
               {title}
             </h3>
             <div className="flex items-center gap-2">

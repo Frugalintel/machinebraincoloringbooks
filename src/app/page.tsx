@@ -20,12 +20,12 @@ export default function Home() {
       <section className="bg-background border-y border-line py-20">
         <div className="container mx-auto px-4 md:px-10 lg:px-16">
           <div className="max-w-4xl mx-auto text-center">
-            <p className="text-[10px] font-mono text-primary uppercase tracking-[0.3em] mb-3">
-              How It Works
+            <p className="font-label mb-3 tracking-[0.12em] text-primary">
+              How it works
             </p>
-            <h3 className="font-display text-2xl md:text-4xl text-cream uppercase tracking-tight mb-12">
+            <h2 className="font-heading text-h2 mb-12 text-cream">
               Every book has a secret code.
-            </h3>
+            </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
               {/* Step 1 */}
@@ -34,10 +34,10 @@ export default function Home() {
                   <Book size={24} className="text-primary" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-display text-sm text-cream uppercase tracking-wide">
+                  <h3 className="font-heading text-h3 text-cream">
                     1. Get the book
-                  </h4>
-                  <p className="text-fg-muted text-xs font-mono">
+                  </h3>
+                  <p className="text-fg-muted text-base">
                     Choose your adventure above
                   </p>
                 </div>
@@ -49,10 +49,10 @@ export default function Home() {
                   <Key size={24} className="text-primary" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-display text-sm text-cream uppercase tracking-wide">
+                  <h3 className="font-heading text-h3 text-cream">
                     2. Find the code
-                  </h4>
-                  <p className="text-fg-muted text-xs font-mono">
+                  </h3>
+                  <p className="text-fg-muted text-base">
                     Hidden on the back page
                   </p>
                 </div>
@@ -64,10 +64,10 @@ export default function Home() {
                   <Sparkles size={24} className="text-primary" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-display text-sm text-cream uppercase tracking-wide">
-                    3. Unlock Rewards
-                  </h4>
-                  <p className="text-fg-muted text-xs font-mono">
+                  <h3 className="font-heading text-h3 text-cream">
+                    3. Unlock rewards
+                  </h3>
+                  <p className="text-fg-muted text-base">
                     Access stories & collectibles
                   </p>
                 </div>

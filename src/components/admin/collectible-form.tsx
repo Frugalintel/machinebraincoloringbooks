@@ -165,7 +165,7 @@ export function CollectibleForm({
           <ArrowLeft size={20} className="text-fg-muted" />
         </Link>
         <div>
-          <h1 className="text-3xl font-display font-bold text-cream">
+          <h1 className="text-3xl font-heading font-bold text-cream">
             {isEditing ? "EDIT COLLECTIBLE" : "NEW COLLECTIBLE"}
           </h1>
           <p className="text-fg-muted font-mono text-sm">
@@ -180,7 +180,7 @@ export function CollectibleForm({
         {/* Left Column - Form Fields */}
         <div className="space-y-6">
           <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
-            <h3 className="font-display text-lg text-cream flex items-center gap-2">
+            <h3 className="font-heading text-lg text-cream flex items-center gap-2">
               <Gem size={18} className="text-primary" />
               Basic Info
             </h3>
@@ -228,7 +228,7 @@ export function CollectibleForm({
           </div>
 
           <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
-            <h3 className="font-display text-lg text-cream flex items-center gap-2">
+            <h3 className="font-heading text-lg text-cream flex items-center gap-2">
               <Box size={18} className="text-primary" />
               Classification
             </h3>
@@ -309,7 +309,7 @@ export function CollectibleForm({
           </div>
 
           <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
-            <h3 className="font-display text-lg text-cream flex items-center gap-2">
+            <h3 className="font-heading text-lg text-cream flex items-center gap-2">
               <Sparkles size={18} className="text-primary" />
               Relationships
             </h3>
@@ -363,7 +363,7 @@ export function CollectibleForm({
         {/* Right Column - Preview & Image */}
         <div className="space-y-6">
           <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
-            <h3 className="font-display text-lg text-cream">
+            <h3 className="font-heading text-lg text-cream">
               3D Trophy Preview
             </h3>
             <p className="text-xs text-fg-muted font-mono">
@@ -395,7 +395,7 @@ export function CollectibleForm({
           </div>
 
           <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
-            <h3 className="font-display text-lg text-cream">
+            <h3 className="font-heading text-lg text-cream">
               Collectible Image
             </h3>
             <p className="text-xs text-fg-muted font-mono">
@@ -422,7 +422,7 @@ export function CollectibleForm({
 
           {/* Card Preview */}
           <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
-            <h3 className="font-display text-lg text-cream">Card Preview</h3>
+            <h3 className="font-heading text-lg text-cream">Card Preview</h3>
 
             <div
               className="p-4 rounded-xl border transition-all"
@@ -452,7 +452,7 @@ export function CollectibleForm({
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-display font-bold text-sm mb-0.5 text-cream">
+                  <h3 className="font-heading font-bold text-sm mb-0.5 text-cream">
                     {formData.name || "Untitled"}
                   </h3>
                   <p

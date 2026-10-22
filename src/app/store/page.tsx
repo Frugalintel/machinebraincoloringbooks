@@ -13,7 +13,7 @@ import {
 import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
 import { useAuth } from "@/context/auth-context";
-import { fetchPublishedProducts } from "@/lib/products";
+import { fetchPublishedProducts, productsOrCatalog } from "@/lib/products";
 import { fetchProductRatings } from "@/lib/reviews";
 import { categories, type Category } from "@/lib/store-data";
 import { Product, ProductRating } from "@/lib/types";
@@ -37,11 +37,11 @@ export default function StorePage() {
 
       if (fetchError) throw fetchError;
 
-      if (data) {
-        setProducts(data);
+      const next = productsOrCatalog(data);
+      setProducts(next);
 
-        // Fetch ratings for all products
-        const productIds = data.map((p) => p.id);
+      if (next.length > 0) {
+        const productIds = next.map((p) => p.id);
         const { data: ratingsData } = await fetchProductRatings(productIds);
         if (ratingsData) {
           setRatings(ratingsData);
@@ -49,7 +49,8 @@ export default function StorePage() {
       }
     } catch (err) {
       logger.error("Error loading products:", err);
-      setError("Unable to load products. Please try again.");
+      setProducts(productsOrCatalog(null));
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -93,14 +94,14 @@ export default function StorePage() {
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="flex items-center gap-2 mb-4 text-primary font-mono uppercase tracking-widest text-xs">
+          <div className="mb-4 flex items-center gap-2 text-primary">
             <ShoppingBag size={14} />
-            <span>Store</span>
+            <span className="font-label tracking-[0.12em]">Store</span>
           </div>
-          <h1 className="font-display text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+          <h1 className="font-display text-title uppercase text-cream mb-4">
             All Books
           </h1>
-          <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-md">
+          <p className="font-label max-w-md tracking-[0.08em] text-fg-muted">
             Our complete collection of sci-fi coloring books.
           </p>
         </div>
@@ -115,7 +116,7 @@ export default function StorePage() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 text-[10px] font-mono uppercase tracking-widest border transition-all ${
+                className={`font-label px-4 py-2 tracking-[0.08em] border transition-all ${
                   activeCategory === cat
                     ? cat === "HOLIDAY"
                       ? "bg-red-600 border-red-600 text-cream font-bold"
@@ -132,7 +133,7 @@ export default function StorePage() {
 
           {/* View Options */}
           <div className="flex items-center gap-4 border-l border-line pl-6 hidden md:flex">
-            <div className="flex items-center gap-2 text-xs font-mono text-fg-muted uppercase tracking-widest">
+            <div className="flex items-center gap-2 font-label tracking-[0.08em] text-fg-muted">
               <Filter size={14} />
               <span>Sort: Newest</span>
             </div>
@@ -153,7 +154,7 @@ export default function StorePage() {
             <p className="text-danger font-mono mb-4">{error}</p>
             <button
               onClick={retryFetch}
-              className="px-6 py-2 bg-primary text-ink font-bold uppercase tracking-widest hover:bg-cream transition-colors"
+              className="px-6 py-2 bg-primary text-ink font-heading font-semibold text-sm uppercase tracking-[0.06em] hover:bg-cream transition-colors"
             >
               Retry
             </button>
@@ -245,7 +246,7 @@ export default function StorePage() {
                           className={`flex-1 ${cat.color} relative overflow-hidden`}
                         >
                           <div className="absolute top-0 left-0 right-0 h-8 bg-background/40 flex items-center justify-center border-b border-background/10 backdrop-blur-sm z-10">
-                            <span className="font-display text-fg-secondary text-sm tracking-widest uppercase">
+                            <span className="font-label tracking-[0.08em] text-fg-secondary">
                               {cat.subtitle}
                             </span>
                           </div>
@@ -293,12 +294,12 @@ export default function StorePage() {
                                 <span className="text-fg-muted line-through text-[10px] font-mono">
                                   {formatPrice(priceInfo.originalPrice)}
                                 </span>
-                                <span className="font-display text-cream text-lg tracking-tight">
+                                <span className="price text-cream text-[18px] md:text-[22px]">
                                   {formatPrice(priceInfo.finalPrice)}
                                 </span>
                               </>
                             ) : (
-                              <span className="font-display text-cream text-lg tracking-tight">
+                              <span className="price text-cream text-[18px] md:text-[22px]">
                                 {formatPrice(priceInfo.originalPrice)}
                               </span>
                             )}
@@ -315,7 +316,7 @@ export default function StorePage() {
                           </div>
                         </div>
                         <div className="flex items-center justify-between border-t border-line pt-2">
-                          <span className="text-[9px] text-fg-muted font-mono uppercase tracking-widest">
+                          <span className="font-label tracking-[0.08em] text-fg-muted">
                             {cat.age}
                           </span>
                           {ratings[cat.id] &&
@@ -335,7 +336,7 @@ export default function StorePage() {
                               </span>
                             </div>
                           ) : (
-                            <span className="text-[9px] text-fg-faint font-mono">
+                            <span className="font-label tracking-[0.08em] text-fg-faint">
                               VOL. {String(i + 1).padStart(3, "0")}
                             </span>
                           )}
@@ -345,10 +346,10 @@ export default function StorePage() {
                   </Link>
 
                   <div className="mt-3 text-center">
-                    <h3 className="font-display text-base text-cream uppercase tracking-wide group-hover:text-primary transition-colors">
+                    <h3 className="font-heading text-h3 text-cream group-hover:text-primary transition-colors">
                       {cat.title}
                     </h3>
-                    <p className="text-[10px] text-fg-faint font-mono uppercase tracking-widest mt-1">
+                    <p className="font-label mt-1 tracking-[0.08em] text-fg-faint">
                       {cat.category}
                     </p>
                   </div>

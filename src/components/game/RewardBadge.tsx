@@ -126,7 +126,7 @@ export function RewardBadge({
             </span>
           ) : null}
           <span
-            className={`block ${sizeConfig.value} ${config.color} font-display uppercase truncate`}
+            className={`block ${sizeConfig.value} ${config.color} font-heading uppercase truncate`}
           >
             {value}
           </span>
@@ -213,7 +213,7 @@ export function RewardUnlockAnimation({
             Reward Unlocked
           </p>
           <h2
-            className={`font-display text-3xl ${config.color} uppercase tracking-wide`}
+            className={`font-heading text-3xl ${config.color} uppercase tracking-wide`}
           >
             {label}
           </h2>

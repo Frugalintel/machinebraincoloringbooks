@@ -89,7 +89,7 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-display font-bold mb-2">ANALYTICS</h2>
+        <h2 className="text-3xl font-heading font-bold mb-2">ANALYTICS</h2>
         <p className="text-fg-muted font-mono text-sm">
           Revenue Intelligence & Growth Metrics
         </p>
@@ -147,14 +147,14 @@ export default function AnalyticsPage() {
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="bg-surface-1 border border-line p-6 rounded-lg">
-              <h3 className="font-display text-xl mb-6">
+              <h3 className="font-heading text-xl mb-6">
                 Revenue Trend (Last 30 Days)
               </h3>
               <RevenueChart data={revenueData} />
             </div>
 
             <div className="bg-surface-1 border border-line p-6 rounded-lg">
-              <h3 className="font-display text-xl mb-6">Sales by Category</h3>
+              <h3 className="font-heading text-xl mb-6">Sales by Category</h3>
               <CategoryChart data={categoryData} />
             </div>
           </div>

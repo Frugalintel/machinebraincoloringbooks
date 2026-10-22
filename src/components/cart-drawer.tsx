@@ -100,9 +100,7 @@ export function CartDrawer() {
             <div className="relative z-10 p-6 border-b border-line flex items-center justify-between bg-background shrink-0">
               <div>
                 <div className="flex items-center gap-3">
-                  <h2 className="font-display text-3xl text-cream tracking-wide uppercase">
-                    CART
-                  </h2>
+                  <h2 className="font-heading text-h2 text-cream">CART</h2>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <div className="w-1.5 h-1.5 bg-primary animate-pulse"></div>
@@ -131,7 +129,7 @@ export function CartDrawer() {
                         className="text-fg-muted group-hover:text-primary transition-colors"
                       />
                     </div>
-                    <p className="font-display text-xl text-cream uppercase tracking-widest mb-1">
+                    <p className="font-heading text-xl text-cream uppercase tracking-widest mb-1">
                       Your cart is empty
                     </p>
                   </div>
@@ -153,7 +151,7 @@ export function CartDrawer() {
                           ) : (
                             <>
                               <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-multiply"></div>
-                              <div className="absolute inset-0 flex items-center justify-center text-fg-faint font-display text-2xl opacity-50 font-bold">
+                              <div className="absolute inset-0 flex items-center justify-center text-fg-faint font-heading text-2xl opacity-50 font-bold">
                                 {item.title.charAt(0)}
                               </div>
                             </>
@@ -163,7 +161,7 @@ export function CartDrawer() {
                         <div className="flex-1 flex flex-col justify-between py-0.5">
                           <div>
                             <div className="flex justify-between items-start gap-2">
-                              <h3 className="font-display text-base text-cream leading-none uppercase tracking-wide group-hover:text-primary transition-colors line-clamp-1">
+                              <h3 className="font-heading text-base text-cream leading-none uppercase tracking-wide group-hover:text-primary transition-colors line-clamp-1">
                                 {item.title}
                               </h3>
                               <button
@@ -200,7 +198,7 @@ export function CartDrawer() {
                                 <Plus size={10} />
                               </button>
                             </div>
-                            <p className="font-display text-base text-cream tracking-tight">
+                            <p className="font-heading text-base text-cream tracking-tight">
                               ${(item.price * item.quantity).toFixed(2)}
                             </p>
                           </div>
@@ -236,7 +234,7 @@ export function CartDrawer() {
                               className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-surface-2 text-fg-faint font-display text-xl">
+                            <div className="w-full h-full flex items-center justify-center bg-surface-2 text-fg-faint font-heading text-xl">
                               {product.title.charAt(0)}
                             </div>
                           )}
@@ -259,7 +257,7 @@ export function CartDrawer() {
                           </button>
                         </Link>
                         <div className="space-y-1">
-                          <h5 className="font-display text-xs text-cream uppercase tracking-wide truncate">
+                          <h5 className="font-heading text-xs text-cream uppercase tracking-wide truncate">
                             {product.title}
                           </h5>
                           <p className="font-mono text-[10px] text-fg-muted">
@@ -292,11 +290,11 @@ export function CartDrawer() {
                 <div className="h-px w-full bg-surface-2 my-2"></div>
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col">
-                    <span className="font-display text-xl text-cream uppercase tracking-wide">
+                    <span className="font-heading text-xl text-cream uppercase tracking-wide">
                       Total
                     </span>
                   </div>
-                  <span className="font-display text-4xl text-primary tracking-tighter leading-none">
+                  <span className="font-heading text-4xl text-primary tracking-tighter leading-none">
                     ${cartTotal.toFixed(2)}
                   </span>
                 </div>
@@ -304,7 +302,7 @@ export function CartDrawer() {
 
               <Button
                 disabled={items.length === 0}
-                className="w-full bg-primary text-ink hover:bg-cream border border-transparent hover:border-primary font-display text-xl h-14 rounded-none tracking-widest uppercase transition-all group relative overflow-hidden"
+                className="w-full bg-primary text-ink hover:bg-cream border border-transparent hover:border-primary font-heading text-xl h-14 rounded-none tracking-widest uppercase transition-all group relative overflow-hidden"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Proceed to Checkout{" "}

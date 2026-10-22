@@ -343,7 +343,7 @@ export default function CollectibleDetail() {
                 </span>
               </div>
 
-              <h1 className="font-display text-5xl md:text-7xl font-bold uppercase leading-[0.9] text-cream mb-8 tracking-tight">
+              <h1 className="font-display text-title uppercase text-cream mb-8">
                 {collectible.name}
               </h1>
 
@@ -387,7 +387,7 @@ export default function CollectibleDetail() {
                 <div className="absolute top-0 left-0 w-1 h-full bg-primary/50 group-hover:bg-primary transition-colors"></div>
                 <div className="flex justify-between items-start gap-4">
                   <div>
-                    <h4 className="font-display text-xl text-cream uppercase mb-2 group-hover:text-primary transition-colors">
+                    <h4 className="font-heading text-xl text-cream uppercase mb-2 group-hover:text-primary transition-colors">
                       {relatedAchievement
                         ? relatedAchievement.title
                         : "Classified Requirement"}
@@ -426,7 +426,7 @@ export default function CollectibleDetail() {
             {/* Interactive Data Section (PRIVATE) */}
             <div className="mt-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display text-xl text-cream uppercase flex items-center gap-2">
+                <h2 className="font-heading text-xl text-cream flex items-center gap-2">
                   <User size={18} className="text-primary" />
                   {user ? "Personal Archive" : "Encrypted Data"}
                 </h2>
@@ -442,7 +442,7 @@ export default function CollectibleDetail() {
                 {!user && (
                   <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm p-6 text-center">
                     <Lock className="w-12 h-12 text-primary mb-4" />
-                    <h3 className="font-display text-2xl text-cream uppercase mb-2">
+                    <h3 className="font-heading text-2xl text-cream mb-2">
                       Join the Hunt
                     </h3>
                     <p className="text-fg-secondary font-mono text-xs uppercase tracking-widest max-w-sm mb-6 leading-relaxed">
@@ -451,7 +451,7 @@ export default function CollectibleDetail() {
                     </p>
                     <Button
                       onClick={() => openAuthModal("register")}
-                      className="bg-primary text-ink hover:bg-cream hover:text-ink font-display uppercase tracking-widest px-8 h-12 rounded-none transition-all transform hover:scale-105"
+                      className="bg-primary text-ink hover:bg-cream hover:text-ink font-heading uppercase tracking-widest px-8 h-12 rounded-none transition-all transform hover:scale-105"
                     >
                       Initialize Neural Link
                     </Button>
