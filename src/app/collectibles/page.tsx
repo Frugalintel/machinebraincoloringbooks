@@ -88,7 +88,7 @@ export default function CollectiblesPublicPage() {
                   <Trophy size={14} />
                   <span>Rewards</span>
                 </div>
-                <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+                <h1 className="font-display text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
                   <span className="text-primary">Collectibles</span>
                 </h1>
                 <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl leading-relaxed">
@@ -128,13 +128,13 @@ export default function CollectiblesPublicPage() {
             {!user ? (
               <Button
                 onClick={() => openAuthModal("register")}
-                className="bg-cream text-ink hover:bg-primary hover:text-ink font-heading uppercase tracking-widest px-8 py-6 rounded-none text-lg transition-all transform hover:scale-105"
+                className="bg-cream text-ink hover:bg-primary hover:text-ink font-display uppercase tracking-widest px-8 py-6 rounded-none text-lg transition-all transform hover:scale-105"
               >
                 <UserPlus className="mr-2" size={20} /> Create account
               </Button>
             ) : (
               <Link href="/trophy-room">
-                <Button className="bg-primary text-ink hover:bg-cream hover:text-ink font-heading uppercase tracking-widest px-8 py-6 rounded-none text-lg">
+                <Button className="bg-primary text-ink hover:bg-cream hover:text-ink font-display uppercase tracking-widest px-8 py-6 rounded-none text-lg">
                   Go to Trophy Room <ArrowRight className="ml-2" size={20} />
                 </Button>
               </Link>
@@ -152,7 +152,7 @@ export default function CollectiblesPublicPage() {
                 <span className="text-primary font-mono text-xs uppercase tracking-[0.2em] mb-2 block">
                   Set {setIndex + 1}
                 </span>
-                <h2 className="font-heading text-4xl text-cream uppercase">
+                <h2 className="font-display text-4xl text-cream uppercase">
                   {set.title}
                 </h2>
               </div>
@@ -160,7 +160,7 @@ export default function CollectiblesPublicPage() {
                 <p className="font-mono text-xs text-fg-muted uppercase tracking-widest">
                   Total Artifacts
                 </p>
-                <p className="font-heading text-2xl">{set.total}</p>
+                <p className="font-display text-2xl">{set.total}</p>
               </div>
             </div>
 
@@ -228,7 +228,7 @@ export default function CollectiblesPublicPage() {
 
                       {/* Info & Action Area */}
                       <div className="flex-1 flex flex-col">
-                        <h3 className="font-heading text-xl text-cream uppercase mb-1 group-hover:text-primary transition-colors">
+                        <h3 className="font-display text-xl text-cream uppercase mb-1 group-hover:text-primary transition-colors">
                           {item.name}
                         </h3>
                         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest mb-4">
@@ -274,7 +274,7 @@ export default function CollectiblesPublicPage() {
       {!user && (
         <div className="bg-primary/10 border-t border-line py-20 text-center">
           <div className="container mx-auto px-4">
-            <h2 className="font-heading text-3xl md:text-5xl text-cream uppercase mb-6">
+            <h2 className="font-display text-3xl md:text-5xl text-cream uppercase mb-6">
               Start collecting
             </h2>
             <p className="text-fg-muted font-mono text-sm max-w-xl mx-auto mb-8 uppercase tracking-widest">
@@ -282,7 +282,7 @@ export default function CollectiblesPublicPage() {
             </p>
             <Button
               onClick={() => openAuthModal("register")}
-              className="bg-primary text-ink hover:bg-cream font-heading uppercase tracking-widest px-10 py-6 rounded-none text-xl"
+              className="bg-primary text-ink hover:bg-cream font-display uppercase tracking-widest px-10 py-6 rounded-none text-xl"
             >
               Create account
             </Button>

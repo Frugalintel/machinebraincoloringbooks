@@ -87,7 +87,7 @@ export default function HealthPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-heading font-bold mb-2">SYSTEM HEALTH</h2>
+        <h2 className="text-3xl font-display font-bold mb-2">SYSTEM HEALTH</h2>
         <p className="text-fg-muted font-mono text-sm">
           Infrastructure Status & Monitoring
         </p>
@@ -123,7 +123,7 @@ export default function HealthPage() {
               )}
             </div>
             <div>
-              <h3 className="text-xl font-bold font-heading mb-1">
+              <h3 className="text-xl font-bold font-display mb-1">
                 {status.service}
               </h3>
               <div className="flex items-center gap-2">

@@ -97,7 +97,7 @@ export default function StorePage() {
             <ShoppingBag size={14} />
             <span>Store</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+          <h1 className="font-display text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
             All Books
           </h1>
           <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-md">
@@ -245,7 +245,7 @@ export default function StorePage() {
                           className={`flex-1 ${cat.color} relative overflow-hidden`}
                         >
                           <div className="absolute top-0 left-0 right-0 h-8 bg-background/40 flex items-center justify-center border-b border-background/10 backdrop-blur-sm z-10">
-                            <span className="font-heading text-fg-secondary text-sm tracking-widest uppercase">
+                            <span className="font-display text-fg-secondary text-sm tracking-widest uppercase">
                               {cat.subtitle}
                             </span>
                           </div>
@@ -293,12 +293,12 @@ export default function StorePage() {
                                 <span className="text-fg-muted line-through text-[10px] font-mono">
                                   {formatPrice(priceInfo.originalPrice)}
                                 </span>
-                                <span className="font-heading text-cream text-lg tracking-tight">
+                                <span className="font-display text-cream text-lg tracking-tight">
                                   {formatPrice(priceInfo.finalPrice)}
                                 </span>
                               </>
                             ) : (
-                              <span className="font-heading text-cream text-lg tracking-tight">
+                              <span className="font-display text-cream text-lg tracking-tight">
                                 {formatPrice(priceInfo.originalPrice)}
                               </span>
                             )}
@@ -345,7 +345,7 @@ export default function StorePage() {
                   </Link>
 
                   <div className="mt-3 text-center">
-                    <h3 className="font-heading text-base text-cream uppercase tracking-wide group-hover:text-primary transition-colors">
+                    <h3 className="font-display text-base text-cream uppercase tracking-wide group-hover:text-primary transition-colors">
                       {cat.title}
                     </h3>
                     <p className="text-[10px] text-fg-faint font-mono uppercase tracking-widest mt-1">

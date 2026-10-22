@@ -169,7 +169,7 @@ function AuthPageContent() {
           size={18}
           className={`mr-2 ${isLastUsed ? "text-primary group-hover:text-ink" : ""}`}
         />
-        <span className="text-xs font-heading uppercase tracking-wider">
+        <span className="text-xs font-display uppercase tracking-wider">
           {label}
         </span>
       </button>
@@ -252,7 +252,7 @@ function AuthPageContent() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50 flex items-center justify-center"
+        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-display text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50 flex items-center justify-center"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -297,7 +297,7 @@ function AuthPageContent() {
 
           <div className="text-center mb-8">
             <Link href="/" className="inline-block group">
-              <h1 className="font-heading text-4xl font-bold text-cream mb-2 transition-colors uppercase tracking-tighter group-hover:text-primary">
+              <h1 className="font-display text-4xl font-bold text-cream mb-2 transition-colors uppercase tracking-tighter group-hover:text-primary">
                 Machine
                 <br />
                 Brain

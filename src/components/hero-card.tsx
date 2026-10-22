@@ -98,7 +98,7 @@ export function HeroCard({
           </p>
           <h1
             id="home-hero-heading"
-            className="font-heading text-[clamp(2.6rem,11vw,5.75rem)] font-bold uppercase leading-[0.86] tracking-[-0.045em] text-cream"
+            className="font-display text-[clamp(2.15rem,8.4vw,4.6rem)] font-bold uppercase leading-[0.94] tracking-[-0.02em] text-cream"
           >
             <span className="block">{headlineWhite}</span>
             <span className="mt-1 block text-(--hero-accent)">
@@ -111,13 +111,13 @@ export function HeroCard({
           <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:gap-4 lg:items-start">
             <Button
               asChild
-              className="h-11 rounded-md bg-(--hero-accent) px-8 font-heading text-sm uppercase tracking-[0.2em] text-ink hover:bg-cream hover:text-ink sm:h-12 sm:text-base"
+              className="h-11 rounded-md bg-(--hero-accent) px-8 font-display text-sm uppercase tracking-[0.2em] text-ink hover:bg-cream hover:text-ink sm:h-12 sm:text-base"
             >
               <Link href={primaryCta.href}>{primaryCta.label}</Link>
             </Button>
             <Link
               href={secondaryCta.href}
-              className="inline-flex min-h-10 items-center font-heading text-xs uppercase tracking-[0.24em] text-fg-muted transition-colors hover:text-cream sm:min-h-11 sm:text-sm"
+              className="inline-flex min-h-10 items-center font-display text-xs uppercase tracking-[0.24em] text-fg-muted transition-colors hover:text-cream sm:min-h-11 sm:text-sm"
             >
               {secondaryCta.label}
             </Link>
@@ -177,7 +177,7 @@ export function HeroCard({
                   {originalPrice}
                 </span>
               ) : null}
-              <span className="mt-1 block font-heading text-[1.75rem] leading-none tracking-tight">
+              <span className="mt-1 block font-display text-[1.75rem] leading-none tracking-tight">
                 {price}
               </span>
             </span>

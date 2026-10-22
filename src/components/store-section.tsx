@@ -62,7 +62,7 @@ export function StoreSection() {
         <div className="flex items-center gap-4">
           <div className="h-8 w-4 bg-primary"></div>
           <div>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tighter text-cream leading-none">
+            <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tighter text-cream leading-none">
               BOOKS
             </h2>
             <span className="font-sans text-[10px] text-fg-muted tracking-[0.3em] uppercase block mt-1">
@@ -134,7 +134,7 @@ export function StoreSection() {
                     >
                       {/* Top Strip: Title */}
                       <div className="absolute top-0 left-0 right-0 h-8 bg-background/40 flex items-center justify-center border-b border-background/10 backdrop-blur-sm z-10">
-                        <span className="font-heading text-fg-secondary text-sm tracking-widest uppercase">
+                        <span className="font-display text-fg-secondary text-sm tracking-widest uppercase">
                           {cat.subtitle}
                         </span>
                       </div>
@@ -186,12 +186,12 @@ export function StoreSection() {
                               <span className="text-fg-muted line-through text-[10px] font-mono">
                                 {formatPrice(priceInfo.originalPrice)}
                               </span>
-                              <span className="font-heading text-cream text-lg tracking-tight">
+                              <span className="font-display text-cream text-lg tracking-tight">
                                 {formatPrice(priceInfo.finalPrice)}
                               </span>
                             </>
                           ) : (
-                            <span className="font-heading text-cream text-lg tracking-tight">
+                            <span className="font-display text-cream text-lg tracking-tight">
                               {formatPrice(priceInfo.originalPrice)}
                             </span>
                           )}
@@ -223,7 +223,7 @@ export function StoreSection() {
 
                 {/* Title Below */}
                 <div className="mt-3 text-center">
-                  <h3 className="font-heading text-base text-cream uppercase tracking-wide group-hover:text-primary transition-colors">
+                  <h3 className="font-display text-base text-cream uppercase tracking-wide group-hover:text-primary transition-colors">
                     {cat.title}
                   </h3>
                 </div>

@@ -28,12 +28,10 @@ export default function MediaLibraryPage() {
   const fetchImages = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.storage
-        .from("products")
-        .list("", {
-          limit: 100,
-          sortBy: { column: "created_at", order: "desc" },
-        });
+      const { data, error } = await supabase.storage.from("products").list("", {
+        limit: 100,
+        sortBy: { column: "created_at", order: "desc" },
+      });
 
       if (data) setImages(data);
       if (error) logger.error("Error fetching images:", error);
@@ -73,7 +71,7 @@ export default function MediaLibraryPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-heading font-bold mb-1">MEDIA LIBRARY</h2>
+        <h2 className="text-3xl font-display font-bold mb-1">MEDIA LIBRARY</h2>
         <p className="text-fg-muted font-mono text-sm">
           Manage your uploaded assets.
         </p>
@@ -101,7 +99,7 @@ export default function MediaLibraryPage() {
           {images.length === 0 && (
             <div className="col-span-full p-20 text-center text-fg-muted bg-surface-1 border border-line rounded-xl border-dashed">
               <ImageIcon size={48} className="mx-auto text-fg-faint mb-4" />
-              <p className="font-heading text-lg text-fg-muted">
+              <p className="font-display text-lg text-fg-muted">
                 No media found
               </p>
               <p className="text-xs font-mono mt-2">

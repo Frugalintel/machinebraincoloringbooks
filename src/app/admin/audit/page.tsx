@@ -148,7 +148,7 @@ export default function AuditLogPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-heading font-bold mb-2 tracking-tight">
+        <h2 className="text-3xl font-display font-bold mb-2 tracking-tight">
           AUDIT LOG
         </h2>
         <p className="text-fg-muted font-mono text-sm">

@@ -78,7 +78,7 @@ export default function AdminStoriesPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-heading font-bold mb-1">
+          <h2 className="text-3xl font-display font-bold mb-1">
             INTERACTIVE ADVENTURES
           </h2>
           <p className="text-fg-muted font-mono text-sm">
@@ -136,7 +136,7 @@ export default function AdminStoriesPage() {
           {filteredStories.length === 0 && (
             <div className="col-span-full p-20 text-center text-fg-muted bg-surface-1 border border-line rounded-lg border-dashed">
               <BookOpen size={48} className="mx-auto text-fg-faint mb-4" />
-              <p className="font-heading text-lg text-fg-muted">
+              <p className="font-display text-lg text-fg-muted">
                 No adventures found
               </p>
             </div>
@@ -195,7 +195,7 @@ export default function AdminStoriesPage() {
                         {/* Content Info */}
                         <div className="absolute bottom-0 left-0 right-0 p-5 z-30">
                           <div className="mb-3">
-                            <h3 className="font-heading text-xl font-bold text-cream leading-tight mb-1 truncate">
+                            <h3 className="font-display text-xl font-bold text-cream leading-tight mb-1 truncate">
                               {story.title}
                             </h3>
                             <p className="text-xs text-fg-muted line-clamp-2">
@@ -287,7 +287,7 @@ export default function AdminStoriesPage() {
                           </div>
                         </td>
                         <td className="p-4">
-                          <div className="font-heading font-bold text-cream text-sm truncate max-w-[200px]">
+                          <div className="font-display font-bold text-cream text-sm truncate max-w-[200px]">
                             {story.title}
                           </div>
                           <div className="text-[10px] text-fg-muted font-mono mt-1">

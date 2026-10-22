@@ -300,7 +300,7 @@ export default function ScanPage() {
             <Scan size={14} />
             <span>Scanner</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+          <h1 className="font-display text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
             Scan a Page
           </h1>
           <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl mx-auto">
@@ -322,7 +322,7 @@ export default function ScanPage() {
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <Camera size={40} className="text-primary" />
               </div>
-              <h3 className="font-heading text-lg uppercase mb-3 text-cream">
+              <h3 className="font-display text-lg uppercase mb-3 text-cream">
                 Camera Access Needed
               </h3>
               <p className="text-fg-muted font-mono text-xs mb-8 max-w-xs leading-relaxed">
@@ -332,7 +332,7 @@ export default function ScanPage() {
               <div className="space-y-3 w-full max-w-xs">
                 <Button
                   onClick={() => setStep("qr")}
-                  className="w-full h-12 bg-primary text-ink hover:bg-primary/90 font-heading uppercase tracking-widest"
+                  className="w-full h-12 bg-primary text-ink hover:bg-primary/90 font-display uppercase tracking-widest"
                 >
                   Enable Camera
                 </Button>
@@ -355,7 +355,7 @@ export default function ScanPage() {
               <div className="w-16 h-16 bg-warning-wash text-warning rounded-full flex items-center justify-center mb-6">
                 <ShieldAlert size={32} />
               </div>
-              <h3 className="font-heading text-xl uppercase mb-3 text-warning">
+              <h3 className="font-display text-xl uppercase mb-3 text-warning">
                 Secure Connection Required
               </h3>
               <p className="text-fg-muted font-mono text-xs mb-6 max-w-xs leading-relaxed">
@@ -471,7 +471,7 @@ export default function ScanPage() {
           {step === "qr" && isSecure && !useCamera ? (
             <div className="w-full h-full flex flex-col items-center justify-center p-8">
               <CameraOff size={48} className="text-fg-faint mb-6" />
-              <h3 className="font-heading text-lg uppercase mb-2">
+              <h3 className="font-display text-lg uppercase mb-2">
                 Manual Entry
               </h3>
               <p className="text-fg-muted font-mono text-xs mb-6 text-center">
@@ -491,7 +491,7 @@ export default function ScanPage() {
                 <Button
                   type="submit"
                   disabled={!manualCode.trim()}
-                  className="w-full h-12 bg-primary text-ink hover:bg-primary/90 font-heading uppercase"
+                  className="w-full h-12 bg-primary text-ink hover:bg-primary/90 font-display uppercase"
                 >
                   Verify Code
                 </Button>
@@ -521,7 +521,7 @@ export default function ScanPage() {
                 <div className="w-24 h-24 rounded-full border-2 border-dashed border-fg-faint flex items-center justify-center mb-4 mx-auto">
                   <Camera size={40} className="text-fg-muted" />
                 </div>
-                <h3 className="font-heading text-xl uppercase mb-2">
+                <h3 className="font-display text-xl uppercase mb-2">
                   Capture Page
                 </h3>
                 <p className="text-fg-muted font-mono text-xs max-w-xs mx-auto">
@@ -538,7 +538,7 @@ export default function ScanPage() {
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                <div className="bg-primary text-ink font-heading uppercase tracking-wider px-8 py-4 rounded-full flex items-center gap-3 hover:bg-cream transition-colors">
+                <div className="bg-primary text-ink font-display uppercase tracking-wider px-8 py-4 rounded-full flex items-center gap-3 hover:bg-cream transition-colors">
                   <Camera size={20} />
                   Open Camera
                 </div>
@@ -630,7 +630,7 @@ export default function ScanPage() {
                 <span>Success</span>
               </div>
 
-              <h3 className="font-heading text-2xl uppercase mb-2 text-cream">
+              <h3 className="font-display text-2xl uppercase mb-2 text-cream">
                 Scan Uploaded!
               </h3>
               <p className="text-fg-muted font-mono text-xs mb-6 max-w-xs">
@@ -640,7 +640,7 @@ export default function ScanPage() {
 
               <div className="flex flex-col gap-3 w-full max-w-xs">
                 <Link href="/trophy-room" className="w-full">
-                  <Button className="w-full h-12 bg-primary text-ink hover:bg-primary/90 font-heading uppercase tracking-widest">
+                  <Button className="w-full h-12 bg-primary text-ink hover:bg-primary/90 font-display uppercase tracking-widest">
                     <Trophy size={16} className="mr-2" /> View Trophy Room
                   </Button>
                 </Link>

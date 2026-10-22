@@ -23,7 +23,7 @@ export default function Home() {
             <p className="text-[10px] font-mono text-primary uppercase tracking-[0.3em] mb-3">
               How It Works
             </p>
-            <h3 className="font-heading text-2xl md:text-4xl text-cream uppercase tracking-tight mb-12">
+            <h3 className="font-display text-2xl md:text-4xl text-cream uppercase tracking-tight mb-12">
               Every book has a secret code.
             </h3>
 
@@ -34,7 +34,7 @@ export default function Home() {
                   <Book size={24} className="text-primary" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-heading text-sm text-cream uppercase tracking-wide">
+                  <h4 className="font-display text-sm text-cream uppercase tracking-wide">
                     1. Get the book
                   </h4>
                   <p className="text-fg-muted text-xs font-mono">
@@ -49,7 +49,7 @@ export default function Home() {
                   <Key size={24} className="text-primary" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-heading text-sm text-cream uppercase tracking-wide">
+                  <h4 className="font-display text-sm text-cream uppercase tracking-wide">
                     2. Find the code
                   </h4>
                   <p className="text-fg-muted text-xs font-mono">
@@ -64,7 +64,7 @@ export default function Home() {
                   <Sparkles size={24} className="text-primary" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-heading text-sm text-cream uppercase tracking-wide">
+                  <h4 className="font-display text-sm text-cream uppercase tracking-wide">
                     3. Unlock Rewards
                   </h4>
                   <p className="text-fg-muted text-xs font-mono">

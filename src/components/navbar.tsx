@@ -226,7 +226,7 @@ export function Navbar() {
               className="flex flex-col leading-none tracking-tighter group"
             >
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl md:text-4xl font-heading font-bold text-cream uppercase group-hover:text-primary transition-colors">
+                <h1 className="text-2xl md:text-4xl font-display font-bold text-cream uppercase group-hover:text-primary transition-colors">
                   Machine Brain
                 </h1>
                 <div className="w-2 h-2 md:w-3 md:h-3 bg-primary mt-1 group-hover:bg-cream transition-colors"></div>
@@ -271,7 +271,7 @@ export function Navbar() {
                 className={`flex items-center justify-center w-10 h-10 border border-line transition-colors ${isProfileOpen || user ? "bg-primary text-ink border-primary hover:bg-cream" : "hover:bg-primary hover:border-primary hover:text-ink text-cream"}`}
               >
                 {user ? (
-                  <span className="font-heading font-bold text-sm tracking-wide">
+                  <span className="font-display font-bold text-sm tracking-wide">
                     {user.initials}
                   </span>
                 ) : (
@@ -291,7 +291,7 @@ export function Navbar() {
                     {user ? (
                       <>
                         <div className="p-4 border-b border-line">
-                          <p className="text-cream font-heading uppercase">
+                          <p className="text-cream font-display uppercase">
                             {user.initials}
                           </p>
                           <p className="text-[10px] text-fg-muted font-mono truncate">
@@ -334,7 +334,7 @@ export function Navbar() {
                           className="px-4 py-3 text-sm text-cream hover:bg-background flex items-center gap-3 transition-colors border-b border-line w-full text-left"
                         >
                           <LogIn size={14} className="text-primary" />
-                          <span className="font-heading uppercase tracking-wider">
+                          <span className="font-display uppercase tracking-wider">
                             Login
                           </span>
                         </button>
@@ -411,7 +411,7 @@ export function Navbar() {
               className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-background border-r border-line z-[10002] lg:hidden flex flex-col pt-[env(safe-area-inset-top)]"
             >
               <div className="p-6 border-b border-line flex justify-between items-center">
-                <h2 className="font-heading text-2xl text-cream uppercase">
+                <h2 className="font-display text-2xl text-cream uppercase">
                   Menu
                 </h2>
                 <button
@@ -428,7 +428,7 @@ export function Navbar() {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`text-2xl font-heading uppercase tracking-wide ${
+                    className={`text-2xl font-display uppercase tracking-wide ${
                       pathname.startsWith(link.href)
                         ? "text-primary"
                         : "text-cream hover:text-primary"

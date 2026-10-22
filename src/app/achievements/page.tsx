@@ -113,7 +113,7 @@ export default function AchievementsPage() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
             <Lock className="w-12 h-12 text-fg-muted mx-auto" />
-            <h1 className="text-2xl font-heading uppercase">
+            <h1 className="text-2xl font-display uppercase">
               Restricted Access
             </h1>
             <p className="text-fg-muted font-mono text-xs max-w-xs mx-auto">
@@ -183,7 +183,7 @@ export default function AchievementsPage() {
                 <Trophy size={14} />
                 <span>Achievements</span>
               </div>
-              <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+              <h1 className="font-display text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
                 Achievements
               </h1>
               <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">
@@ -208,7 +208,7 @@ export default function AchievementsPage() {
                       Equipped
                     </p>
                     <p
-                      className={`font-heading text-xl ${isFull ? "text-signal" : "text-primary"}`}
+                      className={`font-display text-xl ${isFull ? "text-signal" : "text-primary"}`}
                     >
                       {activeAchievementIds.length} / {loadoutSlots}
                     </p>
@@ -249,7 +249,7 @@ export default function AchievementsPage() {
               </div>
               <div className="space-y-4">
                 <div className="flex items-baseline justify-between">
-                  <span className="font-heading text-3xl text-cream">
+                  <span className="font-display text-3xl text-cream">
                     {unlockedAchievements.length}
                   </span>
                   <span className="text-fg-muted font-mono text-sm">
@@ -267,7 +267,7 @@ export default function AchievementsPage() {
                     <span className="text-[10px] text-fg-muted font-mono">
                       Current Title:
                     </span>
-                    <p className="text-signal font-heading uppercase">
+                    <p className="text-signal font-display uppercase">
                       {achievementMilestone.reward.label}
                     </p>
                   </div>
@@ -356,7 +356,7 @@ export default function AchievementsPage() {
                 </div>
               </div>
               <div className="space-y-4">
-                <h3 className="font-heading text-2xl text-cream uppercase">
+                <h3 className="font-display text-2xl text-cream uppercase">
                   Achievement Trophy
                 </h3>
                 <p className="text-fg-muted font-mono text-sm">
@@ -366,7 +366,7 @@ export default function AchievementsPage() {
                 </p>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-background border border-line p-4 text-center">
-                    <p className="font-heading text-2xl text-cream">
+                    <p className="font-display text-2xl text-cream">
                       {unlockedAchievements.length}
                     </p>
                     <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
@@ -374,7 +374,7 @@ export default function AchievementsPage() {
                     </p>
                   </div>
                   <div className="bg-background border border-line p-4 text-center">
-                    <p className="font-heading text-2xl text-cream">
+                    <p className="font-display text-2xl text-cream">
                       {activeAchievementIds.length}
                     </p>
                     <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
@@ -382,7 +382,7 @@ export default function AchievementsPage() {
                     </p>
                   </div>
                   <div className="bg-background border border-line p-4 text-center">
-                    <p className="font-heading text-2xl text-cream">
+                    <p className="font-display text-2xl text-cream">
                       {achievementScore}
                     </p>
                     <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
@@ -391,7 +391,7 @@ export default function AchievementsPage() {
                   </div>
                 </div>
                 <Link href="/trophy-room">
-                  <Button className="w-full bg-transparent border border-line text-signal hover:bg-cream hover:text-ink font-heading uppercase tracking-widest h-12 rounded-none">
+                  <Button className="w-full bg-transparent border border-line text-signal hover:bg-cream hover:text-ink font-display uppercase tracking-widest h-12 rounded-none">
                     <Trophy size={16} className="mr-2" /> View Trophy Room
                   </Button>
                 </Link>
@@ -405,7 +405,7 @@ export default function AchievementsPage() {
         {/* Active Loadout Preview (Sticky) */}
         <div className="mb-12 sticky top-20 z-30 bg-background/80 backdrop-blur-md border border-line p-6 shadow-2xl">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading text-xl text-cream uppercase flex items-center gap-2">
+            <h3 className="font-display text-xl text-cream uppercase flex items-center gap-2">
               <Zap size={16} className="text-primary" /> Your badges
             </h3>
             <span className="text-[10px] text-fg-muted font-mono uppercase">
@@ -523,7 +523,7 @@ export default function AchievementsPage() {
                     <div className="flex items-center gap-2 text-signal text-[10px] font-mono uppercase tracking-widest mb-2">
                       <ArrowRightLeft size={12} /> Swap Mission
                     </div>
-                    <h3 className="font-heading text-xl text-cream uppercase">
+                    <h3 className="font-display text-xl text-cream uppercase">
                       Select Mission to Replace
                     </h3>
                   </div>
@@ -551,7 +551,7 @@ export default function AchievementsPage() {
                         <AchievementIcon icon={newMission.icon} size={16} />
                       </div>
                       <div>
-                        <h4 className="font-heading text-cream uppercase">
+                        <h4 className="font-display text-cream uppercase">
                           {newMission.title}
                         </h4>
                         <p className="text-[10px] text-fg-muted font-mono uppercase">
@@ -589,7 +589,7 @@ export default function AchievementsPage() {
                           />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-heading text-cream uppercase group-hover:text-danger transition-colors">
+                          <h4 className="font-display text-cream uppercase group-hover:text-danger transition-colors">
                             {activeMission.title}
                           </h4>
                           <p className="text-[10px] text-fg-muted font-mono uppercase">

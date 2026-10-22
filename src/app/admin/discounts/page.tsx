@@ -250,7 +250,7 @@ export default function DiscountsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-heading font-bold mb-1">DISCOUNTS</h2>
+          <h2 className="text-3xl font-display font-bold mb-1">DISCOUNTS</h2>
           <p className="text-fg-muted font-mono text-sm">
             Manage campaigns and promo codes.
           </p>

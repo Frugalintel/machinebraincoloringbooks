@@ -108,7 +108,7 @@ export default function NewProductPage() {
             <ChevronLeft size={24} />
           </Link>
           <div>
-            <h2 className="text-3xl font-heading font-bold">NEW PRODUCT</h2>
+            <h2 className="text-3xl font-display font-bold">NEW PRODUCT</h2>
             <p className="text-fg-muted font-mono text-sm">
               Create a new listing.
             </p>

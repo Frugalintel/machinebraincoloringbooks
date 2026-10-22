@@ -63,7 +63,7 @@ export default function SettingsPage() {
     <div className="max-w-5xl mx-auto pb-20">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-3xl font-heading font-bold mb-1">SETTINGS</h2>
+          <h2 className="text-3xl font-display font-bold mb-1">SETTINGS</h2>
           <p className="text-fg-muted font-mono text-sm">
             Configure your store preferences.
           </p>

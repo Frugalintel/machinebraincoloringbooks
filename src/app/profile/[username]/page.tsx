@@ -80,7 +80,7 @@ export default function ProfilePage() {
           >
             <Avatar className="w-40 h-40 border-4 border-background rounded-none shadow-xl relative z-10 bg-surface-2">
               <AvatarImage src="" /> {/* No image for now, force fallback */}
-              <AvatarFallback className="bg-surface-2 text-4xl font-heading text-fg-muted rounded-none uppercase">
+              <AvatarFallback className="bg-surface-2 text-4xl font-display text-fg-muted rounded-none uppercase">
                 {isCurrentUser && user ? user.initials : "MB"}
               </AvatarFallback>
             </Avatar>
@@ -97,7 +97,7 @@ export default function ProfilePage() {
 
           <div className="flex-1 mb-4">
             <div className="flex flex-col md:flex-row md:items-center gap-4 mb-2">
-              <h1 className="font-heading text-4xl md:text-6xl font-bold uppercase leading-none tracking-tighter">
+              <h1 className="font-display text-4xl md:text-6xl font-bold uppercase leading-none tracking-tighter">
                 {displayName}
               </h1>
               <span className="self-start md:self-auto text-[10px] font-mono bg-primary/10 text-primary border border-primary/30 px-2 py-1 uppercase tracking-widest">
@@ -113,7 +113,7 @@ export default function ProfilePage() {
 
           <div className="flex gap-8 mb-6 text-center border-l border-line pl-8 hidden md:flex">
             <div>
-              <p className="font-heading text-3xl font-bold text-cream">
+              <p className="font-display text-3xl font-bold text-cream">
                 {achievements.filter((a) => a.unlocked).length}
               </p>
               <p className="text-[10px] text-fg-muted tracking-widest uppercase font-mono">
@@ -121,7 +121,7 @@ export default function ProfilePage() {
               </p>
             </div>
             <div>
-              <p className="font-heading text-3xl font-bold text-cream">
+              <p className="font-display text-3xl font-bold text-cream">
                 {collectionSets.reduce(
                   (acc, set) => acc + set.collected.length,
                   0,
@@ -140,7 +140,7 @@ export default function ProfilePage() {
             {/* Achievements Section */}
             <div className="space-y-8">
               <div className="flex items-center justify-between border-b border-line pb-4">
-                <h2 className="font-heading text-2xl text-cream uppercase tracking-wide flex items-center gap-3">
+                <h2 className="font-display text-2xl text-cream uppercase tracking-wide flex items-center gap-3">
                   <Trophy className="text-primary" /> Active Missions
                 </h2>
                 <Link href="/achievements">
@@ -196,7 +196,7 @@ export default function ProfilePage() {
             {/* Collectibles Showcase */}
             <div className="space-y-8">
               <div className="flex items-center justify-between border-b border-line pb-4">
-                <h2 className="font-heading text-2xl text-cream uppercase tracking-wide flex items-center gap-3">
+                <h2 className="font-display text-2xl text-cream uppercase tracking-wide flex items-center gap-3">
                   <Box className="text-primary" /> Digital Collection
                 </h2>
                 <Link href="/trophy-room">
@@ -249,7 +249,7 @@ export default function ProfilePage() {
                       <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono mb-1">
                         Collection Rank
                       </p>
-                      <p className="font-heading text-xl text-cream uppercase">
+                      <p className="font-display text-xl text-cream uppercase">
                         {collectionSets.reduce(
                           (acc, set) => acc + set.collected.length,
                           0,
@@ -265,7 +265,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex gap-4">
                       <div>
-                        <p className="font-heading text-2xl text-primary">
+                        <p className="font-display text-2xl text-primary">
                           {collectionSets.reduce(
                             (acc, set) => acc + set.collected.length,
                             0,
@@ -276,7 +276,7 @@ export default function ProfilePage() {
                         </p>
                       </div>
                       <div>
-                        <p className="font-heading text-2xl text-fg-faint">
+                        <p className="font-display text-2xl text-fg-faint">
                           {collectionSets.reduce(
                             (acc, set) =>
                               acc + (set.total - set.collected.length),
@@ -310,7 +310,7 @@ export default function ProfilePage() {
                       className="border border-line bg-background p-4 relative group hover:border-line-strong transition-colors"
                     >
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-heading text-lg text-cream uppercase">
+                        <h3 className="font-display text-lg text-cream uppercase">
                           {set.title}
                         </h3>
                         <span className="font-mono text-xs text-primary">
@@ -371,7 +371,7 @@ export default function ProfilePage() {
 
             <div className="relative z-10 max-w-lg mx-auto">
               <Lock className="w-12 h-12 text-primary mx-auto mb-6" />
-              <h2 className="font-heading text-3xl text-cream uppercase mb-4 tracking-wide">
+              <h2 className="font-display text-3xl text-cream uppercase mb-4 tracking-wide">
                 Access Restricted
               </h2>
               <p className="text-fg-muted font-mono text-sm uppercase tracking-widest mb-8 leading-relaxed">
@@ -380,7 +380,7 @@ export default function ProfilePage() {
               </p>
               <Button
                 onClick={() => openAuthModal("login")}
-                className="bg-primary text-ink hover:bg-cream font-heading uppercase tracking-widest px-8 py-6 rounded-none text-lg"
+                className="bg-primary text-ink hover:bg-cream font-display uppercase tracking-widest px-8 py-6 rounded-none text-lg"
               >
                 Authenticate User
               </Button>
@@ -390,7 +390,7 @@ export default function ProfilePage() {
 
         {/* --- MAINTENANCE SECTION: ORDERS & SETTINGS --- */}
         <div className="border-t border-line pt-12">
-          <h2 className="font-heading text-xl text-fg-muted uppercase tracking-widest mb-8 flex items-center gap-2">
+          <h2 className="font-display text-xl text-fg-muted uppercase tracking-widest mb-8 flex items-center gap-2">
             <Shield size={16} /> Account Maintenance
           </h2>
 
@@ -399,13 +399,13 @@ export default function ProfilePage() {
               <TabsList className="w-full bg-transparent border-b border-line p-0 h-auto justify-start rounded-none gap-8 mb-8 flex-wrap md:flex-nowrap">
                 <TabsTrigger
                   value="history"
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-line-strong data-[state=active]:bg-transparent data-[state=active]:text-cream text-fg-faint font-heading text-sm px-0 pb-2 tracking-widest uppercase hover:text-fg-muted transition-colors flex-1 md:flex-none text-left justify-start"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-line-strong data-[state=active]:bg-transparent data-[state=active]:text-cream text-fg-faint font-display text-sm px-0 pb-2 tracking-widest uppercase hover:text-fg-muted transition-colors flex-1 md:flex-none text-left justify-start"
                 >
                   Order History
                 </TabsTrigger>
                 <TabsTrigger
                   value="settings"
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-line-strong data-[state=active]:bg-transparent data-[state=active]:text-cream text-fg-faint font-heading text-sm px-0 pb-2 tracking-widest uppercase hover:text-fg-muted transition-colors flex-1 md:flex-none text-left justify-start"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-line-strong data-[state=active]:bg-transparent data-[state=active]:text-cream text-fg-faint font-display text-sm px-0 pb-2 tracking-widest uppercase hover:text-fg-muted transition-colors flex-1 md:flex-none text-left justify-start"
                 >
                   System Settings
                 </TabsTrigger>
@@ -431,7 +431,7 @@ export default function ProfilePage() {
               <TabsContent value="settings">
                 <div className="max-w-xl border border-line bg-background p-8 relative">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-fg-muted to-transparent"></div>
-                  <h3 className="font-heading text-2xl text-cream mb-8 uppercase flex items-center gap-3">
+                  <h3 className="font-display text-2xl text-cream mb-8 uppercase flex items-center gap-3">
                     <Terminal size={20} className="text-fg-muted" /> Account
                     Data
                   </h3>
@@ -454,7 +454,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="pt-4 border-t border-line">
-                      <Button className="bg-cream text-ink hover:bg-primary hover:text-ink font-heading tracking-[0.2em] uppercase text-lg px-8 py-6 rounded-none w-full border border-transparent hover:border-ink transition-all">
+                      <Button className="bg-cream text-ink hover:bg-primary hover:text-ink font-display tracking-[0.2em] uppercase text-lg px-8 py-6 rounded-none w-full border border-transparent hover:border-ink transition-all">
                         Save Changes
                       </Button>
 
@@ -462,7 +462,7 @@ export default function ProfilePage() {
                         <Button
                           variant="outline"
                           onClick={signOut}
-                          className="w-full border border-danger/50 text-danger hover:bg-danger-strong hover:text-cream font-heading tracking-widest uppercase h-12 rounded-none"
+                          className="w-full border border-danger/50 text-danger hover:bg-danger-strong hover:text-cream font-display tracking-widest uppercase h-12 rounded-none"
                         >
                           Disconnect System (Logout)
                         </Button>

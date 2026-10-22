@@ -83,7 +83,7 @@ export default function AdminLayout({
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-            <span className="font-heading font-bold text-lg tracking-wide uppercase">
+            <span className="font-display font-bold text-lg tracking-wide uppercase">
               Machine Brain
             </span>
           </div>
@@ -105,7 +105,7 @@ export default function AdminLayout({
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 bg-cream rounded-full"></div>{" "}
               {/* Logo Placeholder */}
-              <span className="font-heading font-bold text-lg tracking-wide">
+              <span className="font-display font-bold text-lg tracking-wide">
                 MACHINE BRAIN
               </span>
             </div>

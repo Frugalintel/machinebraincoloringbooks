@@ -47,7 +47,7 @@ export function Footer() {
         {/* Brand Column */}
         <div className="flex flex-col justify-between">
           <div>
-            <h3 className="font-heading text-2xl text-cream uppercase tracking-tighter mb-4">
+            <h3 className="font-display text-2xl text-cream uppercase tracking-tighter mb-4">
               Machine
               <br />
               <span className="text-primary">Brain</span>

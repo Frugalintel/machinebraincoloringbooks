@@ -149,7 +149,7 @@ export default function TrophyRoomPage() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
             <Lock className="w-12 h-12 text-fg-muted mx-auto" />
-            <h1 className="text-2xl font-heading uppercase">
+            <h1 className="text-2xl font-display uppercase">
               Restricted Access
             </h1>
             <Button
@@ -184,7 +184,7 @@ export default function TrophyRoomPage() {
             <Trophy size={14} />
             <span>Your Collection</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+          <h1 className="font-display text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
             Your Collection
           </h1>
           <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">
@@ -218,7 +218,7 @@ export default function TrophyRoomPage() {
 
                   <div className="flex justify-between items-start mb-8">
                     <div>
-                      <h3 className="font-heading text-3xl text-cream uppercase tracking-wide mb-2">
+                      <h3 className="font-display text-3xl text-cream uppercase tracking-wide mb-2">
                         {set.title}
                       </h3>
                       <div className="flex items-center gap-2 text-xs font-mono text-fg-muted uppercase tracking-widest">
@@ -231,7 +231,7 @@ export default function TrophyRoomPage() {
                       </div>
                     </div>
                     {isComplete ? (
-                      <div className="bg-primary text-ink px-4 py-2 font-heading uppercase tracking-widest text-sm animate-pulse">
+                      <div className="bg-primary text-ink px-4 py-2 font-display uppercase tracking-widest text-sm animate-pulse">
                         Set Complete
                       </div>
                     ) : null}
@@ -297,7 +297,7 @@ export default function TrophyRoomPage() {
           {/* Code Input */}
           <div className="bg-background border border-line p-6 md:p-8 relative">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-transparent"></div>
-            <h3 className="font-heading text-xl text-cream mb-6 uppercase flex items-center gap-2">
+            <h3 className="font-display text-xl text-cream mb-6 uppercase flex items-center gap-2">
               <Scan size={18} className="text-primary" /> Enter a code
             </h3>
 
@@ -318,7 +318,7 @@ export default function TrophyRoomPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 bg-surface-2 hover:bg-primary hover:text-ink text-cream font-heading uppercase tracking-widest rounded-none transition-all"
+                className="w-full h-12 bg-surface-2 hover:bg-primary hover:text-ink text-cream font-display uppercase tracking-widest rounded-none transition-all"
               >
                 {loading ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -343,7 +343,7 @@ export default function TrophyRoomPage() {
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,79,0,0.15),transparent)] animate-pulse"></div>
 
                 <Trophy size={48} className="mx-auto text-primary mb-4" />
-                <h3 className="font-heading text-2xl text-cream uppercase tracking-wide mb-2">
+                <h3 className="font-display text-2xl text-cream uppercase tracking-wide mb-2">
                   Unlocked
                 </h3>
                 <p className="text-primary font-mono text-sm uppercase tracking-widest mb-6">
@@ -363,7 +363,7 @@ export default function TrophyRoomPage() {
                   </div>
                 </div>
 
-                <Button className="w-full border border-primary text-primary hover:bg-primary hover:text-ink bg-transparent font-heading uppercase tracking-widest text-xs h-10 rounded-none">
+                <Button className="w-full border border-primary text-primary hover:bg-primary hover:text-ink bg-transparent font-display uppercase tracking-widest text-xs h-10 rounded-none">
                   View in 3D
                 </Button>
               </motion.div>

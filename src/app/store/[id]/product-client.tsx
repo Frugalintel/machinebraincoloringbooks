@@ -100,7 +100,7 @@ export function ProductClient({ product }: ProductClientProps) {
                   ) : (
                     <>
                       <div className="absolute top-0 left-0 right-0 h-12 bg-background/40 flex items-center justify-center border-b border-background/10 backdrop-blur-sm z-10">
-                        <span className="font-heading text-fg-secondary text-xl tracking-widest uppercase">
+                        <span className="font-display text-fg-secondary text-xl tracking-widest uppercase">
                           {product.subtitle}
                         </span>
                       </div>
@@ -120,7 +120,7 @@ export function ProductClient({ product }: ProductClientProps) {
                     <span className="text-xs text-fg-muted font-mono uppercase">
                       Vol. {product.id.slice(0, 3)}
                     </span>
-                    <span className="text-xs text-cream font-heading tracking-widest uppercase">
+                    <span className="text-xs text-cream font-display tracking-widest uppercase">
                       {product.title}
                     </span>
                   </div>
@@ -142,7 +142,7 @@ export function ProductClient({ product }: ProductClientProps) {
             <div className="border-b border-line pb-8 mb-8">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-8 w-2 bg-primary"></div>
-                <h1 className="font-heading text-5xl md:text-6xl font-bold uppercase leading-none text-cream">
+                <h1 className="font-display text-5xl md:text-6xl font-bold uppercase leading-none text-cream">
                   {product.title}
                 </h1>
               </div>
@@ -172,7 +172,7 @@ export function ProductClient({ product }: ProductClientProps) {
                 <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
                   Recommended Age
                 </span>
-                <div className="font-heading text-xl text-cream uppercase">
+                <div className="font-display text-xl text-cream uppercase">
                   {product.age}
                 </div>
               </div>
@@ -180,7 +180,7 @@ export function ProductClient({ product }: ProductClientProps) {
                 <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
                   Format
                 </span>
-                <div className="font-heading text-xl text-cream uppercase">
+                <div className="font-display text-xl text-cream uppercase">
                   Print + Digital
                 </div>
               </div>
@@ -188,7 +188,7 @@ export function ProductClient({ product }: ProductClientProps) {
                 <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
                   Pages
                 </span>
-                <div className="font-heading text-xl text-cream uppercase">
+                <div className="font-display text-xl text-cream uppercase">
                   96 Pages
                 </div>
               </div>
@@ -221,7 +221,7 @@ export function ProductClient({ product }: ProductClientProps) {
                     <Trophy size={10} />
                     <span>Includes Digital Collectible</span>
                   </div>
-                  <p className="text-cream font-heading text-sm uppercase mb-1">
+                  <p className="text-cream font-display text-sm uppercase mb-1">
                     Exclusive 3D Trophy
                   </p>
                   <p className="text-fg-muted text-xs font-mono">
@@ -266,7 +266,7 @@ export function ProductClient({ product }: ProductClientProps) {
                   <div className="flex items-baseline gap-3">
                     {priceInfo.hasDiscount ? (
                       <>
-                        <span className="font-heading text-4xl text-cream">
+                        <span className="font-display text-4xl text-cream">
                           {formatPrice(priceInfo.finalPrice)}
                         </span>
                         <span className="font-mono text-xl text-fg-faint line-through">
@@ -274,7 +274,7 @@ export function ProductClient({ product }: ProductClientProps) {
                         </span>
                       </>
                     ) : (
-                      <span className="font-heading text-4xl text-cream">
+                      <span className="font-display text-4xl text-cream">
                         {formatPrice(priceInfo.originalPrice)}
                       </span>
                     )}
@@ -288,7 +288,7 @@ export function ProductClient({ product }: ProductClientProps) {
 
               <Button
                 onClick={handleAddToCart}
-                className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all group mb-4"
+                className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-display text-xl tracking-[0.2em] rounded-none uppercase transition-all group mb-4"
               >
                 Add to Requisition{" "}
                 <ShoppingCart className="ml-4 w-5 h-5 group-hover:scale-110 transition-transform" />

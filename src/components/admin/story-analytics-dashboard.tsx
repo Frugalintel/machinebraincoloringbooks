@@ -136,7 +136,7 @@ export function StoryAnalyticsDashboard() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-surface-1 border border-line p-6 rounded-lg">
-          <h3 className="font-heading text-xl mb-6">Most Popular Adventures</h3>
+          <h3 className="font-display text-xl mb-6">Most Popular Adventures</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={storyPopularity}>

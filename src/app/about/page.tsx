@@ -10,7 +10,7 @@ export default function AboutPage() {
             <Info size={14} />
             <span>Company</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+          <h1 className="font-display text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
             About Us
           </h1>
           <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">

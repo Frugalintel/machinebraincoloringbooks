@@ -188,7 +188,7 @@ export default function EditProductPage({
             <ArrowLeft size={24} />
           </Link>
           <div>
-            <h1 className="text-3xl font-heading font-bold text-cream">
+            <h1 className="text-3xl font-display font-bold text-cream">
               Edit Product
             </h1>
             <p className="text-fg-muted font-mono text-xs uppercase tracking-widest mt-1">
@@ -400,7 +400,7 @@ export default function EditProductPage({
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-16 h-16 rounded-full border-2 border-cream/10 flex items-center justify-center bg-cream/5 backdrop-blur-sm">
-                      <span className="font-heading text-2xl text-fg-faint">
+                      <span className="font-display text-2xl text-fg-faint">
                         {(formData.title || "NP").substring(0, 2)}
                       </span>
                     </div>
@@ -417,7 +417,7 @@ export default function EditProductPage({
                       <p className="text-[10px] font-mono text-primary uppercase tracking-widest mb-1">
                         {formData.category || "CATEGORY"}
                       </p>
-                      <h3 className="font-heading text-lg font-bold text-cream leading-tight mb-1 truncate pr-2">
+                      <h3 className="font-display text-lg font-bold text-cream leading-tight mb-1 truncate pr-2">
                         {formData.title || "Product Title"}
                       </h3>
                       <p className="text-xs text-fg-muted truncate">
