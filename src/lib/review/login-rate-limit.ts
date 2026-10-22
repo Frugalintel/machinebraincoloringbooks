@@ -196,3 +196,21 @@ export function shouldBlockLoginAttempts(
     isOverGlobalLoginFailureLimit(globalFailures)
   );
 }
+
+const LOGIN_ATTEMPT_RETENTION_MS = 24 * 60 * 60 * 1000;
+
+export function loginAttemptRetentionCutoff(now = Date.now()): string {
+  return new Date(now - LOGIN_ATTEMPT_RETENTION_MS).toISOString();
+}
+
+export async function deleteOldLoginAttempts(
+  supabase: SupabaseClient,
+): Promise<void> {
+  const { error } = await supabase
+    .from("book_review_login_attempts")
+    .delete()
+    .lt("attempted_at", loginAttemptRetentionCutoff());
+  if (error) {
+    throw new Error(error.message);
+  }
+}

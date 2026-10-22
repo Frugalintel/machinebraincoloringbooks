@@ -10,6 +10,7 @@ import {
   clientIpFromRequest,
   countRecentGlobalLoginFailures,
   countRecentLoginFailures,
+  deleteOldLoginAttempts,
   hashLoginIp,
   recordLoginFailure,
   shouldBlockLoginAttempts,
@@ -84,6 +85,15 @@ export async function POST(request: NextRequest) {
           error instanceof Error ? error.message : "Supabase is not configured",
       },
       { status: 500 },
+    );
+  }
+
+  try {
+    await deleteOldLoginAttempts(supabase);
+  } catch (error) {
+    console.error(
+      "Failed to clean up old book review login attempts",
+      error instanceof Error ? error.message : undefined,
     );
   }
 

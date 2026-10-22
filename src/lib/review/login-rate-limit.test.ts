@@ -1,10 +1,13 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { NextRequest } from "next/server";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   clientIpFromRequest,
+  deleteOldLoginAttempts,
   hashLoginIp,
   isOverGlobalLoginFailureLimit,
   isOverLoginFailureLimit,
+  loginAttemptRetentionCutoff,
   normalizeClientIp,
   shouldBlockLoginAttempts,
 } from "@/lib/review/login-rate-limit";
@@ -104,5 +107,41 @@ describe("global login failure cap", () => {
     expect(shouldBlockLoginAttempts(5, 0)).toBe(true);
     expect(shouldBlockLoginAttempts(0, 50)).toBe(true);
     expect(shouldBlockLoginAttempts(5, 50)).toBe(true);
+  });
+});
+
+describe("deleteOldLoginAttempts", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("deletes rows older than one day via attempted_at", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-10-12T20:48:00.000Z"));
+
+    const lt = vi.fn().mockResolvedValue({ error: null });
+    const del = vi.fn(() => ({ lt }));
+    const from = vi.fn(() => ({ delete: del }));
+
+    await deleteOldLoginAttempts({ from } as unknown as SupabaseClient);
+
+    expect(from).toHaveBeenCalledWith("book_review_login_attempts");
+    expect(del).toHaveBeenCalledTimes(1);
+    expect(lt).toHaveBeenCalledWith(
+      "attempted_at",
+      loginAttemptRetentionCutoff(),
+    );
+    expect(lt).toHaveBeenCalledWith("attempted_at", "2026-10-11T20:48:00.000Z");
+  });
+
+  it("throws when the delete returns an error", async () => {
+    const lt = vi
+      .fn()
+      .mockResolvedValue({ error: { message: "delete failed" } });
+    const from = vi.fn(() => ({ delete: () => ({ lt }) }));
+
+    await expect(
+      deleteOldLoginAttempts({ from } as unknown as SupabaseClient),
+    ).rejects.toThrow("delete failed");
   });
 });
