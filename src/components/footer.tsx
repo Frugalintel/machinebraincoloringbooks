@@ -4,48 +4,33 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
 import { BrandLockup } from "@/components/mark";
-
-const footerLinks = {
-  Shop: [
-    { name: "Store", href: "/store" },
-    { name: "Stories", href: "/stories" },
-    { name: "Collectibles", href: "/collectibles" },
-    { name: "About", href: "/about" },
-  ],
-  Account: [
-    { name: "Login", href: "/auth?mode=login" },
-    { name: "Register", href: "/auth?mode=register" },
-    { name: "Order Lookup", href: "/orders/lookup" },
-    { name: "Help", href: "/help" },
-  ],
-  Legal: [
-    { name: "Terms", href: "/terms" },
-    { name: "Privacy", href: "/privacy" },
-    { name: "Licenses", href: "/licenses" },
-  ],
-};
+import {
+  FOOTER_LINK_GROUPS,
+  SHELL_FOCUS,
+  SITE_SOCIAL_LINKS,
+  hidesCustomerFooter,
+} from "@/lib/site-shell";
+import { cn } from "@/lib/utils";
 
 export function Footer() {
   const pathname = usePathname();
 
-  if (
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/review") ||
-    pathname === "/scan"
-  ) {
+  if (hidesCustomerFooter(pathname)) {
     return null;
   }
 
+  const year = new Date().getFullYear();
+
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   };
 
   return (
     <footer className="border-t border-line bg-background text-fg-muted font-sans">
-      {/* Top Grid */}
-      <div className="container mx-auto px-4 md:px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-12">
-        {/* Brand Column */}
+      <div className="container mx-auto grid grid-cols-1 gap-12 px-4 py-14 md:grid-cols-4 md:px-6">
         <div className="flex flex-col justify-between">
           <div>
             <BrandLockup
@@ -54,32 +39,30 @@ export function Footer() {
               ink="cream"
               className="mb-4"
               wordmarkClassName="text-[16px] md:text-[18px]"
-              subtitle={
-                <p className="font-label mt-2 max-w-[200px] leading-relaxed tracking-[0.08em] text-fg-muted">
-                  Coloring books with secrets. Est. 2025.
-                </p>
-              }
             />
-          </div>
-          <div className="mt-8 md:mt-0">
-            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest">
-              <div className="w-2 h-2 bg-primary animate-pulse rounded-full"></div>
-            </div>
+            <p className="max-w-[220px] text-sm font-normal leading-relaxed text-fg-secondary">
+              Coloring books with secrets.
+            </p>
+            <p className="font-label mt-3 text-signal tracking-[0.1em]">
+              Est. 2025
+            </p>
           </div>
         </div>
 
-        {/* Links Columns */}
-        {Object.entries(footerLinks).map(([category, links]) => (
-          <div key={category}>
-            <h4 className="font-label mb-6 inline-block border-b border-line pb-2 tracking-[0.12em] text-cream">
-              {category}
-            </h4>
+        {FOOTER_LINK_GROUPS.map((group) => (
+          <div key={group.heading}>
+            <h2 className="font-label mb-5 tracking-[0.12em] text-cream">
+              {group.heading}
+            </h2>
             <ul className="space-y-3">
-              {links.map((link) => (
-                <li key={link.name}>
+              {group.links.map((link) => (
+                <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm font-normal uppercase tracking-[0.02em] hover:text-primary transition-colors"
+                    className={cn(
+                      "text-sm font-medium text-fg-muted hover:text-cream",
+                      SHELL_FOCUS,
+                    )}
                   >
                     {link.name}
                   </Link>
@@ -90,20 +73,64 @@ export function Footer() {
         ))}
       </div>
 
-      {/* Bottom Bar */}
+      {SITE_SOCIAL_LINKS.length > 0 ? (
+        <div className="border-t border-line">
+          <div className="container mx-auto flex flex-wrap items-center gap-4 px-4 py-4 md:px-6">
+            <p className="font-label tracking-[0.12em] text-cream">Social</p>
+            {SITE_SOCIAL_LINKS.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                rel="noreferrer"
+                target="_blank"
+                className={cn(
+                  "text-sm font-medium text-fg-muted hover:text-cream",
+                  SHELL_FOCUS,
+                )}
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       <div className="border-t border-line bg-background">
-        <div className="container mx-auto px-4 md:px-6 h-12 flex items-center justify-between font-label tracking-[0.08em]">
-          <span>© 2025 Machine Brain Inc.</span>
+        <div className="container mx-auto flex min-h-12 flex-col items-start justify-between gap-3 px-4 py-3 font-sans md:flex-row md:items-center md:px-6">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+            <span className="font-label tracking-[0.08em]">
+              © {year} Machine Brain
+            </span>
+            <Link
+              href="/terms"
+              className={cn(
+                "font-medium text-fg-muted hover:text-cream",
+                SHELL_FOCUS,
+              )}
+            >
+              Terms
+            </Link>
+            <Link
+              href="/privacy"
+              className={cn(
+                "font-medium text-fg-muted hover:text-cream",
+                SHELL_FOCUS,
+              )}
+            >
+              Privacy
+            </Link>
+          </div>
 
           <button
+            type="button"
             onClick={scrollToTop}
-            className="flex items-center gap-2 hover:text-cream transition-colors group"
+            className={cn(
+              "inline-flex items-center gap-2 text-sm font-medium text-fg-muted hover:text-cream",
+              SHELL_FOCUS,
+            )}
           >
-            Return to Top
-            <ArrowUp
-              size={12}
-              className="group-hover:-translate-y-1 transition-transform"
-            />
+            Back to top
+            <ArrowUp size={12} strokeWidth={1.75} />
           </button>
         </div>
       </div>

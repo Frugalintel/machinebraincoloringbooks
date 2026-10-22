@@ -1,0 +1,211 @@
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Navbar } from "@/components/navbar";
+import { SITE_NAV_LINKS } from "@/lib/site-shell";
+
+const nav = vi.hoisted(() => ({
+  pathname: "/",
+  cartCount: 2,
+  setIsCartOpen: vi.fn(),
+  openAuthModal: vi.fn(),
+  signOut: vi.fn(),
+  user: null as null | { email: string; id: string; initials: string },
+  isAdmin: false,
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  usePathname: () => nav.pathname,
+  useSearchParams: () => new URLSearchParams(),
+  useParams: () => ({}),
+}));
+
+vi.mock("@/context/cart-context", () => ({
+  useCart: () => ({
+    setIsCartOpen: nav.setIsCartOpen,
+    cartCount: nav.cartCount,
+  }),
+}));
+
+vi.mock("@/context/auth-context", () => ({
+  useAuth: () => ({
+    user: nav.user,
+    signOut: nav.signOut,
+    openAuthModal: nav.openAuthModal,
+    isAdmin: nav.isAdmin,
+  }),
+}));
+
+vi.mock("@/context/settings-context", () => ({
+  useSettings: () => ({
+    campaign: {
+      isActive: false,
+      banner: { enabled: false },
+      theme: { animation: "none" },
+    },
+  }),
+}));
+
+function menuButton() {
+  return screen.getByRole("button", { name: /menu/i });
+}
+
+describe("Navbar", () => {
+  beforeEach(() => {
+    nav.pathname = "/";
+    nav.cartCount = 2;
+    nav.user = null;
+    nav.isAdmin = false;
+    nav.setIsCartOpen.mockReset();
+    nav.openAuthModal.mockReset();
+    nav.signOut.mockReset();
+    document.body.style.overflow = "";
+  });
+
+  it("renders the F3 lockup and existing customer routes", () => {
+    render(<Navbar />);
+
+    const home = screen.getAllByRole("link", { name: "Machine Brain" })[0];
+    expect(home).toHaveAttribute("href", "/");
+    expect(home.querySelector("img")).toHaveAttribute(
+      "src",
+      expect.stringMatching(/mb-mark-(full|S3-small)-cream\.svg$/),
+    );
+
+    for (const link of SITE_NAV_LINKS) {
+      expect(
+        screen.getAllByRole("link", { name: link.name })[0],
+      ).toHaveAttribute("href", link.href);
+    }
+
+    expect(screen.getByRole("link", { name: /scan/i })).toHaveAttribute(
+      "href",
+      "/scan",
+    );
+  });
+
+  it("opens and closes the mobile menu with aria-expanded and aria-controls", () => {
+    render(<Navbar />);
+
+    const trigger = menuButton();
+    const menuId = trigger.getAttribute("aria-controls");
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(menuId).toBeTruthy();
+
+    fireEvent.click(trigger);
+
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    const dialog = screen.getByRole("dialog", { name: /menu/i });
+    expect(dialog).toHaveAttribute("id", menuId);
+
+    fireEvent.click(screen.getByRole("button", { name: /close menu/i }));
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(
+      screen.queryByRole("dialog", { name: /menu/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("closes the mobile menu on Escape and restores trigger focus", () => {
+    render(<Navbar />);
+
+    const trigger = menuButton();
+    fireEvent.click(trigger);
+    expect(screen.getByRole("dialog", { name: /menu/i })).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    expect(
+      screen.queryByRole("dialog", { name: /menu/i }),
+    ).not.toBeInTheDocument();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it("locks body scroll while the mobile menu is open", () => {
+    render(<Navbar />);
+
+    fireEvent.click(menuButton());
+    expect(document.body.style.overflow).toBe("hidden");
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(document.body.style.overflow).not.toBe("hidden");
+  });
+
+  it("keeps mobile menu links keyboard-reachable", () => {
+    render(<Navbar />);
+    fireEvent.click(menuButton());
+
+    const dialog = screen.getByRole("dialog", { name: /menu/i });
+    const store = within(dialog).getByRole("link", { name: "Store" });
+    expect(store).toHaveAttribute("href", "/store");
+    expect(store.tabIndex).toBeGreaterThanOrEqual(0);
+  });
+
+  it("opens the cart from the header action", () => {
+    render(<Navbar />);
+
+    fireEvent.click(screen.getByRole("button", { name: /cart/i }));
+    expect(nav.setIsCartOpen).toHaveBeenCalledWith(true);
+    expect(screen.getByRole("button", { name: /cart/i })).toHaveTextContent(
+      "2",
+    );
+  });
+
+  it("uses a minimal lockup header on auth, scan, and review", () => {
+    for (const path of ["/auth", "/scan", "/review", "/review/demo"]) {
+      nav.pathname = path;
+      const { unmount } = render(<Navbar />);
+
+      expect(
+        screen.getAllByRole("link", { name: "Machine Brain" })[0],
+      ).toHaveAttribute("href", "/");
+      expect(screen.getByRole("link", { name: /home/i })).toHaveAttribute(
+        "href",
+        "/",
+      );
+      expect(
+        screen.queryByRole("button", { name: /menu/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /cart/i }),
+      ).not.toBeInTheDocument();
+      unmount();
+    }
+  });
+
+  it("hides the customer navbar on admin", () => {
+    nav.pathname = "/admin";
+    const { container } = render(<Navbar />);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("does not paint orange fills or an orange mark in the rendered chrome", () => {
+    const { container } = render(<Navbar />);
+    fireEvent.click(menuButton());
+
+    const orangeFills = container.querySelectorAll(
+      '[class*="bg-primary"], [class*="bg-signal"], [class*="bg-brand-orange"]',
+    );
+    expect(orangeFills).toHaveLength(0);
+
+    const marks = container.querySelectorAll("img");
+    expect(marks.length).toBeGreaterThan(0);
+    for (const mark of marks) {
+      expect(mark.getAttribute("src")).toMatch(
+        /mb-mark-(full|S3-small)-(cream|ink)\.svg$/,
+      );
+    }
+
+    expect(container.textContent).not.toMatch(/Machine\s*$/);
+    expect(
+      screen.getAllByRole("link", { name: "Machine Brain" })[0],
+    ).toHaveTextContent("Machine Brain");
+  });
+});
