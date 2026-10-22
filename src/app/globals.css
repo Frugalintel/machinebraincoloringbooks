@@ -43,80 +43,150 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Custom colors */
-  --color-brand-orange: #ff4f00;
-  --color-brand-dark: #111111;
-  --color-brand-gray: #222222;
+  /* Locked brand colors. Do not add --color-base: it would collide with text-base.
+     Base alpha steps use bg-background / border-background (same hex as --base). */
+  --color-cream: var(--cream);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-signal: var(--signal);
+
+  /* Derived surface / line / text ramp */
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+
+  /* Functional status */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-danger-strong: var(--danger-strong);
+  --color-success-wash: var(--success-wash);
+  --color-warning-wash: var(--warning-wash);
+  --color-danger-wash: var(--danger-wash);
+
+  /* Legacy aliases wired to locked / derived tokens */
+  --color-brand-orange: var(--signal);
+  --color-brand-dark: var(--base);
+  --color-brand-gray: var(--surface-2);
 }
 
 :root {
   --radius: 0rem; /* Boxy feel */
 
-  /* Machine Brain Theme */
-  --background: #111111; /* Charcoal Black */
-  --foreground: #eeeeee;
+  /*
+   * Locked Machine Brain palette (Notion Brand Aesthetic Guide).
+   * Guide grey #8E887C is spec-only and is not a product token.
+   */
+  --base: #0f0f0f; /* near-black cover/page base */
+  --cream: #f2ead8; /* primary ink on dark; second surface */
+  --ink: #141414; /* type and marks on light surfaces */
+  --paper: #ffffff; /* white paper, not an ink */
+  --signal: #ff4f00; /* accent labels/type on near-black only */
 
-  --card: #1a1a1a;
-  --card-foreground: #eeeeee;
+  /* Derived tokens — exact Studio hexes (F1 follow-up) */
+  --surface-1: #1a1a19; /* cream 5% on base */
+  --surface-2: #21211f; /* cream 8% on base */
+  --surface-3: #2a2927; /* cream 12% on base */
+  --line: #33322f; /* cream 16% on base */
+  --line-strong: #807c74; /* cream 50% on base */
+  --fg-secondary: #c5beb0; /* cream 80% on base */
+  --fg-muted: #979288; /* cream 60% on base */
+  --fg-faint: #6a675f; /* cream 40% on base */
+  --success: #7fb88a;
+  --warning: #e3b85c;
+  --danger: #ee6a7c;
+  --danger-strong: #b23a48;
+  --success-wash: #1a201b;
+  --warning-wash: #242017;
+  --danger-wash: #25181a;
+  --page-1: #ffffff; /* hero book pages only */
+  --page-2: #f1f1f1;
+  --page-3: #dddddd;
 
-  --popover: #1a1a1a;
-  --popover-foreground: #eeeeee;
+  --background: var(--base);
+  --foreground: var(--cream);
 
-  --primary: #ff4f00; /* Safety Orange */
-  --primary-foreground: #ffffff;
+  --card: var(--surface-1);
+  --card-foreground: var(--cream);
 
-  --secondary: #2a2a2a;
-  --secondary-foreground: #ffffff;
+  --popover: var(--surface-1);
+  --popover-foreground: var(--cream);
 
-  --muted: #2a2a2a;
-  --muted-foreground: #888888;
+  --primary: var(--signal);
+  /* Ink on signal is 5.59:1 (paper was 3.30:1 and failed). */
+  --primary-foreground: var(--ink);
 
-  --accent: #ff4f00;
-  --accent-foreground: #ffffff;
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--cream);
 
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
+  --muted: var(--surface-2);
+  --muted-foreground: var(--fg-muted);
 
-  --border: #222222;
-  --input: #222222;
-  --ring: #ff4f00;
+  --accent: var(--signal);
+  --accent-foreground: var(--ink);
 
-  --chart-1: #ff4f00;
-  --chart-2: #ffffff;
-  --chart-3: #888888;
-  --chart-4: #222222;
-  --chart-5: #111111;
+  --destructive: var(--danger);
+  --destructive-foreground: var(--ink);
 
-  --sidebar: #111111;
-  --sidebar-foreground: #eeeeee;
-  --sidebar-primary: #ff4f00;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #222222;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #222222;
-  --sidebar-ring: #ff4f00;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--signal);
+
+  --chart-1: #f2ead8;
+  --chart-2: #6fb3a8;
+  --chart-3: #b58db6;
+  --chart-4: #d6a85a;
+  --chart-5: #979288;
+
+  --sidebar: var(--base);
+  --sidebar-foreground: var(--cream);
+  --sidebar-primary: var(--signal);
+  --sidebar-primary-foreground: var(--ink);
+  --sidebar-accent: var(--surface-2);
+  --sidebar-accent-foreground: var(--cream);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--signal);
 }
 
 /* Keep .dark same as root to enforce it */
 .dark {
-  --background: #111111;
-  --foreground: #eeeeee;
-  --card: #1a1a1a;
-  --card-foreground: #eeeeee;
-  --popover: #1a1a1a;
-  --popover-foreground: #eeeeee;
-  --primary: #ff4f00;
-  --primary-foreground: #ffffff;
-  --secondary: #2a2a2a;
-  --secondary-foreground: #ffffff;
-  --muted: #2a2a2a;
-  --muted-foreground: #888888;
-  --accent: #ff4f00;
-  --accent-foreground: #ffffff;
-  --destructive: #7f1d1d;
-  --border: #222222;
-  --input: #222222;
-  --ring: #ff4f00;
+  --background: var(--base);
+  --foreground: var(--cream);
+  --card: var(--surface-1);
+  --card-foreground: var(--cream);
+  --popover: var(--surface-1);
+  --popover-foreground: var(--cream);
+  --primary: var(--signal);
+  --primary-foreground: var(--ink);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--cream);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--fg-muted);
+  --accent: var(--signal);
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--ink);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--signal);
+  --chart-1: #f2ead8;
+  --chart-2: #6fb3a8;
+  --chart-3: #b58db6;
+  --chart-4: #d6a85a;
+  --chart-5: #979288;
+  --sidebar: var(--base);
+  --sidebar-foreground: var(--cream);
+  --sidebar-primary: var(--signal);
+  --sidebar-primary-foreground: var(--ink);
+  --sidebar-accent: var(--surface-2);
+  --sidebar-accent-foreground: var(--cream);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--signal);
 }
 
 @layer base {
@@ -131,7 +201,7 @@
 
   /* Global Selection Styling */
   ::selection {
-    @apply bg-primary text-black;
+    @apply bg-primary text-ink;
   }
 
   body::before {
@@ -155,11 +225,11 @@
 
   .text-orange-glow {
     /* Subtle print bleed effect instead of neon */
-    text-shadow: 1px 1px 0px rgba(255, 79, 0, 0.5);
+    text-shadow: 1px 1px 0px color-mix(in srgb, var(--signal) 50%, transparent);
   }
 
   .vintage-border {
-    @apply border border-orange-500/30;
+    @apply border border-signal/30;
   }
 
   .text-stroke-1 {
@@ -175,7 +245,7 @@
     background: linear-gradient(
       0deg,
       rgba(0, 0, 0, 0) 0%,
-      rgba(255, 79, 0, 0.1) 50%,
+      color-mix(in srgb, var(--signal) 10%, transparent) 50%,
       rgba(0, 0, 0, 0) 100%
     );
     opacity: 0.1;
@@ -197,24 +267,13 @@
     }
   }
 
-  /* CRT Overlay (Curvature & Vignette) */
+  /* CRT Overlay — base/20 vignette only (RGB stripes removed) */
   .crt-overlay {
-    background:
-      radial-gradient(
-        circle,
-        rgba(18, 16, 16, 0) 50%,
-        rgba(0, 0, 0, 0.25) 100%
-      ),
-      linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
-      linear-gradient(
-        90deg,
-        rgba(255, 0, 0, 0.06),
-        rgba(0, 255, 0, 0.02),
-        rgba(0, 0, 255, 0.06)
-      );
-    background-size:
-      100% 2px,
-      3px 100%;
+    background: radial-gradient(
+      circle,
+      rgba(15, 15, 15, 0) 50%,
+      rgba(15, 15, 15, 0.2) 100%
+    );
     pointer-events: none;
   }
 
@@ -235,13 +294,13 @@
   }
 
   .glitch-text::before {
-    color: #0ff;
+    color: color-mix(in srgb, var(--cream) 20%, transparent);
     z-index: -1;
     animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
   }
 
   .glitch-text::after {
-    color: #f0f;
+    color: color-mix(in srgb, var(--cream) 20%, transparent);
     z-index: -2;
     animation: glitch-anim-2 3s infinite linear alternate-reverse;
   }
@@ -304,8 +363,16 @@
   .grid-bg-move {
     background-size: 40px 40px;
     background-image:
-      linear-gradient(to right, rgba(255, 79, 0, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 79, 0, 0.05) 1px, transparent 1px);
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--signal) 5%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--signal) 5%, transparent) 1px,
+        transparent 1px
+      );
     perspective: 500px;
     transform-style: preserve-3d;
     animation: grid-move 20s linear infinite;
@@ -351,11 +418,11 @@
     0%,
     100% {
       opacity: 1;
-      text-shadow: 0 0 10px rgba(255, 79, 0, 0.5);
+      text-shadow: 0 0 10px color-mix(in srgb, var(--signal) 50%, transparent);
     }
     50% {
       opacity: 0.8;
-      text-shadow: 0 0 20px rgba(255, 79, 0, 0.2);
+      text-shadow: 0 0 20px color-mix(in srgb, var(--signal) 20%, transparent);
     }
   }
 }
@@ -386,7 +453,7 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #111;
+  background: var(--base);
   box-shadow:
     inset 8px 0 16px -8px rgba(255, 255, 255, 0.12),
     inset -1px 0 0 rgba(0, 0, 0, 0.35),
@@ -415,10 +482,15 @@
   bottom: 12px;
   left: -18px;
   width: 18px;
-  border-top: 1px solid #222;
-  border-bottom: 1px solid #222;
-  border-left: 1px solid #111;
-  background: linear-gradient(90deg, #030303 0%, #050505 52%, #2a2a2a 100%);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-left: 1px solid var(--base);
+  background: linear-gradient(
+    90deg,
+    var(--base) 0%,
+    var(--base) 52%,
+    var(--surface-3) 100%
+  );
   transform-origin: right center;
   transform: skewY(-6deg);
   box-shadow:
@@ -434,10 +506,10 @@
   width: 10px;
   background: repeating-linear-gradient(
     to right,
-    #f3ebe0 0px,
-    #f3ebe0 1px,
-    #e8dcc8 1px,
-    #e8dcc8 2px
+    var(--page-1) 0px,
+    var(--page-1) 1px,
+    var(--page-2) 1px,
+    var(--page-2) 2px
   );
   transform-origin: left center;
   transform: skewY(4deg);
@@ -450,7 +522,7 @@
   right: 8px;
   left: 2px;
   height: 8px;
-  background: linear-gradient(180deg, #efe6d8 0%, #d9ceb8 100%);
+  background: linear-gradient(180deg, var(--page-2) 0%, var(--page-3) 100%);
   transform-origin: bottom center;
   transform: skewX(-48deg);
   opacity: 0.85;

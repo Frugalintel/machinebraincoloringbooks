@@ -123,17 +123,17 @@ export function StoriesSection() {
             className={`h-8 w-4 ${activeTheme.bgAccent} transition-colors duration-500`}
           />
           <div>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight text-white uppercase">
+            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight text-cream uppercase">
               {ADVENTURES_COPY.pillarName}
             </h2>
-            <p className="text-white/40 text-sm mt-1">
+            <p className="text-fg-faint text-sm mt-1">
               {ADVENTURES_COPY.pillarTagline}
             </p>
           </div>
         </div>
         <Link
           href="/stories"
-          className="hidden md:flex items-center gap-2 text-sm text-white/40 hover:text-white transition-colors"
+          className="hidden md:flex items-center gap-2 text-sm text-fg-faint hover:text-cream transition-colors"
         >
           View all
           <ArrowRight size={14} />
@@ -149,8 +149,8 @@ export function StoriesSection() {
         {/* Featured Image */}
         <div
           className={`
-            relative overflow-hidden rounded-sm bg-[#0a0a0a] border transition-all duration-500 min-h-[400px]
-            ${isHovering ? "border-white/20" : "border-white/10"}
+            relative overflow-hidden rounded-sm bg-background border transition-all duration-500 min-h-[400px]
+            ${isHovering ? "border-cream/20" : "border-cream/10"}
           `}
           style={{
             boxShadow: isHovering
@@ -177,8 +177,8 @@ export function StoriesSection() {
                   `}
                 />
                 {/* Gradient overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
+                <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
               </motion.div>
             ) : null}
           </AnimatePresence>
@@ -196,7 +196,7 @@ export function StoriesSection() {
                   className="space-y-4"
                 >
                   {/* Meta */}
-                  <div className="flex items-center gap-4 text-white/40">
+                  <div className="flex items-center gap-4 text-fg-faint">
                     {activeStory.estimated_minutes ? (
                       <div className="flex items-center gap-1.5">
                         <Clock size={12} />
@@ -213,12 +213,12 @@ export function StoriesSection() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-heading text-4xl md:text-5xl font-bold text-white uppercase tracking-tight leading-none">
+                  <h3 className="font-heading text-4xl md:text-5xl font-bold text-cream uppercase tracking-tight leading-none">
                     {activeStory.title}
                   </h3>
 
                   {/* Synopsis */}
-                  <p className="text-white/60 text-sm leading-relaxed max-w-md line-clamp-2">
+                  <p className="text-fg-muted text-sm leading-relaxed max-w-md line-clamp-2">
                     {activeStory.synopsis}
                   </p>
 
@@ -227,7 +227,7 @@ export function StoriesSection() {
                     {user ? (
                       <Link href="/stories">
                         <Button
-                          className={`h-11 px-6 ${activeTheme.bgAccent} text-black hover:opacity-90 font-medium text-sm rounded-sm transition-all`}
+                          className={`h-11 px-6 ${activeTheme.bgAccent} text-ink hover:opacity-90 font-medium text-sm rounded-sm transition-all`}
                         >
                           <BookOpen size={14} className="mr-2" />
                           Enter Code
@@ -235,7 +235,7 @@ export function StoriesSection() {
                       </Link>
                     ) : (
                       <Link href="/stories">
-                        <Button className="h-11 px-6 bg-white text-black hover:bg-white/90 font-medium text-sm rounded-sm transition-all">
+                        <Button className="h-11 px-6 bg-cream text-ink hover:bg-cream/80 font-medium text-sm rounded-sm transition-all">
                           <BookOpen size={14} className="mr-2" />
                           View Adventures
                         </Button>
@@ -246,7 +246,7 @@ export function StoriesSection() {
                       <Button
                         variant="outline"
                         onClick={(e) => handleQuickAdd(e, activeProduct, 15.0)}
-                        className="h-11 px-4 bg-transparent border-white/20 text-white hover:bg-white/10 font-medium text-sm rounded-sm transition-all"
+                        className="h-11 px-4 bg-transparent border-cream/20 text-cream hover:bg-cream/10 font-medium text-sm rounded-sm transition-all"
                       >
                         <ShoppingCart size={14} className="mr-2" />
                         Get Book
@@ -262,8 +262,8 @@ export function StoriesSection() {
         {/* Story List */}
         <div className="flex flex-col gap-3">
           {stories.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center text-white/30">
-              <div className="w-6 h-6 border-2 border-white/10 border-t-white/30 rounded-full animate-spin" />
+            <div className="flex-1 flex items-center justify-center text-fg-faint">
+              <div className="w-6 h-6 border-2 border-cream/10 border-t-white/30 rounded-full animate-spin" />
             </div>
           ) : (
             stories.map((story, index) => {
@@ -280,14 +280,14 @@ export function StoriesSection() {
                     transition-all duration-300
                     ${
                       isActive
-                        ? "bg-white/5 border-white/20"
-                        : "bg-transparent border-white/10 hover:bg-white/[0.02] hover:border-white/15"
+                        ? "bg-cream/5 border-cream/20"
+                        : "bg-transparent border-cream/10 hover:bg-cream/5 hover:border-cream/20"
                     }
                   `}
                 >
                   <div className="flex items-center gap-4">
                     {/* Thumbnail */}
-                    <div className="w-16 h-16 rounded-sm overflow-hidden bg-white/5 shrink-0">
+                    <div className="w-16 h-16 rounded-sm overflow-hidden bg-cream/5 shrink-0">
                       {coverImage ? (
                         <img
                           src={coverImage}
@@ -310,16 +310,16 @@ export function StoriesSection() {
                         <h4
                           className={`
                           font-heading text-lg uppercase tracking-tight truncate transition-colors duration-300
-                          ${isActive ? theme.textAccent : "text-white"}
+                          ${isActive ? theme.textAccent : "text-cream"}
                         `}
                         >
                           {story.title}
                         </h4>
                         {!user && (
-                          <Lock size={12} className="text-white/20 shrink-0" />
+                          <Lock size={12} className="text-fg-faint shrink-0" />
                         )}
                       </div>
-                      <p className="text-xs text-white/40 truncate">
+                      <p className="text-xs text-fg-faint truncate">
                         {story.synopsis}
                       </p>
                     </div>
@@ -328,7 +328,7 @@ export function StoriesSection() {
                     <div
                       className={`
                       w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300
-                      ${isActive ? `${theme.bgAccent} text-black` : "bg-white/5 text-white/30 group-hover:bg-white/10"}
+                      ${isActive ? `${theme.bgAccent} text-ink` : "bg-cream/5 text-fg-faint group-hover:bg-cream/10"}
                     `}
                     >
                       <ChevronRight
@@ -355,21 +355,21 @@ export function StoriesSection() {
           )}
 
           {/* Bottom CTA */}
-          <div className="mt-auto pt-4 border-t border-white/10">
+          <div className="mt-auto pt-4 border-t border-cream/10">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-white/60 text-sm">
+                <p className="text-fg-muted text-sm">
                   {user
                     ? "Have a code from your book?"
                     : "Get a book to unlock adventures"}
                 </p>
-                <p className="text-white/30 text-xs">
+                <p className="text-fg-faint text-xs">
                   Find it on the back page
                 </p>
               </div>
               <Link href="/stories">
                 <Button
-                  className={`h-10 px-5 ${activeTheme.bgAccent} text-black hover:opacity-90 font-medium text-sm rounded-sm transition-all`}
+                  className={`h-10 px-5 ${activeTheme.bgAccent} text-ink hover:opacity-90 font-medium text-sm rounded-sm transition-all`}
                 >
                   {user ? "Enter Code" : "Browse"}
                   <ArrowRight size={14} className="ml-2" />

@@ -17,6 +17,7 @@ import { Collectible } from "@/lib/types";
 import { useToast } from "@/context/toast-context";
 import { logAdminAction } from "@/lib/admin-utils";
 import { logger } from "@/lib/logger";
+import { getRarityStyles } from "@/lib/achievement-utils";
 
 const isProbablyImageUrl = (value?: string) => {
   if (!value) return false;
@@ -36,61 +37,6 @@ const isProbablyImageUrl = (value?: string) => {
     value.startsWith("data:") ||
     value.startsWith("blob:")
   );
-};
-
-const getRarityStyles = (rarity?: string) => {
-  switch (rarity?.toLowerCase()) {
-    case "legendary":
-      return {
-        border: "border-orange-500/60 hover:border-orange-400",
-        glow: "shadow-[0_0_30px_-5px_rgba(249,115,22,0.4)] hover:shadow-[0_0_40px_-5px_rgba(249,115,22,0.6)]",
-        icon: "bg-orange-500/30 text-orange-400 border-orange-500/60",
-        text: "text-orange-400",
-        bg: "bg-gradient-to-br from-orange-950/50 via-[#111] to-yellow-950/30",
-        accent: "bg-gradient-to-b from-orange-500 to-yellow-500",
-        titleColor: "text-orange-100",
-      };
-    case "epic":
-      return {
-        border: "border-purple-500/60 hover:border-purple-400",
-        glow: "shadow-[0_0_30px_-5px_rgba(168,85,247,0.4)] hover:shadow-[0_0_40px_-5px_rgba(168,85,247,0.6)]",
-        icon: "bg-purple-500/30 text-purple-400 border-purple-500/60",
-        text: "text-purple-400",
-        bg: "bg-gradient-to-br from-purple-950/50 via-[#111] to-pink-950/30",
-        accent: "bg-gradient-to-b from-purple-500 to-pink-500",
-        titleColor: "text-purple-100",
-      };
-    case "rare":
-      return {
-        border: "border-blue-500/60 hover:border-blue-400",
-        glow: "shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(59,130,246,0.6)]",
-        icon: "bg-blue-500/30 text-blue-400 border-blue-500/60",
-        text: "text-blue-400",
-        bg: "bg-gradient-to-br from-blue-950/50 via-[#111] to-cyan-950/30",
-        accent: "bg-gradient-to-b from-blue-500 to-cyan-500",
-        titleColor: "text-blue-100",
-      };
-    case "uncommon":
-      return {
-        border: "border-green-500/60 hover:border-green-400",
-        glow: "shadow-[0_0_30px_-5px_rgba(34,197,94,0.4)] hover:shadow-[0_0_40px_-5px_rgba(34,197,94,0.6)]",
-        icon: "bg-green-500/30 text-green-400 border-green-500/60",
-        text: "text-green-400",
-        bg: "bg-gradient-to-br from-green-950/50 via-[#111] to-emerald-950/30",
-        accent: "bg-gradient-to-b from-green-500 to-emerald-500",
-        titleColor: "text-green-100",
-      };
-    default:
-      return {
-        border: "border-[#333] hover:border-gray-500",
-        glow: "hover:shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)]",
-        icon: "bg-[#222] text-gray-400 border-[#444]",
-        text: "text-gray-400",
-        bg: "bg-[#111]",
-        accent: "bg-gray-600",
-        titleColor: "text-white",
-      };
-  }
 };
 
 export default function AdminCollectiblesPage() {
@@ -159,23 +105,23 @@ export default function AdminCollectiblesPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-heading font-bold mb-1">COLLECTIBLES</h2>
-          <p className="text-gray-500 font-mono text-sm">
+          <p className="text-fg-muted font-mono text-sm">
             Manage digital artifacts and collectible items.
           </p>
         </div>
         <Link
           href="/admin/collectibles/new"
-          className="flex items-center justify-center gap-2 bg-primary text-black px-6 py-3 rounded font-bold hover:bg-white transition-colors"
+          className="flex items-center justify-center gap-2 bg-primary text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
         >
           <Plus size={18} />
           <span>ADD COLLECTIBLE</span>
         </Link>
       </div>
 
-      <div className="bg-[#111] border border-[#333] p-4 rounded-lg flex flex-col md:flex-row gap-4">
+      <div className="bg-surface-1 border border-line p-4 rounded-lg flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted"
             size={18}
           />
           <input
@@ -183,20 +129,20 @@ export default function AdminCollectiblesPage() {
             placeholder="Search collectibles..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#222] border border-[#333] rounded py-2 pl-10 pr-4 text-white focus:outline-none focus:border-primary"
+            className="w-full bg-surface-2 border border-line rounded py-2 pl-10 pr-4 text-cream focus:outline-none focus:border-primary"
           />
         </div>
-        <div className="flex items-center gap-2 bg-[#222] p-1 rounded border border-[#333]">
+        <div className="flex items-center gap-2 bg-surface-2 p-1 rounded border border-line">
           <button
             onClick={() => setViewMode("grid")}
-            className={`p-2 rounded ${viewMode === "grid" ? "bg-[#333] text-white" : "text-gray-500 hover:text-white"}`}
+            className={`p-2 rounded ${viewMode === "grid" ? "bg-surface-3 text-cream" : "text-fg-muted hover:text-cream"}`}
             title="Grid View"
           >
             <LayoutGrid size={18} />
           </button>
           <button
             onClick={() => setViewMode("list")}
-            className={`p-2 rounded ${viewMode === "list" ? "bg-[#333] text-white" : "text-gray-500 hover:text-white"}`}
+            className={`p-2 rounded ${viewMode === "list" ? "bg-surface-3 text-cream" : "text-fg-muted hover:text-cream"}`}
             title="List View"
           >
             <List size={18} />
@@ -207,17 +153,17 @@ export default function AdminCollectiblesPage() {
       {isLoading ? (
         <div className="text-center py-20">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-500 font-mono">Loading collectibles...</p>
+          <p className="text-fg-muted font-mono">Loading collectibles...</p>
         </div>
       ) : (
         <>
           {filteredCollectibles.length === 0 && (
-            <div className="col-span-full p-20 text-center text-gray-500 bg-[#111] border border-[#333] rounded-lg border-dashed">
-              <Box size={48} className="mx-auto text-gray-700 mb-4" />
-              <p className="font-heading text-lg text-gray-400">
+            <div className="col-span-full p-20 text-center text-fg-muted bg-surface-1 border border-line rounded-lg border-dashed">
+              <Box size={48} className="mx-auto text-fg-faint mb-4" />
+              <p className="font-heading text-lg text-fg-muted">
                 No collectibles found
               </p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-fg-faint mt-2">
                 Create your first collectible to get started.
               </p>
             </div>
@@ -277,19 +223,19 @@ export default function AdminCollectiblesPage() {
                             {collectible.type || "Artifact"}
                           </p>
                           <span
-                            className={`inline-block text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${styles.text} border-current bg-black/30`}
+                            className={`inline-block text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${styles.text} border-current bg-background/40`}
                           >
                             {collectible.rarity || "Common"}
                           </span>
                         </div>
                       </div>
 
-                      <p className="text-xs text-gray-400 line-clamp-2 mt-3 min-h-[2.5em]">
+                      <p className="text-xs text-fg-muted line-clamp-2 mt-3 min-h-[2.5em]">
                         {collectible.lore || "No lore available."}
                       </p>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-white/10 mt-3">
-                        <span className="text-[10px] text-gray-500 font-mono uppercase">
+                      <div className="flex items-center justify-between pt-3 border-t border-cream/10 mt-3">
+                        <span className="text-[10px] text-fg-muted font-mono uppercase">
                           {collectible.generation || "Gen-0"}
                         </span>
                         <span
@@ -301,11 +247,11 @@ export default function AdminCollectiblesPage() {
                     </Link>
 
                     {/* Actions Footer */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-[#1a1a1a] border-t border-[#333] p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 flex justify-end items-center z-40">
+                    <div className="absolute bottom-0 left-0 right-0 bg-surface-1 border-t border-line p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 flex justify-end items-center z-40">
                       <div className="flex gap-2">
                         <Link
                           href={`/admin/collectibles/${collectible.id}`}
-                          className="p-2 hover:bg-[#333] rounded text-gray-400 hover:text-white transition-colors"
+                          className="p-2 hover:bg-surface-3 rounded text-fg-muted hover:text-cream transition-colors"
                         >
                           <Edit size={16} />
                         </Link>
@@ -314,7 +260,7 @@ export default function AdminCollectiblesPage() {
                             e.preventDefault();
                             handleDelete(collectible);
                           }}
-                          className="p-2 hover:bg-red-900/20 rounded text-gray-400 hover:text-red-500 transition-colors"
+                          className="p-2 hover:bg-danger-wash rounded text-fg-muted hover:text-danger transition-colors"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -325,10 +271,10 @@ export default function AdminCollectiblesPage() {
               })}
             </div>
           ) : (
-            <div className="bg-[#111] border border-[#333] rounded-xl overflow-hidden">
+            <div className="bg-surface-1 border border-line rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
-                  <thead className="bg-[#1a1a1a] text-gray-500 font-mono text-xs uppercase tracking-widest">
+                  <thead className="bg-surface-1 text-fg-muted font-mono text-xs uppercase tracking-widest">
                     <tr>
                       <th className="p-4 font-normal">Image</th>
                       <th className="p-4 font-normal">Name</th>
@@ -346,7 +292,7 @@ export default function AdminCollectiblesPage() {
                       return (
                         <tr
                           key={collectible.id}
-                          className="group hover:bg-[#161616] transition-colors"
+                          className="group hover:bg-surface-1 transition-colors"
                         >
                           <td className="p-4">
                             <div
@@ -372,12 +318,12 @@ export default function AdminCollectiblesPage() {
                             </div>
                           </td>
                           <td className="p-4">
-                            <div className="font-heading font-bold text-white text-sm">
+                            <div className="font-heading font-bold text-cream text-sm">
                               {collectible.name}
                             </div>
                           </td>
                           <td className="p-4">
-                            <span className="text-xs text-gray-400 font-mono uppercase">
+                            <span className="text-xs text-fg-muted font-mono uppercase">
                               {collectible.type || "Artifact"}
                             </span>
                           </td>
@@ -389,12 +335,12 @@ export default function AdminCollectiblesPage() {
                             </span>
                           </td>
                           <td className="p-4">
-                            <span className="text-xs text-gray-500 font-mono">
+                            <span className="text-xs text-fg-muted font-mono">
                               {collectible.generation || "Gen-0"}
                             </span>
                           </td>
                           <td className="p-4">
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-fg-muted">
                               {collectible.found_in || "Unknown"}
                             </span>
                           </td>
@@ -402,13 +348,13 @@ export default function AdminCollectiblesPage() {
                             <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <Link
                                 href={`/admin/collectibles/${collectible.id}`}
-                                className="p-2 hover:bg-[#333] rounded text-gray-400 hover:text-white transition-colors"
+                                className="p-2 hover:bg-surface-3 rounded text-fg-muted hover:text-cream transition-colors"
                               >
                                 <Edit size={16} />
                               </Link>
                               <button
                                 onClick={() => handleDelete(collectible)}
-                                className="p-2 hover:bg-red-900/20 rounded text-gray-400 hover:text-red-500 transition-colors"
+                                className="p-2 hover:bg-danger-wash rounded text-fg-muted hover:text-danger transition-colors"
                               >
                                 <Trash2 size={16} />
                               </button>

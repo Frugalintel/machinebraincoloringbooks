@@ -42,7 +42,7 @@ export function SoftGateModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={onClose}
         >
           <motion.div
@@ -50,32 +50,32 @@ export function SoftGateModal({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-[#0a0a0a] border border-[#333] w-full max-w-md relative overflow-hidden"
+            className="bg-background border border-line w-full max-w-md relative overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Background texture */}
             <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
 
             {/* Header */}
-            <div className="border-b border-[#333] p-6 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-600/10 to-transparent pointer-events-none" />
+            <div className="border-b border-line p-6 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-warning/10 to-transparent pointer-events-none" />
               <div className="flex items-center justify-between relative z-10">
                 <div>
-                  <div className="flex items-center gap-2 text-amber-500 text-[10px] font-mono uppercase tracking-widest mb-2">
+                  <div className="flex items-center gap-2 text-signal text-[10px] font-mono uppercase tracking-widest mb-2">
                     <Lock size={12} /> Gate Encountered
                   </div>
-                  <h3 className="font-heading text-xl text-white uppercase">
+                  <h3 className="font-heading text-xl text-cream uppercase">
                     {nodeTitle || "Locked Content"}
                   </h3>
                   {storyTitle ? (
-                    <p className="text-xs text-gray-500 font-mono mt-1">
+                    <p className="text-xs text-fg-muted font-mono mt-1">
                       {storyTitle}
                     </p>
                   ) : null}
                 </div>
                 <button
                   onClick={onClose}
-                  className="w-8 h-8 flex items-center justify-center border border-[#333] text-gray-500 hover:text-white hover:border-white transition-colors"
+                  className="w-8 h-8 flex items-center justify-center border border-line text-fg-muted hover:text-cream hover:border-cream transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -83,14 +83,14 @@ export function SoftGateModal({
             </div>
 
             {/* Requirement Info */}
-            <div className="p-6 border-b border-[#333]">
-              <div className="flex items-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest mb-3">
-                <AlertTriangle size={12} className="text-amber-500" />
+            <div className="p-6 border-b border-line">
+              <div className="flex items-center gap-2 text-[10px] text-fg-muted uppercase tracking-widest mb-3">
+                <AlertTriangle size={12} className="text-signal" />
                 <span>Requirement Not Met</span>
               </div>
               {gateResult.requirementLabel ? (
-                <div className="bg-[#111] border border-[#222] p-4">
-                  <p className="text-sm text-gray-300">
+                <div className="bg-background border border-line p-4">
+                  <p className="text-sm text-fg-secondary">
                     {gateResult.requirementLabel}
                   </p>
                 </div>
@@ -99,7 +99,7 @@ export function SoftGateModal({
 
             {/* Bypass Options */}
             <div className="p-6 space-y-4">
-              <div className="flex items-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest mb-2">
+              <div className="flex items-center gap-2 text-[10px] text-fg-muted uppercase tracking-widest mb-2">
                 <Sparkles size={12} className="text-primary" />
                 <span>Available Options</span>
               </div>
@@ -114,21 +114,21 @@ export function SoftGateModal({
                   className={`w-full p-4 border transition-all flex items-center gap-4 text-left
                     ${
                       bypassOptions.canAfford
-                        ? "border-[#333] bg-[#111] hover:border-primary/50 hover:bg-[#1a1a1a]"
-                        : "border-[#222] bg-[#0a0a0a] opacity-50 cursor-not-allowed"
+                        ? "border-line bg-background hover:border-primary/50 hover:bg-surface-1"
+                        : "border-line bg-background opacity-50 cursor-not-allowed"
                     }
                   `}
                 >
                   <div
-                    className={`w-10 h-10 flex items-center justify-center border ${bypassOptions.canAfford ? "border-primary/50 text-primary" : "border-[#333] text-gray-600"}`}
+                    className={`w-10 h-10 flex items-center justify-center border ${bypassOptions.canAfford ? "border-primary/50 text-primary" : "border-line text-fg-faint"}`}
                   >
                     <Unlock size={18} />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-heading text-white uppercase">
+                    <h4 className="font-heading text-cream uppercase">
                       Skip with XP
                     </h4>
-                    <p className="text-[10px] text-gray-500 font-mono uppercase">
+                    <p className="text-[10px] text-fg-muted font-mono uppercase">
                       Cost: {bypassOptions.xpCost} XP
                     </p>
                   </div>
@@ -137,7 +137,7 @@ export function SoftGateModal({
                       Available
                     </span>
                   ) : (
-                    <span className="text-[10px] text-red-500 font-mono uppercase tracking-widest">
+                    <span className="text-[10px] text-danger font-mono uppercase tracking-widest">
                       Not Enough XP
                     </span>
                   )}
@@ -148,22 +148,24 @@ export function SoftGateModal({
               {bypassOptions?.alternatives &&
               bypassOptions.alternatives.length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-[10px] text-gray-600 uppercase tracking-widest font-mono">
+                  <p className="text-[10px] text-fg-faint uppercase tracking-widest font-mono">
                     Or earn the requirement:
                   </p>
                   {bypassOptions.alternatives.map((alt, index) => (
                     <Link key={index} href={alt.link} className="block">
                       <motion.div
                         whileHover={{ scale: 1.01 }}
-                        className="w-full p-3 border border-[#333] bg-[#111] hover:border-[#444] transition-all flex items-center justify-between"
+                        className="w-full p-3 border border-line bg-background hover:border-line-strong transition-all flex items-center justify-between"
                       >
                         <div>
-                          <span className="text-[10px] text-gray-500 uppercase font-mono">
+                          <span className="text-[10px] text-fg-muted uppercase font-mono">
                             {alt.type}
                           </span>
-                          <p className="text-sm text-gray-300">{alt.label}</p>
+                          <p className="text-sm text-fg-secondary">
+                            {alt.label}
+                          </p>
                         </div>
-                        <ArrowRight size={14} className="text-gray-600" />
+                        <ArrowRight size={14} className="text-fg-faint" />
                       </motion.div>
                     </Link>
                   ))}
@@ -172,11 +174,11 @@ export function SoftGateModal({
             </div>
 
             {/* Footer */}
-            <div className="border-t border-[#333] p-4 bg-[#111]">
+            <div className="border-t border-line p-4 bg-background">
               <Button
                 onClick={onClose}
                 variant="outline"
-                className="w-full border-[#333] text-gray-500 hover:text-white hover:border-white rounded-none h-10 text-[10px] uppercase tracking-widest"
+                className="w-full border-line text-fg-muted hover:text-cream hover:border-cream rounded-none h-10 text-[10px] uppercase tracking-widest"
               >
                 Continue Later
               </Button>
@@ -213,7 +215,7 @@ export function GateIndicator({
   if (hasRequirement) {
     return (
       <div
-        className={`inline-flex items-center gap-1 bg-green-500/10 border border-green-500/30 text-green-500 ${sizeClasses[size]} font-mono uppercase tracking-widest ${className}`}
+        className={`inline-flex items-center gap-1 bg-success/10 border border-success/30 text-success ${sizeClasses[size]} font-mono uppercase tracking-widest ${className}`}
       >
         <Unlock size={size === "sm" ? 10 : 12} />
         <span>Unlocked</span>
@@ -224,7 +226,7 @@ export function GateIndicator({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 text-amber-500 ${sizeClasses[size]} font-mono uppercase tracking-widest hover:bg-amber-500/20 transition-colors ${className}`}
+      className={`inline-flex items-center gap-1 bg-cream/5 border border-line text-signal ${sizeClasses[size]} font-mono uppercase tracking-widest hover:bg-cream/10 transition-colors ${className}`}
     >
       <Lock size={size === "sm" ? 10 : 12} />
       <span>{bypassCost ? `${bypassCost} XP` : "Gate"}</span>

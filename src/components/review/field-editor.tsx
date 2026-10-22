@@ -24,7 +24,7 @@ export function FieldEditor({
             return (
               <label
                 key={key}
-                className="flex items-center gap-3 rounded-md border border-[#2a2a2a] bg-[#111] px-3 py-2 text-sm"
+                className="flex items-center gap-3 rounded-md border border-line bg-background px-3 py-2 text-sm"
               >
                 <input
                   type="checkbox"
@@ -40,7 +40,7 @@ export function FieldEditor({
             return (
               <label
                 key={key}
-                className="block space-y-2 rounded-md border border-[#2a2a2a] bg-[#111] p-3 text-sm"
+                className="block space-y-2 rounded-md border border-line bg-background p-3 text-sm"
               >
                 <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                   {label}
@@ -48,7 +48,7 @@ export function FieldEditor({
                 <input
                   value={typeof value === "string" ? value : ""}
                   onChange={(event) => onChange(key, event.target.value)}
-                  className="h-9 w-full rounded border border-[#333] bg-[#0b0b0b] px-2 font-mono text-xs"
+                  className="h-9 w-full rounded border border-line bg-background px-2 font-mono text-xs"
                 />
                 <input
                   type="file"
@@ -74,7 +74,7 @@ export function FieldEditor({
             return (
               <label
                 key={key}
-                className="block space-y-2 rounded-md border border-[#2a2a2a] bg-[#111] p-3 text-sm md:col-span-2"
+                className="block space-y-2 rounded-md border border-line bg-background p-3 text-sm md:col-span-2"
               >
                 <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                   {label}
@@ -83,7 +83,7 @@ export function FieldEditor({
                   value={String(value ?? "")}
                   onChange={(event) => onChange(key, event.target.value)}
                   rows={4}
-                  className="w-full rounded border border-[#333] bg-[#0b0b0b] px-2 py-2 text-sm"
+                  className="w-full rounded border border-line bg-background px-2 py-2 text-sm"
                 />
               </label>
             );
@@ -91,7 +91,7 @@ export function FieldEditor({
             return (
               <label
                 key={key}
-                className="block space-y-2 rounded-md border border-[#2a2a2a] bg-[#111] p-3 text-sm"
+                className="block space-y-2 rounded-md border border-line bg-background p-3 text-sm"
               >
                 <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                   {label}
@@ -99,7 +99,7 @@ export function FieldEditor({
                 <input
                   value={String(value ?? "")}
                   onChange={(event) => onChange(key, event.target.value)}
-                  className="h-9 w-full rounded border border-[#333] bg-[#0b0b0b] px-2 text-sm"
+                  className="h-9 w-full rounded border border-line bg-background px-2 text-sm"
                 />
               </label>
             );

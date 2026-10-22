@@ -16,11 +16,11 @@ export default function EditCollectiblePage() {
     const fetchCollectible = async () => {
       try {
         const { data, error } = await supabase
-          .from('collectibles')
-          .select('*')
-          .eq('id', params.id)
+          .from("collectibles")
+          .select("*")
+          .eq("id", params.id)
           .single();
-        
+
         if (error) throw error;
         setCollectible(data);
       } catch (error) {
@@ -31,19 +31,24 @@ export default function EditCollectiblePage() {
     };
 
     if (params.id) {
-        fetchCollectible();
+      fetchCollectible();
     }
   }, [params.id]);
 
   if (loading) {
     return (
-        <div className="flex items-center justify-center min-h-[50vh]">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-        </div>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
-  if (!collectible) return <div className="text-center py-20 text-gray-500">Collectible not found</div>;
+  if (!collectible)
+    return (
+      <div className="text-center py-20 text-fg-muted">
+        Collectible not found
+      </div>
+    );
 
   return <CollectibleForm initialData={collectible} isEditing={true} />;
 }

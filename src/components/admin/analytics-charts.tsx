@@ -1,22 +1,31 @@
 "use client";
 
 import React from "react";
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   BarChart,
   Bar,
   PieChart,
   Pie,
-  Cell
+  Cell,
 } from "recharts";
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
+const COLORS = ["#F2EAD8", "#6FB3A8", "#B58DB6", "#D6A85A", "#979288"];
+
+const CHART_CHROME = {
+  grid: "#33322F",
+  axis: "#6A675F",
+  tooltipBg: "#1A1A19",
+  tooltipBorder: "1px solid #33322F",
+  tooltipText: "#F2EAD8",
+  cursor: "#21211F",
+};
 
 interface KPICardProps {
   title: string;
@@ -27,17 +36,19 @@ interface KPICardProps {
 }
 
 export function KPICard({ title, value, icon: Icon, color, bg }: KPICardProps) {
-    return (
-        <div className="bg-[#111] border border-[#333] p-6 rounded-xl relative overflow-hidden group hover:border-gray-500 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300">
-            <div className={`absolute top-4 right-4 p-2 rounded-lg ${bg} ${color}`}>
-                <Icon size={20} />
-            </div>
-            <div>
-                <p className="text-gray-500 text-xs font-mono uppercase tracking-widest mb-1">{title}</p>
-                <h3 className="text-3xl font-bold font-heading text-white">{value}</h3>
-            </div>
-        </div>
-    );
+  return (
+    <div className="bg-surface-1 border border-line p-6 rounded-xl relative overflow-hidden group hover:border-line-strong hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300">
+      <div className={`absolute top-4 right-4 p-2 rounded-lg ${bg} ${color}`}>
+        <Icon size={20} />
+      </div>
+      <div>
+        <p className="text-fg-muted text-xs font-mono uppercase tracking-widest mb-1">
+          {title}
+        </p>
+        <h3 className="text-3xl font-bold font-heading text-cream">{value}</h3>
+      </div>
+    </div>
+  );
 }
 
 interface RevenueDataPoint {
@@ -55,36 +66,46 @@ export function RevenueChart({ data }: { data: RevenueDataPoint[] }) {
         >
           <defs>
             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#6FB3A8" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#6FB3A8" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-          <XAxis 
-            dataKey="date" 
-            stroke="#666" 
-            fontSize={12} 
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={CHART_CHROME.grid}
+            vertical={false}
+          />
+          <XAxis
+            dataKey="date"
+            stroke={CHART_CHROME.axis}
+            tick={{ fill: "#979288" }}
+            fontSize={12}
             tickLine={false}
             axisLine={false}
           />
-          <YAxis 
-            stroke="#666" 
-            fontSize={12} 
+          <YAxis
+            stroke={CHART_CHROME.axis}
+            tick={{ fill: "#979288" }}
+            fontSize={12}
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `$${value}`}
           />
-          <Tooltip 
-            contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '4px' }}
-            itemStyle={{ color: '#fff' }}
-            formatter={(value: number) => [`$${value}`, 'Revenue']}
+          <Tooltip
+            contentStyle={{
+              backgroundColor: CHART_CHROME.tooltipBg,
+              border: CHART_CHROME.tooltipBorder,
+              borderRadius: "4px",
+            }}
+            itemStyle={{ color: CHART_CHROME.tooltipText }}
+            formatter={(value: number) => [`$${value}`, "Revenue"]}
           />
-          <Area 
-            type="monotone" 
-            dataKey="revenue" 
-            stroke="#22c55e" 
-            fillOpacity={1} 
-            fill="url(#colorRevenue)" 
+          <Area
+            type="monotone"
+            dataKey="revenue"
+            stroke="#6FB3A8"
+            fillOpacity={1}
+            fill="url(#colorRevenue)"
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -109,18 +130,26 @@ export function CategoryChart({ data }: { data: CategoryDataPoint[] }) {
             cy="50%"
             labelLine={false}
             outerRadius={100}
-            fill="#8884d8"
+            fill="#F2EAD8"
             dataKey="value"
             nameKey="name"
-            label={({ name, percent }) => `${name} ${(percent ? percent * 100 : 0).toFixed(0)}%`}
+            label={({ name, percent }) =>
+              `${name} ${(percent ? percent * 100 : 0).toFixed(0)}%`
+            }
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
             ))}
           </Pie>
-          <Tooltip 
-            contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }}
-            itemStyle={{ color: '#fff' }}
+          <Tooltip
+            contentStyle={{
+              backgroundColor: CHART_CHROME.tooltipBg,
+              border: CHART_CHROME.tooltipBorder,
+            }}
+            itemStyle={{ color: CHART_CHROME.tooltipText }}
           />
         </PieChart>
       </ResponsiveContainer>
@@ -141,26 +170,35 @@ export function UserGrowthChart({ data }: { data: UserGrowthDataPoint[] }) {
           data={data}
           margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-          <XAxis 
-            dataKey="name" 
-            stroke="#666" 
-            fontSize={12} 
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={CHART_CHROME.grid}
+            vertical={false}
+          />
+          <XAxis
+            dataKey="name"
+            stroke={CHART_CHROME.axis}
+            tick={{ fill: "#979288" }}
+            fontSize={12}
             tickLine={false}
             axisLine={false}
           />
-          <YAxis 
-            stroke="#666" 
-            fontSize={12} 
+          <YAxis
+            stroke={CHART_CHROME.axis}
+            tick={{ fill: "#979288" }}
+            fontSize={12}
             tickLine={false}
             axisLine={false}
           />
-          <Tooltip 
-             contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }}
-             itemStyle={{ color: '#fff' }}
-             cursor={{fill: '#222'}}
+          <Tooltip
+            contentStyle={{
+              backgroundColor: CHART_CHROME.tooltipBg,
+              border: CHART_CHROME.tooltipBorder,
+            }}
+            itemStyle={{ color: CHART_CHROME.tooltipText }}
+            cursor={{ fill: CHART_CHROME.cursor }}
           />
-          <Bar dataKey="users" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="users" fill="#B58DB6" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

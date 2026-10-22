@@ -89,26 +89,26 @@ export default function GameDashboardPage() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-black text-white font-sans flex flex-col">
+      <main className="min-h-screen bg-background text-cream font-sans flex flex-col">
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center max-w-md">
-            <div className="w-24 h-24 mx-auto mb-8 bg-[#111] border border-[#333] rounded-full flex items-center justify-center relative">
-              <Lock size={40} className="text-gray-600" />
+            <div className="w-24 h-24 mx-auto mb-8 bg-background border border-line rounded-full flex items-center justify-center relative">
+              <Lock size={40} className="text-fg-faint" />
               <div className="absolute -top-2 -right-2 w-8 h-8 bg-primary rounded-full animate-pulse flex items-center justify-center">
-                <Sparkles size={16} className="text-black" />
+                <Sparkles size={16} className="text-ink" />
               </div>
             </div>
-            <h1 className="font-heading text-4xl text-white uppercase mb-4">
+            <h1 className="font-heading text-4xl text-cream uppercase mb-4">
               Game Hub
             </h1>
-            <p className="text-gray-400 font-mono text-sm mb-8 leading-relaxed">
+            <p className="text-fg-muted font-mono text-sm mb-8 leading-relaxed">
               Track your progress across all pillars: Collectibles,
               Achievements, Stories, and Mastery. Each pillar works standalone
               with optional cross-pillar bonuses.
             </p>
             <Button
               onClick={() => openAuthModal("register")}
-              className="bg-primary text-black hover:bg-white font-heading uppercase tracking-widest px-8 py-6 text-lg rounded-none"
+              className="bg-primary text-ink hover:bg-cream font-heading uppercase tracking-widest px-8 py-6 text-lg rounded-none"
             >
               Start Your Journey
             </Button>
@@ -129,12 +129,12 @@ export default function GameDashboardPage() {
                 { icon: Sparkles, label: "Stories", desc: "XP & Narrative" },
                 { icon: BookOpen, label: "Mastery", desc: "Book Completion" },
               ].map((pillar, i) => (
-                <div key={i} className="bg-[#111] border border-[#222] p-4">
+                <div key={i} className="bg-background border border-line p-4">
                   <pillar.icon size={20} className="text-primary mb-2" />
-                  <h3 className="font-heading text-white uppercase text-sm">
+                  <h3 className="font-heading text-cream uppercase text-sm">
                     {pillar.label}
                   </h3>
-                  <p className="text-[10px] text-gray-500 font-mono">
+                  <p className="text-[10px] text-fg-muted font-mono">
                     {pillar.desc}
                   </p>
                 </div>
@@ -147,9 +147,9 @@ export default function GameDashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans">
+    <main className="min-h-screen bg-background text-cream font-sans">
       {/* Header */}
-      <div className="bg-[#111] border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -158,10 +158,10 @@ export default function GameDashboardPage() {
                 <Grid3X3 size={14} />
                 <span>Unified Progress Hub</span>
               </div>
-              <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tighter">
+              <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
                 Game Dashboard
               </h1>
-              <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-xl">
+              <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">
                 All pillars at a glance. Each works standalone with optional
                 cross-pillar bonuses.
               </p>
@@ -169,23 +169,23 @@ export default function GameDashboardPage() {
 
             {/* Level & XP Summary */}
             <div className="flex gap-4">
-              <div className="bg-black border border-[#333] p-4">
+              <div className="bg-background border border-line p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Zap size={14} className="text-primary" />
-                  <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">
+                  <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
                     Level
                   </span>
                 </div>
                 <p className="font-heading text-3xl text-primary">{level}</p>
               </div>
-              <div className="bg-black border border-[#333] p-4">
+              <div className="bg-background border border-line p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Target size={14} className="text-gray-500" />
-                  <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">
+                  <Target size={14} className="text-fg-muted" />
+                  <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
                     Total XP
                   </span>
                 </div>
-                <p className="font-heading text-3xl text-white">
+                <p className="font-heading text-3xl text-cream">
                   {totalXP.toLocaleString()}
                 </p>
               </div>
@@ -215,7 +215,7 @@ export default function GameDashboardPage() {
 
         {/* Main Stats Grid */}
         <div className="mb-12">
-          <h2 className="font-heading text-2xl text-white uppercase mb-6 flex items-center gap-2">
+          <h2 className="font-heading text-2xl text-cream uppercase mb-6 flex items-center gap-2">
             <Sparkles size={20} className="text-primary" /> Pillar Overview
           </h2>
           <PillarStatsGrid
@@ -245,11 +245,11 @@ export default function GameDashboardPage() {
         {/* Pillar Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Collectibles Pillar */}
-          <div className="bg-[#0a0a0a] border border-[#222] p-6">
+          <div className="bg-background border border-line p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <Trophy size={20} className="text-amber-500" />
-                <h3 className="font-heading text-xl text-white uppercase">
+                <Trophy size={20} className="text-signal" />
+                <h3 className="font-heading text-xl text-cream uppercase">
                   Collectibles
                 </h3>
               </div>
@@ -257,7 +257,7 @@ export default function GameDashboardPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-amber-500 hover:text-white text-[10px] uppercase tracking-widest"
+                  className="text-signal hover:text-cream text-[10px] uppercase tracking-widest"
                 >
                   View All <ArrowRight size={12} className="ml-1" />
                 </Button>
@@ -273,19 +273,19 @@ export default function GameDashboardPage() {
               />
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#111] border border-[#222] p-3 text-center">
-                  <p className="font-heading text-2xl text-amber-500">
+                <div className="bg-background border border-line p-3 text-center">
+                  <p className="font-heading text-2xl text-cream">
                     {pillarProgress.collectibles.completedSets.length}
                   </p>
-                  <p className="text-[10px] text-gray-500 uppercase font-mono">
+                  <p className="text-[10px] text-fg-muted uppercase font-mono">
                     Sets Complete
                   </p>
                 </div>
-                <div className="bg-[#111] border border-[#222] p-3 text-center">
-                  <p className="font-heading text-2xl text-white">
+                <div className="bg-background border border-line p-3 text-center">
+                  <p className="font-heading text-2xl text-cream">
                     {collectorScore}
                   </p>
-                  <p className="text-[10px] text-gray-500 uppercase font-mono">
+                  <p className="text-[10px] text-fg-muted uppercase font-mono">
                     Score
                   </p>
                 </div>
@@ -305,11 +305,11 @@ export default function GameDashboardPage() {
           </div>
 
           {/* Achievements Pillar */}
-          <div className="bg-[#0a0a0a] border border-[#222] p-6">
+          <div className="bg-background border border-line p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <Star size={20} className="text-purple-500" />
-                <h3 className="font-heading text-xl text-white uppercase">
+                <Star size={20} className="text-signal" />
+                <h3 className="font-heading text-xl text-cream uppercase">
                   Achievements
                 </h3>
               </div>
@@ -317,7 +317,7 @@ export default function GameDashboardPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-purple-500 hover:text-white text-[10px] uppercase tracking-widest"
+                  className="text-signal hover:text-cream text-[10px] uppercase tracking-widest"
                 >
                   View All <ArrowRight size={12} className="ml-1" />
                 </Button>
@@ -334,7 +334,7 @@ export default function GameDashboardPage() {
 
               {/* Active Loadout Preview */}
               <div>
-                <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono mb-2 block">
+                <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono mb-2 block">
                   Active Loadout ({activeAchievementIds.length}/{loadoutSlots})
                 </span>
                 <div className="flex gap-2">
@@ -344,16 +344,16 @@ export default function GameDashboardPage() {
                     return (
                       <div
                         key={i}
-                        className={`w-10 h-10 border flex items-center justify-center ${ach ? "border-purple-500/50 bg-[#111]" : "border-[#222] border-dashed"}`}
+                        className={`w-10 h-10 border flex items-center justify-center ${ach ? "border-signal/40 bg-background" : "border-line border-dashed"}`}
                       >
                         {ach ? (
                           <AchievementIcon
                             icon={ach.icon}
                             size={16}
-                            className="text-purple-500"
+                            className="text-signal"
                           />
                         ) : (
-                          <span className="text-[8px] text-gray-700">+</span>
+                          <span className="text-[8px] text-fg-faint">+</span>
                         )}
                       </div>
                     );
@@ -375,11 +375,11 @@ export default function GameDashboardPage() {
           </div>
 
           {/* Stories Pillar */}
-          <div className="bg-[#0a0a0a] border border-[#222] p-6">
+          <div className="bg-background border border-line p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <Sparkles size={20} className="text-primary" />
-                <h3 className="font-heading text-xl text-white uppercase">
+                <h3 className="font-heading text-xl text-cream uppercase">
                   Stories
                 </h3>
               </div>
@@ -387,7 +387,7 @@ export default function GameDashboardPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-primary hover:text-white text-[10px] uppercase tracking-widest"
+                  className="text-primary hover:text-cream text-[10px] uppercase tracking-widest"
                 >
                   View All <ArrowRight size={12} className="ml-1" />
                 </Button>
@@ -396,37 +396,37 @@ export default function GameDashboardPage() {
 
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-[#111] border border-[#222] p-3 text-center">
-                  <p className="font-heading text-2xl text-green-500">
+                <div className="bg-background border border-line p-3 text-center">
+                  <p className="font-heading text-2xl text-success">
                     {completedStories.length}
                   </p>
-                  <p className="text-[10px] text-gray-500 uppercase font-mono">
+                  <p className="text-[10px] text-fg-muted uppercase font-mono">
                     Complete
                   </p>
                 </div>
-                <div className="bg-[#111] border border-[#222] p-3 text-center">
-                  <p className="font-heading text-2xl text-amber-500">
+                <div className="bg-background border border-line p-3 text-center">
+                  <p className="font-heading text-2xl text-cream">
                     {inProgressStories.length}
                   </p>
-                  <p className="text-[10px] text-gray-500 uppercase font-mono">
+                  <p className="text-[10px] text-fg-muted uppercase font-mono">
                     In Progress
                   </p>
                 </div>
-                <div className="bg-[#111] border border-[#222] p-3 text-center">
-                  <p className="font-heading text-2xl text-gray-600">
+                <div className="bg-background border border-line p-3 text-center">
+                  <p className="font-heading text-2xl text-fg-faint">
                     {stories.length -
                       completedStories.length -
                       inProgressStories.length}
                   </p>
-                  <p className="text-[10px] text-gray-500 uppercase font-mono">
+                  <p className="text-[10px] text-fg-muted uppercase font-mono">
                     Locked
                   </p>
                 </div>
               </div>
 
-              <div className="bg-[#111] border border-[#222] p-4">
+              <div className="bg-background border border-line p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 uppercase font-mono">
+                  <span className="text-[10px] text-fg-muted uppercase font-mono">
                     Total XP Earned
                   </span>
                   <span className="font-heading text-xl text-primary">
@@ -450,11 +450,11 @@ export default function GameDashboardPage() {
           </div>
 
           {/* Mastery Pillar */}
-          <div className="bg-[#0a0a0a] border border-[#222] p-6">
+          <div className="bg-background border border-line p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <BookOpen size={20} className="text-emerald-500" />
-                <h3 className="font-heading text-xl text-white uppercase">
+                <BookOpen size={20} className="text-signal" />
+                <h3 className="font-heading text-xl text-cream uppercase">
                   Mastery
                 </h3>
               </div>
@@ -462,7 +462,7 @@ export default function GameDashboardPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-emerald-500 hover:text-white text-[10px] uppercase tracking-widest"
+                  className="text-signal hover:text-cream text-[10px] uppercase tracking-widest"
                 >
                   Browse Books <ArrowRight size={12} className="ml-1" />
                 </Button>
@@ -471,26 +471,26 @@ export default function GameDashboardPage() {
 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#111] border border-[#222] p-3 text-center">
-                  <p className="font-heading text-2xl text-emerald-500">
+                <div className="bg-background border border-line p-3 text-center">
+                  <p className="font-heading text-2xl text-cream">
                     {pillarProgress.mastery.mastered}
                   </p>
-                  <p className="text-[10px] text-gray-500 uppercase font-mono">
+                  <p className="text-[10px] text-fg-muted uppercase font-mono">
                     Mastered
                   </p>
                 </div>
-                <div className="bg-[#111] border border-[#222] p-3 text-center">
-                  <p className="font-heading text-2xl text-white">
+                <div className="bg-background border border-line p-3 text-center">
+                  <p className="font-heading text-2xl text-cream">
                     {pillarProgress.mastery.inProgress}
                   </p>
-                  <p className="text-[10px] text-gray-500 uppercase font-mono">
+                  <p className="text-[10px] text-fg-muted uppercase font-mono">
                     In Progress
                   </p>
                 </div>
               </div>
 
-              <div className="bg-[#111] border border-[#222] p-4">
-                <p className="text-sm text-gray-400 leading-relaxed">
+              <div className="bg-background border border-line p-4">
+                <p className="text-sm text-fg-muted leading-relaxed">
                   Master books by completing all 10 milestones. Earn standalone
                   badges and optional XP for story mode.
                 </p>
@@ -512,7 +512,7 @@ export default function GameDashboardPage() {
         {/* Recent Activity */}
         {recentUnlocks.length > 0 && (
           <div className="mb-12">
-            <h2 className="font-heading text-2xl text-white uppercase mb-6 flex items-center gap-2">
+            <h2 className="font-heading text-2xl text-cream uppercase mb-6 flex items-center gap-2">
               <Sparkles size={20} className="text-primary" /> Recent Activity
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -522,14 +522,14 @@ export default function GameDashboardPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-[#0a0a0a] border border-[#222] p-4 text-center"
+                  className="bg-background border border-line p-4 text-center"
                 >
                   <div
                     className={`w-10 h-10 mx-auto mb-2 flex items-center justify-center border ${
                       item.type === "achievement"
-                        ? "border-purple-500/50 text-purple-500"
+                        ? "border-signal/40 text-signal"
                         : item.type === "collectible"
-                          ? "border-amber-500/50 text-amber-500"
+                          ? "border-signal/40 text-signal"
                           : "border-primary/50 text-primary"
                     }`}
                   >
@@ -541,10 +541,10 @@ export default function GameDashboardPage() {
                       <Sparkles size={16} />
                     )}
                   </div>
-                  <p className="text-xs text-white font-heading uppercase truncate">
+                  <p className="text-xs text-cream font-heading uppercase truncate">
                     {item.title}
                   </p>
-                  <p className="text-[9px] text-gray-500 font-mono uppercase">
+                  <p className="text-[9px] text-fg-muted font-mono uppercase">
                     {item.type}
                   </p>
                 </motion.div>
@@ -554,9 +554,9 @@ export default function GameDashboardPage() {
         )}
 
         {/* 3D Trophy Preview */}
-        <div className="bg-[#0a0a0a] border border-[#222] p-8">
+        <div className="bg-background border border-line p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="relative aspect-square max-w-[300px] mx-auto bg-[#111] border border-[#333] overflow-hidden">
+            <div className="relative aspect-square max-w-[300px] mx-auto bg-background border border-line overflow-hidden">
               <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none z-10" />
               <TrophyCanvas
                 size="large"
@@ -572,30 +572,30 @@ export default function GameDashboardPage() {
                 autoRotate={true}
                 isInteractive={true}
               />
-              <div className="absolute bottom-3 left-0 right-0 text-center text-[10px] font-mono text-gray-500 uppercase pointer-events-none z-20">
+              <div className="absolute bottom-3 left-0 right-0 text-center text-[10px] font-mono text-fg-muted uppercase pointer-events-none z-20">
                 Drag to Rotate
               </div>
             </div>
             <div>
-              <h3 className="font-heading text-2xl text-white uppercase mb-4">
+              <h3 className="font-heading text-2xl text-cream uppercase mb-4">
                 Your Progress Trophy
               </h3>
-              <p className="text-gray-400 mb-6">
+              <p className="text-fg-muted mb-6">
                 This trophy represents your overall progress across all pillars.
                 It evolves as you level up and complete milestones.
               </p>
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Trophy Tier:</span>
+                  <span className="text-fg-muted">Trophy Tier:</span>
                   <span
                     className={`font-heading uppercase ${
                       level >= 15
-                        ? "text-orange-400"
+                        ? "text-signal"
                         : level >= 10
-                          ? "text-purple-400"
+                          ? "text-signal"
                           : level >= 5
-                            ? "text-blue-400"
-                            : "text-gray-400"
+                            ? "text-fg-muted"
+                            : "text-fg-muted"
                     }`}
                   >
                     {level >= 15
@@ -608,12 +608,12 @@ export default function GameDashboardPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Current Level:</span>
+                  <span className="text-fg-muted">Current Level:</span>
                   <span className="text-primary font-heading">{level}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Total Progress:</span>
-                  <span className="text-white font-mono">
+                  <span className="text-fg-muted">Total Progress:</span>
+                  <span className="text-cream font-mono">
                     {pillarProgress.collectibles.collected +
                       pillarProgress.achievements.unlocked +
                       completedStories.length +

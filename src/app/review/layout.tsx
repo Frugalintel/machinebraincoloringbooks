@@ -6,13 +6,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function ReviewLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function ReviewLayout({ children }: { children: ReactNode }) {
   return (
-    <div data-book-review="" className="min-h-screen bg-[#0b0b0b] text-[#eee]">
+    <div data-book-review="" className="min-h-screen bg-background text-cream">
       {children}
     </div>
   );

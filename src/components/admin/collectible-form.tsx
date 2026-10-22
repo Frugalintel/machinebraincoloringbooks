@@ -20,7 +20,7 @@ const TrophyCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-full min-h-[300px] bg-[#111] animate-pulse flex items-center justify-center rounded-lg">
+      <div className="w-full h-full min-h-[300px] bg-surface-1 animate-pulse flex items-center justify-center rounded-lg">
         <div className="w-12 h-12 border-2 border-primary/30 rounded-full animate-spin border-t-primary" />
       </div>
     ),
@@ -38,11 +38,11 @@ interface CollectibleFormProps {
 }
 
 const RARITY_TIERS = [
-  { id: "Common", color: "#94a3b8", border: "border-slate-500" },
-  { id: "Uncommon", color: "#22c55e", border: "border-green-500" },
-  { id: "Rare", color: "#3b82f6", border: "border-blue-500" },
-  { id: "Epic", color: "#a855f7", border: "border-purple-500" },
-  { id: "Legendary", color: "#f97316", border: "border-orange-500" },
+  { id: "Common", color: "#979288", border: "border-line-strong" },
+  { id: "Uncommon", color: "#C5BEB0", border: "border-fg-muted" },
+  { id: "Rare", color: "#F2EAD8", border: "border-fg-secondary" },
+  { id: "Epic", color: "#F2EAD8", border: "border-cream" },
+  { id: "Legendary", color: "#FF4F00", border: "border-signal" },
 ];
 
 export function CollectibleForm({
@@ -160,15 +160,15 @@ export function CollectibleForm({
       <div className="flex items-center gap-4 mb-8">
         <Link
           href="/admin/collectibles"
-          className="p-2 rounded-full hover:bg-[#222] transition-colors"
+          className="p-2 rounded-full hover:bg-surface-2 transition-colors"
         >
-          <ArrowLeft size={20} className="text-gray-400" />
+          <ArrowLeft size={20} className="text-fg-muted" />
         </Link>
         <div>
-          <h1 className="text-3xl font-heading font-bold text-white">
+          <h1 className="text-3xl font-heading font-bold text-cream">
             {isEditing ? "EDIT COLLECTIBLE" : "NEW COLLECTIBLE"}
           </h1>
-          <p className="text-gray-500 font-mono text-sm">
+          <p className="text-fg-muted font-mono text-sm">
             {isEditing
               ? "Update collectible details"
               : "Create a new digital artifact"}
@@ -179,14 +179,14 @@ export function CollectibleForm({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column - Form Fields */}
         <div className="space-y-6">
-          <div className="space-y-4 bg-[#111] p-6 rounded-lg border border-[#333]">
-            <h3 className="font-heading text-lg text-white flex items-center gap-2">
+          <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
+            <h3 className="font-heading text-lg text-cream flex items-center gap-2">
               <Gem size={18} className="text-primary" />
               Basic Info
             </h3>
 
             <div className="space-y-2">
-              <label className="text-sm font-mono text-gray-400 uppercase">
+              <label className="text-sm font-mono text-fg-muted uppercase">
                 Name
               </label>
               <Input
@@ -194,13 +194,13 @@ export function CollectibleForm({
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="e.g. Quantum-Bulldog"
-                className="bg-[#222] border-[#333]"
+                className="bg-surface-2 border-line"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-mono text-gray-400 uppercase">
+              <label className="text-sm font-mono text-fg-muted uppercase">
                 Lore / Description
               </label>
               <textarea
@@ -209,12 +209,12 @@ export function CollectibleForm({
                 onChange={handleChange}
                 placeholder="The backstory of this artifact..."
                 rows={4}
-                className="flex min-h-[100px] w-full rounded-md border border-[#333] bg-[#222] px-3 py-2 text-sm text-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex min-h-[100px] w-full rounded-md border border-line bg-surface-2 px-3 py-2 text-sm text-cream placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-mono text-gray-400 uppercase">
+              <label className="text-sm font-mono text-fg-muted uppercase">
                 Unlock Requirement
               </label>
               <Input
@@ -222,20 +222,20 @@ export function CollectibleForm({
                 value={formData.requirement || ""}
                 onChange={handleChange}
                 placeholder="e.g. Complete 'First Splash' achievement"
-                className="bg-[#222] border-[#333]"
+                className="bg-surface-2 border-line"
               />
             </div>
           </div>
 
-          <div className="space-y-4 bg-[#111] p-6 rounded-lg border border-[#333]">
-            <h3 className="font-heading text-lg text-white flex items-center gap-2">
+          <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
+            <h3 className="font-heading text-lg text-cream flex items-center gap-2">
               <Box size={18} className="text-primary" />
               Classification
             </h3>
 
             {/* Rarity Selector */}
             <div className="space-y-2">
-              <label className="text-sm font-mono text-gray-400 uppercase">
+              <label className="text-sm font-mono text-fg-muted uppercase">
                 Rarity Tier
               </label>
               <div className="grid grid-cols-5 gap-1">
@@ -251,8 +251,8 @@ export function CollectibleForm({
                     }
                     className={`text-[10px] uppercase font-bold py-2 rounded border transition-all ${
                       formData.rarity === tier.id
-                        ? `bg-white text-black border-white`
-                        : "bg-[#222] text-gray-500 border-[#333] hover:border-gray-500"
+                        ? `bg-cream text-ink border-white`
+                        : "bg-surface-2 text-fg-muted border-line hover:border-line-strong"
                     }`}
                     style={{
                       color: formData.rarity === tier.id ? "#000" : tier.color,
@@ -262,14 +262,14 @@ export function CollectibleForm({
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] text-gray-500 text-right uppercase tracking-widest">
+              <p className="text-[10px] text-fg-muted text-right uppercase tracking-widest">
                 {formData.rarity} Tier
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-mono text-gray-400 uppercase">
+                <label className="text-sm font-mono text-fg-muted uppercase">
                   Type
                 </label>
                 <Input
@@ -277,11 +277,11 @@ export function CollectibleForm({
                   value={formData.type || ""}
                   onChange={handleChange}
                   placeholder="e.g. Companion, Vehicle"
-                  className="bg-[#222] border-[#333]"
+                  className="bg-surface-2 border-line"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-mono text-gray-400 uppercase">
+                <label className="text-sm font-mono text-fg-muted uppercase">
                   Generation
                 </label>
                 <Input
@@ -289,13 +289,13 @@ export function CollectibleForm({
                   value={formData.generation || ""}
                   onChange={handleChange}
                   placeholder="e.g. Gen-1, Mk-II"
-                  className="bg-[#222] border-[#333]"
+                  className="bg-surface-2 border-line"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-mono text-gray-400 uppercase">
+              <label className="text-sm font-mono text-fg-muted uppercase">
                 Found In / Location
               </label>
               <Input
@@ -303,26 +303,26 @@ export function CollectibleForm({
                 value={formData.found_in || ""}
                 onChange={handleChange}
                 placeholder="e.g. Sector 7: Residential"
-                className="bg-[#222] border-[#333]"
+                className="bg-surface-2 border-line"
               />
             </div>
           </div>
 
-          <div className="space-y-4 bg-[#111] p-6 rounded-lg border border-[#333]">
-            <h3 className="font-heading text-lg text-white flex items-center gap-2">
+          <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
+            <h3 className="font-heading text-lg text-cream flex items-center gap-2">
               <Sparkles size={18} className="text-primary" />
               Relationships
             </h3>
 
             <div className="space-y-2">
-              <label className="text-sm font-mono text-gray-400 uppercase">
+              <label className="text-sm font-mono text-fg-muted uppercase">
                 Collection Set
               </label>
               <select
                 name="set_id"
                 value={formData.set_id || ""}
                 onChange={handleChange}
-                className="flex h-10 w-full rounded-md border border-[#333] bg-[#222] px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                className="flex h-10 w-full rounded-md border border-line bg-surface-2 px-3 py-2 text-sm text-cream focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
               >
                 <option value="">No Set</option>
                 {collectionSets.map((set) => (
@@ -334,7 +334,7 @@ export function CollectibleForm({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-mono text-gray-400 uppercase">
+              <label className="text-sm font-mono text-fg-muted uppercase">
                 Related Achievement
               </label>
               <select
@@ -344,7 +344,7 @@ export function CollectibleForm({
                     .related_achievement_id as string) || ""
                 }
                 onChange={handleChange}
-                className="flex h-10 w-full rounded-md border border-[#333] bg-[#222] px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                className="flex h-10 w-full rounded-md border border-line bg-surface-2 px-3 py-2 text-sm text-cream focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
               >
                 <option value="">No Linked Achievement</option>
                 {achievements.map((ach) => (
@@ -353,7 +353,7 @@ export function CollectibleForm({
                   </option>
                 ))}
               </select>
-              <p className="text-[10px] text-gray-600">
+              <p className="text-[10px] text-fg-faint">
                 Link to an achievement that unlocks this collectible
               </p>
             </div>
@@ -362,15 +362,15 @@ export function CollectibleForm({
 
         {/* Right Column - Preview & Image */}
         <div className="space-y-6">
-          <div className="space-y-4 bg-[#111] p-6 rounded-lg border border-[#333]">
-            <h3 className="font-heading text-lg text-white">
+          <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
+            <h3 className="font-heading text-lg text-cream">
               3D Trophy Preview
             </h3>
-            <p className="text-xs text-gray-500 font-mono">
+            <p className="text-xs text-fg-muted font-mono">
               Shows how this collectible will appear in the trophy room.
             </p>
 
-            <div className="aspect-square bg-black/50 border border-[#222] rounded-lg overflow-hidden relative">
+            <div className="aspect-square bg-background/40 border border-line rounded-lg overflow-hidden relative">
               <TrophyCanvas
                 size="large"
                 rarity={formData.rarity || "Common"}
@@ -381,7 +381,7 @@ export function CollectibleForm({
               {/* Rarity Badge Overlay */}
               <div className="absolute top-4 right-4 z-10">
                 <span
-                  className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border bg-black/60 backdrop-blur-sm"
+                  className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border bg-background/60 backdrop-blur-sm"
                   style={{ color: rarityColor, borderColor: rarityColor }}
                 >
                   {formData.rarity}
@@ -389,22 +389,22 @@ export function CollectibleForm({
               </div>
             </div>
 
-            <p className="text-[10px] text-gray-500 text-center">
+            <p className="text-[10px] text-fg-muted text-center">
               Drag to rotate • Scroll to zoom
             </p>
           </div>
 
-          <div className="space-y-4 bg-[#111] p-6 rounded-lg border border-[#333]">
-            <h3 className="font-heading text-lg text-white">
+          <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
+            <h3 className="font-heading text-lg text-cream">
               Collectible Image
             </h3>
-            <p className="text-xs text-gray-500 font-mono">
+            <p className="text-xs text-fg-muted font-mono">
               Upload a 2D icon or preview image.
             </p>
 
             <div className="space-y-4">
               {formData.image_url ? (
-                <div className="relative w-full aspect-square max-w-[200px] mx-auto bg-[#222] rounded-lg overflow-hidden border border-[#333]">
+                <div className="relative w-full aspect-square max-w-[200px] mx-auto bg-surface-2 rounded-lg overflow-hidden border border-line">
                   <img
                     src={formData.image_url}
                     alt="Collectible preview"
@@ -421,8 +421,8 @@ export function CollectibleForm({
           </div>
 
           {/* Card Preview */}
-          <div className="space-y-4 bg-[#111] p-6 rounded-lg border border-[#333]">
-            <h3 className="font-heading text-lg text-white">Card Preview</h3>
+          <div className="space-y-4 bg-surface-1 p-6 rounded-lg border border-line">
+            <h3 className="font-heading text-lg text-cream">Card Preview</h3>
 
             <div
               className="p-4 rounded-xl border transition-all"
@@ -452,7 +452,7 @@ export function CollectibleForm({
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-heading font-bold text-sm mb-0.5 text-white">
+                  <h3 className="font-heading font-bold text-sm mb-0.5 text-cream">
                     {formData.name || "Untitled"}
                   </h3>
                   <p
@@ -462,7 +462,7 @@ export function CollectibleForm({
                     {formData.type || "Artifact"}
                   </p>
                   <span
-                    className="inline-block text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border bg-black/30"
+                    className="inline-block text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border bg-background/40"
                     style={{ color: rarityColor, borderColor: rarityColor }}
                   >
                     {formData.rarity || "Common"}
@@ -470,7 +470,7 @@ export function CollectibleForm({
                 </div>
               </div>
 
-              <p className="text-xs text-gray-400 line-clamp-2 mt-3">
+              <p className="text-xs text-fg-muted line-clamp-2 mt-3">
                 {formData.lore || "No lore available."}
               </p>
             </div>
@@ -478,11 +478,11 @@ export function CollectibleForm({
         </div>
       </div>
 
-      <div className="flex justify-end pt-4 border-t border-[#333]">
+      <div className="flex justify-end pt-4 border-t border-line">
         <Button
           type="submit"
           disabled={loading}
-          className="bg-primary text-black hover:bg-white font-bold px-8"
+          className="bg-primary text-ink hover:bg-cream font-bold px-8"
         >
           {loading ? (
             "SAVING..."

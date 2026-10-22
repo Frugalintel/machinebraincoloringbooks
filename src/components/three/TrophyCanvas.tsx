@@ -84,7 +84,7 @@ export function TrophyCanvas({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#111",
+          background: "#1A1A19",
         }}
       >
         <div

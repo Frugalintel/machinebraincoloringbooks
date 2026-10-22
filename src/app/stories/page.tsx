@@ -114,9 +114,9 @@ export default function StoriesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans selection:bg-primary selection:text-black">
+    <main className="min-h-screen bg-background text-cream font-sans selection:bg-primary selection:text-ink">
       {/* Header */}
-      <div className="bg-[#111] border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
@@ -125,16 +125,16 @@ export default function StoriesPage() {
                 <BookOpen size={14} />
                 <span>{ADVENTURES_COPY.pillarName}</span>
               </div>
-              <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tighter">
+              <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
                 Adventures
               </h1>
-              <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-md">
+              <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-md">
                 {ADVENTURES_COPY.pillarTagline}
               </p>
             </div>
 
             <div className="w-full md:w-auto md:min-w-[380px]">
-              <p className="text-[11px] font-medium text-white/30 mb-3 uppercase tracking-wider">
+              <p className="text-[11px] font-medium text-fg-faint mb-3 uppercase tracking-wider">
                 {ADVENTURES_COPY.codePrompt}
               </p>
               <CodeEntry />
@@ -147,7 +147,7 @@ export default function StoriesPage() {
       <div className="container mx-auto px-4 md:px-6 py-16">
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="w-8 h-8 border-2 border-white/10 border-t-white/50 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-cream/10 border-t-white/50 rounded-full animate-spin" />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -177,10 +177,10 @@ export default function StoriesPage() {
                   {/* Card */}
                   <div
                     className={`
-                      relative overflow-hidden rounded-sm bg-[#0a0a0a] 
-                      border border-white/10
+                      relative overflow-hidden rounded-sm bg-background 
+                      border border-cream/10
                       transition-all duration-500 ease-out
-                      ${isHovered ? "border-white/20 -translate-y-1" : "translate-y-0"}
+                      ${isHovered ? "border-cream/20 -translate-y-1" : "translate-y-0"}
                       ${!unlocked ? "opacity-50 hover:opacity-70" : ""}
                     `}
                     style={{
@@ -205,7 +205,7 @@ export default function StoriesPage() {
                           {/* Gradient Overlay */}
                           <div
                             className={`
-                            absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent
+                            absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent
                             transition-opacity duration-500
                             ${isHovered ? "opacity-70" : "opacity-90"}
                           `}
@@ -234,16 +234,16 @@ export default function StoriesPage() {
                         </span>
 
                         {unlocked ? (
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 backdrop-blur-md rounded-full">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="text-[10px] font-medium text-white/80 uppercase tracking-wider">
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-cream/10 backdrop-blur-md rounded-full">
+                            <div className="w-1.5 h-1.5 rounded-full bg-signal animate-pulse" />
+                            <span className="text-[10px] font-medium text-fg-secondary uppercase tracking-wider">
                               {ADVENTURES_COPY.unlockedLabel}
                             </span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
-                            <Lock size={10} className="text-white/40" />
-                            <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-background/40 backdrop-blur-md rounded-full border border-cream/10">
+                            <Lock size={10} className="text-fg-faint" />
+                            <span className="text-[10px] font-medium text-fg-faint uppercase tracking-wider">
                               {ADVENTURES_COPY.lockedLabel}
                             </span>
                           </div>
@@ -254,7 +254,7 @@ export default function StoriesPage() {
                       <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
                         <h3
                           className={`
-                          font-heading text-3xl md:text-4xl font-bold text-white uppercase tracking-tight leading-none
+                          font-heading text-3xl md:text-4xl font-bold text-cream uppercase tracking-tight leading-none
                           transition-transform duration-500 ease-out
                           ${isHovered ? "translate-y-0" : "translate-y-1"}
                         `}
@@ -267,7 +267,7 @@ export default function StoriesPage() {
                     {/* Content Section */}
                     <div className="p-6 space-y-4">
                       {/* Meta Row */}
-                      <div className="flex items-center gap-4 text-white/30">
+                      <div className="flex items-center gap-4 text-fg-faint">
                         {story.estimated_minutes ? (
                           <div className="flex items-center gap-1.5">
                             <Clock size={12} />
@@ -283,8 +283,8 @@ export default function StoriesPage() {
                                 key={i}
                                 className={`w-1.5 h-1.5 rounded-full ${
                                   i < story.difficulty!
-                                    ? "bg-white/50"
-                                    : "bg-white/10"
+                                    ? "bg-cream/40"
+                                    : "bg-cream/10"
                                 }`}
                               />
                             ))}
@@ -293,7 +293,7 @@ export default function StoriesPage() {
                       </div>
 
                       {/* Synopsis */}
-                      <p className="text-sm text-white/50 leading-relaxed line-clamp-2">
+                      <p className="text-sm text-fg-faint leading-relaxed line-clamp-2">
                         {story.synopsis}
                       </p>
 
@@ -307,7 +307,7 @@ export default function StoriesPage() {
                         {unlocked ? (
                           <Link href={`/stories/${story.id}`}>
                             <Button
-                              className={`w-full h-11 ${theme.bgAccent} text-black hover:opacity-90 font-medium text-sm rounded-sm transition-all`}
+                              className={`w-full h-11 ${theme.bgAccent} text-ink hover:opacity-90 font-medium text-sm rounded-sm transition-all`}
                             >
                               <BookOpen size={14} className="mr-2" />
                               Start Reading
@@ -316,7 +316,7 @@ export default function StoriesPage() {
                           </Link>
                         ) : requiredProductId ? (
                           <Link href={`/store/${requiredProductId}`}>
-                            <Button className="w-full h-11 bg-white/10 text-white hover:bg-white/20 font-medium text-sm rounded-sm border border-white/10 transition-all">
+                            <Button className="w-full h-11 bg-cream/10 text-cream hover:bg-cream/20 font-medium text-sm rounded-sm border border-cream/10 transition-all">
                               <ShoppingCart size={14} className="mr-2" />
                               Get the Book
                               <ArrowRight size={14} className="ml-auto" />
@@ -325,7 +325,7 @@ export default function StoriesPage() {
                         ) : (
                           <Button
                             disabled
-                            className="w-full h-11 bg-white/5 text-white/30 font-medium text-sm rounded-sm cursor-not-allowed"
+                            className="w-full h-11 bg-cream/5 text-fg-faint font-medium text-sm rounded-sm cursor-not-allowed"
                           >
                             <Lock size={14} className="mr-2" />
                             Code Required
@@ -335,7 +335,7 @@ export default function StoriesPage() {
 
                       {/* Always visible hint for locked */}
                       {!unlocked && !isHovered && (
-                        <p className="text-xs text-white/30 text-center">
+                        <p className="text-xs text-fg-faint text-center">
                           Hover for options
                         </p>
                       )}

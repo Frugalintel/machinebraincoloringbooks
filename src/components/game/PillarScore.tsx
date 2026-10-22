@@ -22,12 +22,12 @@ const PILLAR_CONFIG: Record<
 > = {
   collector: {
     icon: Trophy,
-    color: "text-amber-500",
+    color: "text-signal",
     gradient: "from-amber-500 to-orange-500",
   },
   achievement: {
     icon: Star,
-    color: "text-purple-500",
+    color: "text-signal",
     gradient: "from-purple-500 to-pink-500",
   },
   story: {
@@ -37,7 +37,7 @@ const PILLAR_CONFIG: Record<
   },
   mastery: {
     icon: BookOpen,
-    color: "text-emerald-500",
+    color: "text-signal",
     gradient: "from-emerald-500 to-teal-500",
   },
 };
@@ -86,19 +86,19 @@ export function PillarScore({
 
   return (
     <div
-      className={`bg-[#0a0a0a] border border-[#222] ${sizeConfig.container} ${className}`}
+      className={`bg-background border border-line ${sizeConfig.container} ${className}`}
     >
       <div className="flex items-center gap-3">
         {showIcon ? (
           <div
-            className={`w-10 h-10 flex items-center justify-center border border-[#333] bg-[#111] ${config.color}`}
+            className={`w-10 h-10 flex items-center justify-center border border-line bg-background ${config.color}`}
           >
             <Icon size={sizeConfig.icon} />
           </div>
         ) : null}
         <div className="flex-1">
           <span
-            className={`block ${sizeConfig.label} text-gray-500 uppercase tracking-widest font-mono mb-1`}
+            className={`block ${sizeConfig.label} text-fg-muted uppercase tracking-widest font-mono mb-1`}
           >
             {label || defaultLabels[pillar]}
           </span>
@@ -120,7 +120,7 @@ export function PillarScore({
               </span>
             )}
             {sublabel ? (
-              <span className={`${sizeConfig.label} text-gray-600 font-mono`}>
+              <span className={`${sizeConfig.label} text-fg-faint font-mono`}>
                 {sublabel}
               </span>
             ) : null}
@@ -160,7 +160,7 @@ export function PillarProgressBar({
       {label || showValues ? (
         <div className="flex items-center justify-between mb-2">
           {label ? (
-            <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">
+            <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
               {label}
             </span>
           ) : null}
@@ -171,7 +171,7 @@ export function PillarProgressBar({
           ) : null}
         </div>
       ) : null}
-      <div className={`w-full ${heightClass} bg-[#222] overflow-hidden`}>
+      <div className={`w-full ${heightClass} bg-surface-2 overflow-hidden`}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}

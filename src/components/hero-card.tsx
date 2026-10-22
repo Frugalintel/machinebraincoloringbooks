@@ -7,7 +7,7 @@ import type { CampaignTheme } from "@/lib/types";
 
 const GRID_TEXTURE: CSSProperties = {
   backgroundImage:
-    "linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)",
+    "linear-gradient(#33322F 1px, transparent 1px), linear-gradient(90deg, #33322F 1px, transparent 1px)",
   backgroundSize: "40px 40px",
   opacity: 0.1,
 };
@@ -20,14 +20,14 @@ export function getHeroTextureStyle(
       return GRID_TEXTURE;
     case "dots":
       return {
-        backgroundImage: "radial-gradient(#444 1px, transparent 1px)",
+        backgroundImage: "radial-gradient(#6A675F 1px, transparent 1px)",
         backgroundSize: "20px 20px",
         opacity: 0.2,
       };
     case "scanlines":
       return {
         backgroundImage:
-          "repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px)",
+          "repeating-linear-gradient(0deg, transparent, transparent 2px, var(--base) 3px)",
         opacity: 0.3,
       };
     case "noise":
@@ -68,7 +68,7 @@ export function HeroCard({
   return (
     <section
       aria-labelledby="home-hero-heading"
-      className="relative isolate w-full overflow-hidden bg-[#050505]"
+      className="relative isolate w-full overflow-hidden bg-background"
       style={{ "--hero-accent": accentColor } as CSSProperties}
     >
       <div
@@ -98,26 +98,26 @@ export function HeroCard({
           </p>
           <h1
             id="home-hero-heading"
-            className="font-heading text-[clamp(2.6rem,11vw,5.75rem)] font-bold uppercase leading-[0.86] tracking-[-0.045em] text-white"
+            className="font-heading text-[clamp(2.6rem,11vw,5.75rem)] font-bold uppercase leading-[0.86] tracking-[-0.045em] text-cream"
           >
             <span className="block">{headlineWhite}</span>
             <span className="mt-1 block text-(--hero-accent)">
               {headlineAccent}
             </span>
           </h1>
-          <p className="mt-4 max-w-md text-[14px] leading-relaxed text-zinc-400 sm:mt-6 sm:text-base sm:leading-7">
+          <p className="mt-4 max-w-md text-[14px] leading-relaxed text-fg-muted sm:mt-6 sm:text-base sm:leading-7">
             {subcopy}
           </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:gap-4 lg:items-start">
             <Button
               asChild
-              className="h-11 rounded-md bg-(--hero-accent) px-8 font-heading text-sm uppercase tracking-[0.2em] text-white hover:bg-white hover:text-black sm:h-12 sm:text-base"
+              className="h-11 rounded-md bg-(--hero-accent) px-8 font-heading text-sm uppercase tracking-[0.2em] text-ink hover:bg-cream hover:text-ink sm:h-12 sm:text-base"
             >
               <Link href={primaryCta.href}>{primaryCta.label}</Link>
             </Button>
             <Link
               href={secondaryCta.href}
-              className="inline-flex min-h-10 items-center font-heading text-xs uppercase tracking-[0.24em] text-zinc-400 transition-colors hover:text-white sm:min-h-11 sm:text-sm"
+              className="inline-flex min-h-10 items-center font-heading text-xs uppercase tracking-[0.24em] text-fg-muted transition-colors hover:text-cream sm:min-h-11 sm:text-sm"
             >
               {secondaryCta.label}
             </Link>
@@ -128,11 +128,11 @@ export function HeroCard({
                 <li key={chip.label} className="flex items-center">
                   {index > 0 ? (
                     <span
-                      className="mx-3 h-3 w-px bg-zinc-700 sm:mx-5"
+                      className="mx-3 h-3 w-px bg-fg-faint sm:mx-5"
                       aria-hidden
                     />
                   ) : null}
-                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500 sm:text-[11px]">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-fg-muted sm:text-[11px]">
                     {chip.label}
                   </span>
                 </li>
@@ -167,13 +167,13 @@ export function HeroCard({
             </Link>
             <span
               data-testid="hero-price-badge"
-              className="pointer-events-none absolute right-0 bottom-4 z-30 rounded-xl bg-white px-4 py-3 text-left text-black shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:bottom-6 lg:-right-2 lg:bottom-10"
+              className="pointer-events-none absolute right-0 bottom-4 z-30 rounded-xl bg-cream px-4 py-3 text-left text-ink shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:bottom-6 lg:-right-2 lg:bottom-10"
             >
-              <span className="block font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500">
+              <span className="block font-mono text-[10px] uppercase tracking-[0.22em] text-ink/60">
                 {badgeLabel}
               </span>
               {originalPrice ? (
-                <span className="mt-1 block font-mono text-xs text-zinc-400 line-through">
+                <span className="mt-1 block font-mono text-xs text-ink/60 line-through">
                   {originalPrice}
                 </span>
               ) : null}
@@ -187,7 +187,7 @@ export function HeroCard({
 
       <Link
         href={collectionLink.href}
-        className="absolute bottom-5 left-1/2 z-20 inline-flex min-h-11 -translate-x-1/2 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500 transition-colors hover:text-white sm:text-[11px] lg:left-16 lg:translate-x-0"
+        className="absolute bottom-5 left-1/2 z-20 inline-flex min-h-11 -translate-x-1/2 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-fg-muted transition-colors hover:text-cream sm:text-[11px] lg:left-16 lg:translate-x-0"
       >
         <span>{collectionLink.label}</span>
         <ArrowDown size={12} />
