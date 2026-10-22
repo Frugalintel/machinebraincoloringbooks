@@ -142,7 +142,7 @@ export function ProductClient({ product }: ProductClientProps) {
             <div className="border-b border-line pb-8 mb-8">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-8 w-2 bg-primary"></div>
-                <h1 className="font-heading text-5xl md:text-6xl font-bold uppercase leading-none text-cream">
+                <h1 className="font-display text-title uppercase text-cream">
                   {product.title}
                 </h1>
               </div>

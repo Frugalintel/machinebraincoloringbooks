@@ -28,12 +28,10 @@ export default function MediaLibraryPage() {
   const fetchImages = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.storage
-        .from("products")
-        .list("", {
-          limit: 100,
-          sortBy: { column: "created_at", order: "desc" },
-        });
+      const { data, error } = await supabase.storage.from("products").list("", {
+        limit: 100,
+        sortBy: { column: "created_at", order: "desc" },
+      });
 
       if (data) setImages(data);
       if (error) logger.error("Error fetching images:", error);

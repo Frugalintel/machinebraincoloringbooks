@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Oswald, Rajdhani } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { CartProvider } from "@/context/cart-context";
@@ -12,19 +11,7 @@ import { AuthModal } from "@/components/auth-modal";
 import { EnvironmentIndicator } from "@/components/environment-indicator";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-
-const oswald = Oswald({
-  variable: "--font-oswald",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const rajdhani = Rajdhani({
-  variable: "--font-rajdhani",
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"],
-  display: "swap",
-});
+import { displayFont, monoFont, sansFont } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "Machine Brain | Sci-Fi Coloring Books",
@@ -45,10 +32,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${oswald.variable} ${rajdhani.variable} antialiased bg-background text-foreground font-sans overflow-x-hidden`}
-      >
+    <html
+      lang="en"
+      className={`dark ${displayFont.variable} ${sansFont.variable} ${monoFont.variable}`}
+    >
+      <body className="antialiased bg-background text-foreground font-sans overflow-x-hidden">
         <AuthProvider>
           <ToastProvider>
             <GameProvider>

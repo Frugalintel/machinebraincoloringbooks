@@ -397,7 +397,7 @@ export function ReviewsSection({
         <div>
           <div className="flex items-center gap-4 mb-2">
             <div className="h-8 w-2 bg-primary"></div>
-            <h2 className="font-heading text-3xl md:text-4xl font-bold uppercase tracking-tight text-cream">
+            <h2 className="font-heading text-h2 text-cream">
               Customer Reviews
             </h2>
           </div>

@@ -100,9 +100,7 @@ export function CartDrawer() {
             <div className="relative z-10 p-6 border-b border-line flex items-center justify-between bg-background shrink-0">
               <div>
                 <div className="flex items-center gap-3">
-                  <h2 className="font-heading text-3xl text-cream tracking-wide uppercase">
-                    CART
-                  </h2>
+                  <h2 className="font-heading text-h2 text-cream">CART</h2>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <div className="w-1.5 h-1.5 bg-primary animate-pulse"></div>

@@ -6,11 +6,11 @@ export default function AboutPage() {
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="flex items-center gap-2 mb-4 text-primary font-mono uppercase tracking-widest text-xs">
+          <div className="mb-4 flex items-center gap-2 text-primary">
             <Info size={14} />
-            <span>Company</span>
+            <span className="font-label tracking-[0.12em]">Company</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+          <h1 className="font-display text-title uppercase text-cream mb-4">
             About Us
           </h1>
           <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">

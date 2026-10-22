@@ -47,12 +47,10 @@ export function Footer() {
         {/* Brand Column */}
         <div className="flex flex-col justify-between">
           <div>
-            <h3 className="font-heading text-2xl text-cream uppercase tracking-tighter mb-4">
-              Machine
-              <br />
-              <span className="text-primary">Brain</span>
-            </h3>
-            <p className="text-xs font-mono uppercase tracking-widest leading-relaxed max-w-[200px]">
+            <p className="mb-4 whitespace-nowrap font-heading font-bold text-[16px] md:text-[18px] uppercase tracking-[0.02em] text-cream">
+              Machine <span className="text-primary">Brain</span>
+            </p>
+            <p className="font-label max-w-[200px] leading-relaxed tracking-[0.08em]">
               Coloring books with secrets. Est. 2025.
             </p>
           </div>
@@ -66,7 +64,7 @@ export function Footer() {
         {/* Links Columns */}
         {Object.entries(footerLinks).map(([category, links]) => (
           <div key={category}>
-            <h4 className="text-xs font-mono text-cream uppercase tracking-widest mb-6 border-b border-line pb-2 inline-block">
+            <h4 className="font-label mb-6 inline-block border-b border-line pb-2 tracking-[0.12em] text-cream">
               {category}
             </h4>
             <ul className="space-y-3">
@@ -74,7 +72,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm hover:text-primary transition-colors uppercase tracking-wide"
+                    className="text-sm font-normal uppercase tracking-[0.02em] hover:text-primary transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -87,7 +85,7 @@ export function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-line bg-background">
-        <div className="container mx-auto px-4 md:px-6 h-12 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest">
+        <div className="container mx-auto px-4 md:px-6 h-12 flex items-center justify-between font-label tracking-[0.08em]">
           <span>© 2025 Machine Brain Inc.</span>
 
           <button

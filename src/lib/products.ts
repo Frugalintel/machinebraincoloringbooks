@@ -1,6 +1,18 @@
 import { PostgrestError } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { products as catalogProducts } from "@/lib/store-data";
 import { Product, DatabaseProduct } from "@/lib/types";
+
+/** Local catalog when live products fail to load (preview / no database). */
+export function productsOrCatalog(
+  live: Product[] | null | undefined,
+  limit?: number,
+): Product[] {
+  if (live && live.length > 0) {
+    return live;
+  }
+  return limit ? catalogProducts.slice(0, limit) : catalogProducts;
+}
 
 export const mapDatabaseProduct = (p: DatabaseProduct): Product => ({
   id: p.id,

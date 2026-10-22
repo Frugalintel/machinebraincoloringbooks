@@ -399,7 +399,7 @@ export default function StoryDetailPage() {
             <div className="bg-background border border-primary p-8 rounded-lg max-w-lg w-full text-center relative overflow-hidden">
               <div className="absolute inset-0 bg-primary/5 animate-pulse pointer-events-none"></div>
               <Trophy size={48} className="mx-auto text-primary mb-6" />
-              <h2 className="font-heading text-3xl uppercase text-cream mb-2">
+              <h2 className="font-heading text-3xl text-cream mb-2">
                 Mission Complete
               </h2>
               <p className="text-fg-muted font-mono text-sm mb-8">
@@ -481,7 +481,7 @@ export default function StoryDetailPage() {
                   {ADVENTURES_COPY.badge}
                 </div>
               </div>
-              <h1 className="font-heading text-4xl text-cream uppercase tracking-wide leading-tight">
+              <h1 className="font-display text-title uppercase text-cream leading-tight">
                 {story.title}
               </h1>
               {progress ? (
@@ -579,7 +579,7 @@ export default function StoryDetailPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
 
                   <div className="absolute bottom-6 left-6 right-6">
-                    <h2 className="font-heading text-4xl md:text-5xl text-cream uppercase tracking-wide mb-2">
+                    <h2 className="font-heading text-4xl md:text-5xl text-cream tracking-wide mb-2">
                       {currentChapter.title}
                     </h2>
                   </div>
@@ -594,7 +594,7 @@ export default function StoryDetailPage() {
                     {currentChapter.status === "active" &&
                     currentChapter.challenge ? (
                       <div className="mt-8 p-6 border border-line bg-background rounded-lg">
-                        <h3 className="font-heading text-xl text-cream mb-4 uppercase">
+                        <h3 className="font-heading text-xl text-cream mb-4">
                           Challenge Active
                         </h3>
 

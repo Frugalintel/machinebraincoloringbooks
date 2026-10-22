@@ -73,10 +73,8 @@ export function CollectiblesSection() {
         <div className="flex items-center gap-4">
           <div className="h-8 w-4 bg-primary"></div>
           <div>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tighter text-cream leading-none">
-              YOUR COLLECTION
-            </h2>
-            <span className="font-sans text-[10px] text-fg-muted tracking-[0.3em] uppercase block mt-1">
+            <h2 className="font-heading text-h2 text-cream">Your collection</h2>
+            <span className="font-label mt-1 block tracking-[0.08em] text-fg-muted">
               Digital rewards from your books
             </span>
           </div>
@@ -205,8 +203,8 @@ export function CollectiblesSection() {
                 />
                 <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full animate-pulse"></div>
               </div>
-              <h3 className="font-heading text-2xl text-cream uppercase mb-2">
-                Hidden Treasures
+              <h3 className="font-heading text-h3 mb-2 text-cream">
+                Hidden treasures
               </h3>
               <p className="text-fg-muted font-mono text-xs uppercase tracking-widest max-w-xs">
                 Digital rewards await inside every book
@@ -371,7 +369,7 @@ export function CollectiblesSection() {
                       <benefit.icon size={16} className="text-fg-muted" />
                     </div>
                     <div>
-                      <h4 className="font-heading text-sm text-cream uppercase">
+                      <h4 className="font-heading text-h3 text-cream">
                         {benefit.title}
                       </h4>
                       <p className="text-xs text-fg-muted font-mono">

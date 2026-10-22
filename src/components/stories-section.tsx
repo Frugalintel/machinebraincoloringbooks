@@ -123,7 +123,7 @@ export function StoriesSection() {
             className={`h-8 w-4 ${activeTheme.bgAccent} transition-colors duration-500`}
           />
           <div>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight text-cream uppercase">
+            <h2 className="font-heading text-h2 text-cream">
               {ADVENTURES_COPY.pillarName}
             </h2>
             <p className="text-fg-faint text-sm mt-1">
@@ -213,7 +213,7 @@ export function StoriesSection() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-heading text-4xl md:text-5xl font-bold text-cream uppercase tracking-tight leading-none">
+                  <h3 className="font-heading text-4xl md:text-5xl font-bold text-cream tracking-tight leading-none">
                     {activeStory.title}
                   </h3>
 

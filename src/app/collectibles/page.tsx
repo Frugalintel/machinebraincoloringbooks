@@ -88,7 +88,7 @@ export default function CollectiblesPublicPage() {
                   <Trophy size={14} />
                   <span>Rewards</span>
                 </div>
-                <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
+                <h1 className="font-display text-title uppercase text-cream mb-4">
                   <span className="text-primary">Collectibles</span>
                 </h1>
                 <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl leading-relaxed">
@@ -152,7 +152,7 @@ export default function CollectiblesPublicPage() {
                 <span className="text-primary font-mono text-xs uppercase tracking-[0.2em] mb-2 block">
                   Set {setIndex + 1}
                 </span>
-                <h2 className="font-heading text-4xl text-cream uppercase">
+                <h2 className="font-heading text-4xl text-cream">
                   {set.title}
                 </h2>
               </div>
@@ -274,7 +274,7 @@ export default function CollectiblesPublicPage() {
       {!user && (
         <div className="bg-primary/10 border-t border-line py-20 text-center">
           <div className="container mx-auto px-4">
-            <h2 className="font-heading text-3xl md:text-5xl text-cream uppercase mb-6">
+            <h2 className="font-heading text-3xl md:text-5xl text-cream mb-6">
               Start collecting
             </h2>
             <p className="text-fg-muted font-mono text-sm max-w-xl mx-auto mb-8 uppercase tracking-widest">

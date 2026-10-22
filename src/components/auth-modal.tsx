@@ -151,7 +151,7 @@ export function AuthModal() {
         className="h-12 border bg-background hover:bg-cream hover:text-ink transition-all flex items-center justify-center group border-line text-fg-muted hover:border-cream"
       >
         <Icon size={18} className="mr-2" />
-        <span className="text-xs font-heading uppercase tracking-wider">
+        <span className="text-sm font-medium uppercase tracking-[0.06em]">
           {label}
         </span>
       </button>
@@ -172,8 +172,8 @@ export function AuthModal() {
       <div className="absolute inset-0 flex items-center">
         <span className="w-full border-t border-line" />
       </div>
-      <div className="relative flex justify-center text-[10px] uppercase font-mono">
-        <span className="bg-background px-2 text-fg-faint">{text}</span>
+      <div className="relative flex justify-center font-label tracking-[0.08em] text-fg-faint">
+        <span className="bg-background px-2">{text}</span>
       </div>
     </div>
   );
@@ -181,27 +181,27 @@ export function AuthModal() {
   const FormSection = (
     <form onSubmit={handleAuth} className="space-y-6 mb-6">
       <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
+        <label className="font-label flex items-center gap-2 tracking-[0.10em] text-fg-muted">
           <User size={10} /> Email
         </label>
         <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted"
+          className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-sans text-base placeholder:text-fg-muted"
           placeholder="you@example.com"
           disabled={loading}
         />
       </div>
       <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
+        <label className="font-label flex items-center gap-2 tracking-[0.10em] text-fg-muted">
           <Lock size={10} /> Password
         </label>
         <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted"
+          className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-sans text-base placeholder:text-fg-muted"
           placeholder="••••••••"
           disabled={loading}
         />
@@ -213,14 +213,14 @@ export function AuthModal() {
           animate={{ opacity: 1, height: "auto" }}
           className="space-y-2 overflow-hidden"
         >
-          <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
+          <label className="font-label flex items-center gap-2 tracking-[0.10em] text-fg-muted">
             <CheckCircle size={10} /> Confirm Password
           </label>
           <Input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted"
+            className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-sans text-base placeholder:text-fg-muted"
             placeholder="••••••••"
             disabled={loading}
           />
@@ -230,7 +230,7 @@ export function AuthModal() {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50"
+        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading font-semibold text-sm tracking-[0.06em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -280,7 +280,7 @@ export function AuthModal() {
                   <h1 className="font-heading text-3xl font-bold text-cream mb-2 uppercase tracking-tighter text-primary">
                     Machine Brain
                   </h1>
-                  <div className="flex items-center justify-center gap-2 tracking-widest text-[10px] font-mono uppercase mt-2 text-primary">
+                  <div className="flex items-center justify-center gap-2 font-label mt-2 tracking-[0.08em] text-primary">
                     <Terminal size={12} />
                     <span>{isLogin ? "Sign in" : "Create account"}</span>
                   </div>
@@ -341,7 +341,7 @@ export function AuthModal() {
                     <div className="mt-4 text-center border-t border-line pt-4">
                       <button
                         onClick={() => {}}
-                        className="text-[10px] text-fg-faint hover:text-primary transition-colors uppercase tracking-widest font-mono"
+                        className="text-sm font-medium uppercase tracking-[0.04em] text-fg-faint hover:text-primary transition-colors"
                       >
                         Forgot Password?
                       </button>

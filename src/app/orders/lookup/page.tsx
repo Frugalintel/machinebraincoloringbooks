@@ -32,7 +32,7 @@ export default function OrderLookupPage() {
       <div className="container mx-auto px-4 md:px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]">
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
-            <h1 className="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter mb-4">
+            <h1 className="font-display text-title uppercase mb-4">
               Order Tracking
             </h1>
             <p className="text-fg-muted font-mono text-xs uppercase tracking-widest">

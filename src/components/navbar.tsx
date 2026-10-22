@@ -221,17 +221,14 @@ export function Navbar() {
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           {/* Left: Logo & Brand */}
           <div className="flex items-center gap-8 md:gap-12">
-            <Link
-              href="/"
-              className="flex flex-col leading-none tracking-tighter group"
-            >
+            <Link href="/" className="flex min-w-0 flex-col leading-none group">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl md:text-4xl font-heading font-bold text-cream uppercase group-hover:text-primary transition-colors">
+                <span className="whitespace-nowrap font-heading font-bold text-[16px] md:text-[18px] lg:text-[20px] uppercase tracking-[0.02em] text-cream group-hover:text-primary transition-colors">
                   Machine Brain
-                </h1>
-                <div className="w-2 h-2 md:w-3 md:h-3 bg-primary mt-1 group-hover:bg-cream transition-colors"></div>
+                </span>
+                <div className="w-2 h-2 md:w-3 md:h-3 bg-primary shrink-0 group-hover:bg-cream transition-colors"></div>
               </div>
-              <span className="text-[10px] md:text-sm text-fg-muted uppercase tracking-[0.2em] font-sans">
+              <span className="font-label mt-1 tracking-[0.08em] text-fg-muted">
                 Coloring Books
               </span>
             </Link>
@@ -242,7 +239,7 @@ export function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`text-sm font-mono uppercase tracking-widest hover:text-primary transition-colors ${
+                  className={`text-[13px] font-medium uppercase tracking-[0.06em] hover:text-primary transition-colors ${
                     pathname.startsWith(link.href)
                       ? "text-cream border-b-2 border-primary pb-1"
                       : "text-fg-muted"
@@ -271,7 +268,7 @@ export function Navbar() {
                 className={`flex items-center justify-center w-10 h-10 border border-line transition-colors ${isProfileOpen || user ? "bg-primary text-ink border-primary hover:bg-cream" : "hover:bg-primary hover:border-primary hover:text-ink text-cream"}`}
               >
                 {user ? (
-                  <span className="font-heading font-bold text-sm tracking-wide">
+                  <span className="font-heading font-semibold text-sm tracking-[0.06em] uppercase">
                     {user.initials}
                   </span>
                 ) : (
@@ -411,9 +408,7 @@ export function Navbar() {
               className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-background border-r border-line z-[10002] lg:hidden flex flex-col pt-[env(safe-area-inset-top)]"
             >
               <div className="p-6 border-b border-line flex justify-between items-center">
-                <h2 className="font-heading text-2xl text-cream uppercase">
-                  Menu
-                </h2>
+                <h2 className="font-heading text-h2 text-cream">Menu</h2>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-fg-muted hover:text-cream"
@@ -428,7 +423,7 @@ export function Navbar() {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`text-2xl font-heading uppercase tracking-wide ${
+                    className={`text-[16px] font-medium uppercase tracking-[0.06em] ${
                       pathname.startsWith(link.href)
                         ? "text-primary"
                         : "text-cream hover:text-primary"

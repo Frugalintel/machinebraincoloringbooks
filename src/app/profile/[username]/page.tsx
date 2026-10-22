@@ -97,7 +97,7 @@ export default function ProfilePage() {
 
           <div className="flex-1 mb-4">
             <div className="flex flex-col md:flex-row md:items-center gap-4 mb-2">
-              <h1 className="font-heading text-4xl md:text-6xl font-bold uppercase leading-none tracking-tighter">
+              <h1 className="font-display text-title uppercase leading-none">
                 {displayName}
               </h1>
               <span className="self-start md:self-auto text-[10px] font-mono bg-primary/10 text-primary border border-primary/30 px-2 py-1 uppercase tracking-widest">
@@ -140,7 +140,7 @@ export default function ProfilePage() {
             {/* Achievements Section */}
             <div className="space-y-8">
               <div className="flex items-center justify-between border-b border-line pb-4">
-                <h2 className="font-heading text-2xl text-cream uppercase tracking-wide flex items-center gap-3">
+                <h2 className="font-heading text-2xl text-cream tracking-wide flex items-center gap-3">
                   <Trophy className="text-primary" /> Active Missions
                 </h2>
                 <Link href="/achievements">
@@ -196,7 +196,7 @@ export default function ProfilePage() {
             {/* Collectibles Showcase */}
             <div className="space-y-8">
               <div className="flex items-center justify-between border-b border-line pb-4">
-                <h2 className="font-heading text-2xl text-cream uppercase tracking-wide flex items-center gap-3">
+                <h2 className="font-heading text-2xl text-cream tracking-wide flex items-center gap-3">
                   <Box className="text-primary" /> Digital Collection
                 </h2>
                 <Link href="/trophy-room">
@@ -371,7 +371,7 @@ export default function ProfilePage() {
 
             <div className="relative z-10 max-w-lg mx-auto">
               <Lock className="w-12 h-12 text-primary mx-auto mb-6" />
-              <h2 className="font-heading text-3xl text-cream uppercase mb-4 tracking-wide">
+              <h2 className="font-heading text-3xl text-cream mb-4 tracking-wide">
                 Access Restricted
               </h2>
               <p className="text-fg-muted font-mono text-sm uppercase tracking-widest mb-8 leading-relaxed">
@@ -390,7 +390,7 @@ export default function ProfilePage() {
 
         {/* --- MAINTENANCE SECTION: ORDERS & SETTINGS --- */}
         <div className="border-t border-line pt-12">
-          <h2 className="font-heading text-xl text-fg-muted uppercase tracking-widest mb-8 flex items-center gap-2">
+          <h2 className="font-heading text-xl text-fg-muted tracking-widest mb-8 flex items-center gap-2">
             <Shield size={16} /> Account Maintenance
           </h2>
 
@@ -431,7 +431,7 @@ export default function ProfilePage() {
               <TabsContent value="settings">
                 <div className="max-w-xl border border-line bg-background p-8 relative">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-fg-muted to-transparent"></div>
-                  <h3 className="font-heading text-2xl text-cream mb-8 uppercase flex items-center gap-3">
+                  <h3 className="font-heading text-2xl text-cream mb-8 flex items-center gap-3">
                     <Terminal size={20} className="text-fg-muted" /> Account
                     Data
                   </h3>
