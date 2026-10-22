@@ -38,8 +38,10 @@ signed URLs in batches (`createSignedUrls`, 1 hour).
   set. `POST /api/review/login` compares `REVIEW_PASSWORD` in constant time
   and sets an httpOnly, Secure (production), SameSite=Lax HMAC cookie.
   Failed logins are stored as HMAC-hashed IPs in
-  `public.book_review_login_attempts` (service role only). Five failures in
-  15 minutes return 429.
+  `public.book_review_login_attempts` (service role only). IPv6 addresses are
+  normalized to their /64 prefix before hashing so rotating interface IDs
+  share one key. Five failures per key in 15 minutes, or 50 failures across
+  all keys in that window, return 429.
 - `src/proxy.ts` blocks `/api/review/*` without that cookie, except login,
   logout, and the token submissions API.
 - `GET /api/review/[slug]/submissions` authenticates with
