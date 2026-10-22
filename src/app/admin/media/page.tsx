@@ -79,7 +79,7 @@ export default function MediaLibraryPage() {
 
       <div className="bg-surface-1 border border-line p-6 rounded-xl">
         <h3 className="font-bold text-cream mb-4 flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-primary text-ink flex items-center justify-center text-xs font-bold">
+          <span className="w-6 h-6 rounded-full bg-cream text-ink flex items-center justify-center text-xs font-bold">
             <ImageIcon size={14} />
           </span>
           Upload New Asset
@@ -143,12 +143,12 @@ export default function MediaLibraryPage() {
                 </div>
                 <div className="p-3 border-t border-line bg-surface-1">
                   <p
-                    className="text-[10px] text-fg-muted truncate font-mono"
+                    className=" text-fg-muted truncate font-label"
                     title={img.name}
                   >
                     {img.name}
                   </p>
-                  <p className="text-[9px] text-fg-faint mt-1 uppercase tracking-wider font-mono">
+                  <p className=" text-fg-faint mt-1 uppercase tracking-wider font-label">
                     {((Number(img.metadata?.size) || 0) / 1024).toFixed(1)} KB
                   </p>
                 </div>

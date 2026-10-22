@@ -87,7 +87,7 @@ export default function AdminStoriesPage() {
         </div>
         <Link
           href="/admin/stories/new"
-          className="flex items-center justify-center gap-2 bg-primary text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
+          className="flex items-center justify-center gap-2 bg-cream text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
         >
           <Plus size={18} />
           <span>ADD ADVENTURE</span>
@@ -206,7 +206,7 @@ export default function AdminStoriesPage() {
                           <div className="flex items-center justify-between border-t border-cream/10 pt-3">
                             <div className="flex items-center gap-1.5 text-fg-muted">
                               <Clock size={12} />
-                              <span className="text-[10px] font-mono uppercase tracking-wider">
+                              <span className=" font-label uppercase tracking-wider">
                                 {story.estimated_minutes || 15} MIN
                               </span>
                             </div>
@@ -214,7 +214,7 @@ export default function AdminStoriesPage() {
                               {[...Array(5)].map((_, idx) => (
                                 <div
                                   key={idx}
-                                  className={`w-1 h-2 rounded-sm ${idx < (story.difficulty || 1) ? "bg-primary" : "bg-surface-3"}`}
+                                  className={`w-1 h-2 rounded-sm ${idx < (story.difficulty || 1) ? "bg-cream" : "bg-surface-3"}`}
                                 ></div>
                               ))}
                             </div>
@@ -225,7 +225,7 @@ export default function AdminStoriesPage() {
 
                     {/* Actions Footer */}
                     <div className="absolute bottom-0 left-0 right-0 bg-surface-1 border-t border-line p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 flex justify-between items-center z-40">
-                      <span className="text-[10px] text-fg-muted font-mono pl-1">
+                      <span className=" text-fg-muted font-label pl-1">
                         {story.content?.length || 0} Nodes
                       </span>
 
@@ -290,7 +290,7 @@ export default function AdminStoriesPage() {
                           <div className="font-heading font-bold text-cream text-sm truncate max-w-[200px]">
                             {story.title}
                           </div>
-                          <div className="text-[10px] text-fg-muted font-mono mt-1">
+                          <div className=" text-fg-muted font-label mt-1">
                             Nodes: {story.content?.length || 0}
                           </div>
                         </td>
@@ -303,7 +303,7 @@ export default function AdminStoriesPage() {
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-1.5 text-fg-muted">
                               <Clock size={12} />
-                              <span className="text-[10px] font-mono">
+                              <span className=" font-label">
                                 {story.estimated_minutes || 15} min
                               </span>
                             </div>
@@ -311,7 +311,7 @@ export default function AdminStoriesPage() {
                               {[...Array(5)].map((_, idx) => (
                                 <div
                                   key={idx}
-                                  className={`w-1 h-1.5 rounded-[1px] ${idx < (story.difficulty || 1) ? "bg-primary" : "bg-surface-3"}`}
+                                  className={`w-1 h-1.5 rounded-[1px] ${idx < (story.difficulty || 1) ? "bg-cream" : "bg-surface-3"}`}
                                 ></div>
                               ))}
                             </div>

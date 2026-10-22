@@ -397,7 +397,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
   if (error || !book || !draft) {
     return (
       <main className="mx-auto max-w-xl px-6 py-16">
-        <h1 className="font-heading text-2xl uppercase">Review unavailable</h1>
+        <h1 className="font-heading text-2xl ">Review unavailable</h1>
         <p className="mt-3 text-sm text-destructive">
           {error || "Book data is missing."}
         </p>
@@ -412,10 +412,10 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
     <section key={matter.id} className="space-y-4">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
+          <p className=" font-label uppercase tracking-[0.3em] text-primary">
             {heading}
           </p>
-          <h2 className="font-heading text-xl uppercase">{matter.id}</h2>
+          <h2 className="font-heading text-xl ">{matter.id}</h2>
         </div>
       </div>
       <ScaledTemplate
@@ -442,12 +442,10 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
       <header className="sticky top-0 z-30 border-b border-line bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
+            <p className=" font-label uppercase tracking-[0.3em] text-primary">
               Book review
             </p>
-            <h1 className="font-heading text-xl uppercase md:text-2xl">
-              {book.title}
-            </h1>
+            <h1 className="font-heading text-xl md:text-2xl">{book.title}</h1>
             <p className="font-mono text-xs text-muted-foreground">
               {book.slug} · {book.trim.page_count} pages ·{" "}
               {book.trim.in.join("×")}
@@ -487,12 +485,10 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
       <div className="mx-auto max-w-6xl space-y-12 px-4 py-8">
         <section className="space-y-4">
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
+            <p className=" font-label uppercase tracking-[0.3em] text-primary">
               Cover
             </p>
-            <h2 className="font-heading text-xl uppercase">
-              Front · spine · back
-            </h2>
+            <h2 className="font-heading text-xl ">Front · spine · back</h2>
             <p className="text-xs text-muted-foreground">
               Wrap {book.cover.width}×{book.cover.height} · folds at{" "}
               {book.cover.foldsX.join(" / ")}
@@ -522,12 +518,10 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
         <section className="space-y-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
+              <p className=" font-label uppercase tracking-[0.3em] text-primary">
                 Pages
               </p>
-              <h2 className="font-heading text-xl uppercase">
-                Color · line art
-              </h2>
+              <h2 className="font-heading text-xl ">Color · line art</h2>
             </div>
             <Button
               type="button"
@@ -591,7 +585,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                     <SortablePageCard key={id} id={id}>
                       <div className="w-full space-y-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <h3 className="font-heading text-lg uppercase">
+                          <h3 className="font-heading text-lg ">
                             {page
                               ? `Page ${page.number}`
                               : insert
@@ -690,7 +684,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                                   No color art
                                 </div>
                               )}
-                              <figcaption className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                              <figcaption className="font-label uppercase tracking-widest text-muted-foreground">
                                 Color
                               </figcaption>
                             </figure>
@@ -708,7 +702,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                                   No line art
                                 </div>
                               )}
-                              <figcaption className="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                              <figcaption className="flex items-center justify-between font-label uppercase tracking-widest text-muted-foreground">
                                 <span>Line art</span>
                                 {page.lineSvgUrl ? (
                                   <a
@@ -756,7 +750,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
 
         {draft.deleted.length > 0 ? (
           <section className="space-y-3">
-            <h2 className="font-heading text-xl uppercase">Deleted</h2>
+            <h2 className="font-heading text-xl ">Deleted</h2>
             <p className="text-sm text-muted-foreground">
               Soft-deleted pages stay in the payload until you undo them.
             </p>

@@ -91,7 +91,7 @@ export default function CollectibleDetail() {
     return (
       <main className="min-h-screen bg-background text-cream flex items-center justify-center font-mono">
         <div className="text-center">
-          <h1 className="text-4xl text-primary mb-4">ERROR 404</h1>
+          <h1 className="font-display text-title text-cream mb-4">Error 404</h1>
           <p className="text-fg-muted">ARTIFACT NOT FOUND IN ARCHIVES</p>
           <Link
             href="/collectibles"
@@ -158,10 +158,10 @@ export default function CollectibleDetail() {
   };
 
   return (
-    <main className="min-h-screen bg-background text-cream font-sans selection:bg-primary selection:text-ink flex flex-col">
+    <main className="min-h-screen bg-background text-cream font-sans selection:bg-cream selection:text-ink flex flex-col">
       {/* Breadcrumb / Header */}
       <div className="border-b border-line bg-background pt-32 pb-6">
-        <div className="container mx-auto px-4 md:px-6 flex items-center gap-4 text-[10px] md:text-xs font-mono text-fg-muted uppercase tracking-widest">
+        <div className="container mx-auto px-4 md:px-6 flex items-center gap-4 md:text-xs font-label text-fg-muted uppercase tracking-widest">
           <Link
             href="/collectibles"
             className="hover:text-primary flex items-center gap-2 transition-colors"
@@ -204,7 +204,7 @@ export default function CollectibleDetail() {
 
               {/* Season Badge - Top Left */}
               <div className="absolute top-6 left-6 z-20">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-background/60 border border-cream/10 text-cream text-[10px] font-mono uppercase tracking-widest rounded-full backdrop-blur-sm">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-background/60 border border-cream/10 text-cream font-label uppercase tracking-widest rounded-full backdrop-blur-sm">
                   <SeasonIcon season={currentSeason} size={12} />
                   <span>{seasonInfo.name}</span>
                   <span className="text-fg-muted">•</span>
@@ -213,18 +213,18 @@ export default function CollectibleDetail() {
               </div>
 
               {/* Interaction Hint */}
-              <div className="absolute bottom-4 left-0 right-0 text-center text-[10px] font-mono text-fg-muted uppercase tracking-widest z-20 pointer-events-none">
+              <div className="absolute bottom-4 left-0 right-0 text-center font-label text-fg-muted uppercase tracking-widest z-20 pointer-events-none">
                 Drag to Rotate • Scroll to Zoom
               </div>
 
               {/* Status Badge - Top Right */}
               <div className="absolute top-6 right-6 z-20">
                 {user && isUnlocked ? (
-                  <div className="flex items-center gap-2 px-3 py-1 bg-success-wash border border-success/30 text-success text-[10px] font-mono uppercase tracking-widest rounded-full">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-success-wash border border-success/30 text-success font-label uppercase tracking-widest rounded-full">
                     <Shield size={10} /> Authenticated
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 px-3 py-1 bg-background/40 border border-cream/10 text-fg-muted text-[10px] font-mono uppercase tracking-widest rounded-full backdrop-blur-sm">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-background/40 border border-cream/10 text-fg-muted font-label uppercase tracking-widest rounded-full backdrop-blur-sm">
                     <Lock size={10} /> {user ? "Locked" : "Restricted"}
                   </div>
                 )}
@@ -237,12 +237,12 @@ export default function CollectibleDetail() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Sparkles size={14} className="text-primary" />
-                    <span className="text-[10px] font-mono text-fg-muted uppercase tracking-widest">
+                    <span className=" font-label text-fg-muted uppercase tracking-widest">
                       Trophy Condition
                     </span>
                   </div>
                   <span
-                    className={`text-[10px] font-mono uppercase tracking-widest ${
+                    className={` font-label uppercase tracking-widest ${
                       entropy < 0.25
                         ? "text-success"
                         : entropy < 0.5
@@ -275,7 +275,7 @@ export default function CollectibleDetail() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-mono text-fg-faint">
+                  <span className=" font-label text-fg-faint">
                     {entropyPercent}% wear accumulated
                   </span>
 
@@ -284,10 +284,10 @@ export default function CollectibleDetail() {
                     onClick={handlePolish}
                     disabled={isPolishing || entropy < 0.1}
                     size="sm"
-                    className={`h-8 text-[9px] uppercase tracking-widest font-mono ${
+                    className={`h-8 uppercase tracking-widest font-label ${
                       entropy < 0.1
                         ? "bg-surface-2 text-fg-faint cursor-not-allowed"
-                        : "bg-primary/20 text-primary border border-primary/30 hover:bg-primary hover:text-ink"
+                        : "bg-cream/20 text-primary border border-primary/30 hover:bg-cream hover:text-ink"
                     }`}
                   >
                     <Sparkles size={10} className="mr-1" />
@@ -305,21 +305,21 @@ export default function CollectibleDetail() {
             <div className="grid grid-cols-3 gap-px bg-surface-3 border border-line">
               <div className="bg-background p-4 flex flex-col gap-1 items-center text-center">
                 <Scan size={14} className="text-fg-muted mb-1" />
-                <span className="text-[9px] text-fg-muted uppercase tracking-widest font-mono">
+                <span className=" text-fg-muted uppercase tracking-widest font-label">
                   Format
                 </span>
                 <span className="text-cream font-mono text-xs">.DAT</span>
               </div>
               <div className="bg-background p-4 flex flex-col gap-1 items-center text-center">
                 <Box size={14} className="text-fg-muted mb-1" />
-                <span className="text-[9px] text-fg-muted uppercase tracking-widest font-mono">
+                <span className=" text-fg-muted uppercase tracking-widest font-label">
                   Size
                 </span>
                 <span className="text-cream font-mono text-xs">12 MB</span>
               </div>
               <div className="bg-background p-4 flex flex-col gap-1 items-center text-center">
                 <Shield size={14} className="text-fg-muted mb-1" />
-                <span className="text-[9px] text-fg-muted uppercase tracking-widest font-mono">
+                <span className=" text-fg-muted uppercase tracking-widest font-label">
                   Hash
                 </span>
                 <span className="text-cream font-mono text-xs">#A7X-9</span>
@@ -332,18 +332,18 @@ export default function CollectibleDetail() {
             <div className="mb-10">
               <div className="flex items-center gap-3 mb-6">
                 <span
-                  className={`px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border ${rarityColor} bg-transparent rounded-sm`}
+                  className={`px-2 py-0.5 font-label uppercase tracking-widest border ${rarityColor} bg-transparent rounded-sm`}
                 >
                   {collectible.rarity || "Unknown"}
                 </span>
                 <div className="h-px w-8 bg-line"></div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-fg-muted">
+                <span className=" font-label uppercase tracking-widest text-fg-muted">
                   {collectible.type || "Artifact"} {"//"}{" "}
                   {collectible.generation || "GEN-0"}
                 </span>
               </div>
 
-              <h1 className="font-display text-title uppercase text-cream mb-8">
+              <h1 className="font-display text-title text-cream mb-8">
                 {collectible.name}
               </h1>
 
@@ -352,7 +352,7 @@ export default function CollectibleDetail() {
                 <div className="absolute top-0 right-0 p-2 opacity-20">
                   <Info size={40} />
                 </div>
-                <h3 className="text-xs font-mono text-primary uppercase tracking-widest mb-3">
+                <h3 className="text-xs font-mono text-primary tracking-widest mb-3">
                   Database Entry // Lore
                 </h3>
                 <p className="text-fg-secondary font-sans leading-relaxed text-sm md:text-lg">
@@ -376,7 +376,7 @@ export default function CollectibleDetail() {
 
             {/* UNLOCK PROTOCOL / REQUIREMENTS (VISIBLE TO ALL) */}
             <div className="mb-8">
-              <h3 className="font-mono text-xs text-fg-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+              <h3 className="font-mono text-xs text-fg-muted tracking-widest mb-4 flex items-center gap-2">
                 <Zap size={14} className="text-primary" /> Unlock Protocol
               </h3>
 
@@ -384,10 +384,10 @@ export default function CollectibleDetail() {
                 onClick={handleAchievementClick}
                 className={`bg-background border border-line p-6 hover:border-primary transition-colors group cursor-pointer relative overflow-hidden`}
               >
-                <div className="absolute top-0 left-0 w-1 h-full bg-primary/50 group-hover:bg-primary transition-colors"></div>
+                <div className="absolute top-0 left-0 w-1 h-full bg-cream/50 group-hover:bg-cream transition-colors"></div>
                 <div className="flex justify-between items-start gap-4">
                   <div>
-                    <h4 className="font-heading text-xl text-cream uppercase mb-2 group-hover:text-primary transition-colors">
+                    <h4 className="font-heading text-xl text-cream mb-2 group-hover:text-primary transition-colors">
                       {relatedAchievement
                         ? relatedAchievement.title
                         : "Classified Requirement"}
@@ -397,7 +397,7 @@ export default function CollectibleDetail() {
                     </p>
 
                     {relatedAchievement ? (
-                      <div className="mt-4 flex items-center gap-2 text-[10px] text-primary uppercase tracking-widest font-mono">
+                      <div className="mt-4 flex items-center gap-2 text-primary uppercase tracking-widest font-label">
                         <span>View Mission Intel</span>
                         <ArrowLeft
                           size={10}
@@ -414,7 +414,7 @@ export default function CollectibleDetail() {
                       </div>
                     ) : null}
                     {!user && (
-                      <span className="text-[9px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 uppercase tracking-widest">
+                      <span className="text-[9px] bg-cream/10 text-primary border border-primary/20 px-2 py-0.5 uppercase tracking-widest">
                         Login to Track
                       </span>
                     )}
@@ -431,7 +431,7 @@ export default function CollectibleDetail() {
                   {user ? "Personal Archive" : "Encrypted Data"}
                 </h2>
                 {!user && (
-                  <span className="text-[10px] font-mono text-danger uppercase tracking-widest flex items-center gap-1 animate-pulse">
+                  <span className=" font-label text-danger uppercase tracking-widest flex items-center gap-1 animate-pulse">
                     <Lock size={10} /> Access Denied
                   </span>
                 )}
@@ -451,13 +451,13 @@ export default function CollectibleDetail() {
                     </p>
                     <Button
                       onClick={() => openAuthModal("register")}
-                      className="bg-primary text-ink hover:bg-cream hover:text-ink font-heading uppercase tracking-widest px-8 h-12 rounded-none transition-all transform hover:scale-105"
+                      className="bg-cream text-ink hover:bg-cream hover:text-ink font-heading tracking-widest px-8 h-12 rounded-none transition-all transform hover:scale-105"
                     >
                       Initialize Neural Link
                     </Button>
                     <button
                       onClick={() => openAuthModal("login")}
-                      className="mt-4 text-[10px] font-mono text-fg-muted uppercase tracking-widest hover:text-cream underline decoration-gray-700 underline-offset-4"
+                      className="mt-4 font-label text-fg-muted uppercase tracking-widest hover:text-cream underline decoration-gray-700 underline-offset-4"
                     >
                       Already have access? Login
                     </button>
@@ -469,7 +469,7 @@ export default function CollectibleDetail() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
-                      <span className="block text-[10px] text-fg-muted uppercase tracking-widest font-mono mb-3">
+                      <span className="block text-fg-muted uppercase tracking-widest font-label mb-3">
                         Status
                       </span>
                       <div className="flex items-center gap-3 p-3 bg-background border border-line">
@@ -492,7 +492,7 @@ export default function CollectibleDetail() {
                     </div>
 
                     <div>
-                      <span className="block text-[10px] text-fg-muted uppercase tracking-widest font-mono mb-3">
+                      <span className="block text-fg-muted uppercase tracking-widest font-label mb-3">
                         Requirement
                       </span>
                       <div className="flex items-start gap-3">
@@ -520,22 +520,20 @@ export default function CollectibleDetail() {
                   {relatedAchievement ? (
                     <div className="mt-8 pt-6 border-t border-line">
                       <div className="flex justify-between items-end mb-2">
-                        <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+                        <span className=" text-fg-muted uppercase tracking-widest font-label">
                           Mission Progress
                         </span>
-                        <span className="text-[10px] text-primary font-mono">
-                          30%
-                        </span>
+                        <span className=" text-primary font-label">30%</span>
                       </div>
                       <div className="h-2 bg-surface-2 w-full overflow-hidden">
-                        <div className="h-full bg-primary w-[30%] relative">
+                        <div className="h-full bg-cream w-[30%] relative">
                           <div className="absolute top-0 right-0 bottom-0 w-1 bg-cream/40"></div>
                         </div>
                       </div>
                       <div className="flex justify-end mt-2">
                         <Link
                           href={`/achievements#${relatedAchievement.id}`}
-                          className="text-[10px] text-fg-muted hover:text-primary transition-colors flex items-center gap-1 uppercase tracking-widest font-mono"
+                          className=" text-fg-muted hover:text-primary transition-colors flex items-center gap-1 uppercase tracking-widest font-label"
                         >
                           View Mission Details{" "}
                           <ArrowLeft className="rotate-180" size={10} />

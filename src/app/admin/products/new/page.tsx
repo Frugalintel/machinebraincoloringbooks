@@ -326,7 +326,7 @@ export default function NewProductPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 bg-primary text-ink px-8 py-3 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 bg-cream text-ink px-8 py-3 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-ink"></div>

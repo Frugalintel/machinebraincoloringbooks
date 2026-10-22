@@ -166,7 +166,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
             <ArrowLeft size={20} className="text-fg-muted" />
           </Link>
           <div>
-            <h1 className="text-2xl md:text-3xl font-heading font-bold text-cream leading-tight uppercase">
+            <h1 className="text-2xl md:text-3xl font-heading font-bold text-cream leading-tight ">
               {isEditing ? "EDIT ADVENTURE" : "NEW ADVENTURE"}
             </h1>
             <p className="text-fg-muted font-mono text-xs md:text-sm">
@@ -201,7 +201,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
           <Button
             type="submit"
             disabled={loading}
-            className="bg-primary text-ink hover:bg-cream font-bold flex-1 md:flex-none w-full md:w-auto"
+            className="bg-cream text-ink hover:bg-cream font-bold flex-1 md:flex-none w-full md:w-auto"
           >
             {loading ? (
               "SAVING..."
@@ -220,7 +220,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
         <div className="space-y-6">
           {/* Live Card Preview */}
           <div className="space-y-2">
-            <h3 className="text-xs font-mono uppercase tracking-widest text-fg-muted">
+            <h3 className="text-xs font-mono tracking-widest text-fg-muted">
               Card Preview
             </h3>
             <div className="group relative bg-surface-1 border border-line hover:border-line-strong rounded-xl overflow-hidden shadow-2xl mx-auto w-[280px]">
@@ -256,7 +256,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
                   <div className="flex items-center justify-between border-t border-cream/10 pt-3">
                     <div className="flex items-center gap-1.5 text-fg-muted">
                       <Clock size={12} />
-                      <span className="text-[10px] font-mono uppercase tracking-wider">
+                      <span className=" font-label uppercase tracking-wider">
                         {formData.estimated_minutes || 15} MIN
                       </span>
                     </div>
@@ -264,7 +264,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
                       {[...Array(5)].map((_, idx) => (
                         <div
                           key={idx}
-                          className={`w-1 h-2 rounded-sm ${idx < (formData.difficulty || 1) ? "bg-primary" : "bg-surface-3"}`}
+                          className={`w-1 h-2 rounded-sm ${idx < (formData.difficulty || 1) ? "bg-cream" : "bg-surface-3"}`}
                         ></div>
                       ))}
                     </div>
@@ -283,7 +283,7 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
                   {formData.is_published ? "Published" : "Draft"}
                 </span>
                 <span
-                  className={`text-[10px] uppercase font-bold px-2 py-1 rounded backdrop-blur-md border shadow-sm bg-primary/10 text-primary border-primary/30`}
+                  className={`text-[10px] uppercase font-bold px-2 py-1 rounded backdrop-blur-md border shadow-sm bg-cream/10 text-primary border-primary/30`}
                 >
                   {ADVENTURES_COPY.badge}
                 </span>

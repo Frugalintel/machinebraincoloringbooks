@@ -156,7 +156,7 @@ export function InvitationCard({
             <Icon size={24} />
           </div>
           <div className="flex-1">
-            <h3 className="font-heading text-xl text-cream uppercase tracking-wide mb-1">
+            <h3 className="font-heading text-xl text-cream tracking-wide mb-1">
               {title}
             </h3>
             <div className="flex items-center gap-2">
@@ -173,7 +173,7 @@ export function InvitationCard({
           <div className="bg-background border border-line p-4 mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles size={12} className="text-fg-muted" />
-              <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+              <span className=" text-fg-muted uppercase tracking-widest font-label">
                 Bonus Opportunity
               </span>
             </div>
@@ -211,7 +211,7 @@ export function CrossPillarBonusPreview({
     <div className={`bg-background border border-line p-4 ${className}`}>
       <div className="flex items-center gap-2 mb-3">
         <Sparkles size={12} className="text-primary" />
-        <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+        <span className=" text-fg-muted uppercase tracking-widest font-label">
           Active Cross-Pillar Bonuses
         </span>
       </div>

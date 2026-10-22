@@ -41,7 +41,7 @@ export function CampaignCard({
     >
       {/* Active Badge */}
       {isActive ? (
-        <div className="absolute top-3 right-3 z-20 px-2 py-0.5 bg-primary text-ink text-[10px] font-bold rounded-full uppercase tracking-wider animate-pulse">
+        <div className="absolute top-3 right-3 z-20 px-2 py-0.5 bg-cream text-ink text-[10px] font-bold rounded-full uppercase tracking-wider animate-pulse">
           Active
         </div>
       ) : null}
@@ -56,7 +56,7 @@ export function CampaignCard({
           {/* Mock Banner */}
           {settings.banner?.enabled ? (
             <div
-              className="absolute top-0 left-0 right-0 h-6 w-full flex items-center justify-center text-[8px] font-mono tracking-widest z-10"
+              className="absolute top-0 left-0 right-0 h-6 w-full flex items-center justify-center font-label tracking-widest z-10"
               style={{
                 backgroundColor: bannerColor,
                 color: settings.banner?.textColor,
@@ -93,7 +93,7 @@ export function CampaignCard({
           <h3 className="text-lg font-bold text-cream mb-1 truncate font-heading">
             {name}
           </h3>
-          <div className="flex gap-2 text-[10px] text-fg-muted font-mono uppercase tracking-wider mb-4">
+          <div className="flex gap-2 text-fg-muted font-label uppercase tracking-wider mb-4">
             <span>
               {settings.discount?.enabled
                 ? `${settings.discount.value}% OFF`

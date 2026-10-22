@@ -160,12 +160,12 @@ export function PillarProgressBar({
       {label || showValues ? (
         <div className="flex items-center justify-between mb-2">
           {label ? (
-            <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+            <span className=" text-fg-muted uppercase tracking-widest font-label">
               {label}
             </span>
           ) : null}
           {showValues ? (
-            <span className={`text-[10px] font-mono ${config.color}`}>
+            <span className={` font-label ${config.color}`}>
               {current} / {max}
             </span>
           ) : null}

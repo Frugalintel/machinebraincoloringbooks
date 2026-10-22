@@ -99,13 +99,13 @@ export default function AnalyticsPage() {
         <TabsList className="bg-surface-1 border border-line">
           <TabsTrigger
             value="store"
-            className="data-[state=active]:bg-primary data-[state=active]:text-ink font-mono uppercase tracking-widest text-xs"
+            className="data-[state=active]:bg-cream data-[state=active]:text-ink font-mono uppercase tracking-widest text-xs"
           >
             Store
           </TabsTrigger>
           <TabsTrigger
             value="stories"
-            className="data-[state=active]:bg-primary data-[state=active]:text-ink font-mono uppercase tracking-widest text-xs"
+            className="data-[state=active]:bg-cream data-[state=active]:text-ink font-mono uppercase tracking-widest text-xs"
           >
             Stories
           </TabsTrigger>

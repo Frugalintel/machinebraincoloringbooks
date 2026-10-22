@@ -51,9 +51,9 @@ export const getRarityStyles = (rarity?: string) => {
         icon: "bg-cream/5 text-signal border-signal",
         text: "text-signal",
         bg: "bg-background",
-        accent: "bg-signal",
+        accent: "bg-cream",
         titleColor: "text-signal",
-        progressColor: "from-signal to-cream",
+        progressColor: "from-cream to-cream",
       };
     case "epic":
       return {

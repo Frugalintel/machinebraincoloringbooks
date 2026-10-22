@@ -94,11 +94,11 @@ export default function GameDashboardPage() {
           <div className="text-center max-w-md">
             <div className="w-24 h-24 mx-auto mb-8 bg-background border border-line rounded-full flex items-center justify-center relative">
               <Lock size={40} className="text-fg-faint" />
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-primary rounded-full animate-pulse flex items-center justify-center">
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-cream rounded-full animate-pulse flex items-center justify-center">
                 <Sparkles size={16} className="text-ink" />
               </div>
             </div>
-            <h1 className="font-heading text-4xl text-cream uppercase mb-4">
+            <h1 className="font-display text-title text-cream mb-4">
               Game Hub
             </h1>
             <p className="text-fg-muted font-mono text-sm mb-8 leading-relaxed">
@@ -108,7 +108,7 @@ export default function GameDashboardPage() {
             </p>
             <Button
               onClick={() => openAuthModal("register")}
-              className="bg-primary text-ink hover:bg-cream font-heading uppercase tracking-widest px-8 py-6 text-lg rounded-none"
+              className="bg-cream text-ink hover:bg-cream font-heading tracking-widest px-8 py-6 text-lg rounded-none"
             >
               Start Your Journey
             </Button>
@@ -131,12 +131,10 @@ export default function GameDashboardPage() {
               ].map((pillar, i) => (
                 <div key={i} className="bg-background border border-line p-4">
                   <pillar.icon size={20} className="text-primary mb-2" />
-                  <h3 className="font-heading text-cream uppercase text-sm">
+                  <h3 className="font-heading text-cream text-sm">
                     {pillar.label}
                   </h3>
-                  <p className="text-[10px] text-fg-muted font-mono">
-                    {pillar.desc}
-                  </p>
+                  <p className=" text-fg-muted font-label">{pillar.desc}</p>
                 </div>
               ))}
             </div>
@@ -158,7 +156,7 @@ export default function GameDashboardPage() {
                 <Grid3X3 size={14} />
                 <span>Unified Progress Hub</span>
               </div>
-              <h1 className="font-display text-title uppercase text-cream mb-4">
+              <h1 className="font-display text-title text-cream mb-4">
                 Game Dashboard
               </h1>
               <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">
@@ -172,7 +170,7 @@ export default function GameDashboardPage() {
               <div className="bg-background border border-line p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Zap size={14} className="text-primary" />
-                  <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+                  <span className=" text-fg-muted uppercase tracking-widest font-label">
                     Level
                   </span>
                 </div>
@@ -181,7 +179,7 @@ export default function GameDashboardPage() {
               <div className="bg-background border border-line p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Target size={14} className="text-fg-muted" />
-                  <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+                  <span className=" text-fg-muted uppercase tracking-widest font-label">
                     Total XP
                   </span>
                 </div>
@@ -215,7 +213,7 @@ export default function GameDashboardPage() {
 
         {/* Main Stats Grid */}
         <div className="mb-12">
-          <h2 className="font-heading text-2xl text-cream uppercase mb-6 flex items-center gap-2">
+          <h2 className="font-heading text-2xl text-cream mb-6 flex items-center gap-2">
             <Sparkles size={20} className="text-primary" /> Pillar Overview
           </h2>
           <PillarStatsGrid
@@ -249,7 +247,7 @@ export default function GameDashboardPage() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <Trophy size={20} className="text-signal" />
-                <h3 className="font-heading text-xl text-cream uppercase">
+                <h3 className="font-heading text-xl text-cream ">
                   Collectibles
                 </h3>
               </div>
@@ -277,7 +275,7 @@ export default function GameDashboardPage() {
                   <p className="font-heading text-2xl text-cream">
                     {pillarProgress.collectibles.completedSets.length}
                   </p>
-                  <p className="text-[10px] text-fg-muted uppercase font-mono">
+                  <p className=" text-fg-muted uppercase font-label">
                     Sets Complete
                   </p>
                 </div>
@@ -285,9 +283,7 @@ export default function GameDashboardPage() {
                   <p className="font-heading text-2xl text-cream">
                     {collectorScore}
                   </p>
-                  <p className="text-[10px] text-fg-muted uppercase font-mono">
-                    Score
-                  </p>
+                  <p className=" text-fg-muted uppercase font-label">Score</p>
                 </div>
               </div>
 
@@ -309,7 +305,7 @@ export default function GameDashboardPage() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <Star size={20} className="text-signal" />
-                <h3 className="font-heading text-xl text-cream uppercase">
+                <h3 className="font-heading text-xl text-cream ">
                   Achievements
                 </h3>
               </div>
@@ -334,7 +330,7 @@ export default function GameDashboardPage() {
 
               {/* Active Loadout Preview */}
               <div>
-                <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono mb-2 block">
+                <span className=" text-fg-muted uppercase tracking-widest font-label mb-2 block">
                   Active Loadout ({activeAchievementIds.length}/{loadoutSlots})
                 </span>
                 <div className="flex gap-2">
@@ -379,9 +375,7 @@ export default function GameDashboardPage() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <Sparkles size={20} className="text-primary" />
-                <h3 className="font-heading text-xl text-cream uppercase">
-                  Stories
-                </h3>
+                <h3 className="font-heading text-xl text-cream ">Stories</h3>
               </div>
               <Link href="/stories">
                 <Button
@@ -400,7 +394,7 @@ export default function GameDashboardPage() {
                   <p className="font-heading text-2xl text-success">
                     {completedStories.length}
                   </p>
-                  <p className="text-[10px] text-fg-muted uppercase font-mono">
+                  <p className=" text-fg-muted uppercase font-label">
                     Complete
                   </p>
                 </div>
@@ -408,7 +402,7 @@ export default function GameDashboardPage() {
                   <p className="font-heading text-2xl text-cream">
                     {inProgressStories.length}
                   </p>
-                  <p className="text-[10px] text-fg-muted uppercase font-mono">
+                  <p className=" text-fg-muted uppercase font-label">
                     In Progress
                   </p>
                 </div>
@@ -418,15 +412,13 @@ export default function GameDashboardPage() {
                       completedStories.length -
                       inProgressStories.length}
                   </p>
-                  <p className="text-[10px] text-fg-muted uppercase font-mono">
-                    Locked
-                  </p>
+                  <p className=" text-fg-muted uppercase font-label">Locked</p>
                 </div>
               </div>
 
               <div className="bg-background border border-line p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-fg-muted uppercase font-mono">
+                  <span className=" text-fg-muted uppercase font-label">
                     Total XP Earned
                   </span>
                   <span className="font-heading text-xl text-primary">
@@ -454,9 +446,7 @@ export default function GameDashboardPage() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <BookOpen size={20} className="text-signal" />
-                <h3 className="font-heading text-xl text-cream uppercase">
-                  Mastery
-                </h3>
+                <h3 className="font-heading text-xl text-cream ">Mastery</h3>
               </div>
               <Link href="/store">
                 <Button
@@ -475,7 +465,7 @@ export default function GameDashboardPage() {
                   <p className="font-heading text-2xl text-cream">
                     {pillarProgress.mastery.mastered}
                   </p>
-                  <p className="text-[10px] text-fg-muted uppercase font-mono">
+                  <p className=" text-fg-muted uppercase font-label">
                     Mastered
                   </p>
                 </div>
@@ -483,7 +473,7 @@ export default function GameDashboardPage() {
                   <p className="font-heading text-2xl text-cream">
                     {pillarProgress.mastery.inProgress}
                   </p>
-                  <p className="text-[10px] text-fg-muted uppercase font-mono">
+                  <p className=" text-fg-muted uppercase font-label">
                     In Progress
                   </p>
                 </div>
@@ -512,7 +502,7 @@ export default function GameDashboardPage() {
         {/* Recent Activity */}
         {recentUnlocks.length > 0 && (
           <div className="mb-12">
-            <h2 className="font-heading text-2xl text-cream uppercase mb-6 flex items-center gap-2">
+            <h2 className="font-heading text-2xl text-cream mb-6 flex items-center gap-2">
               <Sparkles size={20} className="text-primary" /> Recent Activity
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -541,10 +531,10 @@ export default function GameDashboardPage() {
                       <Sparkles size={16} />
                     )}
                   </div>
-                  <p className="text-xs text-cream font-heading uppercase truncate">
+                  <p className="text-xs text-cream font-heading truncate">
                     {item.title}
                   </p>
-                  <p className="text-[9px] text-fg-muted font-mono uppercase">
+                  <p className=" text-fg-muted font-label uppercase">
                     {item.type}
                   </p>
                 </motion.div>
@@ -572,12 +562,12 @@ export default function GameDashboardPage() {
                 autoRotate={true}
                 isInteractive={true}
               />
-              <div className="absolute bottom-3 left-0 right-0 text-center text-[10px] font-mono text-fg-muted uppercase pointer-events-none z-20">
+              <div className="absolute bottom-3 left-0 right-0 text-center font-label text-fg-muted uppercase pointer-events-none z-20">
                 Drag to Rotate
               </div>
             </div>
             <div>
-              <h3 className="font-heading text-2xl text-cream uppercase mb-4">
+              <h3 className="font-heading text-2xl text-cream mb-4">
                 Your Progress Trophy
               </h3>
               <p className="text-fg-muted mb-6">
@@ -588,7 +578,7 @@ export default function GameDashboardPage() {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-fg-muted">Trophy Tier:</span>
                   <span
-                    className={`font-heading uppercase ${
+                    className={`font-heading ${
                       level >= 15
                         ? "text-signal"
                         : level >= 10

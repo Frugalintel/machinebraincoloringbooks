@@ -113,7 +113,7 @@ export default function AdminAchievementsPage() {
         </div>
         <Link
           href="/admin/achievements/new"
-          className="flex items-center justify-center gap-2 bg-primary text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
+          className="flex items-center justify-center gap-2 bg-cream text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
         >
           <Plus size={18} />
           <span>ADD ACHIEVEMENT</span>
@@ -201,7 +201,7 @@ export default function AdminAchievementsPage() {
                             {achievement.title}
                           </h3>
                           <p
-                            className={`text-[10px] font-mono uppercase tracking-wide mb-1 ${styles.text}`}
+                            className={` font-label uppercase tracking-wide mb-1 ${styles.text}`}
                           >
                             {achievement.trigger_type?.replace("_", " ")}
                           </p>
@@ -226,7 +226,7 @@ export default function AdminAchievementsPage() {
                       </p>
 
                       <div className="flex items-center justify-between pt-3 border-t border-cream/10 mt-3">
-                        <span className="text-[10px] text-fg-muted font-mono uppercase">
+                        <span className=" text-fg-muted font-label uppercase">
                           Target
                         </span>
                         <span
@@ -311,7 +311,7 @@ export default function AdminAchievementsPage() {
                               <span className="text-xs text-cream font-mono uppercase">
                                 {achievement.trigger_type?.replace("_", " ")}
                               </span>
-                              <span className="text-[10px] text-fg-muted font-mono">
+                              <span className=" text-fg-muted font-label">
                                 Target: {achievement.target_value}
                               </span>
                             </div>

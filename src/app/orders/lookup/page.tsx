@@ -32,9 +32,7 @@ export default function OrderLookupPage() {
       <div className="container mx-auto px-4 md:px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]">
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
-            <h1 className="font-display text-title uppercase mb-4">
-              Order Tracking
-            </h1>
+            <h1 className="font-display text-title mb-4">Order Tracking</h1>
             <p className="text-fg-muted font-mono text-xs uppercase tracking-widest">
               Enter your order details to check the status.
             </p>
@@ -70,7 +68,7 @@ export default function OrderLookupPage() {
                     <span className="text-fg-muted text-xs font-mono uppercase">
                       Status
                     </span>
-                    <span className="bg-primary/10 text-primary border border-primary/30 px-2 py-1 text-[10px] font-mono uppercase tracking-widest flex items-center gap-2">
+                    <span className="bg-cream/10 text-primary border border-primary/30 px-2 py-1 font-label uppercase tracking-widest flex items-center gap-2">
                       <Truck size={10} /> In Transit
                     </span>
                   </div>
@@ -95,7 +93,7 @@ export default function OrderLookupPage() {
                   </div>
                   <div className="w-0.5 h-6 bg-surface-3 ml-1"></div>
                   <div className="flex items-center gap-4">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-cream rounded-full animate-pulse"></div>
                     <div className="flex-1">
                       <p className="text-cream text-sm">Out for Delivery</p>
                       <p className="text-fg-faint text-xs font-mono">
@@ -109,7 +107,7 @@ export default function OrderLookupPage() {
                 <Button
                   onClick={() => setStatus("idle")}
                   variant="outline"
-                  className="w-full border-line hover:border-cream hover:text-cream text-fg-muted font-heading uppercase tracking-widest h-12 rounded-none mt-4"
+                  className="w-full border-line hover:border-cream hover:text-cream text-fg-muted font-heading tracking-widest h-12 rounded-none mt-4"
                 >
                   Track Another
                 </Button>
@@ -122,7 +120,7 @@ export default function OrderLookupPage() {
                 className="space-y-6"
               >
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
+                  <label className=" uppercase tracking-widest text-fg-muted font-label flex items-center gap-2">
                     <Package size={12} /> Order ID
                   </label>
                   <Input
@@ -134,7 +132,7 @@ export default function OrderLookupPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
+                  <label className=" uppercase tracking-widest text-fg-muted font-label flex items-center gap-2">
                     <Search size={12} /> Email Address
                   </label>
                   <Input
@@ -157,7 +155,7 @@ export default function OrderLookupPage() {
                 <Button
                   type="submit"
                   disabled={status === "loading"}
-                  className="w-full h-12 bg-primary hover:bg-cream hover:text-ink text-cream font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all group"
+                  className="w-full h-12 bg-cream text-ink hover:bg-cream/80 font-heading text-xl tracking-[0.2em] rounded-none transition-all group"
                 >
                   {status === "loading"
                     ? "Searching Database..."

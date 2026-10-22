@@ -71,7 +71,7 @@ export default function SettingsPage() {
         <button
           onClick={handleSave}
           disabled={isLoading || isSettingsLoading}
-          className="flex items-center gap-2 bg-primary text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 bg-cream text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50"
         >
           {isLoading || isSettingsLoading ? (
             <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-ink"></div>
@@ -111,7 +111,7 @@ export default function SettingsPage() {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-fg-faint peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-cream after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-cream after:border-line after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-signal"></div>
+              <div className="w-11 h-6 bg-fg-faint peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-cream after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-cream after:border-line after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cream"></div>
             </label>
           </div>
 
@@ -227,7 +227,7 @@ export default function SettingsPage() {
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" className="sr-only peer" />
-                <div className="w-9 h-5 bg-fg-faint peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-cream after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-cream after:border-line after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-9 h-5 bg-fg-faint peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-cream after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-cream after:border-line after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cream"></div>
               </label>
             </div>
 
@@ -244,7 +244,7 @@ export default function SettingsPage() {
                   defaultChecked
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-fg-faint peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-cream after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-cream after:border-line after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-9 h-5 bg-fg-faint peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-cream after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-cream after:border-line after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cream"></div>
               </label>
             </div>
           </div>

@@ -161,7 +161,7 @@ function AuthPageContent() {
         className={`h-12 border bg-background hover:bg-cream hover:text-ink transition-all flex items-center justify-center group relative ${isLastUsed ? "border-primary text-cream" : "border-line text-fg-muted hover:border-cream"}`}
       >
         {isLastUsed ? (
-          <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] bg-primary text-ink px-1.5 font-mono uppercase tracking-wide">
+          <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-cream text-ink px-1.5 font-label uppercase tracking-wide">
             Last Used
           </span>
         ) : null}
@@ -212,7 +212,7 @@ function AuthPageContent() {
           placeholder="user@machinebrain.com"
         />
         {lastProvider === "email" && isLogin ? (
-          <div className="text-[9px] text-primary uppercase tracking-widest font-mono text-right">
+          <div className=" text-primary uppercase tracking-widest font-label text-right">
             Last Used Method
           </div>
         ) : null}
@@ -252,7 +252,7 @@ function AuthPageContent() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading font-semibold text-sm tracking-[0.06em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50 flex items-center justify-center"
+        className="w-full h-14 bg-cream text-ink hover:bg-cream/80 font-heading font-semibold text-sm tracking-[0.06em] rounded-none transition-all mt-4 group disabled:opacity-50 flex items-center justify-center"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -286,7 +286,7 @@ function AuthPageContent() {
         className="relative z-10 w-full max-w-md bg-background border border-line shadow-2xl"
       >
         {/* Header Strip */}
-        <div className="h-2 w-full bg-primary"></div>
+        <div className="h-2 w-full bg-cream"></div>
 
         <div className="p-8 md:p-12 relative">
           {/* Corner Artifacts */}
@@ -373,7 +373,7 @@ function AuthPageContent() {
       </motion.div>
 
       {/* Bottom Status Bar */}
-      <div className="absolute bottom-0 w-full border-t border-line bg-background py-2 px-6 flex justify-between items-center text-[10px] text-fg-faint font-mono uppercase tracking-widest">
+      <div className="absolute bottom-0 w-full border-t border-line bg-background py-2 px-6 flex justify-between items-center text-fg-faint font-label uppercase tracking-widest">
         <span className="hidden md:inline"></span>
         <span className="animate-pulse text-primary">● Online</span>
       </div>

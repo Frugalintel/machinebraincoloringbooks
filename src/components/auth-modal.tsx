@@ -231,7 +231,7 @@ export function AuthModal() {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading font-semibold text-sm tracking-[0.06em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50"
+        className="w-full h-14 bg-cream text-ink hover:bg-cream/80 font-heading font-semibold text-sm tracking-[0.06em] rounded-none transition-all mt-4 group disabled:opacity-50"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -266,7 +266,7 @@ export function AuthModal() {
             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-[101] p-4"
           >
             <div className="bg-background border border-line shadow-2xl relative">
-              <div className="h-2 w-full bg-primary"></div>
+              <div className="h-2 w-full bg-cream"></div>
 
               {/* Close Button */}
               <button

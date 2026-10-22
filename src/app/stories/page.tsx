@@ -114,7 +114,7 @@ export default function StoriesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background text-cream font-sans selection:bg-primary selection:text-ink">
+    <main className="min-h-screen bg-background text-cream font-sans selection:bg-cream selection:text-ink">
       {/* Header */}
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
@@ -125,7 +125,7 @@ export default function StoriesPage() {
                 <BookOpen size={14} />
                 <span>{ADVENTURES_COPY.pillarName}</span>
               </div>
-              <h1 className="font-display text-title uppercase text-cream mb-4">
+              <h1 className="font-display text-title text-cream mb-4">
                 Adventures
               </h1>
               <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-md">
@@ -235,7 +235,7 @@ export default function StoriesPage() {
 
                         {unlocked ? (
                           <div className="flex items-center gap-1.5 px-2.5 py-1 bg-cream/10 backdrop-blur-md rounded-full">
-                            <div className="w-1.5 h-1.5 rounded-full bg-signal animate-pulse" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-cream animate-pulse" />
                             <span className="text-[10px] font-medium text-fg-secondary uppercase tracking-wider">
                               {ADVENTURES_COPY.unlockedLabel}
                             </span>

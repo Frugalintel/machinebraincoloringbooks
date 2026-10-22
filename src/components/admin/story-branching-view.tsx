@@ -332,7 +332,7 @@ export function StoryBranchingView({
               className={`flex justify-center transition-all duration-300 ${isHovered ? "opacity-100 scale-105" : "opacity-80 scale-100"}`}
             >
               <span
-                className={`px-2 py-0.5 rounded text-[9px] font-mono truncate max-w-full border shadow-sm select-none backdrop-blur-sm
+                className={`px-2 py-0.5 rounded font-label truncate max-w-full border shadow-sm select-none backdrop-blur-sm
                           ${
                             isHovered
                               ? "bg-success text-ink border-success font-bold"
@@ -546,7 +546,7 @@ export function StoryBranchingView({
                         ${isTarget ? "bg-success-wash" : ""}
                     `}
                     >
-                      <span className="text-[10px] font-mono text-fg-muted truncate max-w-[80px]">
+                      <span className=" font-label text-fg-muted truncate max-w-[80px]">
                         {node.id.slice(0, 8)}
                       </span>
 
@@ -612,7 +612,7 @@ export function StoryBranchingView({
                       {node.choices.map((c, i) => (
                         <div
                           key={i}
-                          className="flex items-center justify-between text-[10px] text-fg-muted font-mono group/choice relative"
+                          className="flex items-center justify-between text-fg-muted font-label group/choice relative"
                           data-choice-index={i}
                         >
                           <span className="truncate max-w-[150px] group-hover/choice:text-cream transition-colors">
@@ -631,8 +631,8 @@ export function StoryBranchingView({
                             }
                           >
                             <div
-                              className={`w-2 h-2 rounded-full border border-gray-500 bg-surface-1 group-hover/choice:bg-primary group-hover/choice:border-primary transition-colors
-                                        ${connectionStart?.nodeId === node.id && connectionStart?.choiceIndex === i ? "bg-primary border-primary scale-125" : ""}
+                              className={`w-2 h-2 rounded-full border border-gray-500 bg-surface-1 group-hover/choice:bg-cream group-hover/choice:border-primary transition-colors
+                                        ${connectionStart?.nodeId === node.id && connectionStart?.choiceIndex === i ? "bg-cream border-primary scale-125" : ""}
                                     `}
                             ></div>
                           </div>

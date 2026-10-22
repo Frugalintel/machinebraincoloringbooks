@@ -10,9 +10,7 @@ export default function LicensesPage() {
             <Scale size={14} />
             <span>Legal</span>
           </div>
-          <h1 className="font-display text-title uppercase text-cream mb-4">
-            Licenses
-          </h1>
+          <h1 className="font-display text-title text-cream mb-4">Licenses</h1>
           <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">
             Third-party software and asset licenses.
           </p>

@@ -89,7 +89,7 @@ export function MediaUpload({
 
           {type === "audio" && (
             <div className="flex items-center gap-4 p-4">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+              <div className="w-10 h-10 rounded-full bg-cream/20 flex items-center justify-center text-primary">
                 <Music size={20} />
               </div>
               <audio controls src={url} className="flex-1 h-8" />
@@ -131,7 +131,7 @@ export function MediaUpload({
                 {type === "image" && <Upload size={20} />}
                 {type === "audio" && <FileAudio size={20} />}
                 {type === "video" && <Video size={20} />}
-                <span className="font-mono text-[10px] uppercase tracking-wider">
+                <span className="font-label uppercase tracking-wider">
                   {label || `Upload ${type}`}
                 </span>
               </>

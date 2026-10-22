@@ -71,7 +71,7 @@ export function CollectiblesSection() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <div className="h-8 w-4 bg-primary"></div>
+          <div className="h-8 w-4 bg-cream"></div>
           <div>
             <h2 className="font-heading text-h2 text-cream">Your collection</h2>
             <span className="font-label mt-1 block tracking-[0.08em] text-fg-muted">
@@ -155,14 +155,14 @@ export function CollectiblesSection() {
                               <Lock size={12} className="text-fg-muted" />
                             )}
                             <span
-                              className={`text-[10px] font-mono uppercase tracking-widest ${displayCollectible.isCollected ? "text-primary" : "text-fg-muted"}`}
+                              className={` font-label uppercase tracking-widest ${displayCollectible.isCollected ? "text-primary" : "text-fg-muted"}`}
                             >
                               {displayCollectible.isCollected
                                 ? "Collected"
                                 : "Locked"}
                             </span>
                           </div>
-                          <h3 className="font-heading text-3xl text-cream uppercase tracking-tight">
+                          <h3 className="font-heading text-3xl text-cream tracking-tight">
                             {displayCollectible.name}
                           </h3>
                           <p className="text-xs text-fg-muted font-mono uppercase mt-1">
@@ -173,7 +173,7 @@ export function CollectiblesSection() {
                         {/* Rarity Badge */}
                         <div
                           className={`
-                          px-2 py-1 text-[10px] font-mono uppercase tracking-widest border
+ px-2 py-1 font-label uppercase tracking-widest border
                           ${
                             displayCollectible.rarity === "Legendary"
                               ? "border-signal text-signal bg-cream/5"
@@ -201,7 +201,7 @@ export function CollectiblesSection() {
                   size={32}
                   className="text-fg-faint group-hover:text-primary transition-colors"
                 />
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-cream rounded-full animate-pulse"></div>
               </div>
               <h3 className="font-heading text-h3 mb-2 text-cream">
                 Hidden treasures
@@ -224,7 +224,7 @@ export function CollectiblesSection() {
                   <span className="font-heading text-xl text-cream">
                     {collectedInSet.length}
                   </span>
-                  <span className="text-[10px] text-fg-muted font-mono uppercase tracking-widest">
+                  <span className=" text-fg-muted font-label uppercase tracking-widest">
                     Items
                   </span>
                 </div>
@@ -232,7 +232,7 @@ export function CollectiblesSection() {
                   <span className="font-heading text-xl text-cream">
                     {completedSetIds.length}
                   </span>
-                  <span className="text-[10px] text-fg-muted font-mono uppercase tracking-widest">
+                  <span className=" text-fg-muted font-label uppercase tracking-widest">
                     Sets
                   </span>
                 </div>
@@ -240,7 +240,7 @@ export function CollectiblesSection() {
                   <span className="font-heading text-xl text-primary">
                     {collectorScore}
                   </span>
-                  <span className="text-[10px] text-fg-muted font-mono uppercase tracking-widest">
+                  <span className=" text-fg-muted font-label uppercase tracking-widest">
                     Points
                   </span>
                 </div>
@@ -270,7 +270,7 @@ export function CollectiblesSection() {
                         <div
                           className={`
                           w-12 h-12 rounded-sm flex items-center justify-center border
-                          ${isActive ? "border-primary/30 bg-primary/10" : "border-line bg-background"}
+                          ${isActive ? "border-primary/30 bg-cream/10" : "border-line bg-background"}
                         `}
                         >
                           {isComplete ? (
@@ -290,14 +290,14 @@ export function CollectiblesSection() {
                           <div className="flex items-center justify-between mb-1">
                             <h4
                               className={`
-                              font-heading text-sm uppercase tracking-wide transition-colors
+ font-heading text-sm tracking-wide transition-colors
                               ${isActive ? "text-cream" : "text-fg-muted group-hover:text-cream"}
                             `}
                             >
                               {item.set.title}
                             </h4>
                             {isComplete ? (
-                              <div className="flex items-center gap-1 text-[10px] text-signal font-mono uppercase">
+                              <div className="flex items-center gap-1 text-signal font-label uppercase">
                                 <Check size={10} /> Complete
                               </div>
                             ) : null}
@@ -307,13 +307,13 @@ export function CollectiblesSection() {
                           <div className="flex items-center gap-3">
                             <div className="flex-1 h-1 bg-surface-2 rounded-full overflow-hidden">
                               <motion.div
-                                className={`h-full ${isComplete ? "bg-amber-500" : "bg-primary"}`}
+                                className={`h-full ${isComplete ? "bg-amber-500" : "bg-cream"}`}
                                 initial={{ width: 0 }}
                                 animate={{ width: `${item.progress.percent}%` }}
                                 transition={{ duration: 1, ease: "easeOut" }}
                               />
                             </div>
-                            <span className="text-[10px] font-mono text-fg-muted w-8 text-right">
+                            <span className=" font-label text-fg-muted w-8 text-right">
                               {item.progress.collected}/{item.progress.total}
                             </span>
                           </div>
@@ -332,7 +332,7 @@ export function CollectiblesSection() {
                       {isActive ? (
                         <motion.div
                           layoutId="activeSetIndicator"
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-8 bg-primary shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-8 bg-cream shadow-[0_0_10px_rgba(255,255,255,0.3)]"
                         />
                       ) : null}
                     </button>
@@ -383,11 +383,11 @@ export function CollectiblesSection() {
               <div className="mt-auto border-t border-line pt-6">
                 <Button
                   onClick={() => openAuthModal("register")}
-                  className="w-full h-12 bg-primary text-ink hover:bg-cream font-heading uppercase tracking-widest text-lg rounded-none mb-3"
+                  className="w-full h-12 bg-cream text-ink hover:bg-cream font-heading tracking-widest text-lg rounded-none mb-3"
                 >
                   Start Collecting
                 </Button>
-                <p className="text-center text-[10px] text-fg-muted font-mono uppercase">
+                <p className="text-center text-fg-muted font-label uppercase">
                   Already have an account?{" "}
                   <button
                     onClick={() => openAuthModal("login")}
@@ -407,16 +407,16 @@ export function CollectiblesSection() {
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="block font-heading text-sm text-cream uppercase">
+                      <span className="block font-heading text-sm text-cream ">
                         Have a code?
                       </span>
-                      <span className="text-[10px] text-fg-muted font-mono uppercase tracking-widest">
+                      <span className=" text-fg-muted font-label uppercase tracking-widest">
                         Find it on the back page
                       </span>
                     </div>
                     <Link
                       href="/scan"
-                      className="text-[10px] font-mono text-fg-muted hover:text-primary flex items-center gap-1 transition-colors"
+                      className=" font-label text-fg-muted hover:text-primary flex items-center gap-1 transition-colors"
                     >
                       <Scan size={12} />
                       Or scan page

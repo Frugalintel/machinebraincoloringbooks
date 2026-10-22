@@ -47,7 +47,7 @@ const ActionBadge = ({ action }: { action: string }) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-mono uppercase tracking-wide border ${color} whitespace-nowrap`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded font-label uppercase tracking-wide border ${color} whitespace-nowrap`}
     >
       {icon}
       {action.replace(/_/g, " ")}
@@ -209,7 +209,7 @@ export default function AuditLogPage() {
       <div className="bg-surface-1 border border-line rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm min-w-[800px] table-fixed border-collapse">
-            <thead className="bg-surface-1 text-fg-muted font-mono text-[10px] uppercase tracking-wider">
+            <thead className="bg-surface-1 text-fg-muted font-label uppercase tracking-wider">
               <tr>
                 <th className="p-4 w-[180px] font-medium">Timestamp</th>
                 <th className="p-4 w-[200px] font-medium">Actor</th>
@@ -252,7 +252,7 @@ export default function AuditLogPage() {
                             addSuffix: true,
                           })}
                         </span>
-                        <span className="text-fg-faint text-[10px] font-mono group-hover:text-fg-muted transition-colors">
+                        <span className="text-fg-faint font-label group-hover:text-fg-muted transition-colors">
                           {new Date(log.created_at).toLocaleTimeString()}
                         </span>
                       </div>
@@ -305,7 +305,7 @@ export default function AuditLogPage() {
           >
             <ChevronLeft size={14} /> PREV
           </button>
-          <span className="text-[10px] text-fg-faint font-mono tracking-widest">
+          <span className=" text-fg-faint font-label tracking-widest">
             PAGE {page + 1}
           </span>
           <button

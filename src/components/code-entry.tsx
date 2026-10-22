@@ -178,7 +178,7 @@ export function CodeEntry() {
 
   return (
     <div className="w-full max-w-md mx-auto relative">
-      <div className="absolute inset-0 bg-primary/5 blur-xl rounded-full opacity-20 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-cream/5 blur-xl rounded-full opacity-20 pointer-events-none"></div>
 
       <form onSubmit={handleSubmit} className="relative z-10 flex gap-2">
         <div className="relative flex-1 group">
@@ -197,7 +197,7 @@ export function CodeEntry() {
         <Button
           type="submit"
           disabled={loading || !code}
-          className={`h-12 w-12 p-0 rounded bg-surface-2 border border-line hover:bg-primary hover:text-ink hover:border-primary transition-all duration-300
+          className={`h-12 w-12 p-0 rounded bg-surface-2 border border-line hover:bg-cream hover:text-ink hover:border-primary transition-all duration-300
             ${result === "success" ? "bg-success text-ink border-success" : ""}
             ${result === "error" ? "bg-danger text-cream border-danger" : ""}
           `}
@@ -220,7 +220,7 @@ export function CodeEntry() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className={`absolute top-full left-0 right-0 mt-2 text-[10px] font-mono uppercase tracking-widest text-center
+            className={`absolute top-full left-0 right-0 mt-2 font-label uppercase tracking-widest text-center
               ${result === "success" ? "text-success" : "text-danger"}
             `}
           >

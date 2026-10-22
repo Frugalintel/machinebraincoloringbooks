@@ -42,7 +42,7 @@ export function FieldEditor({
                 key={key}
                 className="block space-y-2 rounded-md border border-line bg-background p-3 text-sm"
               >
-                <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                <span className="font-label uppercase tracking-widest text-muted-foreground">
                   {label}
                 </span>
                 <input
@@ -76,7 +76,7 @@ export function FieldEditor({
                 key={key}
                 className="block space-y-2 rounded-md border border-line bg-background p-3 text-sm md:col-span-2"
               >
-                <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                <span className="font-label uppercase tracking-widest text-muted-foreground">
                   {label}
                 </span>
                 <textarea
@@ -93,7 +93,7 @@ export function FieldEditor({
                 key={key}
                 className="block space-y-2 rounded-md border border-line bg-background p-3 text-sm"
               >
-                <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                <span className="font-label uppercase tracking-widest text-muted-foreground">
                   {label}
                 </span>
                 <input

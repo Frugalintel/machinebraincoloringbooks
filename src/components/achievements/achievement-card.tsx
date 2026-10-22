@@ -76,11 +76,11 @@ export function AchievementCard({
           >
             {achievement.title}
           </h4>
-          <p className="text-[10px] text-fg-muted font-mono uppercase">
+          <p className=" text-fg-muted font-label uppercase">
             {achievement.progress || "In Progress"}
           </p>
         </div>
-        <div className="text-[10px] text-fg-faint group-hover:text-danger font-mono uppercase tracking-widest transition-colors">
+        <div className=" text-fg-faint group-hover:text-danger font-label uppercase tracking-widest transition-colors">
           Remove
         </div>
       </motion.button>
@@ -167,7 +167,7 @@ export function AchievementCard({
                   Complete
                 </span>
               ) : isActive ? (
-                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-primary text-ink shadow-[0_0_10px_rgba(255,79,0,0.4)] animate-pulse">
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-cream text-ink shadow-[0_0_10px_rgba(255,79,0,0.4)] animate-pulse">
                   <Zap size={10} fill="currentColor" className="text-ink" />
                   Active
                 </span>
@@ -196,7 +196,7 @@ export function AchievementCard({
         <div className="pt-3 border-t border-cream/5 mt-3">
           {!isCompleted && achievement.progress ? (
             <div className="space-y-1">
-              <div className="flex justify-between text-[10px] font-mono uppercase">
+              <div className="flex justify-between font-label uppercase">
                 <span className="text-fg-muted">Progress</span>
                 <span className={isActive ? "text-primary" : "text-fg-muted"}>
                   {achievement.progress}
@@ -207,13 +207,13 @@ export function AchievementCard({
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercent}%` }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className={`h-full ${isActive ? "bg-primary" : "bg-fg-faint"}`}
+                  className={`h-full ${isActive ? "bg-cream" : "bg-fg-faint"}`}
                 />
               </div>
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-fg-muted font-mono uppercase">
+              <span className=" text-fg-muted font-label uppercase">
                 {isCompleted ? "Unlocked" : "Target"}
               </span>
               <span
@@ -238,7 +238,7 @@ export function AchievementCard({
             <div
               className={`w-4 h-4 rounded-full ${relatedCollectible.image} opacity-70`}
             ></div>
-            <span className="text-[9px] font-mono text-fg-muted uppercase truncate max-w-[100px]">
+            <span className=" font-label text-fg-muted uppercase truncate max-w-[100px]">
               {relatedCollectible.name}
             </span>
           </div>
@@ -267,7 +267,7 @@ export function AchievementCard({
         ) : null}
 
         {isCompleted ? (
-          <div className="flex items-center gap-1 px-3 py-1 text-[9px] uppercase tracking-widest text-success font-mono">
+          <div className="flex items-center gap-1 px-3 py-1 uppercase tracking-widest text-success font-label">
             <CheckCircle size={10} /> Done
           </div>
         ) : null}

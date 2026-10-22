@@ -83,12 +83,12 @@ export default function AdminLayout({
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-            <span className="font-heading font-bold text-lg tracking-wide uppercase">
+            <span className="font-heading font-bold text-lg tracking-wide ">
               Machine Brain
             </span>
           </div>
           {/* Branding/User on right */}
-          <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
+          <div className="w-8 h-8 rounded-full bg-cream/20 text-primary flex items-center justify-center font-bold text-xs">
             {user?.initials || "A"}
           </div>
         </div>
@@ -111,14 +111,14 @@ export default function AdminLayout({
             </div>
 
             <div className="bg-surface-2 p-3 rounded-lg flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
+              <div className="w-8 h-8 rounded-full bg-cream/20 text-primary flex items-center justify-center font-bold text-xs">
                 {user?.initials || "A"}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-cream truncate">
                   {user?.displayName || "Admin User"}
                 </p>
-                <p className="text-[10px] text-fg-muted font-mono truncate">
+                <p className=" text-fg-muted font-label truncate">
                   {user?.email}
                 </p>
               </div>
@@ -131,7 +131,7 @@ export default function AdminLayout({
               Logged in as
             </p>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
+              <div className="w-8 h-8 rounded-full bg-cream/20 text-primary flex items-center justify-center font-bold text-xs">
                 {user?.initials || "A"}
               </div>
               <div className="flex-1 min-w-0">
@@ -155,7 +155,7 @@ export default function AdminLayout({
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-md transition-all ${
                     isActive
-                      ? "bg-primary text-ink font-bold"
+                      ? "bg-cream text-ink font-bold"
                       : "text-fg-muted hover:bg-surface-2 hover:text-cream"
                   }`}
                 >

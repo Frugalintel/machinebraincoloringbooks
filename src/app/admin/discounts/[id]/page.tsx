@@ -158,7 +158,7 @@ export default function CampaignEditorPage({
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex items-center gap-2 bg-primary text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 bg-cream text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50"
         >
           {isSaving ? (
             <Loader2 className="animate-spin" size={18} />
@@ -175,7 +175,7 @@ export default function CampaignEditorPage({
           {/* 1. Basic Info */}
           <div className="bg-surface-1 border border-line rounded-xl p-6">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-primary text-ink flex items-center justify-center text-xs font-bold">
+              <span className="w-6 h-6 rounded-full bg-cream text-ink flex items-center justify-center text-xs font-bold">
                 1
               </span>
               Basic Information
@@ -201,7 +201,7 @@ export default function CampaignEditorPage({
           {/* 2. Visual Theme */}
           <div className="bg-surface-1 border border-line rounded-xl p-6">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-primary text-ink flex items-center justify-center text-xs font-bold">
+              <span className="w-6 h-6 rounded-full bg-cream text-ink flex items-center justify-center text-xs font-bold">
                 2
               </span>
               Visual Theme
@@ -293,7 +293,7 @@ export default function CampaignEditorPage({
           <div className="bg-surface-1 border border-line rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-primary text-ink flex items-center justify-center text-xs font-bold">
+                <span className="w-6 h-6 rounded-full bg-cream text-ink flex items-center justify-center text-xs font-bold">
                   3
                 </span>
                 Banner Strip
@@ -312,7 +312,7 @@ export default function CampaignEditorPage({
                       },
                     })
                   }
-                  className={`w-10 h-6 rounded-full transition-colors relative ${campaign.banner.enabled ? "bg-primary" : "bg-surface-3"}`}
+                  className={`w-10 h-6 rounded-full transition-colors relative ${campaign.banner.enabled ? "bg-cream" : "bg-surface-3"}`}
                 >
                   <div
                     className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-background transition-transform ${campaign.banner.enabled ? "translate-x-4" : ""}`}
@@ -432,7 +432,7 @@ export default function CampaignEditorPage({
           <div className="bg-surface-1 border border-line rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-primary text-ink flex items-center justify-center text-xs font-bold">
+                <span className="w-6 h-6 rounded-full bg-cream text-ink flex items-center justify-center text-xs font-bold">
                   4
                 </span>
                 Store-wide Discount
@@ -451,7 +451,7 @@ export default function CampaignEditorPage({
                       },
                     })
                   }
-                  className={`w-10 h-6 rounded-full transition-colors relative ${campaign.discount.enabled ? "bg-primary" : "bg-surface-3"}`}
+                  className={`w-10 h-6 rounded-full transition-colors relative ${campaign.discount.enabled ? "bg-cream" : "bg-surface-3"}`}
                 >
                   <div
                     className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-background transition-transform ${campaign.discount.enabled ? "translate-x-4" : ""}`}
@@ -492,7 +492,7 @@ export default function CampaignEditorPage({
         {/* Right Column: Live Preview */}
         <div className="lg:col-span-1">
           <div className="sticky top-8 space-y-4">
-            <h3 className="text-xs font-mono uppercase tracking-widest text-fg-muted">
+            <h3 className="text-xs font-mono tracking-widest text-fg-muted">
               Live Preview
             </h3>
 
@@ -592,7 +592,7 @@ export default function CampaignEditorPage({
               {/* Banner */}
               {campaign.banner.enabled ? (
                 <div
-                  className={`w-full py-1 text-center text-[10px] font-bold font-heading uppercase tracking-widest relative z-20 overflow-hidden ${
+                  className={`w-full py-1 text-center text-[10px] font-bold font-heading tracking-widest relative z-20 overflow-hidden ${
                     campaign.theme?.animation === "pulse" ? "animate-pulse" : ""
                   } ${campaign.banner.pattern ? `pattern-${campaign.banner.pattern}` : ""}`}
                   style={{
@@ -655,7 +655,7 @@ export default function CampaignEditorPage({
                     {campaign.name.toUpperCase()}
                   </div>
                   <div
-                    className="text-2xl font-heading font-bold text-cream uppercase"
+                    className="text-2xl font-heading font-bold text-cream "
                     style={{ fontFamily: campaign.theme?.fonts?.heading }}
                   >
                     EXPLORE

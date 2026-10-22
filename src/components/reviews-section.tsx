@@ -97,7 +97,7 @@ function ReviewCard({
       className="border border-line bg-background p-6 relative group"
     >
       {/* Accent bar */}
-      <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-50"></div>
+      <div className="absolute top-0 left-0 w-1 h-full bg-cream opacity-50"></div>
 
       <div className="flex items-start gap-4">
         <Avatar className="w-10 h-10 border border-line">
@@ -116,12 +116,12 @@ function ReviewCard({
                 {displayName}
               </span>
               {review.is_verified_purchase ? (
-                <span className="text-[9px] font-mono uppercase tracking-widest text-success border border-success/50 px-2 py-0.5 bg-success-wash">
+                <span className=" font-label uppercase tracking-widest text-success border border-success/50 px-2 py-0.5 bg-success-wash">
                   Verified
                 </span>
               ) : null}
             </div>
-            <span className="text-[10px] font-mono text-fg-faint uppercase tracking-widest">
+            <span className=" font-label text-fg-faint uppercase tracking-widest">
               {date}
             </span>
           </div>
@@ -129,7 +129,7 @@ function ReviewCard({
           <div className="flex items-center gap-3 mb-3">
             <StarRating rating={review.rating} size="sm" />
             {review.title ? (
-              <span className="font-heading text-cream uppercase tracking-wide text-sm">
+              <span className="font-heading text-cream tracking-wide text-sm">
                 {review.title}
               </span>
             ) : null}
@@ -144,7 +144,7 @@ function ReviewCard({
           <div className="flex items-center justify-between">
             <button
               onClick={onHelpful}
-              className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-fg-muted hover:text-primary transition-colors"
+              className="flex items-center gap-2 font-label uppercase tracking-widest text-fg-muted hover:text-primary transition-colors"
             >
               <ThumbsUp size={12} />
               <span>Helpful ({review.helpful_count})</span>
@@ -214,15 +214,15 @@ function ReviewForm({
       className="border border-line bg-background p-6"
     >
       <div className="flex items-center gap-4 mb-6">
-        <div className="h-8 w-1 bg-primary"></div>
-        <h3 className="font-heading text-xl uppercase tracking-wide text-cream">
+        <div className="h-8 w-1 bg-cream"></div>
+        <h3 className="font-heading text-xl tracking-wide text-cream">
           {existingReview ? "Edit Your Review" : "Write a Review"}
         </h3>
       </div>
 
       <div className="space-y-6">
         <div>
-          <label className="block text-[10px] font-mono uppercase tracking-widest text-primary mb-3">
+          <label className="block font-label uppercase tracking-widest text-primary mb-3">
             Your Rating *
           </label>
           <StarRating
@@ -232,14 +232,12 @@ function ReviewForm({
             size="lg"
           />
           {rating === 0 && (
-            <p className="text-[10px] font-mono text-fg-muted mt-2">
-              Click to rate
-            </p>
+            <p className=" font-label text-fg-muted mt-2">Click to rate</p>
           )}
         </div>
 
         <div>
-          <label className="block text-[10px] font-mono uppercase tracking-widest text-primary mb-2">
+          <label className="block font-label uppercase tracking-widest text-primary mb-2">
             Review Title
           </label>
           <Input
@@ -251,7 +249,7 @@ function ReviewForm({
         </div>
 
         <div>
-          <label className="block text-[10px] font-mono uppercase tracking-widest text-primary mb-2">
+          <label className="block font-label uppercase tracking-widest text-primary mb-2">
             Your Review
           </label>
           <textarea
@@ -267,7 +265,7 @@ function ReviewForm({
           <Button
             type="submit"
             disabled={rating === 0 || isSubmitting}
-            className="h-12 px-8 bg-primary hover:bg-cream hover:text-ink text-ink font-heading uppercase tracking-widest rounded-none transition-all disabled:opacity-50"
+            className="h-12 px-8 bg-cream hover:bg-cream hover:text-ink text-ink font-heading tracking-widest rounded-none transition-all disabled:opacity-50"
           >
             {isSubmitting ? (
               <span className="animate-pulse">Submitting...</span>
@@ -396,7 +394,7 @@ export function ReviewsSection({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div>
           <div className="flex items-center gap-4 mb-2">
-            <div className="h-8 w-2 bg-primary"></div>
+            <div className="h-8 w-2 bg-cream"></div>
             <h2 className="font-heading text-h2 text-cream">
               Customer Reviews
             </h2>
@@ -413,7 +411,7 @@ export function ReviewsSection({
               <div className="font-heading text-4xl text-cream">
                 {rating.average_rating.toFixed(1)}
               </div>
-              <div className="text-[10px] font-mono text-fg-muted uppercase tracking-widest">
+              <div className=" font-label text-fg-muted uppercase tracking-widest">
                 out of 5
               </div>
             </div>
@@ -422,7 +420,7 @@ export function ReviewsSection({
                 rating={Math.round(rating.average_rating)}
                 size="md"
               />
-              <div className="text-[10px] font-mono text-fg-muted uppercase tracking-widest mt-1">
+              <div className=" font-label text-fg-muted uppercase tracking-widest mt-1">
                 {rating.review_count}{" "}
                 {rating.review_count === 1 ? "review" : "reviews"}
               </div>
@@ -434,7 +432,7 @@ export function ReviewsSection({
       {/* Review Form or Login Prompt */}
       {user ? (
         userReview && !isEditing ? (
-          <div className="mb-8 p-4 border border-primary/30 bg-primary/5">
+          <div className="mb-8 p-4 border border-primary/30 bg-cream/5">
             <p className="text-sm text-fg-muted font-mono">
               You've already reviewed this product.{" "}
               <button
@@ -462,7 +460,7 @@ export function ReviewsSection({
           </p>
           <Button
             onClick={() => openAuthModal("login")}
-            className="h-10 px-6 bg-primary hover:bg-cream hover:text-ink text-ink font-heading uppercase tracking-widest rounded-none"
+            className="h-10 px-6 bg-cream hover:bg-cream hover:text-ink text-ink font-heading tracking-widest rounded-none"
           >
             Sign In
           </Button>
@@ -543,7 +541,7 @@ export function ProductRatingDisplay({
     <div className="flex items-center gap-2">
       <StarRating rating={Math.round(rating.average_rating)} size={size} />
       {showCount ? (
-        <span className="text-[10px] font-mono text-fg-muted">
+        <span className=" font-label text-fg-muted">
           ({rating.review_count})
         </span>
       ) : null}

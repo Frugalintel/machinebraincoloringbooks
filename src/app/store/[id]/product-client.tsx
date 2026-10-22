@@ -15,6 +15,7 @@ import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
 import { Product } from "@/lib/types";
 import { ReviewsSection } from "@/components/reviews-section";
+import { toSentenceCase } from "@/lib/display-text";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
 
 // Dynamic import for 3D trophy canvas
@@ -53,7 +54,7 @@ export function ProductClient({ product }: ProductClientProps) {
     <main className="min-h-screen bg-background text-cream font-sans">
       {/* Breadcrumb / Header */}
       <div className="border-b border-line bg-background py-4">
-        <div className="container mx-auto px-4 md:px-6 flex items-center gap-4 text-[10px] md:text-xs font-mono text-fg-muted uppercase tracking-widest">
+        <div className="container mx-auto px-4 md:px-6 flex items-center gap-4 md:text-xs font-label text-fg-muted uppercase tracking-widest">
           <button
             onClick={() => router.back()}
             className="hover:text-primary flex items-center gap-2 transition-colors"
@@ -61,7 +62,7 @@ export function ProductClient({ product }: ProductClientProps) {
             <ArrowLeft size={12} /> BACK
           </button>
           <span className="text-fg-faint">/</span>
-          <span className="text-cream">{product.title}</span>
+          <span className="text-cream">{toSentenceCase(product.title)}</span>
           <span className="text-fg-faint">/</span>
           <span>Vol. {product.id.slice(0, 3)}</span>
         </div>
@@ -92,7 +93,7 @@ export function ProductClient({ product }: ProductClientProps) {
                     <div className="absolute inset-0">
                       <img
                         src={product.image_url}
-                        alt={product.title}
+                        alt={toSentenceCase(product.title)}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"></div>
@@ -100,7 +101,7 @@ export function ProductClient({ product }: ProductClientProps) {
                   ) : (
                     <>
                       <div className="absolute top-0 left-0 right-0 h-12 bg-background/40 flex items-center justify-center border-b border-background/10 backdrop-blur-sm z-10">
-                        <span className="font-heading text-fg-secondary text-xl tracking-widest uppercase">
+                        <span className="font-heading text-fg-secondary text-xl tracking-widest ">
                           {product.subtitle}
                         </span>
                       </div>
@@ -120,8 +121,8 @@ export function ProductClient({ product }: ProductClientProps) {
                     <span className="text-xs text-fg-muted font-mono uppercase">
                       Vol. {product.id.slice(0, 3)}
                     </span>
-                    <span className="text-xs text-cream font-heading tracking-widest uppercase">
-                      {product.title}
+                    <span className="text-xs text-cream font-heading tracking-widest ">
+                      {toSentenceCase(product.title)}
                     </span>
                   </div>
                 </div>
@@ -131,7 +132,7 @@ export function ProductClient({ product }: ProductClientProps) {
               </motion.div>
 
               {/* Zoom/Interaction Hint */}
-              <div className="absolute bottom-4 right-4 text-[10px] font-mono text-fg-faint uppercase tracking-widest border border-line px-2 py-1">
+              <div className="absolute bottom-4 right-4 font-label text-fg-faint uppercase tracking-widest border border-line px-2 py-1">
                 Fig 1.1 — Front Cover
               </div>
             </div>
@@ -141,12 +142,12 @@ export function ProductClient({ product }: ProductClientProps) {
           <div className="lg:col-span-5 flex flex-col h-full">
             <div className="border-b border-line pb-8 mb-8">
               <div className="flex items-center gap-4 mb-4">
-                <div className="h-8 w-2 bg-primary"></div>
-                <h1 className="font-display text-title uppercase text-cream">
-                  {product.title}
+                <div className="h-8 w-2 bg-cream"></div>
+                <h1 className="font-display text-title text-cream">
+                  {toSentenceCase(product.title)}
                 </h1>
               </div>
-              <h2 className="font-mono text-xl text-fg-muted tracking-widest uppercase mb-6">
+              <h2 className="font-mono text-xl text-fg-muted tracking-widest mb-6">
                 Subtitle: {product.subtitle}
               </h2>
               <p className="text-fg-muted font-sans leading-relaxed text-sm md:text-base max-w-md">
@@ -156,7 +157,7 @@ export function ProductClient({ product }: ProductClientProps) {
 
             <div className="grid grid-cols-2 gap-8 mb-8">
               <div>
-                <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
+                <span className="block uppercase tracking-widest text-primary font-label mb-2">
                   Difficulty Level
                 </span>
                 <div className="flex gap-1">
@@ -169,28 +170,26 @@ export function ProductClient({ product }: ProductClientProps) {
                 </div>
               </div>
               <div>
-                <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
+                <span className="block uppercase tracking-widest text-primary font-label mb-2">
                   Recommended Age
                 </span>
-                <div className="font-heading text-xl text-cream uppercase">
+                <div className="font-heading text-xl text-cream ">
                   {product.age}
                 </div>
               </div>
               <div>
-                <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
+                <span className="block uppercase tracking-widest text-primary font-label mb-2">
                   Format
                 </span>
-                <div className="font-heading text-xl text-cream uppercase">
+                <div className="font-heading text-xl text-cream ">
                   Print + Digital
                 </div>
               </div>
               <div>
-                <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
+                <span className="block uppercase tracking-widest text-primary font-label mb-2">
                   Pages
                 </span>
-                <div className="font-heading text-xl text-cream uppercase">
-                  96 Pages
-                </div>
+                <div className="font-heading text-xl text-cream ">96 Pages</div>
               </div>
             </div>
 
@@ -217,11 +216,11 @@ export function ProductClient({ product }: ProductClientProps) {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 text-primary font-mono text-[10px] uppercase tracking-widest mb-1">
+                  <div className="flex items-center gap-2 text-primary font-label uppercase tracking-widest mb-1">
                     <Trophy size={10} />
                     <span>Includes Digital Collectible</span>
                   </div>
-                  <p className="text-cream font-heading text-sm uppercase mb-1">
+                  <p className="text-cream font-heading text-sm mb-1">
                     Exclusive 3D Trophy
                   </p>
                   <p className="text-fg-muted text-xs font-mono">
@@ -231,7 +230,7 @@ export function ProductClient({ product }: ProductClientProps) {
 
                 <div className="flex-shrink-0">
                   <span
-                    className={`text-[10px] font-mono uppercase tracking-widest px-2 py-1 border ${
+                    className={` font-label uppercase tracking-widest px-2 py-1 border ${
                       product.difficulty >= 4
                         ? "border-signal/40 text-signal bg-cream/5"
                         : product.difficulty >= 3
@@ -255,11 +254,11 @@ export function ProductClient({ product }: ProductClientProps) {
               <div className="flex justify-between items-end mb-6">
                 <div className="flex flex-col">
                   {priceInfo.hasDiscount ? (
-                    <span className="text-[10px] uppercase tracking-widest text-fg-muted font-mono">
+                    <span className=" uppercase tracking-widest text-fg-muted font-label">
                       {campaign.name || "Special Price"}
                     </span>
                   ) : (
-                    <span className="text-[10px] uppercase tracking-widest text-fg-muted font-mono">
+                    <span className=" uppercase tracking-widest text-fg-muted font-label">
                       Standard Price
                     </span>
                   )}
@@ -280,7 +279,7 @@ export function ProductClient({ product }: ProductClientProps) {
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2 text-[10px] font-mono text-success items-center bg-success-wash px-2 py-1 border border-success/30">
+                <div className="flex gap-2 font-label text-success items-center bg-success-wash px-2 py-1 border border-success/30">
                   <div className="w-1.5 h-1.5 bg-success rounded-full animate-pulse"></div>
                   IN STOCK
                 </div>
@@ -288,13 +287,13 @@ export function ProductClient({ product }: ProductClientProps) {
 
               <Button
                 onClick={handleAddToCart}
-                className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all group mb-4"
+                className="w-full h-14 bg-cream text-ink hover:bg-cream/80 font-heading text-xl tracking-[0.2em] rounded-none transition-all group mb-4"
               >
                 Add to Requisition{" "}
                 <ShoppingCart className="ml-4 w-5 h-5 group-hover:scale-110 transition-transform" />
               </Button>
 
-              <div className="flex items-center justify-between text-[10px] font-mono text-fg-muted uppercase tracking-widest">
+              <div className="flex items-center justify-between font-label text-fg-muted uppercase tracking-widest">
                 <div className="flex items-center gap-2">
                   <Truck size={12} />
                   <span>Ships Worldwide</span>

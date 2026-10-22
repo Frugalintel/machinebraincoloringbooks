@@ -78,7 +78,7 @@ export function CoverWrapPreview({
         title={title}
       />
       <div
-        className="grid gap-2 text-[10px] font-mono uppercase tracking-widest text-muted-foreground"
+        className="grid gap-2 font-label uppercase tracking-widest text-muted-foreground"
         style={{
           gridTemplateColumns: `${backWidth}fr ${spineWidth}fr ${frontWidth}fr`,
         }}
