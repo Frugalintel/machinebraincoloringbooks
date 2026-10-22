@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
+import { BrandLockup } from "@/components/mark";
 
 const footerLinks = {
   Shop: [
@@ -47,12 +48,18 @@ export function Footer() {
         {/* Brand Column */}
         <div className="flex flex-col justify-between">
           <div>
-            <p className="mb-4 whitespace-nowrap font-heading font-bold text-[16px] md:text-[18px] uppercase tracking-[0.02em] text-cream">
-              Machine <span className="text-primary">Brain</span>
-            </p>
-            <p className="font-label max-w-[200px] leading-relaxed tracking-[0.08em]">
-              Coloring books with secrets. Est. 2025.
-            </p>
+            <BrandLockup
+              layout="horizontal"
+              markSize={48}
+              ink="cream"
+              className="mb-4"
+              wordmarkClassName="text-[16px] md:text-[18px]"
+              subtitle={
+                <p className="font-label mt-2 max-w-[200px] leading-relaxed tracking-[0.08em] text-fg-muted">
+                  Coloring books with secrets. Est. 2025.
+                </p>
+              }
+            />
           </div>
           <div className="mt-8 md:mt-0">
             <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest">

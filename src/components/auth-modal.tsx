@@ -18,6 +18,7 @@ import {
   Loader2,
   type LucideIcon,
 } from "lucide-react";
+import { BrandLockup } from "@/components/mark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
@@ -277,9 +278,13 @@ export function AuthModal() {
 
               <div className="p-8">
                 <div className="text-center mb-8">
-                  <h1 className="font-heading text-3xl font-bold text-cream mb-2 uppercase tracking-tighter text-primary">
-                    Machine Brain
-                  </h1>
+                  <BrandLockup
+                    layout="stacked"
+                    markSize={48}
+                    ink="cream"
+                    className="mb-2"
+                    wordmarkClassName="text-[24px]"
+                  />
                   <div className="flex items-center justify-center gap-2 font-label mt-2 tracking-[0.08em] text-primary">
                     <Terminal size={12} />
                     <span>{isLogin ? "Sign in" : "Create account"}</span>

@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import {
   Terminal,
   Lock,
@@ -18,8 +17,9 @@ import {
   Loader2,
   type LucideIcon,
 } from "lucide-react";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { BrandLockup } from "@/components/mark";
 import { STORAGE_KEYS } from "@/lib/constants";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 function AuthPageContent() {
   const [isLogin, setIsLogin] = useState(true);
@@ -296,13 +296,14 @@ function AuthPageContent() {
           <div className="absolute bottom-4 right-4 w-2 h-2 border-b border-r border-gray-500"></div>
 
           <div className="text-center mb-8">
-            <Link href="/" className="inline-block group">
-              <h1 className="font-display text-title uppercase text-cream mb-2 transition-colors group-hover:text-primary">
-                Machine
-                <br />
-                Brain
-              </h1>
-            </Link>
+            <BrandLockup
+              layout="stacked"
+              markSize={80}
+              ink="cream"
+              headingLevel="h1"
+              className="mb-2"
+              wordmarkClassName="text-[24px] md:text-[28px]"
+            />
             <div className="flex items-center justify-center gap-2 font-label mt-2 tracking-[0.08em] text-primary">
               <Terminal size={12} />
               <span>{isLogin ? "Sign in" : "Create account"}</span>
