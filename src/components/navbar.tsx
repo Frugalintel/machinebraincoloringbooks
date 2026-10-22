@@ -74,9 +74,9 @@ export function Navbar() {
     <>
       {/* Safe Area Mask (Fixed) - Must be above body::before texture overlay (z-9999) */}
       <div
-        className="fixed top-0 left-0 right-0 bg-[#111] z-[10001] pointer-events-none"
+        className="fixed top-0 left-0 right-0 bg-background z-[10001] pointer-events-none"
         style={{
-          backgroundColor: "#111111",
+          backgroundColor: "var(--base)",
           height: "calc(env(safe-area-inset-top) + 1px)",
           transform: "translateZ(0)",
         }}
@@ -84,8 +84,8 @@ export function Navbar() {
 
       {/* Safe Area Spacer (Scrolls) */}
       <div
-        className="h-[env(safe-area-inset-top)] w-full bg-[#111]"
-        style={{ backgroundColor: "#111111" }}
+        className="h-[env(safe-area-inset-top)] w-full bg-background"
+        style={{ backgroundColor: "var(--base)" }}
       />
 
       {/* Global Discount Banner */}
@@ -211,9 +211,9 @@ export function Navbar() {
       ) : null}
 
       <nav
-        className="w-full border-b border-[#222] bg-[#111] z-[10000] sticky top-[env(safe-area-inset-top)] isolate"
+        className="w-full border-b border-[#222] bg-background z-[10000] sticky top-[env(safe-area-inset-top)] isolate"
         style={{
-          backgroundColor: "#111111",
+          backgroundColor: "var(--base)",
           transform: "translateZ(0)",
           WebkitBackfaceVisibility: "hidden",
         }}
@@ -226,7 +226,7 @@ export function Navbar() {
               className="flex flex-col leading-none tracking-tighter group"
             >
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl md:text-4xl font-heading font-bold text-white uppercase group-hover:text-primary transition-colors">
+                <h1 className="text-2xl md:text-4xl font-heading font-bold text-cream uppercase group-hover:text-primary transition-colors">
                   Machine Brain
                 </h1>
                 <div className="w-2 h-2 md:w-3 md:h-3 bg-primary mt-1 group-hover:bg-white transition-colors"></div>
@@ -244,7 +244,7 @@ export function Navbar() {
                   href={link.href}
                   className={`text-sm font-mono uppercase tracking-widest hover:text-primary transition-colors ${
                     pathname.startsWith(link.href)
-                      ? "text-white border-b-2 border-primary pb-1"
+                      ? "text-cream border-b-2 border-primary pb-1"
                       : "text-gray-500"
                   }`}
                 >
@@ -285,13 +285,13 @@ export function Navbar() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-12 right-0 w-56 bg-[#0a0a0a] border border-[#222] shadow-2xl z-50 flex flex-col"
+                    className="absolute top-12 right-0 w-56 bg-background border border-[#222] shadow-2xl z-50 flex flex-col"
                   >
                     <div className="h-1 w-full bg-primary"></div>
                     {user ? (
                       <>
                         <div className="p-4 border-b border-[#222]">
-                          <p className="text-white font-heading uppercase">
+                          <p className="text-cream font-heading uppercase">
                             {user.initials}
                           </p>
                           <p className="text-[10px] text-gray-500 font-mono truncate">
@@ -300,7 +300,7 @@ export function Navbar() {
                         </div>
                         <Link
                           href="/profile/me"
-                          className="px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-[#151515] flex items-center gap-3 transition-colors"
+                          className="px-4 py-3 text-sm text-gray-400 hover:text-cream hover:bg-background flex items-center gap-3 transition-colors"
                           onClick={() => setIsProfileOpen(false)}
                         >
                           <UserIcon size={14} /> My Profile & Orders
@@ -331,7 +331,7 @@ export function Navbar() {
                             openAuthModal("login");
                             setIsProfileOpen(false);
                           }}
-                          className="px-4 py-3 text-sm text-white hover:bg-[#151515] flex items-center gap-3 transition-colors border-b border-[#222] w-full text-left"
+                          className="px-4 py-3 text-sm text-cream hover:bg-background flex items-center gap-3 transition-colors border-b border-[#222] w-full text-left"
                         >
                           <LogIn size={14} className="text-primary" />
                           <span className="font-heading uppercase tracking-wider">
@@ -343,13 +343,13 @@ export function Navbar() {
                             openAuthModal("register");
                             setIsProfileOpen(false);
                           }}
-                          className="px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-[#151515] flex items-center gap-3 transition-colors w-full text-left"
+                          className="px-4 py-3 text-sm text-gray-400 hover:text-cream hover:bg-background flex items-center gap-3 transition-colors w-full text-left"
                         >
                           <UserPlus size={14} /> Register
                         </button>
                         <Link
                           href="/orders/lookup"
-                          className="px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-[#151515] flex items-center gap-3 transition-colors border-t border-[#222]"
+                          className="px-4 py-3 text-sm text-gray-400 hover:text-cream hover:bg-background flex items-center gap-3 transition-colors border-t border-[#222]"
                           onClick={() => setIsProfileOpen(false)}
                         >
                           <Search size={14} /> Order Lookup
@@ -364,7 +364,7 @@ export function Navbar() {
             {/* Cart Trigger */}
             <Link
               href="/scan"
-              className="text-gray-400 hover:text-white transition-colors"
+              className="text-gray-400 hover:text-cream transition-colors"
             >
               <Scan size={20} />
             </Link>
@@ -384,7 +384,7 @@ export function Navbar() {
             {/* Mobile Menu Trigger */}
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-white hover:text-primary transition-colors"
+              className="lg:hidden p-2 text-cream hover:text-primary transition-colors"
             >
               <Menu size={24} />
             </button>
@@ -408,15 +408,15 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-[#111] border-r border-[#222] z-[10002] lg:hidden flex flex-col pt-[env(safe-area-inset-top)]"
+              className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-background border-r border-[#222] z-[10002] lg:hidden flex flex-col pt-[env(safe-area-inset-top)]"
             >
               <div className="p-6 border-b border-[#222] flex justify-between items-center">
-                <h2 className="font-heading text-2xl text-white uppercase">
+                <h2 className="font-heading text-2xl text-cream uppercase">
                   Menu
                 </h2>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-gray-400 hover:text-white"
+                  className="text-gray-400 hover:text-cream"
                 >
                   <X size={24} />
                 </button>
@@ -431,7 +431,7 @@ export function Navbar() {
                     className={`text-2xl font-heading uppercase tracking-wide ${
                       pathname.startsWith(link.href)
                         ? "text-primary"
-                        : "text-white hover:text-primary"
+                        : "text-cream hover:text-primary"
                     }`}
                   >
                     {link.name}
@@ -444,7 +444,7 @@ export function Navbar() {
                     <Link
                       href="/profile/me"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-lg font-mono uppercase text-white flex items-center gap-4"
+                      className="text-lg font-mono uppercase text-cream flex items-center gap-4"
                     >
                       <UserIcon size={20} /> My Profile
                     </Link>
@@ -474,7 +474,7 @@ export function Navbar() {
                         openAuthModal("login");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="text-lg font-mono uppercase text-white flex items-center gap-4 text-left"
+                      className="text-lg font-mono uppercase text-cream flex items-center gap-4 text-left"
                     >
                       <LogIn size={20} /> Login
                     </button>

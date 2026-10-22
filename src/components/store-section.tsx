@@ -62,7 +62,7 @@ export function StoreSection() {
         <div className="flex items-center gap-4">
           <div className="h-8 w-4 bg-primary"></div>
           <div>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tighter text-white leading-none">
+            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tighter text-cream leading-none">
               BOOKS
             </h2>
             <span className="font-sans text-[10px] text-gray-500 tracking-[0.3em] uppercase block mt-1">
@@ -73,7 +73,7 @@ export function StoreSection() {
         <div className="flex items-center gap-6">
           <Link
             href="/store"
-            className="flex items-center gap-2 text-xs font-mono text-primary hover:text-white uppercase tracking-widest transition-colors group"
+            className="flex items-center gap-2 text-xs font-mono text-primary hover:text-cream uppercase tracking-widest transition-colors group"
           >
             See all books{" "}
             <ArrowRight
@@ -124,7 +124,7 @@ export function StoreSection() {
               >
                 <Link href={`/store/${cat.id}`} className="block h-full">
                   {/* Compact Book Cover Mockup */}
-                  <div className="relative aspect-[3/4] w-full bg-[#111] shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-primary/20 border border-[#222] group-hover:border-primary/50 flex flex-col cursor-pointer h-full">
+                  <div className="relative aspect-[3/4] w-full bg-background shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-primary/20 border border-[#222] group-hover:border-primary/50 flex flex-col cursor-pointer h-full">
                     {/* Spine Shadow (Left) */}
                     <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/60 to-transparent z-20 pointer-events-none"></div>
 
@@ -144,7 +144,7 @@ export function StoreSection() {
                         <div
                           className="absolute inset-0 opacity-30"
                           style={{
-                            backgroundImage: `radial-gradient(circle at 50% 50%, transparent 20%, #000 120%)`,
+                            backgroundImage: `radial-gradient(circle at 50% 50%, transparent 20%, var(--base) 120%)`,
                           }}
                         ></div>
                         <div
@@ -177,7 +177,7 @@ export function StoreSection() {
                     </div>
 
                     {/* Cover Bottom: Data Block */}
-                    <div className="bg-[#0a0a0a] p-3 border-t border-[#222] flex flex-col justify-center relative z-10">
+                    <div className="bg-background p-3 border-t border-[#222] flex flex-col justify-center relative z-10">
                       {/* Price & Difficulty */}
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -186,12 +186,12 @@ export function StoreSection() {
                               <span className="text-gray-500 line-through text-[10px] font-mono">
                                 {formatPrice(priceInfo.originalPrice)}
                               </span>
-                              <span className="font-heading text-white text-lg tracking-tight">
+                              <span className="font-heading text-cream text-lg tracking-tight">
                                 {formatPrice(priceInfo.finalPrice)}
                               </span>
                             </>
                           ) : (
-                            <span className="font-heading text-white text-lg tracking-tight">
+                            <span className="font-heading text-cream text-lg tracking-tight">
                               {formatPrice(priceInfo.originalPrice)}
                             </span>
                           )}
@@ -223,7 +223,7 @@ export function StoreSection() {
 
                 {/* Title Below */}
                 <div className="mt-3 text-center">
-                  <h3 className="font-heading text-base text-white uppercase tracking-wide group-hover:text-primary transition-colors">
+                  <h3 className="font-heading text-base text-cream uppercase tracking-wide group-hover:text-primary transition-colors">
                     {cat.title}
                   </h3>
                 </div>

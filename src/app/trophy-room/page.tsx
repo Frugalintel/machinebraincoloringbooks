@@ -27,7 +27,7 @@ const TrophyCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-full min-h-[100px] bg-[#111] animate-pulse flex items-center justify-center">
+      <div className="w-full h-full min-h-[100px] bg-background animate-pulse flex items-center justify-center">
         <div className="w-8 h-8 border border-primary/30 rounded-full animate-spin" />
       </div>
     ),
@@ -145,7 +145,7 @@ export default function TrophyRoomPage() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-black text-white font-sans flex flex-col">
+      <main className="min-h-screen bg-background text-cream font-sans flex flex-col">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
             <Lock className="w-12 h-12 text-gray-500 mx-auto" />
@@ -165,9 +165,9 @@ export default function TrophyRoomPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans">
+    <main className="min-h-screen bg-background text-cream font-sans">
       {/* Header Banner */}
-      <div className="bg-[#111] border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-[#333] py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="mb-6">
@@ -184,7 +184,7 @@ export default function TrophyRoomPage() {
             <Trophy size={14} />
             <span>Your Collection</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tighter">
+          <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
             Your Collection
           </h1>
           <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-xl">
@@ -204,7 +204,7 @@ export default function TrophyRoomPage() {
               return (
                 <div
                   key={set.id}
-                  className="border border-[#333] bg-[#0a0a0a] p-6 md:p-8 relative overflow-hidden group"
+                  className="border border-[#333] bg-background p-6 md:p-8 relative overflow-hidden group"
                 >
                   {/* Progress Bar */}
                   <div className="absolute top-0 left-0 h-1 bg-[#222] w-full">
@@ -218,7 +218,7 @@ export default function TrophyRoomPage() {
 
                   <div className="flex justify-between items-start mb-8">
                     <div>
-                      <h3 className="font-heading text-3xl text-white uppercase tracking-wide mb-2">
+                      <h3 className="font-heading text-3xl text-cream uppercase tracking-wide mb-2">
                         {set.title}
                       </h3>
                       <div className="flex items-center gap-2 text-xs font-mono text-gray-500 uppercase tracking-widest">
@@ -248,7 +248,7 @@ export default function TrophyRoomPage() {
                           className="block"
                         >
                           <div
-                            className={`aspect-square border ${isCollected ? "border-primary/50 bg-[#151515]" : "border-[#333] border-dashed bg-transparent"} relative flex flex-col items-center justify-center p-4 group/item transition-all hover:border-primary cursor-pointer h-full`}
+                            className={`aspect-square border ${isCollected ? "border-primary/50 bg-background" : "border-[#333] border-dashed bg-transparent"} relative flex flex-col items-center justify-center p-4 group/item transition-all hover:border-primary cursor-pointer h-full`}
                           >
                             {isCollected ? (
                               <>
@@ -267,7 +267,7 @@ export default function TrophyRoomPage() {
                                     }
                                   />
                                 </div>
-                                <span className="absolute bottom-2 left-0 right-0 text-[10px] font-mono text-gray-400 uppercase text-center z-10 group-hover/item:text-white transition-colors">
+                                <span className="absolute bottom-2 left-0 right-0 text-[10px] font-mono text-gray-400 uppercase text-center z-10 group-hover/item:text-cream transition-colors">
                                   {item.name}
                                 </span>
                                 <div className="absolute top-2 right-2 text-primary z-10">
@@ -295,9 +295,9 @@ export default function TrophyRoomPage() {
         {/* Right: Code Input & Reward */}
         <div className="lg:col-span-4 space-y-8">
           {/* Code Input */}
-          <div className="bg-[#0a0a0a] border border-[#333] p-6 md:p-8 relative">
+          <div className="bg-background border border-[#333] p-6 md:p-8 relative">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-transparent"></div>
-            <h3 className="font-heading text-xl text-white mb-6 uppercase flex items-center gap-2">
+            <h3 className="font-heading text-xl text-cream mb-6 uppercase flex items-center gap-2">
               <Scan size={18} className="text-primary" /> Enter a code
             </h3>
 
@@ -309,7 +309,7 @@ export default function TrophyRoomPage() {
                 <Input
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  className="bg-[#111] border-[#333] text-white font-mono text-lg tracking-[0.5em] uppercase h-14 text-center focus:border-primary focus:ring-0 rounded-none placeholder:text-gray-800"
+                  className="bg-background border-[#333] text-cream font-mono text-lg tracking-[0.5em] uppercase h-14 text-center focus:border-primary focus:ring-0 rounded-none placeholder:text-gray-800"
                   placeholder="CODE"
                   maxLength={12}
                   disabled={loading}
@@ -337,20 +337,20 @@ export default function TrophyRoomPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="bg-gradient-to-b from-[#111] to-[#000] border border-primary/50 p-8 text-center relative overflow-hidden"
+                className="bg-gradient-to-b from-background to-background border border-primary/50 p-8 text-center relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-overlay"></div>
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,79,0,0.15),transparent)] animate-pulse"></div>
 
                 <Trophy size={48} className="mx-auto text-primary mb-4" />
-                <h3 className="font-heading text-2xl text-white uppercase tracking-wide mb-2">
+                <h3 className="font-heading text-2xl text-cream uppercase tracking-wide mb-2">
                   Unlocked
                 </h3>
                 <p className="text-primary font-mono text-sm uppercase tracking-widest mb-6">
                   {unlockedReward}
                 </p>
 
-                <div className="w-full aspect-square bg-[#0a0a0a] border border-[#333] relative mb-4 overflow-hidden">
+                <div className="w-full aspect-square bg-background border border-[#333] relative mb-4 overflow-hidden">
                   {/* 3D Trophy Model */}
                   <TrophyCanvas
                     size="large"

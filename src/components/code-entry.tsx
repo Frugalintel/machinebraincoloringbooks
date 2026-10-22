@@ -187,7 +187,7 @@ export function CodeEntry() {
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="Enter your code"
-            className="bg-[#111] border-[#333] text-white font-mono uppercase tracking-widest h-12 pl-10 focus:border-primary/50 transition-colors"
+            className="bg-background border-[#333] text-cream font-mono uppercase tracking-widest h-12 pl-10 focus:border-primary/50 transition-colors"
           />
           <Lock
             size={14}
@@ -199,7 +199,7 @@ export function CodeEntry() {
           disabled={loading || !code}
           className={`h-12 w-12 p-0 rounded bg-[#222] border border-[#333] hover:bg-primary hover:text-black hover:border-primary transition-all duration-300
             ${result === "success" ? "bg-green-500 text-black border-green-500" : ""}
-            ${result === "error" ? "bg-red-500 text-white border-red-500" : ""}
+            ${result === "error" ? "bg-red-500 text-cream border-red-500" : ""}
           `}
         >
           {loading ? (

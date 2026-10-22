@@ -73,7 +73,7 @@ export function CollectiblesSection() {
         <div className="flex items-center gap-4">
           <div className="h-8 w-4 bg-primary"></div>
           <div>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tighter text-white leading-none">
+            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tighter text-cream leading-none">
               YOUR COLLECTION
             </h2>
             <span className="font-sans text-[10px] text-gray-500 tracking-[0.3em] uppercase block mt-1">
@@ -99,7 +99,7 @@ export function CollectiblesSection() {
         {/* LEFT COLUMN: Showcase Area */}
         <div
           className={`
-            relative overflow-hidden bg-[#0a0a0a] border transition-all duration-500 min-h-[400px] flex flex-col
+            relative overflow-hidden bg-background border transition-all duration-500 min-h-[400px] flex flex-col
             ${isHovering ? "border-white/20" : "border-[#222]"}
           `}
           onMouseEnter={() => setIsHovering(true)}
@@ -140,7 +140,7 @@ export function CollectiblesSection() {
               </div>
 
               {/* Overlay Content */}
-              <div className="absolute inset-x-0 bottom-0 p-6 bg-linear-to-t from-black via-black/80 to-transparent pointer-events-none">
+              <div className="absolute inset-x-0 bottom-0 p-6 bg-linear-to-t from-background via-black/80 to-transparent pointer-events-none">
                 <AnimatePresence mode="wait">
                   {displayCollectible ? (
                     <motion.div
@@ -164,7 +164,7 @@ export function CollectiblesSection() {
                                 : "Locked"}
                             </span>
                           </div>
-                          <h3 className="font-heading text-3xl text-white uppercase tracking-tight">
+                          <h3 className="font-heading text-3xl text-cream uppercase tracking-tight">
                             {displayCollectible.name}
                           </h3>
                           <p className="text-xs text-gray-400 font-mono uppercase mt-1">
@@ -198,14 +198,14 @@ export function CollectiblesSection() {
           ) : (
             /* Logged Out Placeholder */
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 z-10">
-              <div className="w-20 h-20 bg-[#0a0a0a] border border-[#333] rounded-full flex items-center justify-center mb-6 relative group-hover:border-primary/50 transition-colors">
+              <div className="w-20 h-20 bg-background border border-[#333] rounded-full flex items-center justify-center mb-6 relative group-hover:border-primary/50 transition-colors">
                 <Lock
                   size={32}
                   className="text-gray-600 group-hover:text-primary transition-colors"
                 />
                 <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full animate-pulse"></div>
               </div>
-              <h3 className="font-heading text-2xl text-white uppercase mb-2">
+              <h3 className="font-heading text-2xl text-cream uppercase mb-2">
                 Hidden Treasures
               </h3>
               <p className="text-gray-500 font-mono text-xs uppercase tracking-widest max-w-xs">
@@ -223,7 +223,7 @@ export function CollectiblesSection() {
               {/* Inline Stats */}
               <div className="flex items-center gap-6 mb-4 px-1">
                 <div className="flex items-baseline gap-1.5">
-                  <span className="font-heading text-xl text-white">
+                  <span className="font-heading text-xl text-cream">
                     {collectedInSet.length}
                   </span>
                   <span className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">
@@ -231,7 +231,7 @@ export function CollectiblesSection() {
                   </span>
                 </div>
                 <div className="flex items-baseline gap-1.5">
-                  <span className="font-heading text-xl text-white">
+                  <span className="font-heading text-xl text-cream">
                     {completedSetIds.length}
                   </span>
                   <span className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">
@@ -272,7 +272,7 @@ export function CollectiblesSection() {
                         <div
                           className={`
                           w-12 h-12 rounded-sm flex items-center justify-center border
-                          ${isActive ? "border-primary/30 bg-primary/10" : "border-[#333] bg-[#0a0a0a]"}
+                          ${isActive ? "border-primary/30 bg-primary/10" : "border-[#333] bg-background"}
                         `}
                         >
                           {isComplete ? (
@@ -293,7 +293,7 @@ export function CollectiblesSection() {
                             <h4
                               className={`
                               font-heading text-sm uppercase tracking-wide transition-colors
-                              ${isActive ? "text-white" : "text-gray-400 group-hover:text-gray-200"}
+                              ${isActive ? "text-cream" : "text-gray-400 group-hover:text-gray-200"}
                             `}
                             >
                               {item.set.title}
@@ -365,13 +365,13 @@ export function CollectiblesSection() {
                 ].map((benefit, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-4 p-4 border border-[#222] bg-[#0a0a0a]"
+                    className="flex items-center gap-4 p-4 border border-[#222] bg-background"
                   >
-                    <div className="w-10 h-10 rounded-sm bg-[#111] flex items-center justify-center border border-[#222]">
+                    <div className="w-10 h-10 rounded-sm bg-background flex items-center justify-center border border-[#222]">
                       <benefit.icon size={16} className="text-gray-400" />
                     </div>
                     <div>
-                      <h4 className="font-heading text-sm text-white uppercase">
+                      <h4 className="font-heading text-sm text-cream uppercase">
                         {benefit.title}
                       </h4>
                       <p className="text-xs text-gray-500 font-mono">
@@ -393,7 +393,7 @@ export function CollectiblesSection() {
                   Already have an account?{" "}
                   <button
                     onClick={() => openAuthModal("login")}
-                    className="text-white hover:text-primary underline decoration-1 underline-offset-4"
+                    className="text-cream hover:text-primary underline decoration-1 underline-offset-4"
                   >
                     Log in
                   </button>
@@ -405,11 +405,11 @@ export function CollectiblesSection() {
           {/* CTA Footer (Code Entry) - Only for Logged In Users */}
           {user ? (
             <div className="mt-auto pt-6 border-t border-[#222]">
-              <div className="bg-[#0a0a0a] border border-[#222] p-4">
+              <div className="bg-background border border-[#222] p-4">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="block font-heading text-sm text-white uppercase">
+                      <span className="block font-heading text-sm text-cream uppercase">
                         Have a code?
                       </span>
                       <span className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">

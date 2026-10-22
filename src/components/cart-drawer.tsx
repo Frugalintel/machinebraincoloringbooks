@@ -84,7 +84,7 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full max-w-md bg-[#0a0a0a] border-l border-[#333] z-[20001] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col"
+            className="fixed top-0 right-0 h-full w-full max-w-md bg-background border-l border-[#333] z-[20001] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col"
           >
             {/* Background Pattern */}
             <div
@@ -97,10 +97,10 @@ export function CartDrawer() {
             ></div>
 
             {/* Header */}
-            <div className="relative z-10 p-6 border-b border-[#333] flex items-center justify-between bg-[#111] shrink-0">
+            <div className="relative z-10 p-6 border-b border-[#333] flex items-center justify-between bg-background shrink-0">
               <div>
                 <div className="flex items-center gap-3">
-                  <h2 className="font-heading text-3xl text-white tracking-wide uppercase">
+                  <h2 className="font-heading text-3xl text-cream tracking-wide uppercase">
                     CART
                   </h2>
                 </div>
@@ -113,7 +113,7 @@ export function CartDrawer() {
               </div>
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="group relative p-2 text-gray-400 hover:text-white transition-colors"
+                className="group relative p-2 text-gray-400 hover:text-cream transition-colors"
               >
                 <div className="absolute inset-0 border border-transparent group-hover:border-[#333] transition-colors rotate-45 group-hover:rotate-0 duration-300"></div>
                 <X size={24} className="relative z-10" />
@@ -131,7 +131,7 @@ export function CartDrawer() {
                         className="text-gray-500 group-hover:text-primary transition-colors"
                       />
                     </div>
-                    <p className="font-heading text-xl text-white uppercase tracking-widest mb-1">
+                    <p className="font-heading text-xl text-cream uppercase tracking-widest mb-1">
                       Your cart is empty
                     </p>
                   </div>
@@ -139,11 +139,11 @@ export function CartDrawer() {
                   items.map((item) => (
                     <div
                       key={item.id}
-                      className="relative group bg-[#111] p-1 border border-[#222] hover:border-primary/50 transition-colors"
+                      className="relative group bg-background p-1 border border-[#222] hover:border-primary/50 transition-colors"
                     >
-                      <div className="flex gap-4 p-3 bg-[#0f0f0f]">
+                      <div className="flex gap-4 p-3 bg-background">
                         {/* Image Placeholder */}
-                        <div className="w-16 h-20 bg-[#151515] border border-[#222] flex-shrink-0 relative overflow-hidden group-hover:border-primary/30 transition-colors">
+                        <div className="w-16 h-20 bg-background border border-[#222] flex-shrink-0 relative overflow-hidden group-hover:border-primary/30 transition-colors">
                           {item.image ? (
                             <img
                               src={item.image}
@@ -163,7 +163,7 @@ export function CartDrawer() {
                         <div className="flex-1 flex flex-col justify-between py-0.5">
                           <div>
                             <div className="flex justify-between items-start gap-2">
-                              <h3 className="font-heading text-base text-white leading-none uppercase tracking-wide group-hover:text-primary transition-colors line-clamp-1">
+                              <h3 className="font-heading text-base text-cream leading-none uppercase tracking-wide group-hover:text-primary transition-colors line-clamp-1">
                                 {item.title}
                               </h3>
                               <button
@@ -179,28 +179,28 @@ export function CartDrawer() {
                           </div>
 
                           <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center bg-[#0a0a0a] border border-[#222]">
+                            <div className="flex items-center bg-background border border-[#222]">
                               <button
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity - 1)
                                 }
-                                className="w-6 h-6 flex items-center justify-center hover:bg-[#222] text-gray-500 hover:text-white transition-colors"
+                                className="w-6 h-6 flex items-center justify-center hover:bg-[#222] text-gray-500 hover:text-cream transition-colors"
                               >
                                 <Minus size={10} />
                               </button>
-                              <span className="w-6 text-center text-[10px] font-mono text-white border-x border-[#222] h-4 flex items-center justify-center leading-none">
+                              <span className="w-6 text-center text-[10px] font-mono text-cream border-x border-[#222] h-4 flex items-center justify-center leading-none">
                                 {item.quantity}
                               </span>
                               <button
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity + 1)
                                 }
-                                className="w-6 h-6 flex items-center justify-center hover:bg-[#222] text-gray-500 hover:text-white transition-colors"
+                                className="w-6 h-6 flex items-center justify-center hover:bg-[#222] text-gray-500 hover:text-cream transition-colors"
                               >
                                 <Plus size={10} />
                               </button>
                             </div>
-                            <p className="font-heading text-base text-white tracking-tight">
+                            <p className="font-heading text-base text-cream tracking-tight">
                               ${(item.price * item.quantity).toFixed(2)}
                             </p>
                           </div>
@@ -222,12 +222,12 @@ export function CartDrawer() {
                     {suggestedProducts.map((product) => (
                       <div
                         key={product.id}
-                        className="group relative bg-[#0f0f0f] border border-[#222] hover:border-gray-600 transition-colors p-2"
+                        className="group relative bg-background border border-[#222] hover:border-gray-600 transition-colors p-2"
                       >
                         <Link
                           href={`/store/${product.id}`}
                           onClick={() => setIsCartOpen(false)}
-                          className="block aspect-[3/4] bg-[#151515] mb-2 relative overflow-hidden"
+                          className="block aspect-[3/4] bg-background mb-2 relative overflow-hidden"
                         >
                           {product.image_url ? (
                             <img
@@ -259,7 +259,7 @@ export function CartDrawer() {
                           </button>
                         </Link>
                         <div className="space-y-1">
-                          <h5 className="font-heading text-xs text-white uppercase tracking-wide truncate">
+                          <h5 className="font-heading text-xs text-cream uppercase tracking-wide truncate">
                             {product.title}
                           </h5>
                           <p className="font-mono text-[10px] text-gray-500">
@@ -274,7 +274,7 @@ export function CartDrawer() {
             </div>
 
             {/* Footer / Total */}
-            <div className="relative z-10 p-6 border-t border-[#333] bg-[#0f0f0f] shrink-0">
+            <div className="relative z-10 p-6 border-t border-[#333] bg-background shrink-0">
               {/* Receipt Style Details */}
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between items-center text-xs font-mono text-gray-500">
@@ -288,7 +288,7 @@ export function CartDrawer() {
                 <div className="h-px w-full bg-[#222] my-2"></div>
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col">
-                    <span className="font-heading text-xl text-white uppercase tracking-wide">
+                    <span className="font-heading text-xl text-cream uppercase tracking-wide">
                       Total
                     </span>
                   </div>

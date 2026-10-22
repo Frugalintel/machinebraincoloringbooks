@@ -68,9 +68,9 @@ export default function CollectiblesPublicPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans">
+    <main className="min-h-screen bg-background text-cream font-sans">
       {/* Hero Section */}
-      <div className="bg-[#111] border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-[#333] py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         {/* Abstract Background Element */}
         <div className="absolute -right-20 -top-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
@@ -88,7 +88,7 @@ export default function CollectiblesPublicPage() {
                   <Trophy size={14} />
                   <span>Rewards</span>
                 </div>
-                <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tighter">
+                <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
                   <span className="text-primary">Collectibles</span>
                 </h1>
                 <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-xl leading-relaxed">
@@ -103,7 +103,7 @@ export default function CollectiblesPublicPage() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="w-40 h-40 bg-[#0a0a0a] border border-[#333] relative overflow-hidden flex-shrink-0"
+                  className="w-40 h-40 bg-background border border-[#333] relative overflow-hidden flex-shrink-0"
                 >
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-amber-500 to-transparent"></div>
                   <div className="absolute top-2 left-2 z-10 flex items-center gap-1 text-primary font-mono text-[8px] uppercase tracking-widest">
@@ -152,7 +152,7 @@ export default function CollectiblesPublicPage() {
                 <span className="text-primary font-mono text-xs uppercase tracking-[0.2em] mb-2 block">
                   Set {setIndex + 1}
                 </span>
-                <h2 className="font-heading text-4xl text-white uppercase">
+                <h2 className="font-heading text-4xl text-cream uppercase">
                   {set.title}
                 </h2>
               </div>
@@ -178,10 +178,10 @@ export default function CollectiblesPublicPage() {
                   >
                     <motion.div
                       whileHover={{ y: -5 }}
-                      className="group relative bg-[#0a0a0a] border border-[#333] p-6 hover:border-primary/50 transition-colors overflow-hidden flex flex-col h-full"
+                      className="group relative bg-background border border-[#333] p-6 hover:border-primary/50 transition-colors overflow-hidden flex flex-col h-full"
                     >
                       {/* Item Preview */}
-                      <div className="aspect-square bg-[#151515] mb-6 relative flex items-center justify-center overflow-hidden border border-[#222] group-hover:border-primary/20 flex-shrink-0">
+                      <div className="aspect-square bg-background mb-6 relative flex items-center justify-center overflow-hidden border border-[#222] group-hover:border-primary/20 flex-shrink-0">
                         {isItemCollected(item.id) ? (
                           <>
                             <div className="w-full h-full">
@@ -220,7 +220,7 @@ export default function CollectiblesPublicPage() {
                           <p className="text-[10px] text-primary uppercase tracking-widest font-mono mb-2">
                             View Details
                           </p>
-                          <p className="text-xs text-white font-mono leading-relaxed">
+                          <p className="text-xs text-cream font-mono leading-relaxed">
                             Click to inspect artifact
                           </p>
                         </div>
@@ -228,7 +228,7 @@ export default function CollectiblesPublicPage() {
 
                       {/* Info & Action Area */}
                       <div className="flex-1 flex flex-col">
-                        <h3 className="font-heading text-xl text-white uppercase mb-1 group-hover:text-primary transition-colors">
+                        <h3 className="font-heading text-xl text-cream uppercase mb-1 group-hover:text-primary transition-colors">
                           {item.name}
                         </h3>
                         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest mb-4">
@@ -274,7 +274,7 @@ export default function CollectiblesPublicPage() {
       {!user && (
         <div className="bg-primary/10 border-t border-[#333] py-20 text-center">
           <div className="container mx-auto px-4">
-            <h2 className="font-heading text-3xl md:text-5xl text-white uppercase mb-6">
+            <h2 className="font-heading text-3xl md:text-5xl text-cream uppercase mb-6">
               Start collecting
             </h2>
             <p className="text-gray-400 font-mono text-sm max-w-xl mx-auto mb-8 uppercase tracking-widest">

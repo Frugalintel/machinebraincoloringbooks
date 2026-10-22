@@ -148,7 +148,7 @@ export function AuthModal() {
       <button
         type="button"
         onClick={() => handleSocialAuth(provider)}
-        className="h-12 border bg-[#111] hover:bg-white hover:text-black transition-all flex items-center justify-center group border-[#222] text-gray-400 hover:border-white"
+        className="h-12 border bg-background hover:bg-white hover:text-black transition-all flex items-center justify-center group border-[#222] text-gray-400 hover:border-white"
       >
         <Icon size={18} className="mr-2" />
         <span className="text-xs font-heading uppercase tracking-wider">
@@ -173,7 +173,7 @@ export function AuthModal() {
         <span className="w-full border-t border-[#222]" />
       </div>
       <div className="relative flex justify-center text-[10px] uppercase font-mono">
-        <span className="bg-[#0a0a0a] px-2 text-gray-600">{text}</span>
+        <span className="bg-background px-2 text-gray-600">{text}</span>
       </div>
     </div>
   );
@@ -188,7 +188,7 @@ export function AuthModal() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-[#111] border-[#222] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
+          className="bg-background border-[#222] text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
           placeholder="you@example.com"
           disabled={loading}
         />
@@ -201,7 +201,7 @@ export function AuthModal() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-[#111] border-[#222] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
+          className="bg-background border-[#222] text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
           placeholder="••••••••"
           disabled={loading}
         />
@@ -220,7 +220,7 @@ export function AuthModal() {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="bg-[#111] border-[#222] text-white focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
+            className="bg-background border-[#222] text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
             placeholder="••••••••"
             disabled={loading}
           />
@@ -264,20 +264,20 @@ export function AuthModal() {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-[101] p-4"
           >
-            <div className="bg-[#0a0a0a] border border-[#222] shadow-2xl relative">
+            <div className="bg-background border border-[#222] shadow-2xl relative">
               <div className="h-2 w-full bg-primary"></div>
 
               {/* Close Button */}
               <button
                 onClick={closeAuthModal}
-                className="absolute top-4 right-4 text-gray-500 hover:text-white"
+                className="absolute top-4 right-4 text-gray-500 hover:text-cream"
               >
                 <X size={20} />
               </button>
 
               <div className="p-8">
                 <div className="text-center mb-8">
-                  <h1 className="font-heading text-3xl font-bold text-white mb-2 uppercase tracking-tighter text-primary">
+                  <h1 className="font-heading text-3xl font-bold text-cream mb-2 uppercase tracking-tighter text-primary">
                     Machine Brain
                   </h1>
                   <div className="flex items-center justify-center gap-2 tracking-widest text-[10px] font-mono uppercase mt-2 text-primary">
@@ -317,7 +317,7 @@ export function AuthModal() {
                       setErrorMsg("");
                       setSuccessMsg("");
                     }}
-                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-white" : "border-transparent text-gray-600 hover:text-gray-400"}`}
+                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-cream" : "border-transparent text-gray-600 hover:text-gray-400"}`}
                   >
                     Login
                   </button>
@@ -327,7 +327,7 @@ export function AuthModal() {
                       setErrorMsg("");
                       setSuccessMsg("");
                     }}
-                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${!isLogin ? "border-primary text-white" : "border-transparent text-gray-600 hover:text-gray-400"}`}
+                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${!isLogin ? "border-primary text-cream" : "border-transparent text-gray-600 hover:text-gray-400"}`}
                   >
                     Register
                   </button>

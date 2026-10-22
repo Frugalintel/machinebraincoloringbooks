@@ -123,7 +123,7 @@ export function StoriesSection() {
             className={`h-8 w-4 ${activeTheme.bgAccent} transition-colors duration-500`}
           />
           <div>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight text-white uppercase">
+            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight text-cream uppercase">
               {ADVENTURES_COPY.pillarName}
             </h2>
             <p className="text-white/40 text-sm mt-1">
@@ -133,7 +133,7 @@ export function StoriesSection() {
         </div>
         <Link
           href="/stories"
-          className="hidden md:flex items-center gap-2 text-sm text-white/40 hover:text-white transition-colors"
+          className="hidden md:flex items-center gap-2 text-sm text-white/40 hover:text-cream transition-colors"
         >
           View all
           <ArrowRight size={14} />
@@ -149,7 +149,7 @@ export function StoriesSection() {
         {/* Featured Image */}
         <div
           className={`
-            relative overflow-hidden rounded-sm bg-[#0a0a0a] border transition-all duration-500 min-h-[400px]
+            relative overflow-hidden rounded-sm bg-background border transition-all duration-500 min-h-[400px]
             ${isHovering ? "border-white/20" : "border-white/10"}
           `}
           style={{
@@ -177,8 +177,8 @@ export function StoriesSection() {
                   `}
                 />
                 {/* Gradient overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
+                <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
               </motion.div>
             ) : null}
           </AnimatePresence>
@@ -213,7 +213,7 @@ export function StoriesSection() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-heading text-4xl md:text-5xl font-bold text-white uppercase tracking-tight leading-none">
+                  <h3 className="font-heading text-4xl md:text-5xl font-bold text-cream uppercase tracking-tight leading-none">
                     {activeStory.title}
                   </h3>
 
@@ -310,7 +310,7 @@ export function StoriesSection() {
                         <h4
                           className={`
                           font-heading text-lg uppercase tracking-tight truncate transition-colors duration-300
-                          ${isActive ? theme.textAccent : "text-white"}
+                          ${isActive ? theme.textAccent : "text-cream"}
                         `}
                         >
                           {story.title}

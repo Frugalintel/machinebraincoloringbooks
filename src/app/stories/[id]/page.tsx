@@ -358,7 +358,7 @@ export default function StoryDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center font-mono">
+      <main className="min-h-screen bg-background text-cream flex items-center justify-center font-mono">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </main>
     );
@@ -366,13 +366,13 @@ export default function StoryDetailPage() {
 
   if (!story) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center font-mono">
+      <main className="min-h-screen bg-background text-cream flex items-center justify-center font-mono">
         <div className="text-center">
           <h1 className="text-4xl text-primary mb-4">ERROR 404</h1>
           <p className="text-gray-500">STORY FILE NOT FOUND</p>
           <Link
             href="/stories"
-            className="mt-8 inline-block border-b border-primary text-primary pb-1 hover:text-white transition-colors"
+            className="mt-8 inline-block border-b border-primary text-primary pb-1 hover:text-cream transition-colors"
           >
             RETURN TO ADVENTURES
           </Link>
@@ -386,7 +386,7 @@ export default function StoryDetailPage() {
   const theme = getStoryTheme(story.title);
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans selection:bg-primary selection:text-black flex flex-col">
+    <main className="min-h-screen bg-background text-cream font-sans selection:bg-primary selection:text-black flex flex-col">
       {/* Rewards Modal */}
       <AnimatePresence>
         {showRewards ? (
@@ -396,10 +396,10 @@ export default function StoryDetailPage() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
           >
-            <div className="bg-[#111] border border-primary p-8 rounded-lg max-w-lg w-full text-center relative overflow-hidden">
+            <div className="bg-background border border-primary p-8 rounded-lg max-w-lg w-full text-center relative overflow-hidden">
               <div className="absolute inset-0 bg-primary/5 animate-pulse pointer-events-none"></div>
               <Trophy size={48} className="mx-auto text-primary mb-6" />
-              <h2 className="font-heading text-3xl uppercase text-white mb-2">
+              <h2 className="font-heading text-3xl uppercase text-cream mb-2">
                 Mission Complete
               </h2>
               <p className="text-gray-400 font-mono text-sm mb-8">
@@ -410,13 +410,13 @@ export default function StoryDetailPage() {
                 {earnedRewards.map((reward, idx) => (
                   <div
                     key={idx}
-                    className="bg-[#0a0a0a] border border-[#333] p-4 rounded flex items-center gap-4 text-left"
+                    className="bg-background border border-[#333] p-4 rounded flex items-center gap-4 text-left"
                   >
                     <div className="w-10 h-10 bg-[#222] rounded flex items-center justify-center text-primary">
                       <Gift size={20} />
                     </div>
                     <div>
-                      <h4 className="font-bold text-white uppercase text-sm">
+                      <h4 className="font-bold text-cream uppercase text-sm">
                         {reward.type} Reward
                       </h4>
                       <p className="text-xs text-gray-400">
@@ -439,12 +439,12 @@ export default function StoryDetailPage() {
       </AnimatePresence>
 
       {/* Breadcrumb / Header */}
-      <div className="border-b border-[#222] bg-[#0a0a0a] py-6 sticky top-0 z-40">
+      <div className="border-b border-[#222] bg-background py-6 sticky top-0 z-40">
         <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
           <div className="flex items-center gap-4 text-[10px] md:text-xs font-medium text-gray-500 uppercase tracking-widest">
             <Link
               href="/stories"
-              className="hover:text-white flex items-center gap-2 transition-colors"
+              className="hover:text-cream flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={12} /> {ADVENTURES_COPY.pillarName}
             </Link>
@@ -458,7 +458,7 @@ export default function StoryDetailPage() {
 
           <button
             onClick={toggleMute}
-            className="text-gray-500 hover:text-white transition-colors"
+            className="text-gray-500 hover:text-cream transition-colors"
           >
             {isMuted ? (
               <VolumeX size={16} />
@@ -481,11 +481,11 @@ export default function StoryDetailPage() {
                   {ADVENTURES_COPY.badge}
                 </div>
               </div>
-              <h1 className="font-heading text-4xl text-white uppercase tracking-wide leading-tight">
+              <h1 className="font-heading text-4xl text-cream uppercase tracking-wide leading-tight">
                 {story.title}
               </h1>
               {progress ? (
-                <div className="w-full bg-[#111] h-1.5 rounded-full mt-4 overflow-hidden">
+                <div className="w-full bg-background h-1.5 rounded-full mt-4 overflow-hidden">
                   <div
                     className={`h-full ${theme.bgAccent}`}
                     style={{
@@ -519,7 +519,7 @@ export default function StoryDetailPage() {
                                         ${
                                           isActive
                                             ? `bg-[#1a1a1a] ${theme.borderAccent}`
-                                            : "bg-[#0a0a0a] border-[#222] hover:border-[#444]"
+                                            : "bg-background border-[#222] hover:border-[#444]"
                                         }
                                         ${isLocked ? "opacity-50 cursor-not-allowed" : "opacity-100"}
                                     `}
@@ -530,7 +530,7 @@ export default function StoryDetailPage() {
                             {chapter.challenge ? "Challenge" : "Chapter"}
                           </p>
                           <h4
-                            className={`font-heading text-base uppercase ${isActive ? "text-white" : "text-gray-400"}`}
+                            className={`font-heading text-base uppercase ${isActive ? "text-cream" : "text-gray-400"}`}
                           >
                             {chapter.title}
                           </h4>
@@ -566,11 +566,11 @@ export default function StoryDetailPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="border border-[#222] bg-[#0a0a0a] flex-1 flex flex-col relative overflow-hidden shadow-2xl rounded-sm min-h-[500px]"
+                className="border border-[#222] bg-background flex-1 flex flex-col relative overflow-hidden shadow-2xl rounded-sm min-h-[500px]"
               >
                 {/* Visual Header */}
                 <div
-                  className={`h-64 w-full relative overflow-hidden bg-gradient-to-br from-gray-900 to-black`}
+                  className={`h-64 w-full relative overflow-hidden bg-gradient-to-br from-gray-900 to-background`}
                 >
                   {currentChapter.image_url ? (
                     <img
@@ -579,10 +579,10 @@ export default function StoryDetailPage() {
                       className="absolute inset-0 w-full h-full object-cover opacity-50"
                     />
                   ) : null}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
 
                   <div className="absolute bottom-6 left-6 right-6">
-                    <h2 className="font-heading text-4xl md:text-5xl text-white uppercase tracking-wide mb-2">
+                    <h2 className="font-heading text-4xl md:text-5xl text-cream uppercase tracking-wide mb-2">
                       {currentChapter.title}
                     </h2>
                   </div>
@@ -596,8 +596,8 @@ export default function StoryDetailPage() {
                     {/* Challenge Interfaces */}
                     {currentChapter.status === "active" &&
                     currentChapter.challenge ? (
-                      <div className="mt-8 p-6 border border-[#333] bg-[#111] rounded-lg">
-                        <h3 className="font-heading text-xl text-white mb-4 uppercase">
+                      <div className="mt-8 p-6 border border-[#333] bg-background rounded-lg">
+                        <h3 className="font-heading text-xl text-cream mb-4 uppercase">
                           Challenge Active
                         </h3>
 
@@ -611,7 +611,7 @@ export default function StoryDetailPage() {
                               value={inputValue}
                               onChange={(e) => setInputValue(e.target.value)}
                               placeholder="Enter answer..."
-                              className="bg-black border-[#333] text-white"
+                              className="bg-background border-[#333] text-cream"
                             />
                             <Button
                               onClick={handleSubmitChallenge}
@@ -708,7 +708,7 @@ export default function StoryDetailPage() {
                           <Button
                             key={idx}
                             onClick={() => handleChoice(choice.nextNodeId)}
-                            className="w-full justify-start text-left h-auto py-4 border border-[#333] hover:border-white/20 hover:bg-[#161616] bg-[#111] text-white transition-all"
+                            className="w-full justify-start text-left h-auto py-4 border border-[#333] hover:border-white/20 hover:bg-background bg-background text-cream transition-all"
                           >
                             <ChevronRight
                               size={16}
@@ -730,7 +730,7 @@ export default function StoryDetailPage() {
                 </div>
               </motion.div>
             ) : (
-              <div className="flex-1 flex items-center justify-center border border-[#222] bg-[#0a0a0a] text-gray-600 font-mono text-xs uppercase tracking-widest">
+              <div className="flex-1 flex items-center justify-center border border-[#222] bg-background text-gray-600 font-mono text-xs uppercase tracking-widest">
                 No data available
               </div>
             )}

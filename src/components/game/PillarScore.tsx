@@ -86,12 +86,12 @@ export function PillarScore({
 
   return (
     <div
-      className={`bg-[#0a0a0a] border border-[#222] ${sizeConfig.container} ${className}`}
+      className={`bg-background border border-[#222] ${sizeConfig.container} ${className}`}
     >
       <div className="flex items-center gap-3">
         {showIcon ? (
           <div
-            className={`w-10 h-10 flex items-center justify-center border border-[#333] bg-[#111] ${config.color}`}
+            className={`w-10 h-10 flex items-center justify-center border border-[#333] bg-background ${config.color}`}
           >
             <Icon size={sizeConfig.icon} />
           </div>

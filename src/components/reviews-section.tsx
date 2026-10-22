@@ -94,14 +94,16 @@ function ReviewCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="border border-[#222] bg-[#0a0a0a] p-6 relative group"
+      className="border border-[#222] bg-background p-6 relative group"
     >
       {/* Accent bar */}
       <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-50"></div>
 
       <div className="flex items-start gap-4">
         <Avatar className="w-10 h-10 border border-[#333]">
-          {review.user?.avatar_url ? <AvatarImage src={review.user.avatar_url} alt={displayName} /> : null}
+          {review.user?.avatar_url ? (
+            <AvatarImage src={review.user.avatar_url} alt={displayName} />
+          ) : null}
           <AvatarFallback className="bg-[#222] text-primary font-mono text-xs">
             {initials}
           </AvatarFallback>
@@ -110,10 +112,14 @@ function ReviewCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-4 mb-2">
             <div className="flex items-center gap-3">
-              <span className="font-mono text-sm text-white">{displayName}</span>
-              {review.is_verified_purchase ? <span className="text-[9px] font-mono uppercase tracking-widest text-green-500 border border-green-900/50 px-2 py-0.5 bg-green-900/20">
+              <span className="font-mono text-sm text-cream">
+                {displayName}
+              </span>
+              {review.is_verified_purchase ? (
+                <span className="text-[9px] font-mono uppercase tracking-widest text-green-500 border border-green-900/50 px-2 py-0.5 bg-green-900/20">
                   Verified
-                </span> : null}
+                </span>
+              ) : null}
             </div>
             <span className="text-[10px] font-mono text-gray-600 uppercase tracking-widest">
               {date}
@@ -122,14 +128,18 @@ function ReviewCard({
 
           <div className="flex items-center gap-3 mb-3">
             <StarRating rating={review.rating} size="sm" />
-            {review.title ? <span className="font-heading text-white uppercase tracking-wide text-sm">
+            {review.title ? (
+              <span className="font-heading text-cream uppercase tracking-wide text-sm">
                 {review.title}
-              </span> : null}
+              </span>
+            ) : null}
           </div>
 
-          {review.comment ? <p className="text-gray-400 text-sm leading-relaxed mb-4">
+          {review.comment ? (
+            <p className="text-gray-400 text-sm leading-relaxed mb-4">
               {review.comment}
-            </p> : null}
+            </p>
+          ) : null}
 
           <div className="flex items-center justify-between">
             <button
@@ -140,10 +150,11 @@ function ReviewCard({
               <span>Helpful ({review.helpful_count})</span>
             </button>
 
-            {isOwn ? <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            {isOwn ? (
+              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={onEdit}
-                  className="p-2 text-gray-500 hover:text-white transition-colors"
+                  className="p-2 text-gray-500 hover:text-cream transition-colors"
                 >
                   <Pencil size={14} />
                 </button>
@@ -153,7 +164,8 @@ function ReviewCard({
                 >
                   <Trash2 size={14} />
                 </button>
-              </div> : null}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -167,7 +179,11 @@ function ReviewForm({
   onCancel,
 }: {
   existingReview?: Review;
-  onSubmit: (data: { rating: number; title: string; comment: string }) => Promise<void>;
+  onSubmit: (data: {
+    rating: number;
+    title: string;
+    comment: string;
+  }) => Promise<void>;
   onCancel?: () => void;
 }) {
   const [rating, setRating] = useState(existingReview?.rating || 0);
@@ -193,10 +209,13 @@ function ReviewForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border border-[#222] bg-[#111] p-6">
+    <form
+      onSubmit={handleSubmit}
+      className="border border-[#222] bg-background p-6"
+    >
       <div className="flex items-center gap-4 mb-6">
         <div className="h-8 w-1 bg-primary"></div>
-        <h3 className="font-heading text-xl uppercase tracking-wide text-white">
+        <h3 className="font-heading text-xl uppercase tracking-wide text-cream">
           {existingReview ? "Edit Your Review" : "Write a Review"}
         </h3>
       </div>
@@ -206,7 +225,12 @@ function ReviewForm({
           <label className="block text-[10px] font-mono uppercase tracking-widest text-primary mb-3">
             Your Rating *
           </label>
-          <StarRating rating={rating} onRate={setRating} interactive size="lg" />
+          <StarRating
+            rating={rating}
+            onRate={setRating}
+            interactive
+            size="lg"
+          />
           {rating === 0 && (
             <p className="text-[10px] font-mono text-gray-500 mt-2">
               Click to rate
@@ -222,7 +246,7 @@ function ReviewForm({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Summarize your experience..."
-            className="bg-black border-[#333] text-white placeholder:text-gray-600 focus:border-primary h-11"
+            className="bg-background border-[#333] text-cream placeholder:text-gray-600 focus:border-primary h-11"
           />
         </div>
 
@@ -235,7 +259,7 @@ function ReviewForm({
             onChange={(e) => setComment(e.target.value)}
             placeholder="Share your thoughts about this product..."
             rows={4}
-            className="w-full bg-black border border-[#333] text-white placeholder:text-gray-600 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 p-3 text-sm resize-none"
+            className="w-full bg-background border border-[#333] text-cream placeholder:text-gray-600 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 p-3 text-sm resize-none"
           />
         </div>
 
@@ -255,24 +279,29 @@ function ReviewForm({
             )}
           </Button>
 
-          {onCancel ? <Button
+          {onCancel ? (
+            <Button
               type="button"
               onClick={onCancel}
               variant="ghost"
-              className="h-12 px-6 text-gray-500 hover:text-white font-mono uppercase tracking-widest"
+              className="h-12 px-6 text-gray-500 hover:text-cream font-mono uppercase tracking-widest"
             >
               Cancel
-            </Button> : null}
+            </Button>
+          ) : null}
         </div>
       </div>
     </form>
   );
 }
 
-export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps) {
+export function ReviewsSection({
+  productId,
+  productTitle,
+}: ReviewsSectionProps) {
   const { user, openAuthModal } = useAuth();
   const { success, error: showError } = useToast();
-  
+
   const [reviews, setReviews] = useState<Review[]>([]);
   const [rating, setRating] = useState<ProductRating | null>(null);
   const [userReview, setUserReview] = useState<Review | null>(null);
@@ -308,7 +337,11 @@ export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps)
     setUserReview(data);
   };
 
-  const handleSubmitReview = async (data: { rating: number; title: string; comment: string }) => {
+  const handleSubmitReview = async (data: {
+    rating: number;
+    title: string;
+    comment: string;
+  }) => {
     if (userReview) {
       // Update existing review
       const { data: updated, error } = await updateReview(userReview.id, data);
@@ -325,12 +358,14 @@ export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps)
         ...data,
       });
       if (error) {
-        showError(error.message || "Failed to submit review. Please try again.");
+        showError(
+          error.message || "Failed to submit review. Please try again.",
+        );
         return;
       }
       success("Review submitted successfully!");
     }
-    
+
     // Reload reviews
     await loadReviews();
     await loadUserReview();
@@ -338,13 +373,13 @@ export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps)
 
   const handleDeleteReview = async () => {
     if (!userReview) return;
-    
+
     const { error } = await deleteReview(userReview.id);
     if (error) {
       showError("Failed to delete review. Please try again.");
       return;
     }
-    
+
     success("Review deleted successfully!");
     setUserReview(null);
     await loadReviews();
@@ -362,7 +397,7 @@ export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps)
         <div>
           <div className="flex items-center gap-4 mb-2">
             <div className="h-8 w-2 bg-primary"></div>
-            <h2 className="font-heading text-3xl md:text-4xl font-bold uppercase tracking-tight text-white">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold uppercase tracking-tight text-cream">
               Customer Reviews
             </h2>
           </div>
@@ -372,9 +407,10 @@ export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps)
         </div>
 
         {/* Rating Summary */}
-        {rating && rating.review_count > 0 ? <div className="flex items-center gap-6 bg-[#111] border border-[#222] px-6 py-4">
+        {rating && rating.review_count > 0 ? (
+          <div className="flex items-center gap-6 bg-background border border-[#222] px-6 py-4">
             <div className="text-center">
-              <div className="font-heading text-4xl text-white">
+              <div className="font-heading text-4xl text-cream">
                 {rating.average_rating.toFixed(1)}
               </div>
               <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">
@@ -382,12 +418,17 @@ export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps)
               </div>
             </div>
             <div className="border-l border-[#333] pl-6">
-              <StarRating rating={Math.round(rating.average_rating)} size="md" />
+              <StarRating
+                rating={Math.round(rating.average_rating)}
+                size="md"
+              />
               <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1">
-                {rating.review_count} {rating.review_count === 1 ? "review" : "reviews"}
+                {rating.review_count}{" "}
+                {rating.review_count === 1 ? "review" : "reviews"}
               </div>
             </div>
-          </div> : null}
+          </div>
+        ) : null}
       </div>
 
       {/* Review Form or Login Prompt */}
@@ -407,14 +448,14 @@ export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps)
         ) : (
           <div className="mb-8">
             <ReviewForm
-              existingReview={isEditing ? userReview ?? undefined : undefined}
+              existingReview={isEditing ? (userReview ?? undefined) : undefined}
               onSubmit={handleSubmitReview}
               onCancel={isEditing ? () => setIsEditing(false) : undefined}
             />
           </div>
         )
       ) : (
-        <div className="mb-8 p-6 border border-[#222] bg-[#111] text-center">
+        <div className="mb-8 p-6 border border-[#222] bg-background text-center">
           <User size={24} className="mx-auto mb-3 text-gray-500" />
           <p className="text-gray-400 font-mono text-sm mb-4">
             Sign in to leave a review
@@ -432,7 +473,10 @@ export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps)
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="border border-[#222] bg-[#0a0a0a] p-6 animate-pulse">
+            <div
+              key={i}
+              className="border border-[#222] bg-background p-6 animate-pulse"
+            >
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-[#222]" />
                 <div className="flex-1">
@@ -446,7 +490,7 @@ export function ReviewsSection({ productId, productTitle }: ReviewsSectionProps)
           ))}
         </div>
       ) : reviews.length === 0 ? (
-        <div className="text-center py-12 border border-[#222] bg-[#0a0a0a]">
+        <div className="text-center py-12 border border-[#222] bg-background">
           <Star size={32} className="mx-auto mb-4 text-[#333]" />
           <p className="font-mono text-gray-500 uppercase tracking-widest text-sm">
             No reviews yet
@@ -498,9 +542,11 @@ export function ProductRatingDisplay({
   return (
     <div className="flex items-center gap-2">
       <StarRating rating={Math.round(rating.average_rating)} size={size} />
-      {showCount ? <span className="text-[10px] font-mono text-gray-500">
+      {showCount ? (
+        <span className="text-[10px] font-mono text-gray-500">
           ({rating.review_count})
-        </span> : null}
+        </span>
+      ) : null}
     </div>
   );
 }

@@ -158,7 +158,7 @@ function AuthPageContent() {
       <button
         type="button"
         onClick={() => handleSocialMock(provider)}
-        className={`h-12 border bg-[#111] hover:bg-white hover:text-black transition-all flex items-center justify-center group relative ${isLastUsed ? "border-primary text-white" : "border-[#333] text-gray-400 hover:border-white"}`}
+        className={`h-12 border bg-background hover:bg-white hover:text-black transition-all flex items-center justify-center group relative ${isLastUsed ? "border-primary text-white" : "border-[#333] text-gray-400 hover:border-white"}`}
       >
         {isLastUsed ? (
           <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] bg-primary text-black px-1.5 font-mono uppercase tracking-wide">
@@ -193,7 +193,7 @@ function AuthPageContent() {
         <span className="w-full border-t border-[#333]" />
       </div>
       <div className="relative flex justify-center text-[10px] uppercase font-mono">
-        <span className="bg-[#0a0a0a] px-2 text-gray-600">{text}</span>
+        <span className="bg-background px-2 text-gray-600">{text}</span>
       </div>
     </div>
   );
@@ -208,7 +208,7 @@ function AuthPageContent() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className={`w-full bg-[#111] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3 border ${lastProvider === "email" && isLogin ? "border-primary" : "border-[#333]"}`}
+          className={`w-full bg-background text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3 border ${lastProvider === "email" && isLogin ? "border-primary" : "border-[#333]"}`}
           placeholder="user@machinebrain.com"
         />
         {lastProvider === "email" && isLogin ? (
@@ -225,7 +225,7 @@ function AuthPageContent() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-[#111] border border-[#333] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3"
+          className="w-full bg-background border border-[#333] text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3"
           placeholder="••••••••"
         />
       </div>
@@ -243,7 +243,7 @@ function AuthPageContent() {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full bg-[#111] border border-[#333] text-white focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3"
+            className="w-full bg-background border border-[#333] text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3"
             placeholder="••••••••"
           />
         </motion.div>
@@ -267,7 +267,7 @@ function AuthPageContent() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#050505] overflow-hidden relative font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-background overflow-hidden relative font-sans">
       {/* Technical Background */}
       <div
         className="absolute inset-0 pointer-events-none opacity-10"
@@ -283,7 +283,7 @@ function AuthPageContent() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 w-full max-w-md bg-[#0a0a0a] border border-[#333] shadow-2xl"
+        className="relative z-10 w-full max-w-md bg-background border border-[#333] shadow-2xl"
       >
         {/* Header Strip */}
         <div className="h-2 w-full bg-primary"></div>
@@ -297,7 +297,7 @@ function AuthPageContent() {
 
           <div className="text-center mb-8">
             <Link href="/" className="inline-block group">
-              <h1 className="font-heading text-4xl font-bold text-white mb-2 transition-colors uppercase tracking-tighter group-hover:text-primary">
+              <h1 className="font-heading text-4xl font-bold text-cream mb-2 transition-colors uppercase tracking-tighter group-hover:text-primary">
                 Machine
                 <br />
                 Brain
@@ -332,7 +332,7 @@ function AuthPageContent() {
                 setIsLogin(true);
                 setErrorMsg("");
               }}
-              className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-white" : "border-transparent text-gray-600 hover:text-gray-400"}`}
+              className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-cream" : "border-transparent text-gray-600 hover:text-gray-400"}`}
             >
               Login
             </button>
@@ -341,7 +341,7 @@ function AuthPageContent() {
                 setIsLogin(false);
                 setErrorMsg("");
               }}
-              className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${!isLogin ? "border-primary text-white" : "border-transparent text-gray-600 hover:text-gray-400"}`}
+              className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${!isLogin ? "border-primary text-cream" : "border-transparent text-gray-600 hover:text-gray-400"}`}
             >
               Register
             </button>
@@ -372,7 +372,7 @@ function AuthPageContent() {
       </motion.div>
 
       {/* Bottom Status Bar */}
-      <div className="absolute bottom-0 w-full border-t border-[#333] bg-[#0a0a0a] py-2 px-6 flex justify-between items-center text-[10px] text-gray-600 font-mono uppercase tracking-widest">
+      <div className="absolute bottom-0 w-full border-t border-[#333] bg-background py-2 px-6 flex justify-between items-center text-[10px] text-gray-600 font-mono uppercase tracking-widest">
         <span className="hidden md:inline"></span>
         <span className="animate-pulse text-primary">● Online</span>
       </div>
@@ -383,7 +383,7 @@ function AuthPageContent() {
 // Loading fallback for Suspense
 function AuthPageLoading() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#050505]">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
         <p className="text-gray-500 font-mono text-xs uppercase tracking-widest">

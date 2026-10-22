@@ -88,16 +88,16 @@ export default function StorePage() {
   });
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans">
+    <main className="min-h-screen bg-background text-cream font-sans">
       {/* Header Banner */}
-      <div className="bg-[#111] border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-[#333] py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="flex items-center gap-2 mb-4 text-primary font-mono uppercase tracking-widest text-xs">
             <ShoppingBag size={14} />
             <span>Store</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tighter">
+          <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
             All Books
           </h1>
           <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-md">
@@ -118,11 +118,11 @@ export default function StorePage() {
                 className={`px-4 py-2 text-[10px] font-mono uppercase tracking-widest border transition-all ${
                   activeCategory === cat
                     ? cat === "HOLIDAY"
-                      ? "bg-red-600 border-red-600 text-white font-bold"
+                      ? "bg-red-600 border-red-600 text-cream font-bold"
                       : "bg-primary border-primary text-black font-bold"
                     : cat === "HOLIDAY"
-                      ? "bg-transparent border-red-900/50 text-red-500 hover:border-red-500 hover:text-white"
-                      : "bg-transparent border-[#333] text-gray-500 hover:border-white hover:text-white"
+                      ? "bg-transparent border-red-900/50 text-red-500 hover:border-red-500 hover:text-cream"
+                      : "bg-transparent border-[#333] text-gray-500 hover:border-white hover:text-cream"
                 }`}
               >
                 {cat}
@@ -137,10 +137,10 @@ export default function StorePage() {
               <span>Sort: Newest</span>
             </div>
             <div className="flex gap-2">
-              <button className="p-2 bg-[#222] text-white">
+              <button className="p-2 bg-[#222] text-cream">
                 <GridIcon size={16} />
               </button>
-              <button className="p-2 border border-[#333] text-gray-500 hover:text-white">
+              <button className="p-2 border border-[#333] text-gray-500 hover:text-cream">
                 <List size={16} />
               </button>
             </div>
@@ -210,7 +210,7 @@ export default function StorePage() {
                   }}
                 >
                   <Link href={`/store/${cat.id}`} className="block">
-                    <div className="relative aspect-[3/4] w-full bg-[#111] shadow-lg transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-primary/20 border border-[#222] group-hover:border-primary/50 flex flex-col cursor-pointer">
+                    <div className="relative aspect-[3/4] w-full bg-background shadow-lg transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-primary/20 border border-[#222] group-hover:border-primary/50 flex flex-col cursor-pointer">
                       {/* Spine Shadow */}
                       <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/60 to-transparent z-20 pointer-events-none"></div>
 
@@ -253,7 +253,7 @@ export default function StorePage() {
                             <div
                               className="absolute inset-0 opacity-30"
                               style={{
-                                backgroundImage: `radial-gradient(circle at 50% 50%, transparent 20%, #000 120%)`,
+                                backgroundImage: `radial-gradient(circle at 50% 50%, transparent 20%, var(--base) 120%)`,
                               }}
                             ></div>
                             <div
@@ -285,7 +285,7 @@ export default function StorePage() {
                       )}
 
                       {/* Data Block */}
-                      <div className="h-1/4 bg-[#0a0a0a] p-3 border-t border-[#333] flex flex-col justify-center gap-2 relative z-10">
+                      <div className="h-1/4 bg-background p-3 border-t border-[#333] flex flex-col justify-center gap-2 relative z-10">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             {priceInfo.hasDiscount ? (
@@ -293,12 +293,12 @@ export default function StorePage() {
                                 <span className="text-gray-500 line-through text-[10px] font-mono">
                                   {formatPrice(priceInfo.originalPrice)}
                                 </span>
-                                <span className="font-heading text-white text-lg tracking-tight">
+                                <span className="font-heading text-cream text-lg tracking-tight">
                                   {formatPrice(priceInfo.finalPrice)}
                                 </span>
                               </>
                             ) : (
-                              <span className="font-heading text-white text-lg tracking-tight">
+                              <span className="font-heading text-cream text-lg tracking-tight">
                                 {formatPrice(priceInfo.originalPrice)}
                               </span>
                             )}
@@ -345,7 +345,7 @@ export default function StorePage() {
                   </Link>
 
                   <div className="mt-3 text-center">
-                    <h3 className="font-heading text-base text-white uppercase tracking-wide group-hover:text-primary transition-colors">
+                    <h3 className="font-heading text-base text-cream uppercase tracking-wide group-hover:text-primary transition-colors">
                       {cat.title}
                     </h3>
                     <p className="text-[10px] text-gray-600 font-mono uppercase tracking-widest mt-1">

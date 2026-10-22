@@ -91,7 +91,7 @@ export default function ScanPage() {
     if (!result || step !== "qr") return;
 
     // The library might return an array or object depending on version
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const rawValue = Array.isArray(result)
       ? (result as any[])[0]?.rawValue
       : (result as any)?.rawValue;
@@ -291,16 +291,16 @@ export default function ScanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-primary selection:text-black">
+    <div className="min-h-screen bg-background text-cream selection:bg-primary selection:text-black">
       {/* Header Banner */}
-      <div className="bg-[#111] border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-[#333] py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="flex items-center justify-center gap-2 mb-4 text-primary font-mono uppercase tracking-widest text-xs">
             <Scan size={14} />
             <span>Scanner</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tighter">
+          <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
             Scan a Page
           </h1>
           <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-xl mx-auto">
@@ -315,14 +315,14 @@ export default function ScanPage() {
 
       <div className="container mx-auto px-4 py-12 max-w-lg">
         {/* Content Area */}
-        <div className="bg-[#111] border border-[#333] relative overflow-hidden aspect-[3/4] flex flex-col items-center justify-center">
+        <div className="bg-background border border-[#333] relative overflow-hidden aspect-[3/4] flex flex-col items-center justify-center">
           {/* Step 0: Permission Primer */}
           {step === "permission" && (
             <div className="flex flex-col items-center justify-center p-8 text-center">
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <Camera size={40} className="text-primary" />
               </div>
-              <h3 className="font-heading text-lg uppercase mb-3 text-white">
+              <h3 className="font-heading text-lg uppercase mb-3 text-cream">
                 Camera Access Needed
               </h3>
               <p className="text-gray-400 font-mono text-xs mb-8 max-w-xs leading-relaxed">
@@ -341,7 +341,7 @@ export default function ScanPage() {
                     setStep("qr");
                     setUseCamera(false);
                   }}
-                  className="text-xs font-mono text-gray-500 uppercase hover:text-white transition-colors"
+                  className="text-xs font-mono text-gray-500 uppercase hover:text-cream transition-colors"
                 >
                   Or enter code manually
                 </button>
@@ -369,7 +369,7 @@ export default function ScanPage() {
                 <ol className="text-xs text-gray-400 font-mono space-y-2 list-decimal list-inside">
                   <li>
                     Open Chrome and go to{" "}
-                    <span className="text-white">chrome://flags</span>
+                    <span className="text-cream">chrome://flags</span>
                   </li>
                   <li>Search for &quot;insecure origins&quot;</li>
                   <li>
@@ -485,7 +485,7 @@ export default function ScanPage() {
                   value={manualCode}
                   onChange={(e) => setManualCode(e.target.value.toUpperCase())}
                   placeholder="ENTER CODE"
-                  className="bg-black border-[#333] text-white font-mono text-lg tracking-[0.3em] uppercase h-14 text-center focus:border-primary"
+                  className="bg-background border-[#333] text-cream font-mono text-lg tracking-[0.3em] uppercase h-14 text-center focus:border-primary"
                   maxLength={20}
                 />
                 <Button
@@ -516,7 +516,7 @@ export default function ScanPage() {
 
           {/* Step 2: Capture Page */}
           {step === "capture" && (
-            <div className="w-full h-full relative bg-black flex flex-col items-center justify-center p-8 text-center">
+            <div className="w-full h-full relative bg-background flex flex-col items-center justify-center p-8 text-center">
               <div className="mb-8 relative">
                 <div className="w-24 h-24 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center mb-4 mx-auto">
                   <Camera size={40} className="text-gray-400" />
@@ -545,7 +545,7 @@ export default function ScanPage() {
               </label>
 
               <div className="mt-4">
-                <label className="cursor-pointer text-xs font-mono uppercase text-gray-500 hover:text-white transition-colors underline">
+                <label className="cursor-pointer text-xs font-mono uppercase text-gray-500 hover:text-cream transition-colors underline">
                   <input
                     type="file"
                     accept="image/*"
@@ -562,7 +562,7 @@ export default function ScanPage() {
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <div className="text-xs font-mono uppercase">
                       <span className="text-gray-400">Verified:</span>{" "}
-                      <span className="text-white">{bookInfo.title}</span>
+                      <span className="text-cream">{bookInfo.title}</span>
                       {bookInfo.page ? (
                         <span className="text-primary ml-2">
                           PG.{bookInfo.page}
@@ -630,7 +630,7 @@ export default function ScanPage() {
                 <span>Success</span>
               </div>
 
-              <h3 className="font-heading text-2xl uppercase mb-2 text-white">
+              <h3 className="font-heading text-2xl uppercase mb-2 text-cream">
                 Scan Uploaded!
               </h3>
               <p className="text-gray-400 font-mono text-xs mb-6 max-w-xs">
@@ -647,7 +647,7 @@ export default function ScanPage() {
                 <Button
                   onClick={resetFlow}
                   variant="outline"
-                  className="w-full h-10 border-[#333] text-gray-400 hover:text-white hover:border-white font-mono text-xs uppercase tracking-widest"
+                  className="w-full h-10 border-[#333] text-gray-400 hover:text-cream hover:border-white font-mono text-xs uppercase tracking-widest"
                 >
                   Scan Another Page
                 </Button>
@@ -681,7 +681,7 @@ export default function ScanPage() {
         {/* Action Buttons for Uploading */}
         {step === "uploading" && (
           <div className="mt-6">
-            <Button disabled className="w-full h-12 bg-[#222] text-white">
+            <Button disabled className="w-full h-12 bg-[#222] text-cream">
               <Loader2 size={16} className="mr-2 animate-spin" /> Uploading...
             </Button>
           </div>
@@ -697,7 +697,7 @@ export default function ScanPage() {
                 onClick={() => {
                   router.back();
                 }}
-                className="text-gray-500 text-xs font-mono uppercase tracking-widest hover:text-white transition-colors py-2 px-4"
+                className="text-gray-500 text-xs font-mono uppercase tracking-widest hover:text-cream transition-colors py-2 px-4"
               >
                 Cancel
               </button>

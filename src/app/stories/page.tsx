@@ -114,9 +114,9 @@ export default function StoriesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans selection:bg-primary selection:text-black">
+    <main className="min-h-screen bg-background text-cream font-sans selection:bg-primary selection:text-black">
       {/* Header */}
-      <div className="bg-[#111] border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-[#333] py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
@@ -125,7 +125,7 @@ export default function StoriesPage() {
                 <BookOpen size={14} />
                 <span>{ADVENTURES_COPY.pillarName}</span>
               </div>
-              <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tighter">
+              <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
                 Adventures
               </h1>
               <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-md">
@@ -177,7 +177,7 @@ export default function StoriesPage() {
                   {/* Card */}
                   <div
                     className={`
-                      relative overflow-hidden rounded-sm bg-[#0a0a0a] 
+                      relative overflow-hidden rounded-sm bg-background 
                       border border-white/10
                       transition-all duration-500 ease-out
                       ${isHovered ? "border-white/20 -translate-y-1" : "translate-y-0"}
@@ -205,7 +205,7 @@ export default function StoriesPage() {
                           {/* Gradient Overlay */}
                           <div
                             className={`
-                            absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent
+                            absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent
                             transition-opacity duration-500
                             ${isHovered ? "opacity-70" : "opacity-90"}
                           `}
@@ -254,7 +254,7 @@ export default function StoriesPage() {
                       <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
                         <h3
                           className={`
-                          font-heading text-3xl md:text-4xl font-bold text-white uppercase tracking-tight leading-none
+                          font-heading text-3xl md:text-4xl font-bold text-cream uppercase tracking-tight leading-none
                           transition-transform duration-500 ease-out
                           ${isHovered ? "translate-y-0" : "translate-y-1"}
                         `}

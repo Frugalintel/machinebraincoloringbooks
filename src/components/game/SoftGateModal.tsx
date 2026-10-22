@@ -50,7 +50,7 @@ export function SoftGateModal({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-[#0a0a0a] border border-[#333] w-full max-w-md relative overflow-hidden"
+            className="bg-background border border-[#333] w-full max-w-md relative overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Background texture */}
@@ -64,7 +64,7 @@ export function SoftGateModal({
                   <div className="flex items-center gap-2 text-amber-500 text-[10px] font-mono uppercase tracking-widest mb-2">
                     <Lock size={12} /> Gate Encountered
                   </div>
-                  <h3 className="font-heading text-xl text-white uppercase">
+                  <h3 className="font-heading text-xl text-cream uppercase">
                     {nodeTitle || "Locked Content"}
                   </h3>
                   {storyTitle ? (
@@ -75,7 +75,7 @@ export function SoftGateModal({
                 </div>
                 <button
                   onClick={onClose}
-                  className="w-8 h-8 flex items-center justify-center border border-[#333] text-gray-500 hover:text-white hover:border-white transition-colors"
+                  className="w-8 h-8 flex items-center justify-center border border-[#333] text-gray-500 hover:text-cream hover:border-white transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -89,7 +89,7 @@ export function SoftGateModal({
                 <span>Requirement Not Met</span>
               </div>
               {gateResult.requirementLabel ? (
-                <div className="bg-[#111] border border-[#222] p-4">
+                <div className="bg-background border border-[#222] p-4">
                   <p className="text-sm text-gray-300">
                     {gateResult.requirementLabel}
                   </p>
@@ -114,8 +114,8 @@ export function SoftGateModal({
                   className={`w-full p-4 border transition-all flex items-center gap-4 text-left
                     ${
                       bypassOptions.canAfford
-                        ? "border-[#333] bg-[#111] hover:border-primary/50 hover:bg-[#1a1a1a]"
-                        : "border-[#222] bg-[#0a0a0a] opacity-50 cursor-not-allowed"
+                        ? "border-[#333] bg-background hover:border-primary/50 hover:bg-[#1a1a1a]"
+                        : "border-[#222] bg-background opacity-50 cursor-not-allowed"
                     }
                   `}
                 >
@@ -125,7 +125,7 @@ export function SoftGateModal({
                     <Unlock size={18} />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-heading text-white uppercase">
+                    <h4 className="font-heading text-cream uppercase">
                       Skip with XP
                     </h4>
                     <p className="text-[10px] text-gray-500 font-mono uppercase">
@@ -155,7 +155,7 @@ export function SoftGateModal({
                     <Link key={index} href={alt.link} className="block">
                       <motion.div
                         whileHover={{ scale: 1.01 }}
-                        className="w-full p-3 border border-[#333] bg-[#111] hover:border-[#444] transition-all flex items-center justify-between"
+                        className="w-full p-3 border border-[#333] bg-background hover:border-[#444] transition-all flex items-center justify-between"
                       >
                         <div>
                           <span className="text-[10px] text-gray-500 uppercase font-mono">
@@ -172,11 +172,11 @@ export function SoftGateModal({
             </div>
 
             {/* Footer */}
-            <div className="border-t border-[#333] p-4 bg-[#111]">
+            <div className="border-t border-[#333] p-4 bg-background">
               <Button
                 onClick={onClose}
                 variant="outline"
-                className="w-full border-[#333] text-gray-500 hover:text-white hover:border-white rounded-none h-10 text-[10px] uppercase tracking-widest"
+                className="w-full border-[#333] text-gray-500 hover:text-cream hover:border-white rounded-none h-10 text-[10px] uppercase tracking-widest"
               >
                 Continue Later
               </Button>

@@ -28,7 +28,7 @@ export default function OrderLookupPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans">
+    <main className="min-h-screen bg-background text-cream font-sans">
       <div className="container mx-auto px-4 md:px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]">
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
@@ -40,7 +40,7 @@ export default function OrderLookupPage() {
             </p>
           </div>
 
-          <div className="bg-[#0a0a0a] border border-[#333] p-8 relative overflow-hidden shadow-2xl">
+          <div className="bg-background border border-[#333] p-8 relative overflow-hidden shadow-2xl">
             {/* Top Accent */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent"></div>
 
@@ -62,7 +62,7 @@ export default function OrderLookupPage() {
                     <span className="text-gray-500 text-xs font-mono uppercase">
                       Order ID
                     </span>
-                    <span className="text-white font-heading tracking-wide">
+                    <span className="text-cream font-heading tracking-wide">
                       {orderId || "#ORD-8829"}
                     </span>
                   </div>
@@ -78,7 +78,7 @@ export default function OrderLookupPage() {
                     <span className="text-gray-500 text-xs font-mono uppercase">
                       Est. Delivery
                     </span>
-                    <span className="text-white font-sans">Nov 24, 2025</span>
+                    <span className="text-cream font-sans">Nov 24, 2025</span>
                   </div>
                 </div>
 
@@ -86,7 +86,7 @@ export default function OrderLookupPage() {
                   <div className="flex items-center gap-4">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <div className="flex-1">
-                      <p className="text-white text-sm">Processing Complete</p>
+                      <p className="text-cream text-sm">Processing Complete</p>
                       <p className="text-gray-600 text-xs font-mono">Hub 04</p>
                     </div>
                     <span className="text-gray-600 text-xs font-mono">
@@ -97,7 +97,7 @@ export default function OrderLookupPage() {
                   <div className="flex items-center gap-4">
                     <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                     <div className="flex-1">
-                      <p className="text-white text-sm">Out for Delivery</p>
+                      <p className="text-cream text-sm">Out for Delivery</p>
                       <p className="text-gray-600 text-xs font-mono">
                         Local Courier
                       </p>
@@ -109,7 +109,7 @@ export default function OrderLookupPage() {
                 <Button
                   onClick={() => setStatus("idle")}
                   variant="outline"
-                  className="w-full border-[#333] hover:border-white hover:text-white text-gray-500 font-heading uppercase tracking-widest h-12 rounded-none mt-4"
+                  className="w-full border-[#333] hover:border-white hover:text-cream text-gray-500 font-heading uppercase tracking-widest h-12 rounded-none mt-4"
                 >
                   Track Another
                 </Button>
@@ -128,7 +128,7 @@ export default function OrderLookupPage() {
                   <Input
                     value={orderId}
                     onChange={(e) => setOrderId(e.target.value)}
-                    className="bg-[#111] border-[#333] text-white font-mono text-base md:text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
+                    className="bg-background border-[#333] text-cream font-mono text-base md:text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
                     placeholder="ORD-XXXX-XXXX"
                     required
                   />
@@ -141,7 +141,7 @@ export default function OrderLookupPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-[#111] border-[#333] text-white font-mono text-base md:text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
+                    className="bg-background border-[#333] text-cream font-mono text-base md:text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-gray-700"
                     placeholder="billing@email.com"
                     required
                   />

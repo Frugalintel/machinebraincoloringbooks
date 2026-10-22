@@ -27,7 +27,7 @@ export function getHeroTextureStyle(
     case "scanlines":
       return {
         backgroundImage:
-          "repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px)",
+          "repeating-linear-gradient(0deg, transparent, transparent 2px, var(--base) 3px)",
         opacity: 0.3,
       };
     case "noise":
@@ -68,7 +68,7 @@ export function HeroCard({
   return (
     <section
       aria-labelledby="home-hero-heading"
-      className="relative isolate w-full overflow-hidden bg-[#050505]"
+      className="relative isolate w-full overflow-hidden bg-background"
       style={{ "--hero-accent": accentColor } as CSSProperties}
     >
       <div
@@ -98,7 +98,7 @@ export function HeroCard({
           </p>
           <h1
             id="home-hero-heading"
-            className="font-heading text-[clamp(2.6rem,11vw,5.75rem)] font-bold uppercase leading-[0.86] tracking-[-0.045em] text-white"
+            className="font-heading text-[clamp(2.6rem,11vw,5.75rem)] font-bold uppercase leading-[0.86] tracking-[-0.045em] text-cream"
           >
             <span className="block">{headlineWhite}</span>
             <span className="mt-1 block text-(--hero-accent)">
@@ -117,7 +117,7 @@ export function HeroCard({
             </Button>
             <Link
               href={secondaryCta.href}
-              className="inline-flex min-h-10 items-center font-heading text-xs uppercase tracking-[0.24em] text-zinc-400 transition-colors hover:text-white sm:min-h-11 sm:text-sm"
+              className="inline-flex min-h-10 items-center font-heading text-xs uppercase tracking-[0.24em] text-zinc-400 transition-colors hover:text-cream sm:min-h-11 sm:text-sm"
             >
               {secondaryCta.label}
             </Link>
@@ -187,7 +187,7 @@ export function HeroCard({
 
       <Link
         href={collectionLink.href}
-        className="absolute bottom-5 left-1/2 z-20 inline-flex min-h-11 -translate-x-1/2 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500 transition-colors hover:text-white sm:text-[11px] lg:left-16 lg:translate-x-0"
+        className="absolute bottom-5 left-1/2 z-20 inline-flex min-h-11 -translate-x-1/2 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500 transition-colors hover:text-cream sm:text-[11px] lg:left-16 lg:translate-x-0"
       >
         <span>{collectionLink.label}</span>
         <ArrowDown size={12} />

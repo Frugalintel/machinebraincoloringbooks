@@ -71,7 +71,7 @@ export function InvitationCard({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-[#0a0a0a] border border-[#222] p-3 relative overflow-hidden ${className}`}
+        className={`bg-background border border-[#222] p-3 relative overflow-hidden ${className}`}
       >
         <div
           className={`absolute inset-0 bg-gradient-to-r ${config.bgGradient} pointer-events-none`}
@@ -121,7 +121,7 @@ export function InvitationCard({
             {onDismiss ? (
               <button
                 onClick={onDismiss}
-                className="text-gray-500 hover:text-white text-xs"
+                className="text-gray-500 hover:text-cream text-xs"
               >
                 Dismiss
               </button>
@@ -137,7 +137,7 @@ export function InvitationCard({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={`bg-[#0a0a0a] border border-[#222] overflow-hidden relative ${className}`}
+      className={`bg-background border border-[#222] overflow-hidden relative ${className}`}
     >
       {/* Background gradient */}
       <div
@@ -149,12 +149,12 @@ export function InvitationCard({
         {/* Header */}
         <div className="flex items-start gap-4 mb-4">
           <div
-            className={`w-12 h-12 flex items-center justify-center border border-[#333] bg-[#111] ${config.color}`}
+            className={`w-12 h-12 flex items-center justify-center border border-[#333] bg-background ${config.color}`}
           >
             <Icon size={24} />
           </div>
           <div className="flex-1">
-            <h3 className="font-heading text-xl text-white uppercase tracking-wide mb-1">
+            <h3 className="font-heading text-xl text-cream uppercase tracking-wide mb-1">
               {title}
             </h3>
             <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ export function InvitationCard({
 
         {/* Cross-pillar invitation */}
         {crossPillarInvitation ? (
-          <div className="bg-[#111] border border-[#222] p-4 mb-4">
+          <div className="bg-background border border-[#222] p-4 mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles size={12} className="text-gray-500" />
               <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">
@@ -206,7 +206,7 @@ export function CrossPillarBonusPreview({
   if (bonuses.length === 0) return null;
 
   return (
-    <div className={`bg-[#0a0a0a] border border-[#222] p-4 ${className}`}>
+    <div className={`bg-background border border-[#222] p-4 ${className}`}>
       <div className="flex items-center gap-2 mb-3">
         <Sparkles size={12} className="text-primary" />
         <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">

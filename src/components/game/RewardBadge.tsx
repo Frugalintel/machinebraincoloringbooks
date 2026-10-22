@@ -262,7 +262,7 @@ export function MilestonePreview({
 }: MilestonePreviewProps) {
   if (!next) {
     return (
-      <div className={`bg-[#0a0a0a] border border-[#222] p-4 ${className}`}>
+      <div className={`bg-background border border-[#222] p-4 ${className}`}>
         <div className="flex items-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest font-mono">
           <Star size={12} className="text-yellow-400" fill="currentColor" />
           <span>All {pillarLabel} Milestones Complete!</span>
@@ -274,7 +274,7 @@ export function MilestonePreview({
   const progress = Math.min(100, (current / next.threshold) * 100);
 
   return (
-    <div className={`bg-[#0a0a0a] border border-[#222] p-4 ${className}`}>
+    <div className={`bg-background border border-[#222] p-4 ${className}`}>
       <div className="flex items-center justify-between mb-3">
         <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">
           Next {pillarLabel} Milestone

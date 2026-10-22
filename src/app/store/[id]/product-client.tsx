@@ -50,9 +50,9 @@ export function ProductClient({ product }: ProductClientProps) {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans">
+    <main className="min-h-screen bg-background text-cream font-sans">
       {/* Breadcrumb / Header */}
-      <div className="border-b border-[#222] bg-[#0a0a0a] py-4">
+      <div className="border-b border-[#222] bg-background py-4">
         <div className="container mx-auto px-4 md:px-6 flex items-center gap-4 text-[10px] md:text-xs font-mono text-gray-500 uppercase tracking-widest">
           <button
             onClick={() => router.back()}
@@ -61,7 +61,7 @@ export function ProductClient({ product }: ProductClientProps) {
             <ArrowLeft size={12} /> BACK
           </button>
           <span className="text-[#333]">/</span>
-          <span className="text-white">{product.title}</span>
+          <span className="text-cream">{product.title}</span>
           <span className="text-[#333]">/</span>
           <span>Vol. {product.id.slice(0, 3)}</span>
         </div>
@@ -71,7 +71,7 @@ export function ProductClient({ product }: ProductClientProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
           {/* Left: Visuals */}
           <div className="lg:col-span-7">
-            <div className="relative aspect-[3/4] md:aspect-square w-full bg-[#111] border border-[#222] p-8 md:p-16 flex items-center justify-center group overflow-hidden">
+            <div className="relative aspect-[3/4] md:aspect-square w-full bg-background border border-[#222] p-8 md:p-16 flex items-center justify-center group overflow-hidden">
               {/* Background Effects */}
               <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay"></div>
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1a1a1a_0%,#000_100%)] opacity-50"></div>
@@ -120,7 +120,7 @@ export function ProductClient({ product }: ProductClientProps) {
                     <span className="text-xs text-gray-500 font-mono uppercase">
                       Vol. {product.id.slice(0, 3)}
                     </span>
-                    <span className="text-xs text-white font-heading tracking-widest uppercase">
+                    <span className="text-xs text-cream font-heading tracking-widest uppercase">
                       {product.title}
                     </span>
                   </div>
@@ -142,7 +142,7 @@ export function ProductClient({ product }: ProductClientProps) {
             <div className="border-b border-[#222] pb-8 mb-8">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-8 w-2 bg-primary"></div>
-                <h1 className="font-heading text-5xl md:text-6xl font-bold uppercase leading-none text-white">
+                <h1 className="font-heading text-5xl md:text-6xl font-bold uppercase leading-none text-cream">
                   {product.title}
                 </h1>
               </div>
@@ -172,7 +172,7 @@ export function ProductClient({ product }: ProductClientProps) {
                 <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
                   Recommended Age
                 </span>
-                <div className="font-heading text-xl text-white uppercase">
+                <div className="font-heading text-xl text-cream uppercase">
                   {product.age}
                 </div>
               </div>
@@ -180,7 +180,7 @@ export function ProductClient({ product }: ProductClientProps) {
                 <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
                   Format
                 </span>
-                <div className="font-heading text-xl text-white uppercase">
+                <div className="font-heading text-xl text-cream uppercase">
                   Print + Digital
                 </div>
               </div>
@@ -188,20 +188,20 @@ export function ProductClient({ product }: ProductClientProps) {
                 <span className="block text-[10px] uppercase tracking-widest text-primary font-mono mb-2">
                   Pages
                 </span>
-                <div className="font-heading text-xl text-white uppercase">
+                <div className="font-heading text-xl text-cream uppercase">
                   96 Pages
                 </div>
               </div>
             </div>
 
             {/* Collectible Trophy Bonus */}
-            <div className="mb-8 border border-[#333] bg-gradient-to-r from-[#111] to-[#0a0a0a] p-4 relative overflow-hidden">
+            <div className="mb-8 border border-[#333] bg-gradient-to-r from-background to-background p-4 relative overflow-hidden">
               <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary via-amber-500 to-transparent"></div>
 
               <div className="flex items-start gap-4 relative z-10">
                 {/* Mini 3D Trophy Preview */}
-                <div className="w-20 h-20 flex-shrink-0 bg-[#0a0a0a] border border-[#222] overflow-hidden">
+                <div className="w-20 h-20 flex-shrink-0 bg-background border border-[#222] overflow-hidden">
                   <TrophyCanvas
                     size="small"
                     rarity={
@@ -221,7 +221,7 @@ export function ProductClient({ product }: ProductClientProps) {
                     <Trophy size={10} />
                     <span>Includes Digital Collectible</span>
                   </div>
-                  <p className="text-white font-heading text-sm uppercase mb-1">
+                  <p className="text-cream font-heading text-sm uppercase mb-1">
                     Exclusive 3D Trophy
                   </p>
                   <p className="text-gray-500 text-xs font-mono">
@@ -249,7 +249,7 @@ export function ProductClient({ product }: ProductClientProps) {
               </div>
             </div>
 
-            <div className="mt-auto bg-[#111] border border-[#222] p-6 md:p-8 relative">
+            <div className="mt-auto bg-background border border-[#222] p-6 md:p-8 relative">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent"></div>
 
               <div className="flex justify-between items-end mb-6">
@@ -266,7 +266,7 @@ export function ProductClient({ product }: ProductClientProps) {
                   <div className="flex items-baseline gap-3">
                     {priceInfo.hasDiscount ? (
                       <>
-                        <span className="font-heading text-4xl text-white">
+                        <span className="font-heading text-4xl text-cream">
                           {formatPrice(priceInfo.finalPrice)}
                         </span>
                         <span className="font-mono text-xl text-gray-600 line-through">
@@ -274,7 +274,7 @@ export function ProductClient({ product }: ProductClientProps) {
                         </span>
                       </>
                     ) : (
-                      <span className="font-heading text-4xl text-white">
+                      <span className="font-heading text-4xl text-cream">
                         {formatPrice(priceInfo.originalPrice)}
                       </span>
                     )}

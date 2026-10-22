@@ -33,7 +33,7 @@ export function ScaledTemplate({
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-md border border-[#2a2a2a] bg-[#111]"
+      className="relative w-full overflow-hidden rounded-md border border-[#2a2a2a] bg-background"
       style={{ height: Math.max(120, height * scale) }}
     >
       <iframe
