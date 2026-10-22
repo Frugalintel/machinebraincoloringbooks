@@ -1,92 +1,121 @@
-# F1 color token mapping
+# F1 color token mapping (Studio follow-up)
 
-Source of truth: locked Notion Brand Aesthetic Guide. Guide grey `#8E887C` is spec-only and is **not** a product token.
+Source of truth: locked Notion Brand Aesthetic Guide + Studio decision doc v2 (Jayden, 2026-10-22). Guide grey `#8E887C` is spec-only and is **not** a product token.
 
-`--color-base` was not added as a Tailwind color: it would collide with `text-base` (font size). Near-black uses `--base` / `--background` / `bg-background`.
+`--color-base` is not a Tailwind color: it would collide with `text-base` (font size). Base alpha steps use `bg-background/5…/80` (same hex as `--base`). Cream alphas use `bg-cream/5…/80`. Snap rule: /5→5, /10→10, /15–25→20, /30–50→40, /60–70→60, /75–95→80.
 
 ## Token table
 
-| Token  | CSS / Tailwind                                                            | Value     | Role                                | Allowed surfaces                                                                              |
-| ------ | ------------------------------------------------------------------------- | --------- | ----------------------------------- | --------------------------------------------------------------------------------------------- |
-| base   | `--base`, `--background`, `bg-background`                                 | `#0F0F0F` | Near-black cover/page base          | Page chrome, dark panels. Not type on light.                                                  |
-| cream  | `--cream`, `--foreground`, `text-cream`, `text-foreground`                | `#F2EAD8` | Primary ink on dark; second surface | Titles and body on near-black; frames when used as a surface.                                 |
-| ink    | `--ink`, `text-ink`                                                       | `#141414` | Type and marks on light             | Cream or paper only.                                                                          |
-| paper  | `--paper`, `bg-paper`, `--primary-foreground`                             | `#FFFFFF` | White paper, not an ink             | Matter-like light surfaces; type on signal CTA fills (unchanged this PR).                     |
-| signal | `--signal`, `--primary`, `--accent`, `--ring`, `text-signal`, `bg-signal` | `#FF4F00` | Accent                              | Small labels and type on near-black only. Large CTA fills are flagged for F5, not redesigned. |
+Contrast is WCAG 2.x vs the listed surface. Body text needs 4.5:1. Large text / UI needs 3:1.
 
-shadcn aliases wired to the locked set: `--card-foreground`, `--popover-foreground`, `--secondary-foreground`, `--sidebar` background/foreground/primary/ring. Mid greys (`--card` `#1a1a1a`, `--border` `#222222`, `--muted`, `--destructive`) were left as-is.
+### Locked
 
-## Mapping table (occurrences replaced)
+| Token  | CSS / Tailwind                                     | Hex       | Role                                       | Contrast                                                     |
+| ------ | -------------------------------------------------- | --------- | ------------------------------------------ | ------------------------------------------------------------ |
+| base   | `--base`, `--background`, `bg-background`          | `#0F0F0F` | Near-black page/cover field                | —                                                            |
+| cream  | `--cream`, `--foreground`, `text-cream`            | `#F2EAD8` | Primary type on dark                       | 16.01 on base, 14.54 / 13.47 / 12.14 on surface-1/2/3        |
+| ink    | `--ink`, `text-ink`                                | `#141414` | Type on light surfaces and on signal fills | 15.38 on cream, 18.42 on paper, **5.59 on signal**           |
+| paper  | `--paper`, `bg-paper`                              | `#FFFFFF` | Depicting paper only. Never type.          | —                                                            |
+| signal | `--signal`, `--primary`, `--accent`, `text-signal` | `#FF4F00` | Small labels on near-black                 | 5.81 / 5.28 / 4.89 on base/s1/s2; **4.41 fail on surface-3** |
 
-Counts are from this PR’s diff (customer-facing files + theme). Admin-only literals were not rewritten.
+### Derived surfaces, lines, text
 
-| Old value                                         |                              New token | Replaced |
-| ------------------------------------------------- | -------------------------------------: | -------: |
-| `#111` / `#111111`                                | base (`bg-background` / `var(--base)`) |      113 |
-| `#0a0a0a`                                         |                                   base |       71 |
-| `#151515`                                         |                                   base |       13 |
-| `#0b0b0b`                                         |                                   base |        7 |
-| `#0f0f0f` (already correct hex)                   |                                   base |        6 |
-| `#050505`                                         |                                   base |        4 |
-| `#000` / `#000000` (page/scanline fills)          |                                   base |        4 |
-| `#161616`                                         |                                   base |        1 |
-| `#101010`                                         |                                   base |        1 |
-| `#030303`                                         |                                   base |        1 |
-| `bg-black` (no opacity)                           |                                   base |       32 |
-| `from-black` (no opacity)                         |                                   base |        1 |
-| `text-white` (body/title on dark; CTA fills left) |                                  cream |      241 |
-| `#eee` / `#eeeeee`                                |                                  cream |        8 |
-| `#ff4f00` in theme/CSS                            |                                 signal |       10 |
-| `border-orange-500` (`.vintage-border`)           |                                 signal |        1 |
-| `themeColor` `#111111`                            |                              `#0F0F0F` |        1 |
-| **Total mapped occurrences**                      |                                        |  **515** |
+| Token        | Hex       | Role                                 | Contrast on base / s1 / s2 / s3     |
+| ------------ | --------- | ------------------------------------ | ----------------------------------- |
+| surface-1    | `#1A1A19` | Cards, popovers, sidebar (cream 5%)  | 1.10 vs base                        |
+| surface-2    | `#21211F` | Secondary/muted fills (cream 8%)     | 1.19 vs base                        |
+| surface-3    | `#2A2927` | Pressed/selected, tracks (cream 12%) | 1.32 vs base                        |
+| line         | `#33322F` | Default borders (cream 16%)          | 1.50 vs base (decorative)           |
+| line-strong  | `#807C74` | Control edges (cream 50%)            | 4.61 / 4.19 / 3.88 / 3.50           |
+| fg-secondary | `#C5BEB0` | Secondary copy (cream 80%)           | 10.38 / 9.43 / 8.73 / 7.87          |
+| fg-muted     | `#979288` | Captions, mono labels (cream 60%)    | 6.19 / 5.63 / 5.21 / 4.69           |
+| fg-faint     | `#6A675F` | Disabled / decorative (cream 40%)    | 3.39 / 3.08; **fails 3:1 on s2/s3** |
 
-Unique hexes with a clear mapping: **12** of 90. Tailwind classes mapped: `text-white`, `bg-black`, `from-black`, `border-orange-500`. Remaining unique hexes and palette classes are listed below.
+### Status (functional)
 
-## Ambiguous / unmapped
+| Token         | Hex       | Role                                | Contrast                     |
+| ------------- | --------- | ----------------------------------- | ---------------------------- |
+| success       | `#7FB88A` | Complete / online                   | 8.33 on base                 |
+| warning       | `#E3B85C` | Limit / caution                     | 10.29 on base                |
+| danger        | `#EE6A7C` | Error text/borders; `--destructive` | 6.38 on base; ink on it 6.13 |
+| danger-strong | `#B23A48` | Solid destructive fill              | cream on it 4.88             |
+| success-wash  | `#1A201B` | Success panel                       | success on wash 7.21         |
+| warning-wash  | `#242017` | Warning panel                       | warning on wash 8.71         |
+| danger-wash   | `#25181A` | Danger panel                        | danger on wash 5.71          |
 
-Left on purpose. Do not guess.
+### Scoped
 
-| Value                                                                                   | Examples                                                                                  | Why left                                                                             |
-| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `#222222`, `#333333`, `#1a1a1a`, `#2a2a2a`, `#444444`, `#555555`, `#666666`, `#888888`  | `src/app/page.tsx` `border-[#222]`; `src/app/globals.css` `--card`, `--border`            | Greys / borders / cards. Not a locked color.                                         |
-| `text-gray-*`, `bg-gray-*`, `border-gray-*`, `text-zinc-*`                              | `src/app/page.tsx:40` `text-gray-500`; `src/components/hero-card.tsx:108` `text-zinc-400` | Tailwind grey/zinc scale. Ambiguous vs cream/ink.                                    |
-| `bg-black/10`–`/95`, `bg-white/5`–`/90`, `text-white/20`–`/90`                          | `src/app/achievements/page.tsx:406`; `src/components/stories-section.tsx:129`             | Opacity tints.                                                                       |
-| `text-red-*`, `text-green-*`, `text-amber-*`, `text-yellow-*`, `bg-red-900/20`          | `src/app/achievements/page.tsx:231`; `src/app/game/page.tsx:251`                          | Status colors.                                                                       |
-| `text-purple-*`, `text-blue-*`, `text-emerald-*`, `text-fuchsia-*`                      | `src/app/achievements/page.tsx:246`; `src/lib/story-utils.ts`                             | Extra palette / story themes.                                                        |
-| `bg-orange-500`, `text-orange-400`                                                      | `src/lib/game-data.ts:75`; `src/app/collectibles/[id]/page.tsx:134`                       | Rarity / status, not brand signal.                                                   |
-| Chart hexes `#8884d8`, `#0088fe`, `#00c49f`, `#ffbb28`, `#ff8042`, `#82ca9d`            | `src/components/admin/analytics-charts.tsx:19`                                            | Chart colors + admin-only.                                                           |
-| Trophy / 3D `#9ca3af`, `#6b7280`, `#60a5fa`, `#4ade80`, `#c084fc`, `#fb923c`, `#8b5a2b` | `src/components/three/TrophyModel.tsx:18-28`                                              | Rarity mesh colors.                                                                  |
-| Store swatches `#e76f51`, `#2a9d8f`, `#e63946`, `#264653`, …                            | `src/lib/store-data.ts`                                                                   | Product data, not chrome.                                                            |
-| Campaign templates `#2563eb`, `#0ff`, `#ff0099`, `#dc2626`, `#120024`, …                | `src/lib/campaign-templates.ts`                                                           | Off-guide campaign themes; admin-owned.                                              |
-| `#00ffff` / `#ff00ff`                                                                   | `src/app/globals.css` `.glitch-text`                                                      | CRT/glitch extras (F later).                                                         |
-| `#33ff00`                                                                               | `src/components/environment-indicator.tsx:34`                                             | Dev-only status.                                                                     |
-| `#f3ebe0`, `#e8dcc8`, `#efe6d8`, `#d9ceb8`                                              | `src/app/globals.css` `.hero-book-pages` / `.hero-book-top`                               | 3D book page stack. Cream-adjacent, but flattening it would restyle the hero book.   |
-| `bg-white`, `text-black`, `hover:bg-white`                                              | `src/components/hero-card.tsx:114,169`; auth Sign In                                      | Paper badge / CTA hover. CTA redesign is F5. Price badge is the open barcode analog. |
-| `#111`, `#050505`, `#0a0a0a` still in `/admin/*`                                        | `src/app/admin/layout.tsx:176`                                                            | Admin-only UI left untouched.                                                        |
-| `--destructive` `#ef4444` / `#7f1d1d`                                                   | `src/app/globals.css`                                                                     | Status.                                                                              |
+| Token     | Hex                                                   | Scope                                               |
+| --------- | ----------------------------------------------------- | --------------------------------------------------- |
+| chart-1…5 | `#F2EAD8`, `#6FB3A8`, `#B58DB6`, `#D6A85A`, `#979288` | Admin analytics only. Each ≥5.1:1 on every surface. |
+| page-1…3  | `#FFFFFF`, `#F1F1F1`, `#DDDDDD`                       | `.hero-book-*` only (paper 100 / 94 / 86%)          |
 
-## Orange large fills (flag for F5)
+### Cream alpha steps on base
 
-Hex is already `#FF4F00`. These remain large fills / identity ornaments. Not redesigned in F1.
+| Utility  | Mixed hex on base |
+| -------- | ----------------- |
+| cream/5  | `#1A1A19`         |
+| cream/10 | `#262523`         |
+| cream/20 | `#3C3B37`         |
+| cream/40 | `#6A675F`         |
+| cream/60 | `#979288`         |
+| cream/80 | `#C5BEB0`         |
 
-| Surface                                   | File                                                                              |
-| ----------------------------------------- | --------------------------------------------------------------------------------- |
-| Hero Browse Books                         | `src/components/hero-card.tsx:112-116`                                            |
-| Auth Sign In / Register                   | `src/app/auth/page.tsx:255`; `src/components/auth-modal.tsx:233`                  |
-| Auth 8px header strip                     | `src/app/auth/page.tsx:289`                                                       |
-| Navbar orange square + cart               | `src/components/navbar.tsx:232,373`                                               |
-| Footer Brain pulse                        | `src/components/footer.tsx:50-61`                                                 |
-| Store Retry / category chip / hover cart  | `src/app/store/page.tsx:156,238`                                                  |
-| Track Order                               | `src/app/orders/lookup/page.tsx:157-165`                                          |
-| Game Start Your Journey                   | `src/app/game/page.tsx:101-113`                                                   |
-| Collectibles Initialize / vault CTAs      | `src/app/collectibles/[id]/page.tsx:454`; `src/app/collectibles/page.tsx:137,285` |
-| Scan Enable Camera                        | `src/app/scan/page.tsx:335`                                                       |
-| Review Unlock                             | `src/app/review/[slug]/login-form.tsx:97`                                         |
-| Trophy-room / achievements Login Required | `src/app/trophy-room/page.tsx:157`; `src/app/achievements/page.tsx:125`           |
-| Cart checkout                             | `src/components/cart-drawer.tsx:303`                                              |
+### shadcn mapping
+
+| Variable                                                                      | Maps to                                               |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `--card`, `--popover`                                                         | surface-1                                             |
+| `--secondary`, `--muted`                                                      | surface-2                                             |
+| `--muted-foreground`                                                          | fg-muted                                              |
+| `--border`, `--input`, `--sidebar-border`                                     | line                                                  |
+| `--sidebar-accent`                                                            | surface-2                                             |
+| `--destructive`                                                               | danger (both modes)                                   |
+| `--destructive-foreground`                                                    | ink                                                   |
+| `--chart-1…5`                                                                 | chart tokens                                          |
+| `--color-brand-gray`                                                          | surface-2                                             |
+| `--primary-foreground`, `--accent-foreground`, `--sidebar-primary-foreground` | **ink** (Jayden: 5.59:1; paper was 3.30:1 and failed) |
+| `::selection`                                                                 | `bg-primary text-ink`                                 |
+
+## Mapping table
+
+| Group                | Old                                                                                                                      | New                                                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| 1 greys              | `#1a1a1a`, `#222` bg, `#2a2a2a`/`#333` bg, `#222`/`#333` borders, `#444–#666`, gray/zinc-400/500, gray-300, gray-600/700 | surface-1 / surface-2 / surface-3 / line / fg-faint / fg-muted / fg-secondary / fg-faint                          |
+| 2 alphas             | `bg-white/*`, `border-white/*`, `text-white/*`, `bg-black/*`                                                             | cream or background at snapped 5/10/20/40/60/80                                                                   |
+| 3 status             | red/green/amber/yellow utilities, `--destructive`                                                                        | danger / success / warning + washes                                                                               |
+| 3 condition meter    | green / yellow / orange / red                                                                                            | success / warning / warning / danger                                                                              |
+| 4 story themes       | emerald / fuchsia classes                                                                                                | cream + signal classes; **keys `signal` / `neon` / `default` kept**                                               |
+| 4 section accents    | purple / blue / emerald / amber decorative                                                                               | cream (stats) + signal (small labels) + line borders                                                              |
+| 5 rarity labels      | gray/green/blue/purple/orange                                                                                            | cream ramp; Legendary `text-signal border-signal`. No pips.                                                       |
+| 5 placeholder art    | `bg-orange/blue/green/…`                                                                                                 | `bg-surface-2`                                                                                                    |
+| 5 trophy             | gray/green/blue/purple/orange meshes; plinth `#1a1a1a`/`#222`                                                            | Studio cream-ramp mains; Legendary cream + **signal `#FF4F00` emissive 0.5**; plinth surface-1/2. Dust/wood kept. |
+| 6 charts             | Recharts defaults + `#222`/`#888` chrome                                                                                 | chart-1…5; grid line; axis fg-faint; ticks fg-muted; tooltip surface-1 + cream                                    |
+| 7 store swatches     | per-product hexes                                                                                                        | `bg-background` + `bg-cream` in `store-data.ts`                                                                   |
+| 8 campaigns          | 11 seasonal palettes                                                                                                     | single `brand` template; removed ids fall back via `getCampaignTemplate` / `resolveCampaignTheme`                 |
+| 9 CRT / DEV          | RGB stripes, `#0ff`/`#f0f`, `#33ff00`                                                                                    | base/20 vignette; glitch cream/20 (animation kept); DEV → success                                                 |
+| 10 hero pages        | cream-ish page stripes                                                                                                   | page-1/2/3 paper steps                                                                                            |
+| 11 badge + CTA hover | `bg-white`, `text-black`, zinc, `hover:bg-white`                                                                         | `bg-cream` + `text-ink` / `text-ink/60`; hover cream + ink. Paper only for depicting paper.                       |
+| 12 admin             | `#050505`/`#0a0a0a`/`bg-black`, `#111`, `#222`, `#333`, logo `bg-white`, `text-red-500`, active nav `text-black`         | background / surface-1 / surface-2 / line / `bg-cream` / danger / **text-ink** (fill stays signal)                |
+
+## Removed campaign template ids
+
+`default`, `cyberpunk`, `retro_wave`, `minimal`, `christmas`, `new_years`, `valentines`, `july_4th`, `halloween`, `thanksgiving`, `black_friday`.
+
+Fallback lives in `src/lib/campaign-templates.ts` (`getCampaignTemplate`, `resolveCampaignTheme`). Call sites: `src/lib/hero-card.ts` `resolveTheme`, `src/components/hero.tsx`, `src/context/settings-context.tsx` (active campaign load), `src/app/admin/discounts/[id]/page.tsx` (editor load + picker). Tests: `src/lib/campaign-templates.test.ts`, `src/lib/hero-card.test.ts`. Database not touched.
+
+## Remaining / out of scope
+
+| Item                                                          | Why                                                                                   |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Large signal fills (hero CTA, auth, navbar, cart, …)          | F5. Hex is already `#FF4F00`. Text on them is now ink.                                |
+| Admin product color picker options (red/blue/purple swatches) | Editor affordance for stored product rows. Defaults are `bg-background` / `bg-cream`. |
+| `body::before` noise overlay                                  | Texture, not color. Guide limits texture to covers.                                   |
+| Fonts (Rajdhani / Oswald vs Redaction / Inter / Plex Mono)    | Type, not color.                                                                      |
+| KDP barcode box (print)                                       | Separate from the site cream price badge.                                             |
+| Site section in the Notion guide                              | Propose to CoS after this PR lands.                                                   |
 
 ## Screenshot note
 
 Before shots: production `https://machinebraincoloringbooks.vercel.app`.
-After shots: local `next start` of this branch. Local `/auth` shows a “database not configured” banner that production does not; colors still apply.
+After shots: this branch preview (SSO). If the preview is gated, local `next start` of this branch; local `/auth` may show a “database not configured” banner that production does not.

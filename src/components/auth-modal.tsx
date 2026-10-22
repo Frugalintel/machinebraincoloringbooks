@@ -148,7 +148,7 @@ export function AuthModal() {
       <button
         type="button"
         onClick={() => handleSocialAuth(provider)}
-        className="h-12 border bg-background hover:bg-white hover:text-black transition-all flex items-center justify-center group border-[#222] text-gray-400 hover:border-white"
+        className="h-12 border bg-background hover:bg-cream hover:text-ink transition-all flex items-center justify-center group border-line text-fg-muted hover:border-cream"
       >
         <Icon size={18} className="mr-2" />
         <span className="text-xs font-heading uppercase tracking-wider">
@@ -170,10 +170,10 @@ export function AuthModal() {
   const Divider = ({ text }: { text: string }) => (
     <div className="relative py-2 mb-6">
       <div className="absolute inset-0 flex items-center">
-        <span className="w-full border-t border-[#222]" />
+        <span className="w-full border-t border-line" />
       </div>
       <div className="relative flex justify-center text-[10px] uppercase font-mono">
-        <span className="bg-background px-2 text-gray-600">{text}</span>
+        <span className="bg-background px-2 text-fg-faint">{text}</span>
       </div>
     </div>
   );
@@ -181,27 +181,27 @@ export function AuthModal() {
   const FormSection = (
     <form onSubmit={handleAuth} className="space-y-6 mb-6">
       <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
+        <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
           <User size={10} /> Email
         </label>
         <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-background border-[#222] text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
+          className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted"
           placeholder="you@example.com"
           disabled={loading}
         />
       </div>
       <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
+        <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
           <Lock size={10} /> Password
         </label>
         <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-background border-[#222] text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
+          className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted"
           placeholder="••••••••"
           disabled={loading}
         />
@@ -213,14 +213,14 @@ export function AuthModal() {
           animate={{ opacity: 1, height: "auto" }}
           className="space-y-2 overflow-hidden"
         >
-          <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
+          <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
             <CheckCircle size={10} /> Confirm Password
           </label>
           <Input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="bg-background border-[#222] text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700"
+            className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted"
             placeholder="••••••••"
             disabled={loading}
           />
@@ -230,7 +230,7 @@ export function AuthModal() {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full h-14 bg-primary hover:bg-white hover:text-black text-white font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50"
+        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -253,7 +253,7 @@ export function AuthModal() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100]"
+            className="fixed inset-0 bg-background/80 backdrop-blur-md z-[100]"
             onClick={closeAuthModal}
           />
 
@@ -264,13 +264,13 @@ export function AuthModal() {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-[101] p-4"
           >
-            <div className="bg-background border border-[#222] shadow-2xl relative">
+            <div className="bg-background border border-line shadow-2xl relative">
               <div className="h-2 w-full bg-primary"></div>
 
               {/* Close Button */}
               <button
                 onClick={closeAuthModal}
-                className="absolute top-4 right-4 text-gray-500 hover:text-cream"
+                className="absolute top-4 right-4 text-fg-muted hover:text-cream"
               >
                 <X size={20} />
               </button>
@@ -288,7 +288,7 @@ export function AuthModal() {
 
                 {/* Supabase not configured warning */}
                 {!isSupabaseConfigured && (
-                  <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-900/50 text-xs text-yellow-400 font-mono">
+                  <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-900/50 text-xs text-warning font-mono">
                     <AlertCircle size={14} className="inline mr-2" />
                     Database not configured. Add Supabase credentials to
                     .env.local
@@ -296,28 +296,28 @@ export function AuthModal() {
                 )}
 
                 {errorMsg ? (
-                  <div className="mb-6 p-3 bg-red-900/20 border border-red-900/50 flex items-start gap-3 text-xs text-red-400 font-mono">
+                  <div className="mb-6 p-3 bg-danger-wash border border-danger/50 flex items-start gap-3 text-xs text-danger font-mono">
                     <AlertCircle size={14} className="mt-0.5 flex-shrink-0" />
                     <span>{errorMsg}</span>
                   </div>
                 ) : null}
 
                 {successMsg ? (
-                  <div className="mb-6 p-3 bg-green-900/20 border border-green-900/50 flex items-start gap-3 text-xs text-green-400 font-mono">
+                  <div className="mb-6 p-3 bg-success-wash border border-success/50 flex items-start gap-3 text-xs text-success font-mono">
                     <CheckCircle size={14} className="mt-0.5 flex-shrink-0" />
                     <span>{successMsg}</span>
                   </div>
                 ) : null}
 
                 {/* Tabs */}
-                <div className="flex mb-8 border-b border-[#222]">
+                <div className="flex mb-8 border-b border-line">
                   <button
                     onClick={() => {
                       setIsLogin(true);
                       setErrorMsg("");
                       setSuccessMsg("");
                     }}
-                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-cream" : "border-transparent text-gray-600 hover:text-gray-400"}`}
+                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-cream" : "border-transparent text-fg-faint hover:text-fg-muted"}`}
                   >
                     Login
                   </button>
@@ -327,7 +327,7 @@ export function AuthModal() {
                       setErrorMsg("");
                       setSuccessMsg("");
                     }}
-                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${!isLogin ? "border-primary text-cream" : "border-transparent text-gray-600 hover:text-gray-400"}`}
+                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${!isLogin ? "border-primary text-cream" : "border-transparent text-fg-faint hover:text-fg-muted"}`}
                   >
                     Register
                   </button>
@@ -338,10 +338,10 @@ export function AuthModal() {
                     {FormSection}
                     <Divider text="Or access via provider" />
                     {SocialSection}
-                    <div className="mt-4 text-center border-t border-[#222] pt-4">
+                    <div className="mt-4 text-center border-t border-line pt-4">
                       <button
                         onClick={() => {}}
-                        className="text-[10px] text-gray-600 hover:text-primary transition-colors uppercase tracking-widest font-mono"
+                        className="text-[10px] text-fg-faint hover:text-primary transition-colors uppercase tracking-widest font-mono"
                       >
                         Forgot Password?
                       </button>

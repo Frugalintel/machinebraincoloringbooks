@@ -158,16 +158,16 @@ function AuthPageContent() {
       <button
         type="button"
         onClick={() => handleSocialMock(provider)}
-        className={`h-12 border bg-background hover:bg-white hover:text-black transition-all flex items-center justify-center group relative ${isLastUsed ? "border-primary text-white" : "border-[#333] text-gray-400 hover:border-white"}`}
+        className={`h-12 border bg-background hover:bg-cream hover:text-ink transition-all flex items-center justify-center group relative ${isLastUsed ? "border-primary text-cream" : "border-line text-fg-muted hover:border-cream"}`}
       >
         {isLastUsed ? (
-          <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] bg-primary text-black px-1.5 font-mono uppercase tracking-wide">
+          <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] bg-primary text-ink px-1.5 font-mono uppercase tracking-wide">
             Last Used
           </span>
         ) : null}
         <Icon
           size={18}
-          className={`mr-2 ${isLastUsed ? "text-primary group-hover:text-black" : ""}`}
+          className={`mr-2 ${isLastUsed ? "text-primary group-hover:text-ink" : ""}`}
         />
         <span className="text-xs font-heading uppercase tracking-wider">
           {label}
@@ -190,10 +190,10 @@ function AuthPageContent() {
   const Divider = ({ text }: { text: string }) => (
     <div className="relative py-2 mb-6">
       <div className="absolute inset-0 flex items-center">
-        <span className="w-full border-t border-[#333]" />
+        <span className="w-full border-t border-line" />
       </div>
       <div className="relative flex justify-center text-[10px] uppercase font-mono">
-        <span className="bg-background px-2 text-gray-600">{text}</span>
+        <span className="bg-background px-2 text-fg-faint">{text}</span>
       </div>
     </div>
   );
@@ -201,14 +201,14 @@ function AuthPageContent() {
   const renderForm = () => (
     <form onSubmit={handleAuth} className="space-y-6 mb-6">
       <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
+        <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
           <User size={10} /> Email
         </label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className={`w-full bg-background text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3 border ${lastProvider === "email" && isLogin ? "border-primary" : "border-[#333]"}`}
+          className={`w-full bg-background text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted px-3 border ${lastProvider === "email" && isLogin ? "border-primary" : "border-line"}`}
           placeholder="user@machinebrain.com"
         />
         {lastProvider === "email" && isLogin ? (
@@ -218,14 +218,14 @@ function AuthPageContent() {
         ) : null}
       </div>
       <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
+        <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
           <Lock size={10} /> Password
         </label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-background border border-[#333] text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3"
+          className="w-full bg-background border border-line text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted px-3"
           placeholder="••••••••"
         />
       </div>
@@ -236,14 +236,14 @@ function AuthPageContent() {
           animate={{ opacity: 1, height: "auto" }}
           className="space-y-2 overflow-hidden"
         >
-          <label className="text-[10px] uppercase tracking-widest text-gray-500 font-mono flex items-center gap-2">
+          <label className="text-[10px] uppercase tracking-widest text-fg-muted font-mono flex items-center gap-2">
             <CheckCircle size={10} /> Confirm Password
           </label>
           <input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full bg-background border border-[#333] text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-gray-700 px-3"
+            className="w-full bg-background border border-line text-cream focus:border-primary focus:outline-none focus:ring-0 h-12 rounded-none font-mono text-base md:text-sm placeholder:text-fg-muted px-3"
             placeholder="••••••••"
           />
         </motion.div>
@@ -252,7 +252,7 @@ function AuthPageContent() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full h-14 bg-primary hover:bg-white hover:text-black text-white font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50 flex items-center justify-center"
+        className="w-full h-14 bg-primary hover:bg-cream hover:text-ink text-cream font-heading text-xl tracking-[0.2em] rounded-none uppercase transition-all mt-4 group disabled:opacity-50 flex items-center justify-center"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -283,7 +283,7 @@ function AuthPageContent() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 w-full max-w-md bg-background border border-[#333] shadow-2xl"
+        className="relative z-10 w-full max-w-md bg-background border border-line shadow-2xl"
       >
         {/* Header Strip */}
         <div className="h-2 w-full bg-primary"></div>
@@ -311,7 +311,7 @@ function AuthPageContent() {
 
           {/* Supabase not configured warning */}
           {!isSupabaseConfigured && (
-            <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-900/50 text-xs text-yellow-400 font-mono">
+            <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-900/50 text-xs text-warning font-mono">
               <AlertCircle size={14} className="inline mr-2" />
               Database not configured. Authentication may not work.
             </div>
@@ -319,20 +319,20 @@ function AuthPageContent() {
 
           {/* Error Message */}
           {errorMsg ? (
-            <div className="mb-6 p-3 bg-red-900/20 border border-red-900/50 flex items-start gap-3 text-xs text-red-400 font-mono">
+            <div className="mb-6 p-3 bg-danger-wash border border-danger/50 flex items-start gap-3 text-xs text-danger font-mono">
               <AlertCircle size={14} className="mt-0.5 shrink-0" />
               <span>{errorMsg}</span>
             </div>
           ) : null}
 
           {/* Toggle Tabs */}
-          <div className="flex mb-8 border-b border-[#333]">
+          <div className="flex mb-8 border-b border-line">
             <button
               onClick={() => {
                 setIsLogin(true);
                 setErrorMsg("");
               }}
-              className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-cream" : "border-transparent text-gray-600 hover:text-gray-400"}`}
+              className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-cream" : "border-transparent text-fg-faint hover:text-fg-muted"}`}
             >
               Login
             </button>
@@ -341,7 +341,7 @@ function AuthPageContent() {
                 setIsLogin(false);
                 setErrorMsg("");
               }}
-              className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${!isLogin ? "border-primary text-cream" : "border-transparent text-gray-600 hover:text-gray-400"}`}
+              className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${!isLogin ? "border-primary text-cream" : "border-transparent text-fg-faint hover:text-fg-muted"}`}
             >
               Register
             </button>
@@ -352,10 +352,10 @@ function AuthPageContent() {
               {renderForm()}
               <Divider text="Or access via provider" />
               {SocialSection}
-              <div className="mt-8 text-center border-t border-[#333] pt-6">
+              <div className="mt-8 text-center border-t border-line pt-6">
                 <button
                   onClick={() => {}}
-                  className="text-[10px] text-gray-600 hover:text-primary transition-colors uppercase tracking-widest font-mono"
+                  className="text-[10px] text-fg-faint hover:text-primary transition-colors uppercase tracking-widest font-mono"
                 >
                   Forgot Password?
                 </button>
@@ -372,7 +372,7 @@ function AuthPageContent() {
       </motion.div>
 
       {/* Bottom Status Bar */}
-      <div className="absolute bottom-0 w-full border-t border-[#333] bg-background py-2 px-6 flex justify-between items-center text-[10px] text-gray-600 font-mono uppercase tracking-widest">
+      <div className="absolute bottom-0 w-full border-t border-line bg-background py-2 px-6 flex justify-between items-center text-[10px] text-fg-faint font-mono uppercase tracking-widest">
         <span className="hidden md:inline"></span>
         <span className="animate-pulse text-primary">● Online</span>
       </div>
@@ -386,7 +386,7 @@ function AuthPageLoading() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-gray-500 font-mono text-xs uppercase tracking-widest">
+        <p className="text-fg-muted font-mono text-xs uppercase tracking-widest">
           Loading...
         </p>
       </div>

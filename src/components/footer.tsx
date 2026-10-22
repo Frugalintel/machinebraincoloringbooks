@@ -41,7 +41,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="border-t border-[#222] bg-background text-gray-500 font-sans">
+    <footer className="border-t border-line bg-background text-fg-muted font-sans">
       {/* Top Grid */}
       <div className="container mx-auto px-4 md:px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Brand Column */}
@@ -66,7 +66,7 @@ export function Footer() {
         {/* Links Columns */}
         {Object.entries(footerLinks).map(([category, links]) => (
           <div key={category}>
-            <h4 className="text-xs font-mono text-cream uppercase tracking-widest mb-6 border-b border-[#222] pb-2 inline-block">
+            <h4 className="text-xs font-mono text-cream uppercase tracking-widest mb-6 border-b border-line pb-2 inline-block">
               {category}
             </h4>
             <ul className="space-y-3">
@@ -86,7 +86,7 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-[#222] bg-background">
+      <div className="border-t border-line bg-background">
         <div className="container mx-auto px-4 md:px-6 h-12 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest">
           <span>© 2025 Machine Brain Inc.</span>
 

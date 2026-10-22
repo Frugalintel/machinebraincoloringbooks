@@ -43,17 +43,36 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Locked brand colors. Do not add --color-base: it would collide with text-base. */
+  /* Locked brand colors. Do not add --color-base: it would collide with text-base.
+     Base alpha steps use bg-background / border-background (same hex as --base). */
   --color-cream: var(--cream);
   --color-ink: var(--ink);
   --color-paper: var(--paper);
   --color-signal: var(--signal);
 
-  /* Legacy aliases wired to locked tokens */
+  /* Derived surface / line / text ramp */
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+
+  /* Functional status */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-danger-strong: var(--danger-strong);
+  --color-success-wash: var(--success-wash);
+  --color-warning-wash: var(--warning-wash);
+  --color-danger-wash: var(--danger-wash);
+
+  /* Legacy aliases wired to locked / derived tokens */
   --color-brand-orange: var(--signal);
   --color-brand-dark: var(--base);
-  /* Mid-grey alias — not a locked product token; left for existing border/card chrome */
-  --color-brand-gray: #222222;
+  --color-brand-gray: var(--surface-2);
 }
 
 :root {
@@ -69,47 +88,68 @@
   --paper: #ffffff; /* white paper, not an ink */
   --signal: #ff4f00; /* accent labels/type on near-black only */
 
+  /* Derived tokens — exact Studio hexes (F1 follow-up) */
+  --surface-1: #1a1a19; /* cream 5% on base */
+  --surface-2: #21211f; /* cream 8% on base */
+  --surface-3: #2a2927; /* cream 12% on base */
+  --line: #33322f; /* cream 16% on base */
+  --line-strong: #807c74; /* cream 50% on base */
+  --fg-secondary: #c5beb0; /* cream 80% on base */
+  --fg-muted: #979288; /* cream 60% on base */
+  --fg-faint: #6a675f; /* cream 40% on base */
+  --success: #7fb88a;
+  --warning: #e3b85c;
+  --danger: #ee6a7c;
+  --danger-strong: #b23a48;
+  --success-wash: #1a201b;
+  --warning-wash: #242017;
+  --danger-wash: #25181a;
+  --page-1: #ffffff; /* hero book pages only */
+  --page-2: #f1f1f1;
+  --page-3: #dddddd;
+
   --background: var(--base);
   --foreground: var(--cream);
 
-  --card: #1a1a1a;
+  --card: var(--surface-1);
   --card-foreground: var(--cream);
 
-  --popover: #1a1a1a;
+  --popover: var(--surface-1);
   --popover-foreground: var(--cream);
 
   --primary: var(--signal);
-  --primary-foreground: var(--paper);
+  /* Ink on signal is 5.59:1 (paper was 3.30:1 and failed). */
+  --primary-foreground: var(--ink);
 
-  --secondary: #2a2a2a;
+  --secondary: var(--surface-2);
   --secondary-foreground: var(--cream);
 
-  --muted: #2a2a2a;
-  --muted-foreground: #888888;
+  --muted: var(--surface-2);
+  --muted-foreground: var(--fg-muted);
 
   --accent: var(--signal);
-  --accent-foreground: var(--paper);
+  --accent-foreground: var(--ink);
 
-  --destructive: #ef4444;
-  --destructive-foreground: var(--paper);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--ink);
 
-  --border: #222222;
-  --input: #222222;
+  --border: var(--line);
+  --input: var(--line);
   --ring: var(--signal);
 
-  --chart-1: var(--signal);
-  --chart-2: var(--paper);
-  --chart-3: #888888;
-  --chart-4: #222222;
-  --chart-5: var(--base);
+  --chart-1: #f2ead8;
+  --chart-2: #6fb3a8;
+  --chart-3: #b58db6;
+  --chart-4: #d6a85a;
+  --chart-5: #979288;
 
   --sidebar: var(--base);
   --sidebar-foreground: var(--cream);
   --sidebar-primary: var(--signal);
-  --sidebar-primary-foreground: var(--paper);
-  --sidebar-accent: #222222;
+  --sidebar-primary-foreground: var(--ink);
+  --sidebar-accent: var(--surface-2);
   --sidebar-accent-foreground: var(--cream);
-  --sidebar-border: #222222;
+  --sidebar-border: var(--line);
   --sidebar-ring: var(--signal);
 }
 
@@ -117,22 +157,36 @@
 .dark {
   --background: var(--base);
   --foreground: var(--cream);
-  --card: #1a1a1a;
+  --card: var(--surface-1);
   --card-foreground: var(--cream);
-  --popover: #1a1a1a;
+  --popover: var(--surface-1);
   --popover-foreground: var(--cream);
   --primary: var(--signal);
-  --primary-foreground: var(--paper);
-  --secondary: #2a2a2a;
+  --primary-foreground: var(--ink);
+  --secondary: var(--surface-2);
   --secondary-foreground: var(--cream);
-  --muted: #2a2a2a;
-  --muted-foreground: #888888;
+  --muted: var(--surface-2);
+  --muted-foreground: var(--fg-muted);
   --accent: var(--signal);
-  --accent-foreground: var(--paper);
-  --destructive: #7f1d1d;
-  --border: #222222;
-  --input: #222222;
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--ink);
+  --border: var(--line);
+  --input: var(--line);
   --ring: var(--signal);
+  --chart-1: #f2ead8;
+  --chart-2: #6fb3a8;
+  --chart-3: #b58db6;
+  --chart-4: #d6a85a;
+  --chart-5: #979288;
+  --sidebar: var(--base);
+  --sidebar-foreground: var(--cream);
+  --sidebar-primary: var(--signal);
+  --sidebar-primary-foreground: var(--ink);
+  --sidebar-accent: var(--surface-2);
+  --sidebar-accent-foreground: var(--cream);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--signal);
 }
 
 @layer base {
@@ -147,7 +201,7 @@
 
   /* Global Selection Styling */
   ::selection {
-    @apply bg-primary text-black;
+    @apply bg-primary text-ink;
   }
 
   body::before {
@@ -213,24 +267,13 @@
     }
   }
 
-  /* CRT Overlay (Curvature & Vignette) */
+  /* CRT Overlay — base/20 vignette only (RGB stripes removed) */
   .crt-overlay {
-    background:
-      radial-gradient(
-        circle,
-        rgba(18, 16, 16, 0) 50%,
-        rgba(0, 0, 0, 0.25) 100%
-      ),
-      linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
-      linear-gradient(
-        90deg,
-        rgba(255, 0, 0, 0.06),
-        rgba(0, 255, 0, 0.02),
-        rgba(0, 0, 255, 0.06)
-      );
-    background-size:
-      100% 2px,
-      3px 100%;
+    background: radial-gradient(
+      circle,
+      rgba(15, 15, 15, 0) 50%,
+      rgba(15, 15, 15, 0.2) 100%
+    );
     pointer-events: none;
   }
 
@@ -251,13 +294,13 @@
   }
 
   .glitch-text::before {
-    color: #0ff;
+    color: color-mix(in srgb, var(--cream) 20%, transparent);
     z-index: -1;
     animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
   }
 
   .glitch-text::after {
-    color: #f0f;
+    color: color-mix(in srgb, var(--cream) 20%, transparent);
     z-index: -2;
     animation: glitch-anim-2 3s infinite linear alternate-reverse;
   }
@@ -439,14 +482,14 @@
   bottom: 12px;
   left: -18px;
   width: 18px;
-  border-top: 1px solid #222;
-  border-bottom: 1px solid #222;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   border-left: 1px solid var(--base);
   background: linear-gradient(
     90deg,
     var(--base) 0%,
     var(--base) 52%,
-    #2a2a2a 100%
+    var(--surface-3) 100%
   );
   transform-origin: right center;
   transform: skewY(-6deg);
@@ -463,10 +506,10 @@
   width: 10px;
   background: repeating-linear-gradient(
     to right,
-    #f3ebe0 0px,
-    #f3ebe0 1px,
-    #e8dcc8 1px,
-    #e8dcc8 2px
+    var(--page-1) 0px,
+    var(--page-1) 1px,
+    var(--page-2) 1px,
+    var(--page-2) 2px
   );
   transform-origin: left center;
   transform: skewY(4deg);
@@ -479,7 +522,7 @@
   right: 8px;
   left: 2px;
   height: 8px;
-  background: linear-gradient(180deg, #efe6d8 0%, #d9ceb8 100%);
+  background: linear-gradient(180deg, var(--page-2) 0%, var(--page-3) 100%);
   transform-origin: bottom center;
   transform: skewX(-48deg);
   opacity: 0.85;

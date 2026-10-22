@@ -59,7 +59,7 @@ function StarRating({
             className={`${sizeClasses[size]} ${
               star <= (hoverRating || rating)
                 ? "fill-primary text-primary"
-                : "fill-transparent text-[#333]"
+                : "fill-transparent text-fg-faint"
             } transition-colors`}
           />
         </button>
@@ -94,17 +94,17 @@ function ReviewCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="border border-[#222] bg-background p-6 relative group"
+      className="border border-line bg-background p-6 relative group"
     >
       {/* Accent bar */}
       <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-50"></div>
 
       <div className="flex items-start gap-4">
-        <Avatar className="w-10 h-10 border border-[#333]">
+        <Avatar className="w-10 h-10 border border-line">
           {review.user?.avatar_url ? (
             <AvatarImage src={review.user.avatar_url} alt={displayName} />
           ) : null}
-          <AvatarFallback className="bg-[#222] text-primary font-mono text-xs">
+          <AvatarFallback className="bg-surface-2 text-primary font-mono text-xs">
             {initials}
           </AvatarFallback>
         </Avatar>
@@ -116,12 +116,12 @@ function ReviewCard({
                 {displayName}
               </span>
               {review.is_verified_purchase ? (
-                <span className="text-[9px] font-mono uppercase tracking-widest text-green-500 border border-green-900/50 px-2 py-0.5 bg-green-900/20">
+                <span className="text-[9px] font-mono uppercase tracking-widest text-success border border-success/50 px-2 py-0.5 bg-success-wash">
                   Verified
                 </span>
               ) : null}
             </div>
-            <span className="text-[10px] font-mono text-gray-600 uppercase tracking-widest">
+            <span className="text-[10px] font-mono text-fg-faint uppercase tracking-widest">
               {date}
             </span>
           </div>
@@ -136,7 +136,7 @@ function ReviewCard({
           </div>
 
           {review.comment ? (
-            <p className="text-gray-400 text-sm leading-relaxed mb-4">
+            <p className="text-fg-muted text-sm leading-relaxed mb-4">
               {review.comment}
             </p>
           ) : null}
@@ -144,7 +144,7 @@ function ReviewCard({
           <div className="flex items-center justify-between">
             <button
               onClick={onHelpful}
-              className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-gray-500 hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-fg-muted hover:text-primary transition-colors"
             >
               <ThumbsUp size={12} />
               <span>Helpful ({review.helpful_count})</span>
@@ -154,13 +154,13 @@ function ReviewCard({
               <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={onEdit}
-                  className="p-2 text-gray-500 hover:text-cream transition-colors"
+                  className="p-2 text-fg-muted hover:text-cream transition-colors"
                 >
                   <Pencil size={14} />
                 </button>
                 <button
                   onClick={onDelete}
-                  className="p-2 text-gray-500 hover:text-red-500 transition-colors"
+                  className="p-2 text-fg-muted hover:text-danger transition-colors"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -211,7 +211,7 @@ function ReviewForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="border border-[#222] bg-background p-6"
+      className="border border-line bg-background p-6"
     >
       <div className="flex items-center gap-4 mb-6">
         <div className="h-8 w-1 bg-primary"></div>
@@ -232,7 +232,7 @@ function ReviewForm({
             size="lg"
           />
           {rating === 0 && (
-            <p className="text-[10px] font-mono text-gray-500 mt-2">
+            <p className="text-[10px] font-mono text-fg-muted mt-2">
               Click to rate
             </p>
           )}
@@ -246,7 +246,7 @@ function ReviewForm({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Summarize your experience..."
-            className="bg-background border-[#333] text-cream placeholder:text-gray-600 focus:border-primary h-11"
+            className="bg-background border-line text-cream placeholder:text-fg-muted focus:border-primary h-11"
           />
         </div>
 
@@ -259,7 +259,7 @@ function ReviewForm({
             onChange={(e) => setComment(e.target.value)}
             placeholder="Share your thoughts about this product..."
             rows={4}
-            className="w-full bg-background border border-[#333] text-cream placeholder:text-gray-600 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 p-3 text-sm resize-none"
+            className="w-full bg-background border border-line text-cream placeholder:text-fg-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 p-3 text-sm resize-none"
           />
         </div>
 
@@ -267,7 +267,7 @@ function ReviewForm({
           <Button
             type="submit"
             disabled={rating === 0 || isSubmitting}
-            className="h-12 px-8 bg-primary hover:bg-white hover:text-black text-black font-heading uppercase tracking-widest rounded-none transition-all disabled:opacity-50"
+            className="h-12 px-8 bg-primary hover:bg-cream hover:text-ink text-ink font-heading uppercase tracking-widest rounded-none transition-all disabled:opacity-50"
           >
             {isSubmitting ? (
               <span className="animate-pulse">Submitting...</span>
@@ -284,7 +284,7 @@ function ReviewForm({
               type="button"
               onClick={onCancel}
               variant="ghost"
-              className="h-12 px-6 text-gray-500 hover:text-cream font-mono uppercase tracking-widest"
+              className="h-12 px-6 text-fg-muted hover:text-cream font-mono uppercase tracking-widest"
             >
               Cancel
             </Button>
@@ -391,7 +391,7 @@ export function ReviewsSection({
   };
 
   return (
-    <section className="border-t border-[#222] pt-12 mt-12">
+    <section className="border-t border-line pt-12 mt-12">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div>
@@ -401,28 +401,28 @@ export function ReviewsSection({
               Customer Reviews
             </h2>
           </div>
-          <p className="font-mono text-sm text-gray-500 tracking-widest uppercase">
+          <p className="font-mono text-sm text-fg-muted tracking-widest uppercase">
             Feedback from verified neural network users
           </p>
         </div>
 
         {/* Rating Summary */}
         {rating && rating.review_count > 0 ? (
-          <div className="flex items-center gap-6 bg-background border border-[#222] px-6 py-4">
+          <div className="flex items-center gap-6 bg-background border border-line px-6 py-4">
             <div className="text-center">
               <div className="font-heading text-4xl text-cream">
                 {rating.average_rating.toFixed(1)}
               </div>
-              <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">
+              <div className="text-[10px] font-mono text-fg-muted uppercase tracking-widest">
                 out of 5
               </div>
             </div>
-            <div className="border-l border-[#333] pl-6">
+            <div className="border-l border-line pl-6">
               <StarRating
                 rating={Math.round(rating.average_rating)}
                 size="md"
               />
-              <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1">
+              <div className="text-[10px] font-mono text-fg-muted uppercase tracking-widest mt-1">
                 {rating.review_count}{" "}
                 {rating.review_count === 1 ? "review" : "reviews"}
               </div>
@@ -435,7 +435,7 @@ export function ReviewsSection({
       {user ? (
         userReview && !isEditing ? (
           <div className="mb-8 p-4 border border-primary/30 bg-primary/5">
-            <p className="text-sm text-gray-400 font-mono">
+            <p className="text-sm text-fg-muted font-mono">
               You've already reviewed this product.{" "}
               <button
                 onClick={() => setIsEditing(true)}
@@ -455,14 +455,14 @@ export function ReviewsSection({
           </div>
         )
       ) : (
-        <div className="mb-8 p-6 border border-[#222] bg-background text-center">
-          <User size={24} className="mx-auto mb-3 text-gray-500" />
-          <p className="text-gray-400 font-mono text-sm mb-4">
+        <div className="mb-8 p-6 border border-line bg-background text-center">
+          <User size={24} className="mx-auto mb-3 text-fg-muted" />
+          <p className="text-fg-muted font-mono text-sm mb-4">
             Sign in to leave a review
           </p>
           <Button
             onClick={() => openAuthModal("login")}
-            className="h-10 px-6 bg-primary hover:bg-white hover:text-black text-black font-heading uppercase tracking-widest rounded-none"
+            className="h-10 px-6 bg-primary hover:bg-cream hover:text-ink text-ink font-heading uppercase tracking-widest rounded-none"
           >
             Sign In
           </Button>
@@ -475,27 +475,27 @@ export function ReviewsSection({
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="border border-[#222] bg-background p-6 animate-pulse"
+              className="border border-line bg-background p-6 animate-pulse"
             >
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#222]" />
+                <div className="w-10 h-10 rounded-full bg-surface-2" />
                 <div className="flex-1">
-                  <div className="h-4 bg-[#222] w-1/4 mb-3 rounded" />
-                  <div className="h-3 bg-[#222] w-1/3 mb-4 rounded" />
-                  <div className="h-3 bg-[#222] w-full mb-2 rounded" />
-                  <div className="h-3 bg-[#222] w-2/3 rounded" />
+                  <div className="h-4 bg-surface-2 w-1/4 mb-3 rounded" />
+                  <div className="h-3 bg-surface-2 w-1/3 mb-4 rounded" />
+                  <div className="h-3 bg-surface-2 w-full mb-2 rounded" />
+                  <div className="h-3 bg-surface-2 w-2/3 rounded" />
                 </div>
               </div>
             </div>
           ))}
         </div>
       ) : reviews.length === 0 ? (
-        <div className="text-center py-12 border border-[#222] bg-background">
-          <Star size={32} className="mx-auto mb-4 text-[#333]" />
-          <p className="font-mono text-gray-500 uppercase tracking-widest text-sm">
+        <div className="text-center py-12 border border-line bg-background">
+          <Star size={32} className="mx-auto mb-4 text-fg-faint" />
+          <p className="font-mono text-fg-muted uppercase tracking-widest text-sm">
             No reviews yet
           </p>
-          <p className="text-gray-600 text-sm mt-2">
+          <p className="text-fg-faint text-sm mt-2">
             Be the first to share your experience!
           </p>
         </div>
@@ -543,7 +543,7 @@ export function ProductRatingDisplay({
     <div className="flex items-center gap-2">
       <StarRating rating={Math.round(rating.average_rating)} size={size} />
       {showCount ? (
-        <span className="text-[10px] font-mono text-gray-500">
+        <span className="text-[10px] font-mono text-fg-muted">
           ({rating.review_count})
         </span>
       ) : null}

@@ -291,9 +291,9 @@ export default function ScanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-cream selection:bg-primary selection:text-black">
+    <div className="min-h-screen bg-background text-cream selection:bg-primary selection:text-ink">
       {/* Header Banner */}
-      <div className="bg-background border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="flex items-center justify-center gap-2 mb-4 text-primary font-mono uppercase tracking-widest text-xs">
@@ -303,7 +303,7 @@ export default function ScanPage() {
           <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
             Scan a Page
           </h1>
-          <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-xl mx-auto">
+          <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl mx-auto">
             {step === "permission" && "Start Scanning"}
             {step === "qr" && "Step 1: Scan code"}
             {step === "capture" && "Step 2: Take photo"}
@@ -315,7 +315,7 @@ export default function ScanPage() {
 
       <div className="container mx-auto px-4 py-12 max-w-lg">
         {/* Content Area */}
-        <div className="bg-background border border-[#333] relative overflow-hidden aspect-[3/4] flex flex-col items-center justify-center">
+        <div className="bg-background border border-line relative overflow-hidden aspect-[3/4] flex flex-col items-center justify-center">
           {/* Step 0: Permission Primer */}
           {step === "permission" && (
             <div className="flex flex-col items-center justify-center p-8 text-center">
@@ -325,14 +325,14 @@ export default function ScanPage() {
               <h3 className="font-heading text-lg uppercase mb-3 text-cream">
                 Camera Access Needed
               </h3>
-              <p className="text-gray-400 font-mono text-xs mb-8 max-w-xs leading-relaxed">
+              <p className="text-fg-muted font-mono text-xs mb-8 max-w-xs leading-relaxed">
                 To scan your book code and capture your coloring page, we need
                 access to your device&apos;s camera.
               </p>
               <div className="space-y-3 w-full max-w-xs">
                 <Button
                   onClick={() => setStep("qr")}
-                  className="w-full h-12 bg-primary text-black hover:bg-primary/90 font-heading uppercase tracking-widest"
+                  className="w-full h-12 bg-primary text-ink hover:bg-primary/90 font-heading uppercase tracking-widest"
                 >
                   Enable Camera
                 </Button>
@@ -341,7 +341,7 @@ export default function ScanPage() {
                     setStep("qr");
                     setUseCamera(false);
                   }}
-                  className="text-xs font-mono text-gray-500 uppercase hover:text-cream transition-colors"
+                  className="text-xs font-mono text-fg-muted uppercase hover:text-cream transition-colors"
                 >
                   Or enter code manually
                 </button>
@@ -351,22 +351,22 @@ export default function ScanPage() {
 
           {/* Insecure Context Warning */}
           {!secureLoading && !isSecure && step !== "permission" && (
-            <div className="absolute inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-8 text-center">
-              <div className="w-16 h-16 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center mb-6">
+            <div className="absolute inset-0 z-50 bg-background/80 flex flex-col items-center justify-center p-8 text-center">
+              <div className="w-16 h-16 bg-warning-wash text-warning rounded-full flex items-center justify-center mb-6">
                 <ShieldAlert size={32} />
               </div>
-              <h3 className="font-heading text-xl uppercase mb-3 text-yellow-500">
+              <h3 className="font-heading text-xl uppercase mb-3 text-warning">
                 Secure Connection Required
               </h3>
-              <p className="text-gray-400 font-mono text-xs mb-6 max-w-xs leading-relaxed">
+              <p className="text-fg-muted font-mono text-xs mb-6 max-w-xs leading-relaxed">
                 Camera access requires HTTPS. You&apos;re accessing this page
                 over an insecure connection.
               </p>
-              <div className="bg-[#1a1a1a] border border-[#333] p-4 text-left w-full max-w-xs">
+              <div className="bg-surface-1 border border-line p-4 text-left w-full max-w-xs">
                 <p className="text-[10px] text-primary font-mono uppercase tracking-widest mb-3 flex items-center gap-2">
                   <Smartphone size={12} /> On Your Phone
                 </p>
-                <ol className="text-xs text-gray-400 font-mono space-y-2 list-decimal list-inside">
+                <ol className="text-xs text-fg-muted font-mono space-y-2 list-decimal list-inside">
                   <li>
                     Open Chrome and go to{" "}
                     <span className="text-cream">chrome://flags</span>
@@ -390,11 +390,11 @@ export default function ScanPage() {
           {step === "qr" && isSecure ? (
             <button
               onClick={toggleCameraMode}
-              className="absolute top-4 right-4 z-50 bg-black/70 backdrop-blur-sm border border-[#333] p-2 hover:bg-[#222] transition-colors"
+              className="absolute top-4 right-4 z-50 bg-background/60 backdrop-blur-sm border border-line p-2 hover:bg-surface-2 transition-colors"
               title={useCamera ? "Switch to manual entry" : "Switch to camera"}
             >
               {useCamera ? (
-                <Keyboard size={20} className="text-gray-400" />
+                <Keyboard size={20} className="text-fg-muted" />
               ) : (
                 <Camera size={20} className="text-primary" />
               )}
@@ -446,15 +446,15 @@ export default function ScanPage() {
                   <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary"></div>
                 </div>
               </div>
-              <div className="absolute bottom-8 left-0 right-0 text-center text-sm font-mono bg-black/50 py-2 backdrop-blur-sm">
+              <div className="absolute bottom-8 left-0 right-0 text-center text-sm font-mono bg-background/40 py-2 backdrop-blur-sm">
                 {cameraError ? (
                   <div className="px-4">
-                    <p className="text-red-400 mb-2">
+                    <p className="text-danger mb-2">
                       Camera Error: {cameraError}
                     </p>
                     {cameraError.toLowerCase().includes("denied") ||
                     cameraError.toLowerCase().includes("permission") ? (
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-fg-muted">
                         Go to Safari → Settings → Websites → Camera and allow
                         access for localhost
                       </p>
@@ -470,11 +470,11 @@ export default function ScanPage() {
           {/* Step 1b: Manual Code Entry */}
           {step === "qr" && isSecure && !useCamera ? (
             <div className="w-full h-full flex flex-col items-center justify-center p-8">
-              <CameraOff size={48} className="text-gray-600 mb-6" />
+              <CameraOff size={48} className="text-fg-faint mb-6" />
               <h3 className="font-heading text-lg uppercase mb-2">
                 Manual Entry
               </h3>
-              <p className="text-gray-500 font-mono text-xs mb-6 text-center">
+              <p className="text-fg-muted font-mono text-xs mb-6 text-center">
                 Enter the code from your coloring book
               </p>
               <form
@@ -485,13 +485,13 @@ export default function ScanPage() {
                   value={manualCode}
                   onChange={(e) => setManualCode(e.target.value.toUpperCase())}
                   placeholder="ENTER CODE"
-                  className="bg-background border-[#333] text-cream font-mono text-lg tracking-[0.3em] uppercase h-14 text-center focus:border-primary"
+                  className="bg-background border-line text-cream font-mono text-lg tracking-[0.3em] uppercase h-14 text-center focus:border-primary"
                   maxLength={20}
                 />
                 <Button
                   type="submit"
                   disabled={!manualCode.trim()}
-                  className="w-full h-12 bg-primary text-black hover:bg-primary/90 font-heading uppercase"
+                  className="w-full h-12 bg-primary text-ink hover:bg-primary/90 font-heading uppercase"
                 >
                   Verify Code
                 </Button>
@@ -507,7 +507,7 @@ export default function ScanPage() {
                   size={32}
                   className="animate-spin text-primary mx-auto mb-4"
                 />
-                <p className="text-gray-400 font-mono text-xs">
+                <p className="text-fg-muted font-mono text-xs">
                   Initializing camera...
                 </p>
               </div>
@@ -518,13 +518,13 @@ export default function ScanPage() {
           {step === "capture" && (
             <div className="w-full h-full relative bg-background flex flex-col items-center justify-center p-8 text-center">
               <div className="mb-8 relative">
-                <div className="w-24 h-24 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center mb-4 mx-auto">
-                  <Camera size={40} className="text-gray-400" />
+                <div className="w-24 h-24 rounded-full border-2 border-dashed border-fg-faint flex items-center justify-center mb-4 mx-auto">
+                  <Camera size={40} className="text-fg-muted" />
                 </div>
                 <h3 className="font-heading text-xl uppercase mb-2">
                   Capture Page
                 </h3>
-                <p className="text-gray-500 font-mono text-xs max-w-xs mx-auto">
+                <p className="text-fg-muted font-mono text-xs max-w-xs mx-auto">
                   Take a clear photo of your colored page. Ensure good lighting
                   and that the whole page is visible.
                 </p>
@@ -538,14 +538,14 @@ export default function ScanPage() {
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                <div className="bg-primary text-black font-heading uppercase tracking-wider px-8 py-4 rounded-full flex items-center gap-3 hover:bg-white transition-colors">
+                <div className="bg-primary text-ink font-heading uppercase tracking-wider px-8 py-4 rounded-full flex items-center gap-3 hover:bg-cream transition-colors">
                   <Camera size={20} />
                   Open Camera
                 </div>
               </label>
 
               <div className="mt-4">
-                <label className="cursor-pointer text-xs font-mono uppercase text-gray-500 hover:text-cream transition-colors underline">
+                <label className="cursor-pointer text-xs font-mono uppercase text-fg-muted hover:text-cream transition-colors underline">
                   <input
                     type="file"
                     accept="image/*"
@@ -557,11 +557,11 @@ export default function ScanPage() {
               </div>
 
               {bookInfo ? (
-                <div className="mt-8 p-3 bg-[#1a1a1a] border border-[#333] rounded-lg w-full max-w-xs">
+                <div className="mt-8 p-3 bg-surface-1 border border-line rounded-lg w-full max-w-xs">
                   <div className="flex items-center gap-3 justify-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
                     <div className="text-xs font-mono uppercase">
-                      <span className="text-gray-400">Verified:</span>{" "}
+                      <span className="text-fg-muted">Verified:</span>{" "}
                       <span className="text-cream">{bookInfo.title}</span>
                       {bookInfo.page ? (
                         <span className="text-primary ml-2">
@@ -600,7 +600,7 @@ export default function ScanPage() {
                 </div>
               </div>
 
-              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="absolute inset-0 bg-background/10"></div>
             </div>
           ) : null}
 
@@ -625,7 +625,7 @@ export default function ScanPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-green-500 font-mono text-[10px] uppercase tracking-widest mb-2">
+              <div className="flex items-center gap-2 text-success font-mono text-[10px] uppercase tracking-widest mb-2">
                 <Check size={12} />
                 <span>Success</span>
               </div>
@@ -633,21 +633,21 @@ export default function ScanPage() {
               <h3 className="font-heading text-2xl uppercase mb-2 text-cream">
                 Scan Uploaded!
               </h3>
-              <p className="text-gray-400 font-mono text-xs mb-6 max-w-xs">
+              <p className="text-fg-muted font-mono text-xs mb-6 max-w-xs">
                 Your page has been submitted for verification. A new trophy may
                 be waiting for you in your collection!
               </p>
 
               <div className="flex flex-col gap-3 w-full max-w-xs">
                 <Link href="/trophy-room" className="w-full">
-                  <Button className="w-full h-12 bg-primary text-black hover:bg-primary/90 font-heading uppercase tracking-widest">
+                  <Button className="w-full h-12 bg-primary text-ink hover:bg-primary/90 font-heading uppercase tracking-widest">
                     <Trophy size={16} className="mr-2" /> View Trophy Room
                   </Button>
                 </Link>
                 <Button
                   onClick={resetFlow}
                   variant="outline"
-                  className="w-full h-10 border-[#333] text-gray-400 hover:text-cream hover:border-white font-mono text-xs uppercase tracking-widest"
+                  className="w-full h-10 border-line text-fg-muted hover:text-cream hover:border-cream font-mono text-xs uppercase tracking-widest"
                 >
                   Scan Another Page
                 </Button>
@@ -665,13 +665,13 @@ export default function ScanPage() {
             <Button
               onClick={retakePhoto}
               variant="outline"
-              className="h-12 border-[#333] hover:bg-[#222]"
+              className="h-12 border-line hover:bg-surface-2"
             >
               <RotateCcw size={16} className="mr-2" /> Retake
             </Button>
             <Button
               onClick={handleUpload}
-              className="h-12 bg-primary text-black hover:bg-primary/90"
+              className="h-12 bg-primary text-ink hover:bg-primary/90"
             >
               <Upload size={16} className="mr-2" /> Upload Scan
             </Button>
@@ -681,7 +681,7 @@ export default function ScanPage() {
         {/* Action Buttons for Uploading */}
         {step === "uploading" && (
           <div className="mt-6">
-            <Button disabled className="w-full h-12 bg-[#222] text-cream">
+            <Button disabled className="w-full h-12 bg-surface-2 text-cream">
               <Loader2 size={16} className="mr-2 animate-spin" /> Uploading...
             </Button>
           </div>
@@ -697,7 +697,7 @@ export default function ScanPage() {
                 onClick={() => {
                   router.back();
                 }}
-                className="text-gray-500 text-xs font-mono uppercase tracking-widest hover:text-cream transition-colors py-2 px-4"
+                className="text-fg-muted text-xs font-mono uppercase tracking-widest hover:text-cream transition-colors py-2 px-4"
               >
                 Cancel
               </button>

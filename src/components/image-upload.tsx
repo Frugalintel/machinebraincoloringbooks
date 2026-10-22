@@ -66,24 +66,24 @@ export function ImageUpload({
   return (
     <div className="w-full">
       {image ? (
-        <div className="relative aspect-video w-full bg-[#222] rounded-lg overflow-hidden border border-[#333] group">
+        <div className="relative aspect-video w-full bg-surface-2 rounded-lg overflow-hidden border border-line group">
           <img
             src={image}
             alt="Uploaded"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+          <div className="absolute inset-0 bg-background/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <button
               type="button"
               onClick={removeImage}
-              className="bg-red-500 text-cream p-2 rounded-full hover:bg-red-600 transition-colors"
+              className="bg-danger text-cream p-2 rounded-full hover:bg-danger-strong transition-colors"
             >
               <X size={20} />
             </button>
           </div>
         </div>
       ) : (
-        <div className="relative aspect-video w-full bg-background border-2 border-dashed border-[#333] rounded-lg hover:border-primary/50 transition-colors flex flex-col items-center justify-center cursor-pointer group">
+        <div className="relative aspect-video w-full bg-background border-2 border-dashed border-line rounded-lg hover:border-primary/50 transition-colors flex flex-col items-center justify-center cursor-pointer group">
           <input
             type="file"
             accept="image/*"
@@ -91,7 +91,7 @@ export function ImageUpload({
             disabled={uploading}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
           />
-          <div className="flex flex-col items-center gap-2 text-gray-500 group-hover:text-primary transition-colors">
+          <div className="flex flex-col items-center gap-2 text-fg-muted group-hover:text-primary transition-colors">
             {uploading ? (
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             ) : (

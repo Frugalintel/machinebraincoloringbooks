@@ -148,13 +148,13 @@ export default function TrophyRoomPage() {
       <main className="min-h-screen bg-background text-cream font-sans flex flex-col">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
-            <Lock className="w-12 h-12 text-gray-500 mx-auto" />
+            <Lock className="w-12 h-12 text-fg-muted mx-auto" />
             <h1 className="text-2xl font-heading uppercase">
               Restricted Access
             </h1>
             <Button
               onClick={() => openAuthModal("login")}
-              className="bg-primary text-black hover:bg-white uppercase tracking-widest"
+              className="bg-primary text-ink hover:bg-cream uppercase tracking-widest"
             >
               Login Required
             </Button>
@@ -167,14 +167,14 @@ export default function TrophyRoomPage() {
   return (
     <main className="min-h-screen bg-background text-cream font-sans">
       {/* Header Banner */}
-      <div className="bg-background border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="mb-6">
             <Link href="/profile/me">
               <Button
                 variant="ghost"
-                className="pl-0 hover:bg-transparent hover:text-primary text-gray-500 font-mono text-xs uppercase tracking-widest transition-colors"
+                className="pl-0 hover:bg-transparent hover:text-primary text-fg-muted font-mono text-xs uppercase tracking-widest transition-colors"
               >
                 <ArrowLeft size={14} className="mr-2" /> Back to Profile
               </Button>
@@ -187,7 +187,7 @@ export default function TrophyRoomPage() {
           <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
             Your Collection
           </h1>
-          <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-xl">
+          <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">
             Your digital rewards from coloring books.
           </p>
         </div>
@@ -204,10 +204,10 @@ export default function TrophyRoomPage() {
               return (
                 <div
                   key={set.id}
-                  className="border border-[#333] bg-background p-6 md:p-8 relative overflow-hidden group"
+                  className="border border-line bg-background p-6 md:p-8 relative overflow-hidden group"
                 >
                   {/* Progress Bar */}
-                  <div className="absolute top-0 left-0 h-1 bg-[#222] w-full">
+                  <div className="absolute top-0 left-0 h-1 bg-surface-2 w-full">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${progress}%` }}
@@ -221,7 +221,7 @@ export default function TrophyRoomPage() {
                       <h3 className="font-heading text-3xl text-cream uppercase tracking-wide mb-2">
                         {set.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-xs font-mono text-gray-500 uppercase tracking-widest">
+                      <div className="flex items-center gap-2 text-xs font-mono text-fg-muted uppercase tracking-widest">
                         <span>
                           Status: {isComplete ? "Complete" : "In Progress"}
                         </span>
@@ -231,7 +231,7 @@ export default function TrophyRoomPage() {
                       </div>
                     </div>
                     {isComplete ? (
-                      <div className="bg-primary text-black px-4 py-2 font-heading uppercase tracking-widest text-sm animate-pulse">
+                      <div className="bg-primary text-ink px-4 py-2 font-heading uppercase tracking-widest text-sm animate-pulse">
                         Set Complete
                       </div>
                     ) : null}
@@ -248,7 +248,7 @@ export default function TrophyRoomPage() {
                           className="block"
                         >
                           <div
-                            className={`aspect-square border ${isCollected ? "border-primary/50 bg-background" : "border-[#333] border-dashed bg-transparent"} relative flex flex-col items-center justify-center p-4 group/item transition-all hover:border-primary cursor-pointer h-full`}
+                            className={`aspect-square border ${isCollected ? "border-primary/50 bg-background" : "border-line border-dashed bg-transparent"} relative flex flex-col items-center justify-center p-4 group/item transition-all hover:border-primary cursor-pointer h-full`}
                           >
                             {isCollected ? (
                               <>
@@ -267,7 +267,7 @@ export default function TrophyRoomPage() {
                                     }
                                   />
                                 </div>
-                                <span className="absolute bottom-2 left-0 right-0 text-[10px] font-mono text-gray-400 uppercase text-center z-10 group-hover/item:text-cream transition-colors">
+                                <span className="absolute bottom-2 left-0 right-0 text-[10px] font-mono text-fg-muted uppercase text-center z-10 group-hover/item:text-cream transition-colors">
                                   {item.name}
                                 </span>
                                 <div className="absolute top-2 right-2 text-primary z-10">
@@ -276,8 +276,8 @@ export default function TrophyRoomPage() {
                               </>
                             ) : (
                               <>
-                                <Lock className="w-6 h-6 text-gray-700 mb-2 group-hover/item:text-gray-500 transition-colors" />
-                                <span className="text-[10px] font-mono text-gray-700 uppercase text-center group-hover/item:text-gray-500 transition-colors">
+                                <Lock className="w-6 h-6 text-fg-faint mb-2 group-hover/item:text-fg-muted transition-colors" />
+                                <span className="text-[10px] font-mono text-fg-faint uppercase text-center group-hover/item:text-fg-muted transition-colors">
                                   Locked
                                 </span>
                               </>
@@ -295,7 +295,7 @@ export default function TrophyRoomPage() {
         {/* Right: Code Input & Reward */}
         <div className="lg:col-span-4 space-y-8">
           {/* Code Input */}
-          <div className="bg-background border border-[#333] p-6 md:p-8 relative">
+          <div className="bg-background border border-line p-6 md:p-8 relative">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-transparent"></div>
             <h3 className="font-heading text-xl text-cream mb-6 uppercase flex items-center gap-2">
               <Scan size={18} className="text-primary" /> Enter a code
@@ -309,7 +309,7 @@ export default function TrophyRoomPage() {
                 <Input
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  className="bg-background border-[#333] text-cream font-mono text-lg tracking-[0.5em] uppercase h-14 text-center focus:border-primary focus:ring-0 rounded-none placeholder:text-gray-800"
+                  className="bg-background border-line text-cream font-mono text-lg tracking-[0.5em] uppercase h-14 text-center focus:border-primary focus:ring-0 rounded-none placeholder:text-fg-muted"
                   placeholder="CODE"
                   maxLength={12}
                   disabled={loading}
@@ -318,7 +318,7 @@ export default function TrophyRoomPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 bg-[#222] hover:bg-primary hover:text-black text-white font-heading uppercase tracking-widest rounded-none transition-all"
+                className="w-full h-12 bg-surface-2 hover:bg-primary hover:text-ink text-cream font-heading uppercase tracking-widest rounded-none transition-all"
               >
                 {loading ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -350,7 +350,7 @@ export default function TrophyRoomPage() {
                   {unlockedReward}
                 </p>
 
-                <div className="w-full aspect-square bg-background border border-[#333] relative mb-4 overflow-hidden">
+                <div className="w-full aspect-square bg-background border border-line relative mb-4 overflow-hidden">
                   {/* 3D Trophy Model */}
                   <TrophyCanvas
                     size="large"
@@ -358,12 +358,12 @@ export default function TrophyRoomPage() {
                     autoRotate={true}
                     isInteractive={true}
                   />
-                  <div className="absolute bottom-4 left-0 right-0 text-center text-[10px] font-mono text-gray-500 uppercase pointer-events-none">
+                  <div className="absolute bottom-4 left-0 right-0 text-center text-[10px] font-mono text-fg-muted uppercase pointer-events-none">
                     Drag to Rotate
                   </div>
                 </div>
 
-                <Button className="w-full border border-primary text-primary hover:bg-primary hover:text-black bg-transparent font-heading uppercase tracking-widest text-xs h-10 rounded-none">
+                <Button className="w-full border border-primary text-primary hover:bg-primary hover:text-ink bg-transparent font-heading uppercase tracking-widest text-xs h-10 rounded-none">
                   View in 3D
                 </Button>
               </motion.div>

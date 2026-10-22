@@ -187,19 +187,19 @@ export function CodeEntry() {
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="Enter your code"
-            className="bg-background border-[#333] text-cream font-mono uppercase tracking-widest h-12 pl-10 focus:border-primary/50 transition-colors"
+            className="bg-background border-line text-cream font-mono uppercase tracking-widest h-12 pl-10 focus:border-primary/50 transition-colors"
           />
           <Lock
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted"
           />
         </div>
         <Button
           type="submit"
           disabled={loading || !code}
-          className={`h-12 w-12 p-0 rounded bg-[#222] border border-[#333] hover:bg-primary hover:text-black hover:border-primary transition-all duration-300
-            ${result === "success" ? "bg-green-500 text-black border-green-500" : ""}
-            ${result === "error" ? "bg-red-500 text-cream border-red-500" : ""}
+          className={`h-12 w-12 p-0 rounded bg-surface-2 border border-line hover:bg-primary hover:text-ink hover:border-primary transition-all duration-300
+            ${result === "success" ? "bg-success text-ink border-success" : ""}
+            ${result === "error" ? "bg-danger text-cream border-danger" : ""}
           `}
         >
           {loading ? (
@@ -221,7 +221,7 @@ export function CodeEntry() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             className={`absolute top-full left-0 right-0 mt-2 text-[10px] font-mono uppercase tracking-widest text-center
-              ${result === "success" ? "text-green-500" : "text-red-500"}
+              ${result === "success" ? "text-success" : "text-danger"}
             `}
           >
             {result === "error" && <span className="mr-2">⚠</span>}

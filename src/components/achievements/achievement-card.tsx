@@ -53,7 +53,7 @@ export function AchievementCard({
       ? styles.border
       : isActive
         ? styles.border + " shadow-[0_0_15px_rgba(255,255,255,0.1)]"
-        : "border-[#333] hover:border-gray-600"
+        : "border-line hover:border-line-strong"
   } ${isCompleted ? styles.glow : ""}`;
 
   // Compact/Modal Variant (Used in Swap Modal)
@@ -63,7 +63,7 @@ export function AchievementCard({
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
         onClick={() => onToggle && onToggle(achievement.id)}
-        className="w-full p-4 border border-[#333] bg-background hover:border-red-500/50 hover:bg-red-900/10 transition-all flex items-center gap-4 group text-left rounded-xl"
+        className="w-full p-4 border border-line bg-background hover:border-danger/50 hover:bg-danger-wash transition-all flex items-center gap-4 group text-left rounded-xl"
       >
         <div
           className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 ${styles.icon} bg-opacity-20`}
@@ -76,11 +76,11 @@ export function AchievementCard({
           >
             {achievement.title}
           </h4>
-          <p className="text-[10px] text-gray-500 font-mono uppercase">
+          <p className="text-[10px] text-fg-muted font-mono uppercase">
             {achievement.progress || "In Progress"}
           </p>
         </div>
-        <div className="text-[10px] text-gray-600 group-hover:text-red-500 font-mono uppercase tracking-widest transition-colors">
+        <div className="text-[10px] text-fg-faint group-hover:text-danger font-mono uppercase tracking-widest transition-colors">
           Remove
         </div>
       </motion.button>
@@ -124,7 +124,7 @@ export function AchievementCard({
                 ? styles.icon
                 : isActive
                   ? styles.icon
-                  : "border-[#333] text-gray-600 bg-background"
+                  : "border-line text-fg-faint bg-background"
             }`}
           >
             <AchievementIcon icon={achievement.icon} size={24} />
@@ -137,7 +137,7 @@ export function AchievementCard({
                   ? styles.titleColor
                   : isActive
                     ? "text-cream"
-                    : "text-gray-400"
+                    : "text-fg-muted"
               }`}
             >
               {achievement.title}
@@ -146,29 +146,29 @@ export function AchievementCard({
             <div className="flex flex-wrap gap-2 mb-1">
               {/* Rarity Badge - Minimalist */}
               <span
-                className={`inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-white/5 ${
-                  isCompleted ? styles.text : "text-gray-500"
+                className={`inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-cream/5 ${
+                  isCompleted ? styles.text : "text-fg-muted"
                 }`}
               >
                 <span
-                  className={`w-1.5 h-1.5 rounded-full ${isCompleted ? styles.bg.replace("bg-gradient-to-br", "bg") : "bg-gray-600"}`}
+                  className={`w-1.5 h-1.5 rounded-full ${isCompleted ? styles.bg.replace("bg-gradient-to-br", "bg") : "bg-fg-faint"}`}
                 ></span>
                 {achievement.rarity || "Common"}
               </span>
 
               {/* Status Badge - Solid/Distinct */}
               {isCompleted ? (
-                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-white/10 text-cream border border-white/20 shadow-sm backdrop-blur-sm">
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-cream/10 text-cream border border-cream/20 shadow-sm backdrop-blur-sm">
                   <CheckCircle
                     size={10}
                     fill="currentColor"
-                    className="text-green-500"
+                    className="text-success"
                   />
                   Complete
                 </span>
               ) : isActive ? (
-                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-primary text-black shadow-[0_0_10px_rgba(255,79,0,0.4)] animate-pulse">
-                  <Zap size={10} fill="currentColor" className="text-black" />
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-primary text-ink shadow-[0_0_10px_rgba(255,79,0,0.4)] animate-pulse">
+                  <Zap size={10} fill="currentColor" className="text-ink" />
                   Active
                 </span>
               ) : null}
@@ -178,7 +178,7 @@ export function AchievementCard({
           {achievement.is_secret && !isCompleted ? (
             <div className="absolute top-5 right-4">
               <span title="Secret">
-                <Lock size={12} className="text-gray-600" />
+                <Lock size={12} className="text-fg-faint" />
               </span>
             </div>
           ) : null}
@@ -186,38 +186,38 @@ export function AchievementCard({
 
         <p
           className={`text-xs line-clamp-2 mt-3 min-h-[2.5em] ${
-            isCompleted || isActive ? "text-gray-300" : "text-gray-600"
+            isCompleted || isActive ? "text-fg-secondary" : "text-fg-faint"
           }`}
         >
           {achievement.description}
         </p>
 
         {/* Progress / Target Section */}
-        <div className="pt-3 border-t border-white/5 mt-3">
+        <div className="pt-3 border-t border-cream/5 mt-3">
           {!isCompleted && achievement.progress ? (
             <div className="space-y-1">
               <div className="flex justify-between text-[10px] font-mono uppercase">
-                <span className="text-gray-500">Progress</span>
-                <span className={isActive ? "text-primary" : "text-gray-500"}>
+                <span className="text-fg-muted">Progress</span>
+                <span className={isActive ? "text-primary" : "text-fg-muted"}>
                   {achievement.progress}
                 </span>
               </div>
-              <div className="h-1 bg-[#222] w-full rounded-full overflow-hidden">
+              <div className="h-1 bg-surface-2 w-full rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercent}%` }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className={`h-full ${isActive ? "bg-primary" : "bg-gray-600"}`}
+                  className={`h-full ${isActive ? "bg-primary" : "bg-fg-faint"}`}
                 />
               </div>
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-gray-500 font-mono uppercase">
+              <span className="text-[10px] text-fg-muted font-mono uppercase">
                 {isCompleted ? "Unlocked" : "Target"}
               </span>
               <span
-                className={`text-xs font-bold font-mono ${isCompleted ? styles.text : "text-gray-500"}`}
+                className={`text-xs font-bold font-mono ${isCompleted ? styles.text : "text-fg-muted"}`}
               >
                 {isCompleted
                   ? achievement.date || "Completed"
@@ -229,7 +229,7 @@ export function AchievementCard({
       </div>
 
       {/* Actions Footer - Fixed at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 bg-black/20 border-t border-white/5 p-2 flex justify-between items-center backdrop-blur-sm">
+      <div className="absolute bottom-0 left-0 right-0 bg-background/20 border-t border-cream/5 p-2 flex justify-between items-center backdrop-blur-sm">
         {relatedCollectible ? (
           <div
             className="flex items-center gap-2 px-2"
@@ -238,7 +238,7 @@ export function AchievementCard({
             <div
               className={`w-4 h-4 rounded-full ${relatedCollectible.image} opacity-70`}
             ></div>
-            <span className="text-[9px] font-mono text-gray-400 uppercase truncate max-w-[100px]">
+            <span className="text-[9px] font-mono text-fg-muted uppercase truncate max-w-[100px]">
               {relatedCollectible.name}
             </span>
           </div>
@@ -256,9 +256,9 @@ export function AchievementCard({
             variant="ghost"
             className={`h-8 text-[9px] uppercase tracking-widest font-bold hover:bg-transparent ${
               isActive
-                ? "text-red-500 hover:text-red-400"
+                ? "text-danger hover:text-danger"
                 : isFull
-                  ? "text-amber-500 hover:text-amber-400"
+                  ? "text-signal hover:text-signal"
                   : "text-primary hover:text-cream"
             }`}
           >
@@ -267,7 +267,7 @@ export function AchievementCard({
         ) : null}
 
         {isCompleted ? (
-          <div className="flex items-center gap-1 px-3 py-1 text-[9px] uppercase tracking-widest text-green-500 font-mono">
+          <div className="flex items-center gap-1 px-3 py-1 text-[9px] uppercase tracking-widest text-success font-mono">
             <CheckCircle size={10} /> Done
           </div>
         ) : null}

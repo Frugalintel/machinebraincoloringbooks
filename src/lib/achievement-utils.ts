@@ -1,93 +1,115 @@
-import { 
-    Trophy, Medal, Crown, Star, Gem, Zap, Rocket, Sword, Shield, Map, Brush, Code, Lock, Heart, Smile, Terminal 
+import {
+  Trophy,
+  Medal,
+  Crown,
+  Star,
+  Gem,
+  Zap,
+  Rocket,
+  Sword,
+  Shield,
+  Map,
+  Brush,
+  Code,
+  Lock,
+  Heart,
+  Smile,
+  Terminal,
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
 export const ICON_MAP: Record<string, LucideIcon> = {
-    'trophy': Trophy,
-    'medal': Medal,
-    'crown': Crown,
-    'star': Star,
-    'gem': Gem,
-    'zap': Zap,
-    'rocket': Rocket,
-    'sword': Sword,
-    'shield': Shield,
-    'map': Map,
-    'brush': Brush,
-    'code': Code,
-    'lock': Lock,
-    'heart': Heart,
-    'smile': Smile,
-    'terminal': Terminal,
+  trophy: Trophy,
+  medal: Medal,
+  crown: Crown,
+  star: Star,
+  gem: Gem,
+  zap: Zap,
+  rocket: Rocket,
+  sword: Sword,
+  shield: Shield,
+  map: Map,
+  brush: Brush,
+  code: Code,
+  lock: Lock,
+  heart: Heart,
+  smile: Smile,
+  terminal: Terminal,
 };
 
 export const getIconComponent = (iconName: string) => {
-    const Icon = ICON_MAP[iconName.toLowerCase()] || Trophy;
-    return Icon;
+  const Icon = ICON_MAP[iconName.toLowerCase()] || Trophy;
+  return Icon;
 };
 
 export const getRarityStyles = (rarity?: string) => {
-    switch(rarity?.toLowerCase()) {
-        case 'legendary': return {
-            border: 'border-orange-500/60 hover:border-orange-400',
-            glow: 'shadow-[0_0_30px_-5px_rgba(249,115,22,0.4)] hover:shadow-[0_0_40px_-5px_rgba(249,115,22,0.6)]',
-            icon: 'bg-orange-500/30 text-orange-400 border-orange-500/60',
-            text: 'text-orange-400',
-            bg: 'bg-gradient-to-br from-orange-950/50 via-[#111] to-yellow-950/30',
-            accent: 'bg-gradient-to-b from-orange-500 to-yellow-500',
-            titleColor: 'text-orange-100',
-            progressColor: 'from-orange-500 to-yellow-500'
-        };
-        case 'epic': return {
-            border: 'border-purple-500/60 hover:border-purple-400',
-            glow: 'shadow-[0_0_30px_-5px_rgba(168,85,247,0.4)] hover:shadow-[0_0_40px_-5px_rgba(168,85,247,0.6)]',
-            icon: 'bg-purple-500/30 text-purple-400 border-purple-500/60',
-            text: 'text-purple-400',
-            bg: 'bg-gradient-to-br from-purple-950/50 via-[#111] to-pink-950/30',
-            accent: 'bg-gradient-to-b from-purple-500 to-pink-500',
-            titleColor: 'text-purple-100',
-            progressColor: 'from-purple-500 to-pink-500'
-        };
-        case 'rare': return {
-            border: 'border-blue-500/60 hover:border-blue-400',
-            glow: 'shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(59,130,246,0.6)]',
-            icon: 'bg-blue-500/30 text-blue-400 border-blue-500/60',
-            text: 'text-blue-400',
-            bg: 'bg-gradient-to-br from-blue-950/50 via-[#111] to-cyan-950/30',
-            accent: 'bg-gradient-to-b from-blue-500 to-cyan-500',
-            titleColor: 'text-blue-100',
-            progressColor: 'from-blue-500 to-cyan-500'
-        };
-        case 'uncommon': return {
-            border: 'border-green-500/60 hover:border-green-400',
-            glow: 'shadow-[0_0_30px_-5px_rgba(34,197,94,0.4)] hover:shadow-[0_0_40px_-5px_rgba(34,197,94,0.6)]',
-            icon: 'bg-green-500/30 text-green-400 border-green-500/60',
-            text: 'text-green-400',
-            bg: 'bg-gradient-to-br from-green-950/50 via-[#111] to-emerald-950/30',
-            accent: 'bg-gradient-to-b from-green-500 to-emerald-500',
-            titleColor: 'text-green-100',
-            progressColor: 'from-green-500 to-emerald-500'
-        };
-        default: return {
-            border: 'border-[#333] hover:border-gray-500',
-            glow: 'hover:shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)]',
-            icon: 'bg-[#222] text-gray-400 border-[#444]',
-            text: 'text-gray-400',
-            bg: 'bg-[#111]',
-            accent: 'bg-gray-600',
-            titleColor: 'text-white',
-            progressColor: 'from-gray-500 to-gray-400'
-        };
-    }
+  switch (rarity?.toLowerCase()) {
+    case "legendary":
+      return {
+        border: "border-signal hover:border-signal",
+        glow: "shadow-[0_0_30px_-5px_color-mix(in_srgb,var(--signal)_40%,transparent)]",
+        icon: "bg-cream/5 text-signal border-signal",
+        text: "text-signal",
+        bg: "bg-background",
+        accent: "bg-signal",
+        titleColor: "text-signal",
+        progressColor: "from-signal to-cream",
+      };
+    case "epic":
+      return {
+        border: "border-cream hover:border-cream",
+        glow: "shadow-[0_0_20px_-5px_color-mix(in_srgb,var(--cream)_20%,transparent)]",
+        icon: "bg-surface-3 text-cream border-cream",
+        text: "text-cream",
+        bg: "bg-surface-3",
+        accent: "bg-cream",
+        titleColor: "text-cream",
+        progressColor: "from-cream to-fg-secondary",
+      };
+    case "rare":
+      return {
+        border: "border-fg-secondary hover:border-fg-secondary",
+        glow: "",
+        icon: "bg-surface-2 text-cream border-fg-secondary",
+        text: "text-cream",
+        bg: "bg-surface-1",
+        accent: "bg-fg-secondary",
+        titleColor: "text-cream",
+        progressColor: "from-fg-secondary to-cream",
+      };
+    case "uncommon":
+      return {
+        border: "border-fg-muted hover:border-fg-muted",
+        glow: "",
+        icon: "bg-surface-2 text-fg-secondary border-fg-muted",
+        text: "text-fg-secondary",
+        bg: "bg-surface-1",
+        accent: "bg-fg-secondary",
+        titleColor: "text-fg-secondary",
+        progressColor: "from-fg-muted to-fg-secondary",
+      };
+    default:
+      return {
+        border: "border-line-strong hover:border-line-strong",
+        glow: "",
+        icon: "bg-surface-2 text-fg-muted border-line-strong",
+        text: "text-fg-muted",
+        bg: "bg-surface-1",
+        accent: "bg-fg-faint",
+        titleColor: "text-cream",
+        progressColor: "from-fg-faint to-fg-muted",
+      };
+  }
 };
 
 export const getAchievementProgress = (progressStr?: string): number => {
-    if (!progressStr) return 0;
-    const match = progressStr.match(/(\d+)\/(\d+)/);
-    if (match) {
-        return Math.min(100, Math.max(0, (parseInt(match[1]) / parseInt(match[2])) * 100));
-    }
-    return 0;
+  if (!progressStr) return 0;
+  const match = progressStr.match(/(\d+)\/(\d+)/);
+  if (match) {
+    return Math.min(
+      100,
+      Math.max(0, (parseInt(match[1]) / parseInt(match[2])) * 100),
+    );
+  }
+  return 0;
 };
-

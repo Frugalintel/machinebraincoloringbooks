@@ -134,9 +134,9 @@ describe("HeroCard prop contract", () => {
       campaign: campaign({
         isActive: true,
         theme: {
-          ...CAMPAIGN_TEMPLATES.christmas,
+          ...CAMPAIGN_TEMPLATES.brand,
           text: {
-            ...CAMPAIGN_TEMPLATES.christmas.text,
+            ...CAMPAIGN_TEMPLATES.brand.text,
             heroTag: "HOLIDAY",
           },
         },
@@ -147,28 +147,36 @@ describe("HeroCard prop contract", () => {
     expect(resolved.badgeLabel).not.toMatch(/HOLIDAY.+HOLIDAY/);
   });
 
-  it("applies campaign headline, accent, and collection label without changing the card shape", () => {
+  it("falls back to the brand template when a removed campaign theme id is stored", () => {
     const resolved = resolveHeroCardProps({
       product: neonCircuit,
       campaign: campaign({
         isActive: true,
-        theme: CAMPAIGN_TEMPLATES.cyberpunk,
+        theme: {
+          id: "cyberpunk",
+          colors: {
+            primary: "#0ff",
+            secondary: "#f0f",
+            accent: "#ff0",
+            background: "#050505",
+            text: "#0ff",
+          },
+          text: {
+            heroTitle: "NEON CITY",
+            heroSubtitle: "System Override",
+            heroTag: "Cyber Week",
+            storyTag: "Hacked",
+          },
+        },
       }),
     });
 
     expect(Object.keys(resolved).sort()).toEqual(
       Object.keys(resolveHeroCardProps({ product: neonCircuit })).sort(),
     );
-    expect(resolved.headlineWhite).toBe(
-      CAMPAIGN_TEMPLATES.cyberpunk.text.heroTitle,
-    );
-    expect(resolved.headlineAccent).toBe(
-      CAMPAIGN_TEMPLATES.cyberpunk.text.heroSubtitle,
-    );
-    expect(resolved.accentColor).toBe(
-      CAMPAIGN_TEMPLATES.cyberpunk.colors.primary,
-    );
-    expect(resolved.collectionLink.label).toBe("View Hacked Collection");
+    expect(resolved.accentColor).toBe(CAMPAIGN_TEMPLATES.brand.colors.primary);
+    expect(resolved.headlineWhite).toBe(DEFAULT_HERO_CARD.headlineWhite);
+    expect(resolved.headlineAccent).toBe(DEFAULT_HERO_CARD.headlineAccent);
     expect(resolved.badgeLabel).toBe("SCI-FI");
   });
 

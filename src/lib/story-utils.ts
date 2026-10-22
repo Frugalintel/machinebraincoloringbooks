@@ -1,33 +1,30 @@
 import { Story } from "@/lib/types";
 
-// Unified theme configuration
+const DEFAULT_THEME_CLASSES = {
+  bgAccent: "bg-signal",
+  bgAccentLight: "bg-cream/5",
+  textAccent: "text-signal",
+  borderAccent: "border-line",
+  gradient: "from-cream/5 via-transparent to-transparent",
+};
+
+// Unified theme configuration.
+// Keys and the lookup API stay so stored stories still resolve; hues are the brand mapping.
 export const STORY_THEMES = {
   signal: {
     id: "signal",
     accent: "emerald",
-    bgAccent: "bg-emerald-500",
-    bgAccentLight: "bg-emerald-500/10",
-    textAccent: "text-emerald-500",
-    borderAccent: "border-emerald-500",
-    gradient: "from-emerald-500/20 via-transparent to-transparent",
+    ...DEFAULT_THEME_CLASSES,
   },
   neon: {
     id: "neon",
     accent: "fuchsia",
-    bgAccent: "bg-fuchsia-500",
-    bgAccentLight: "bg-fuchsia-500/10",
-    textAccent: "text-fuchsia-500",
-    borderAccent: "border-fuchsia-500",
-    gradient: "from-fuchsia-500/20 via-transparent to-transparent",
+    ...DEFAULT_THEME_CLASSES,
   },
   default: {
     id: "default",
     accent: "primary",
-    bgAccent: "bg-primary",
-    bgAccentLight: "bg-primary/10",
-    textAccent: "text-primary",
-    borderAccent: "border-primary",
-    gradient: "from-primary/20 via-transparent to-transparent",
+    ...DEFAULT_THEME_CLASSES,
   },
 };
 

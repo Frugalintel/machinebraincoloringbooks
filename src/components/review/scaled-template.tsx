@@ -33,7 +33,7 @@ export function ScaledTemplate({
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-md border border-[#2a2a2a] bg-background"
+      className="relative w-full overflow-hidden rounded-md border border-line bg-background"
       style={{ height: Math.max(120, height * scale) }}
     >
       <iframe
@@ -83,11 +83,11 @@ export function CoverWrapPreview({
           gridTemplateColumns: `${backWidth}fr ${spineWidth}fr ${frontWidth}fr`,
         }}
       >
-        <span className="rounded bg-[#1a1a1a] px-2 py-1 text-center">Back</span>
-        <span className="rounded bg-[#1a1a1a] px-2 py-1 text-center">
+        <span className="rounded bg-surface-1 px-2 py-1 text-center">Back</span>
+        <span className="rounded bg-surface-1 px-2 py-1 text-center">
           Spine
         </span>
-        <span className="rounded bg-[#1a1a1a] px-2 py-1 text-center">
+        <span className="rounded bg-surface-1 px-2 py-1 text-center">
           Front
         </span>
       </div>

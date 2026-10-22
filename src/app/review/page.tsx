@@ -11,7 +11,7 @@ export default function ReviewIndexPage() {
       </h1>
       <p className="mt-4 text-sm text-muted-foreground">
         Open a book by slug, for example{" "}
-        <code className="rounded bg-[#1a1a1a] px-1.5 py-0.5 text-xs">
+        <code className="rounded bg-surface-1 px-1.5 py-0.5 text-xs">
           /review/ottoline-garden
         </code>
         . Each book is loaded from its storage manifest.

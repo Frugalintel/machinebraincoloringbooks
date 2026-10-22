@@ -75,7 +75,7 @@ export function CartDrawer() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsCartOpen(false)}
-            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[20000]"
+            className="fixed inset-0 bg-background/80 backdrop-blur-md z-[20000]"
           />
 
           {/* Drawer */}
@@ -84,7 +84,7 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full max-w-md bg-background border-l border-[#333] z-[20001] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col"
+            className="fixed top-0 right-0 h-full w-full max-w-md bg-background border-l border-line z-[20001] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col"
           >
             {/* Background Pattern */}
             <div
@@ -97,7 +97,7 @@ export function CartDrawer() {
             ></div>
 
             {/* Header */}
-            <div className="relative z-10 p-6 border-b border-[#333] flex items-center justify-between bg-background shrink-0">
+            <div className="relative z-10 p-6 border-b border-line flex items-center justify-between bg-background shrink-0">
               <div>
                 <div className="flex items-center gap-3">
                   <h2 className="font-heading text-3xl text-cream tracking-wide uppercase">
@@ -106,16 +106,16 @@ export function CartDrawer() {
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <div className="w-1.5 h-1.5 bg-primary animate-pulse"></div>
-                  <p className="text-[10px] text-gray-400 font-mono tracking-widest uppercase">
+                  <p className="text-[10px] text-fg-muted font-mono tracking-widest uppercase">
                     {items.length} items
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="group relative p-2 text-gray-400 hover:text-cream transition-colors"
+                className="group relative p-2 text-fg-muted hover:text-cream transition-colors"
               >
-                <div className="absolute inset-0 border border-transparent group-hover:border-[#333] transition-colors rotate-45 group-hover:rotate-0 duration-300"></div>
+                <div className="absolute inset-0 border border-transparent group-hover:border-line transition-colors rotate-45 group-hover:rotate-0 duration-300"></div>
                 <X size={24} className="relative z-10" />
               </button>
             </div>
@@ -125,10 +125,10 @@ export function CartDrawer() {
               <div className="space-y-4 mb-8">
                 {items.length === 0 ? (
                   <div className="h-40 flex flex-col items-center justify-center text-center opacity-60">
-                    <div className="w-16 h-16 border border-dashed border-[#333] flex items-center justify-center mb-4 rounded-full relative group">
+                    <div className="w-16 h-16 border border-dashed border-line flex items-center justify-center mb-4 rounded-full relative group">
                       <ShoppingBag
                         size={24}
-                        className="text-gray-500 group-hover:text-primary transition-colors"
+                        className="text-fg-muted group-hover:text-primary transition-colors"
                       />
                     </div>
                     <p className="font-heading text-xl text-cream uppercase tracking-widest mb-1">
@@ -139,11 +139,11 @@ export function CartDrawer() {
                   items.map((item) => (
                     <div
                       key={item.id}
-                      className="relative group bg-background p-1 border border-[#222] hover:border-primary/50 transition-colors"
+                      className="relative group bg-background p-1 border border-line hover:border-primary/50 transition-colors"
                     >
                       <div className="flex gap-4 p-3 bg-background">
                         {/* Image Placeholder */}
-                        <div className="w-16 h-20 bg-background border border-[#222] flex-shrink-0 relative overflow-hidden group-hover:border-primary/30 transition-colors">
+                        <div className="w-16 h-20 bg-background border border-line flex-shrink-0 relative overflow-hidden group-hover:border-primary/30 transition-colors">
                           {item.image ? (
                             <img
                               src={item.image}
@@ -153,7 +153,7 @@ export function CartDrawer() {
                           ) : (
                             <>
                               <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-multiply"></div>
-                              <div className="absolute inset-0 flex items-center justify-center text-gray-700 font-heading text-2xl opacity-50 font-bold">
+                              <div className="absolute inset-0 flex items-center justify-center text-fg-faint font-heading text-2xl opacity-50 font-bold">
                                 {item.title.charAt(0)}
                               </div>
                             </>
@@ -168,34 +168,34 @@ export function CartDrawer() {
                               </h3>
                               <button
                                 onClick={() => removeItem(item.id)}
-                                className="text-gray-600 hover:text-red-500 transition-colors -mt-0.5 hover:bg-[#222] rounded-sm"
+                                className="text-fg-faint hover:text-danger transition-colors -mt-0.5 hover:bg-surface-2 rounded-sm"
                               >
                                 <Trash2 size={14} />
                               </button>
                             </div>
-                            <p className="text-[9px] text-gray-500 font-mono tracking-widest mt-1 uppercase line-clamp-1">
+                            <p className="text-[9px] text-fg-muted font-mono tracking-widest mt-1 uppercase line-clamp-1">
                               {item.subtitle || "Standard Edition"}
                             </p>
                           </div>
 
                           <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center bg-background border border-[#222]">
+                            <div className="flex items-center bg-background border border-line">
                               <button
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity - 1)
                                 }
-                                className="w-6 h-6 flex items-center justify-center hover:bg-[#222] text-gray-500 hover:text-cream transition-colors"
+                                className="w-6 h-6 flex items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
                               >
                                 <Minus size={10} />
                               </button>
-                              <span className="w-6 text-center text-[10px] font-mono text-cream border-x border-[#222] h-4 flex items-center justify-center leading-none">
+                              <span className="w-6 text-center text-[10px] font-mono text-cream border-x border-line h-4 flex items-center justify-center leading-none">
                                 {item.quantity}
                               </span>
                               <button
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity + 1)
                                 }
-                                className="w-6 h-6 flex items-center justify-center hover:bg-[#222] text-gray-500 hover:text-cream transition-colors"
+                                className="w-6 h-6 flex items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
                               >
                                 <Plus size={10} />
                               </button>
@@ -213,8 +213,8 @@ export function CartDrawer() {
 
               {/* Suggestions Section */}
               {suggestedProducts.length > 0 && (
-                <div className="pt-6 border-t border-[#222]">
-                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-4 flex items-center gap-2">
+                <div className="pt-6 border-t border-line">
+                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-fg-muted mb-4 flex items-center gap-2">
                     <span className="w-1 h-1 bg-primary rounded-full"></span>
                     You might also like
                   </h4>
@@ -222,7 +222,7 @@ export function CartDrawer() {
                     {suggestedProducts.map((product) => (
                       <div
                         key={product.id}
-                        className="group relative bg-background border border-[#222] hover:border-gray-600 transition-colors p-2"
+                        className="group relative bg-background border border-line hover:border-line-strong transition-colors p-2"
                       >
                         <Link
                           href={`/store/${product.id}`}
@@ -236,7 +236,7 @@ export function CartDrawer() {
                               className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#222] text-gray-700 font-heading text-xl">
+                            <div className="w-full h-full flex items-center justify-center bg-surface-2 text-fg-faint font-heading text-xl">
                               {product.title.charAt(0)}
                             </div>
                           )}
@@ -253,7 +253,7 @@ export function CartDrawer() {
                                 image: product.image_url,
                               });
                             }}
-                            className="absolute bottom-0 right-0 w-8 h-8 bg-white text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary"
+                            className="absolute bottom-0 right-0 w-8 h-8 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary"
                           >
                             <Plus size={16} />
                           </button>
@@ -262,7 +262,7 @@ export function CartDrawer() {
                           <h5 className="font-heading text-xs text-cream uppercase tracking-wide truncate">
                             {product.title}
                           </h5>
-                          <p className="font-mono text-[10px] text-gray-500">
+                          <p className="font-mono text-[10px] text-fg-muted">
                             ${product.price.toFixed(2)}
                           </p>
                         </div>
@@ -274,18 +274,22 @@ export function CartDrawer() {
             </div>
 
             {/* Footer / Total */}
-            <div className="relative z-10 p-6 border-t border-[#333] bg-background shrink-0">
+            <div className="relative z-10 p-6 border-t border-line bg-background shrink-0">
               {/* Receipt Style Details */}
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between items-center text-xs font-mono text-gray-500">
+                <div className="flex justify-between items-center text-xs font-mono text-fg-muted">
                   <span className="uppercase tracking-widest">Subtotal</span>
-                  <span className="text-gray-300">${cartTotal.toFixed(2)}</span>
+                  <span className="text-fg-secondary">
+                    ${cartTotal.toFixed(2)}
+                  </span>
                 </div>
-                <div className="flex justify-between items-center text-xs font-mono text-gray-500">
+                <div className="flex justify-between items-center text-xs font-mono text-fg-muted">
                   <span className="uppercase tracking-widest">Processing</span>
-                  <span className="text-gray-300">CALCULATED AT CHECKOUT</span>
+                  <span className="text-fg-secondary">
+                    CALCULATED AT CHECKOUT
+                  </span>
                 </div>
-                <div className="h-px w-full bg-[#222] my-2"></div>
+                <div className="h-px w-full bg-surface-2 my-2"></div>
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col">
                     <span className="font-heading text-xl text-cream uppercase tracking-wide">
@@ -300,7 +304,7 @@ export function CartDrawer() {
 
               <Button
                 disabled={items.length === 0}
-                className="w-full bg-primary text-black hover:bg-white border border-transparent hover:border-primary font-heading text-xl h-14 rounded-none tracking-widest uppercase transition-all group relative overflow-hidden"
+                className="w-full bg-primary text-ink hover:bg-cream border border-transparent hover:border-primary font-heading text-xl h-14 rounded-none tracking-widest uppercase transition-all group relative overflow-hidden"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Proceed to Checkout{" "}
@@ -309,10 +313,10 @@ export function CartDrawer() {
                     className="group-hover:translate-x-1 transition-transform"
                   />
                 </span>
-                <div className="absolute inset-0 bg-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0"></div>
+                <div className="absolute inset-0 bg-cream transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0"></div>
               </Button>
 
-              <div className="mt-4 flex justify-center gap-4 text-[9px] text-gray-600 font-mono uppercase tracking-widest">
+              <div className="mt-4 flex justify-center gap-4 text-[9px] text-fg-faint font-mono uppercase tracking-widest">
                 <span>Secure checkout</span>
               </div>
             </div>

@@ -72,7 +72,7 @@ export const collectionSets: CollectionSet[] = [
       {
         id: "rover-x",
         name: "Rover-X",
-        image: "bg-orange-500",
+        image: "bg-surface-2",
         requirement: "Code: DOG",
         lore: "The Rover-X was the first autonomous cleaning unit to feature 'Happy-Wag' tail technology. Originally designed to clean radioactive dust from lunar colonies, it became a beloved household pet when surplus units were sold to Earth families. Its sensors are calibrated to detect both dirt and sadness.",
         rarity: "Common",
@@ -83,7 +83,7 @@ export const collectionSets: CollectionSet[] = [
       {
         id: "cyber-spaniel",
         name: "Cyber-Spaniel",
-        image: "bg-blue-500",
+        image: "bg-surface-2",
         requirement: "Complete 'First Splash' achievement",
         relatedAchievementId: "ach-01",
         lore: "Engineered for aquatic environments, the Cyber-Spaniel features hydrophobic synthetic fur and webbed chassis plating. It was briefly used by the Navy for underwater cable inspection before being discharged for 'excessive playfulness'.",
@@ -95,7 +95,7 @@ export const collectionSets: CollectionSet[] = [
       {
         id: "atomic-poodle",
         name: "Atomic-Poodle",
-        image: "bg-green-500",
+        image: "bg-surface-2",
         requirement: "Submit 5 pages",
         lore: "A high-maintenance unit requiring uranium-enriched kibble. The Atomic-Poodle radiates a soft green glow and warms the feet of its owners. Known for its sophisticated AI that judges your interior design choices.",
         rarity: "Rare",
@@ -106,7 +106,7 @@ export const collectionSets: CollectionSet[] = [
       {
         id: "quantum-bulldog",
         name: "Quantum-Bulldog",
-        image: "bg-purple-500",
+        image: "bg-surface-2",
         requirement: "Code: QUANTUM",
         lore: "Existing simultaneously in the living room and the kitchen, the Quantum-Bulldog is the ultimate guard dog. It can bark at intruders before they even arrive. Caution: May occasionally phase through closed doors.",
         rarity: "Legendary",
@@ -127,7 +127,7 @@ export const collectionSets: CollectionSet[] = [
       {
         id: "alpha-wing",
         name: "Alpha-Wing",
-        image: "bg-red-500",
+        image: "bg-surface-2",
         requirement: "Reach Level 5",
         lore: "The standard issue interceptor for the Galactic Federation. Fast, agile, and equipped with non-lethal pulse cannons for disabling space debris.",
         rarity: "Common",
@@ -138,7 +138,7 @@ export const collectionSets: CollectionSet[] = [
       {
         id: "beta-destroyer",
         name: "Beta-Destroyer",
-        image: "bg-yellow-500",
+        image: "bg-surface-2",
         requirement: "Color 3 Space pages",
         lore: "A heavy-duty mining vessel repurposed for asteroid defense. Its yellow hull is reinforced with diamond-nanoweave to withstand impacts.",
         rarity: "Uncommon",
@@ -149,7 +149,7 @@ export const collectionSets: CollectionSet[] = [
       {
         id: "gamma-scout",
         name: "Gamma-Scout",
-        image: "bg-cyan-500",
+        image: "bg-surface-2",
         requirement: "Find hidden link",
         lore: "A long-range reconnaissance ship capable of FTL jumps. Used by explorers to map the outer rim. It carries no weapons, only sensors and a really good coffee machine.",
         rarity: "Rare",
@@ -160,7 +160,7 @@ export const collectionSets: CollectionSet[] = [
       {
         id: "delta-cruiser",
         name: "Delta-Cruiser",
-        image: "bg-pink-500",
+        image: "bg-surface-2",
         requirement: "Share 10 pages",
         lore: "A luxury liner for the stars. The Delta-Cruiser features zero-g swimming pools and holographic concerts. The ultimate status symbol for the interstellar traveler.",
         rarity: "Epic",
@@ -171,7 +171,7 @@ export const collectionSets: CollectionSet[] = [
       {
         id: "omega-station",
         name: "Omega-Station",
-        image: "bg-indigo-500",
+        image: "bg-surface-2",
         requirement: "Complete Set 1",
         lore: "A mobile space fortress. It serves as a hub for trade, diplomacy, and the occasional laser tag tournament. Powered by a harnessed black hole.",
         rarity: "Legendary",

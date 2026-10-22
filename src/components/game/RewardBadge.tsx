@@ -31,38 +31,38 @@ const REWARD_CONFIG: Record<
 > = {
   trophy_skin: {
     icon: Trophy,
-    color: "text-amber-400",
-    bgColor: "bg-amber-500/10 border-amber-500/30",
+    color: "text-signal",
+    bgColor: "bg-cream/5 border-line",
   },
   trophy_pedestal: {
     icon: Gem,
-    color: "text-cyan-400",
-    bgColor: "bg-cyan-500/10 border-cyan-500/30",
+    color: "text-signal",
+    bgColor: "bg-cream/5 border-line",
   },
   profile_frame: {
     icon: Frame,
-    color: "text-purple-400",
-    bgColor: "bg-purple-500/10 border-purple-500/30",
+    color: "text-signal",
+    bgColor: "bg-cream/5 border-line",
   },
   title: {
     icon: Crown,
-    color: "text-yellow-400",
-    bgColor: "bg-yellow-500/10 border-yellow-500/30",
+    color: "text-warning",
+    bgColor: "bg-warning/10 border-yellow-500/30",
   },
   trophy_room_theme: {
     icon: Sparkles,
-    color: "text-pink-400",
-    bgColor: "bg-pink-500/10 border-pink-500/30",
+    color: "text-signal",
+    bgColor: "bg-cream/5 border-line",
   },
   badge_border: {
     icon: Award,
-    color: "text-blue-400",
-    bgColor: "bg-blue-500/10 border-blue-500/30",
+    color: "text-fg-muted",
+    bgColor: "bg-cream/5 border-line",
   },
   mastery_badge: {
     icon: BookOpen,
-    color: "text-emerald-400",
-    bgColor: "bg-emerald-500/10 border-emerald-500/30",
+    color: "text-signal",
+    bgColor: "bg-cream/5 border-emerald-500/30",
   },
 };
 
@@ -120,7 +120,7 @@ export function RewardBadge({
         <div className="flex-1 min-w-0">
           {showLabel ? (
             <span
-              className={`block ${sizeConfig.label} text-gray-500 uppercase tracking-widest font-mono truncate`}
+              className={`block ${sizeConfig.label} text-fg-muted uppercase tracking-widest font-mono truncate`}
             >
               {label}
             </span>
@@ -134,7 +134,7 @@ export function RewardBadge({
         {earned ? (
           <Star
             size={sizeConfig.icon - 4}
-            className="text-yellow-400"
+            className="text-warning"
             fill="currentColor"
           />
         ) : null}
@@ -177,7 +177,7 @@ export function RewardUnlockAnimation({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onAnimationComplete={onComplete}
-      className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
+      className="fixed inset-0 bg-background/80 z-50 flex items-center justify-center"
     >
       <motion.div
         initial={{ scale: 0, rotate: -180 }}
@@ -209,7 +209,7 @@ export function RewardUnlockAnimation({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono mb-2">
+          <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono mb-2">
             Reward Unlocked
           </p>
           <h2
@@ -262,9 +262,9 @@ export function MilestonePreview({
 }: MilestonePreviewProps) {
   if (!next) {
     return (
-      <div className={`bg-background border border-[#222] p-4 ${className}`}>
-        <div className="flex items-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest font-mono">
-          <Star size={12} className="text-yellow-400" fill="currentColor" />
+      <div className={`bg-background border border-line p-4 ${className}`}>
+        <div className="flex items-center gap-2 text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+          <Star size={12} className="text-warning" fill="currentColor" />
           <span>All {pillarLabel} Milestones Complete!</span>
         </div>
       </div>
@@ -274,18 +274,18 @@ export function MilestonePreview({
   const progress = Math.min(100, (current / next.threshold) * 100);
 
   return (
-    <div className={`bg-background border border-[#222] p-4 ${className}`}>
+    <div className={`bg-background border border-line p-4 ${className}`}>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">
+        <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
           Next {pillarLabel} Milestone
         </span>
-        <span className="text-[10px] text-gray-500 font-mono">
+        <span className="text-[10px] text-fg-muted font-mono">
           {current} / {next.threshold}
         </span>
       </div>
 
       {/* Progress bar */}
-      <div className="h-1 bg-[#222] mb-3 overflow-hidden">
+      <div className="h-1 bg-surface-2 mb-3 overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}

@@ -61,27 +61,27 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               exit={{ opacity: 0, x: 20, scale: 0.95 }}
               className={`min-w-[300px] p-4 rounded-lg shadow-lg border flex items-start gap-3 ${
                 t.type === "success"
-                  ? "bg-green-900/90 border-green-700 text-cream"
+                  ? "bg-success-wash border-green-700 text-cream"
                   : t.type === "error"
-                    ? "bg-red-900/90 border-red-700 text-cream"
+                    ? "bg-danger-strong border-red-700 text-cream"
                     : "bg-gray-900/90 border-gray-700 text-cream"
               }`}
             >
               {t.type === "success" && (
-                <CheckCircle size={20} className="text-green-400 mt-0.5" />
+                <CheckCircle size={20} className="text-success mt-0.5" />
               )}
               {t.type === "error" && (
-                <AlertCircle size={20} className="text-red-400 mt-0.5" />
+                <AlertCircle size={20} className="text-danger mt-0.5" />
               )}
               {t.type === "info" && (
-                <Info size={20} className="text-blue-400 mt-0.5" />
+                <Info size={20} className="text-fg-muted mt-0.5" />
               )}
 
               <div className="flex-1 text-sm font-medium">{t.message}</div>
 
               <button
                 onClick={() => removeToast(t.id)}
-                className="text-white/50 hover:text-cream transition-colors"
+                className="text-fg-faint hover:text-cream transition-colors"
               >
                 <X size={16} />
               </button>

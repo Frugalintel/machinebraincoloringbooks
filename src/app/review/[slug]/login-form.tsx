@@ -88,13 +88,13 @@ export function ReviewLoginForm({
             name="password"
             required
             autoComplete="current-password"
-            className="mt-2 h-11 w-full rounded-md border border-[#333] bg-background px-3 text-base text-foreground outline-none focus-visible:border-primary"
+            className="mt-2 h-11 w-full rounded-md border border-line bg-background px-3 text-base text-foreground outline-none focus-visible:border-primary"
           />
         </label>
         <button
           type="submit"
           disabled={pending}
-          className="h-11 w-full rounded-md bg-primary font-heading uppercase tracking-wide text-primary-foreground"
+          className="h-11 w-full rounded-md bg-primary font-heading uppercase tracking-wide text-ink"
         >
           Unlock
         </button>

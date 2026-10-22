@@ -107,48 +107,50 @@ export function StoryAnalyticsDashboard() {
           title="Active Readers (7d)"
           value={metrics.activeReaders.toLocaleString()}
           icon={Users}
-          color="text-blue-500"
-          bg="bg-blue-500/10"
+          color="text-fg-muted"
+          bg="bg-cream/5"
         />
         <KPICard
           title="Adventures Started"
           value={metrics.totalStoriesStarted.toLocaleString()}
           icon={BookOpen}
-          color="text-purple-500"
-          bg="bg-purple-500/10"
+          color="text-signal"
+          bg="bg-cream/5"
         />
         <KPICard
           title="Total Completions"
           value={metrics.totalCompletions.toLocaleString()}
           icon={CheckCircle2}
-          color="text-green-500"
-          bg="bg-green-500/10"
+          color="text-success"
+          bg="bg-success/10"
         />
         <KPICard
           title="Completion Rate"
           value={`${metrics.avgCompletionRate}%`}
           icon={Clock}
-          color="text-orange-500"
-          bg="bg-orange-500/10"
+          color="text-signal"
+          bg="bg-cream/5"
         />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-[#111] border border-[#333] p-6 rounded-lg">
+        <div className="bg-surface-1 border border-line p-6 rounded-lg">
           <h3 className="font-heading text-xl mb-6">Most Popular Adventures</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={storyPopularity}>
                 <XAxis
                   dataKey="name"
-                  stroke="#666"
+                  stroke="#6A675F"
+                  tick={{ fill: "#979288" }}
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#666"
+                  stroke="#6A675F"
+                  tick={{ fill: "#979288" }}
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
@@ -156,22 +158,22 @@ export function StoryAnalyticsDashboard() {
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#111",
-                    borderColor: "#333",
-                    color: "#fff",
+                    backgroundColor: "#1A1A19",
+                    borderColor: "#33322F",
+                    color: "#F2EAD8",
                   }}
-                  itemStyle={{ color: "#fff" }}
-                  cursor={{ fill: "#222" }}
+                  itemStyle={{ color: "#F2EAD8" }}
+                  cursor={{ fill: "#21211F" }}
                 />
-                <Bar dataKey="value" fill="#ff4f00" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="#6FB3A8" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Placeholder for future detailed engagement chart */}
-        <div className="bg-[#111] border border-[#333] p-6 rounded-lg flex items-center justify-center">
-          <div className="text-center text-gray-500">
+        <div className="bg-surface-1 border border-line p-6 rounded-lg flex items-center justify-center">
+          <div className="text-center text-fg-muted">
             <BookOpen size={48} className="mx-auto mb-4 opacity-20" />
             <p>Node drop-off analytics coming soon</p>
           </div>

@@ -32,12 +32,12 @@ const TYPE_CONFIG: Record<
 > = {
   collectibles: {
     icon: Trophy,
-    color: "text-amber-500",
+    color: "text-signal",
     bgGradient: "from-amber-500/10 to-transparent",
   },
   achievements: {
     icon: Star,
-    color: "text-purple-500",
+    color: "text-signal",
     bgGradient: "from-purple-500/10 to-transparent",
   },
   stories: {
@@ -47,7 +47,7 @@ const TYPE_CONFIG: Record<
   },
   mastery: {
     icon: BookOpen,
-    color: "text-emerald-500",
+    color: "text-signal",
     bgGradient: "from-emerald-500/10 to-transparent",
   },
 };
@@ -71,7 +71,7 @@ export function InvitationCard({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-background border border-[#222] p-3 relative overflow-hidden ${className}`}
+        className={`bg-background border border-line p-3 relative overflow-hidden ${className}`}
       >
         <div
           className={`absolute inset-0 bg-gradient-to-r ${config.bgGradient} pointer-events-none`}
@@ -79,13 +79,15 @@ export function InvitationCard({
         <div className="relative z-10 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Icon size={14} className={config.color} />
-            <span className="text-xs text-gray-300">{standaloneReward}</span>
+            <span className="text-xs text-fg-secondary">
+              {standaloneReward}
+            </span>
           </div>
           <Link href={ctaLink}>
             <Button
               size="sm"
               variant="ghost"
-              className={`h-7 px-2 ${config.color} hover:bg-white/10`}
+              className={`h-7 px-2 ${config.color} hover:bg-cream/10`}
             >
               {ctaText} <ArrowRight size={12} className="ml-1" />
             </Button>
@@ -100,12 +102,12 @@ export function InvitationCard({
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-gradient-to-r ${config.bgGradient} border-b border-[#222] p-3 ${className}`}
+        className={`bg-gradient-to-r ${config.bgGradient} border-b border-line p-3 ${className}`}
       >
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Gift size={16} className={config.color} />
-            <span className="text-sm text-gray-300">
+            <span className="text-sm text-fg-secondary">
               {crossPillarInvitation || standaloneReward}
             </span>
           </div>
@@ -113,7 +115,7 @@ export function InvitationCard({
             <Link href={ctaLink}>
               <Button
                 size="sm"
-                className="h-8 bg-white/10 hover:bg-white/20 text-white border-0"
+                className="h-8 bg-cream/10 hover:bg-cream/20 text-cream border-0"
               >
                 {ctaText} <ArrowRight size={14} className="ml-2" />
               </Button>
@@ -121,7 +123,7 @@ export function InvitationCard({
             {onDismiss ? (
               <button
                 onClick={onDismiss}
-                className="text-gray-500 hover:text-cream text-xs"
+                className="text-fg-muted hover:text-cream text-xs"
               >
                 Dismiss
               </button>
@@ -137,7 +139,7 @@ export function InvitationCard({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={`bg-background border border-[#222] overflow-hidden relative ${className}`}
+      className={`bg-background border border-line overflow-hidden relative ${className}`}
     >
       {/* Background gradient */}
       <div
@@ -149,7 +151,7 @@ export function InvitationCard({
         {/* Header */}
         <div className="flex items-start gap-4 mb-4">
           <div
-            className={`w-12 h-12 flex items-center justify-center border border-[#333] bg-background ${config.color}`}
+            className={`w-12 h-12 flex items-center justify-center border border-line bg-background ${config.color}`}
           >
             <Icon size={24} />
           </div>
@@ -168,20 +170,20 @@ export function InvitationCard({
 
         {/* Cross-pillar invitation */}
         {crossPillarInvitation ? (
-          <div className="bg-background border border-[#222] p-4 mb-4">
+          <div className="bg-background border border-line p-4 mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles size={12} className="text-gray-500" />
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">
+              <Sparkles size={12} className="text-fg-muted" />
+              <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
                 Bonus Opportunity
               </span>
             </div>
-            <p className="text-sm text-gray-300">{crossPillarInvitation}</p>
+            <p className="text-sm text-fg-secondary">{crossPillarInvitation}</p>
           </div>
         ) : null}
 
         {/* CTA */}
         <Link href={ctaLink} className="block">
-          <Button className="w-full bg-white/10 hover:bg-white/20 text-white border border-[#333] hover:border-[#444] h-10 font-mono uppercase tracking-widest text-xs">
+          <Button className="w-full bg-cream/10 hover:bg-cream/20 text-cream border border-line hover:border-line-strong h-10 font-mono uppercase tracking-widest text-xs">
             {ctaText} <ArrowRight size={14} className="ml-2" />
           </Button>
         </Link>
@@ -206,10 +208,10 @@ export function CrossPillarBonusPreview({
   if (bonuses.length === 0) return null;
 
   return (
-    <div className={`bg-background border border-[#222] p-4 ${className}`}>
+    <div className={`bg-background border border-line p-4 ${className}`}>
       <div className="flex items-center gap-2 mb-3">
         <Sparkles size={12} className="text-primary" />
-        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">
+        <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
           Active Cross-Pillar Bonuses
         </span>
       </div>
@@ -221,7 +223,7 @@ export function CrossPillarBonusPreview({
             <div key={index} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Icon size={12} className={config.color} />
-                <span className="text-xs text-gray-400">{bonus.label}</span>
+                <span className="text-xs text-fg-muted">{bonus.label}</span>
               </div>
               <span className={`text-xs font-mono ${config.color}`}>
                 {bonus.value}

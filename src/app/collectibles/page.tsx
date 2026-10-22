@@ -70,7 +70,7 @@ export default function CollectiblesPublicPage() {
   return (
     <main className="min-h-screen bg-background text-cream font-sans">
       {/* Hero Section */}
-      <div className="bg-background border-b border-[#333] py-12 relative overflow-hidden">
+      <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         {/* Abstract Background Element */}
         <div className="absolute -right-20 -top-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
@@ -91,7 +91,7 @@ export default function CollectiblesPublicPage() {
                 <h1 className="font-heading text-5xl md:text-7xl font-bold text-cream mb-4 uppercase tracking-tighter">
                   <span className="text-primary">Collectibles</span>
                 </h1>
-                <p className="font-mono text-sm text-gray-500 tracking-widest uppercase max-w-xl leading-relaxed">
+                <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl leading-relaxed">
                   Digital rewards you can unlock by entering codes from your
                   coloring books.
                 </p>
@@ -103,7 +103,7 @@ export default function CollectiblesPublicPage() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="w-40 h-40 bg-background border border-[#333] relative overflow-hidden flex-shrink-0"
+                  className="w-40 h-40 bg-background border border-line relative overflow-hidden flex-shrink-0"
                 >
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-amber-500 to-transparent"></div>
                   <div className="absolute top-2 left-2 z-10 flex items-center gap-1 text-primary font-mono text-[8px] uppercase tracking-widest">
@@ -128,13 +128,13 @@ export default function CollectiblesPublicPage() {
             {!user ? (
               <Button
                 onClick={() => openAuthModal("register")}
-                className="bg-white text-black hover:bg-primary hover:text-black font-heading uppercase tracking-widest px-8 py-6 rounded-none text-lg transition-all transform hover:scale-105"
+                className="bg-cream text-ink hover:bg-primary hover:text-ink font-heading uppercase tracking-widest px-8 py-6 rounded-none text-lg transition-all transform hover:scale-105"
               >
                 <UserPlus className="mr-2" size={20} /> Create account
               </Button>
             ) : (
               <Link href="/trophy-room">
-                <Button className="bg-primary text-black hover:bg-white hover:text-black font-heading uppercase tracking-widest px-8 py-6 rounded-none text-lg">
+                <Button className="bg-primary text-ink hover:bg-cream hover:text-ink font-heading uppercase tracking-widest px-8 py-6 rounded-none text-lg">
                   Go to Trophy Room <ArrowRight className="ml-2" size={20} />
                 </Button>
               </Link>
@@ -147,7 +147,7 @@ export default function CollectiblesPublicPage() {
       <div className="container mx-auto px-4 md:px-6 py-20">
         {collectionSets.map((set, setIndex) => (
           <div key={set.id} className="mb-24 last:mb-0">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-[#333] pb-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-line pb-4">
               <div>
                 <span className="text-primary font-mono text-xs uppercase tracking-[0.2em] mb-2 block">
                   Set {setIndex + 1}
@@ -157,7 +157,7 @@ export default function CollectiblesPublicPage() {
                 </h2>
               </div>
               <div className="text-right hidden md:block">
-                <p className="font-mono text-xs text-gray-500 uppercase tracking-widest">
+                <p className="font-mono text-xs text-fg-muted uppercase tracking-widest">
                   Total Artifacts
                 </p>
                 <p className="font-heading text-2xl">{set.total}</p>
@@ -178,10 +178,10 @@ export default function CollectiblesPublicPage() {
                   >
                     <motion.div
                       whileHover={{ y: -5 }}
-                      className="group relative bg-background border border-[#333] p-6 hover:border-primary/50 transition-colors overflow-hidden flex flex-col h-full"
+                      className="group relative bg-background border border-line p-6 hover:border-primary/50 transition-colors overflow-hidden flex flex-col h-full"
                     >
                       {/* Item Preview */}
-                      <div className="aspect-square bg-background mb-6 relative flex items-center justify-center overflow-hidden border border-[#222] group-hover:border-primary/20 flex-shrink-0">
+                      <div className="aspect-square bg-background mb-6 relative flex items-center justify-center overflow-hidden border border-line group-hover:border-primary/20 flex-shrink-0">
                         {isItemCollected(item.id) ? (
                           <>
                             <div className="w-full h-full">
@@ -199,7 +199,7 @@ export default function CollectiblesPublicPage() {
                               />
                             </div>
                             {/* Collected badge */}
-                            <div className="absolute top-2 right-2 z-10 bg-primary/90 text-black px-2 py-1 font-mono text-[8px] uppercase tracking-widest">
+                            <div className="absolute top-2 right-2 z-10 bg-primary/90 text-ink px-2 py-1 font-mono text-[8px] uppercase tracking-widest">
                               Collected
                             </div>
                           </>
@@ -209,14 +209,14 @@ export default function CollectiblesPublicPage() {
                               className={`w-24 h-24 rounded-full ${item.image} blur-2xl opacity-40 absolute group-hover:opacity-60 transition-opacity`}
                             ></div>
                             <Box
-                              className="w-12 h-12 text-gray-300 relative z-10 group-hover:scale-110 transition-transform duration-500"
+                              className="w-12 h-12 text-fg-secondary relative z-10 group-hover:scale-110 transition-transform duration-500"
                               strokeWidth={1}
                             />
                           </>
                         )}
 
                         {/* Overlay Info on Hover - Simplified to just show it's interactive if there's detailed data */}
-                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 text-center pointer-events-none">
+                        <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 text-center pointer-events-none">
                           <p className="text-[10px] text-primary uppercase tracking-widest font-mono mb-2">
                             View Details
                           </p>
@@ -237,7 +237,7 @@ export default function CollectiblesPublicPage() {
                               <Trophy size={12} /> Owned
                             </span>
                           ) : (
-                            <span className="text-gray-500 flex items-center gap-2">
+                            <span className="text-fg-muted flex items-center gap-2">
                               <Lock size={12} /> Locked
                             </span>
                           )}
@@ -245,14 +245,14 @@ export default function CollectiblesPublicPage() {
 
                         {/* Expanded Details Area (Always visible if related achievement exists, or just cleaner layout) */}
                         {relatedAch ? (
-                          <div className="mt-auto pt-4 border-t border-[#333]">
-                            <div className="flex items-center gap-2 mb-2 text-gray-400">
+                          <div className="mt-auto pt-4 border-t border-line">
+                            <div className="flex items-center gap-2 mb-2 text-fg-muted">
                               <Trophy size={12} className="text-primary" />
                               <span className="text-[10px] font-mono uppercase tracking-wide">
                                 Linked Mission
                               </span>
                             </div>
-                            <p className="text-xs text-gray-300 font-mono mb-3 line-clamp-2">
+                            <p className="text-xs text-fg-secondary font-mono mb-3 line-clamp-2">
                               {relatedAch.description}
                             </p>
                           </div>
@@ -260,7 +260,7 @@ export default function CollectiblesPublicPage() {
                       </div>
 
                       {/* Decorative Corner */}
-                      <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-[#333] group-hover:border-primary/50 transition-colors pointer-events-none"></div>
+                      <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-line group-hover:border-primary/50 transition-colors pointer-events-none"></div>
                     </motion.div>
                   </Link>
                 );
@@ -272,17 +272,17 @@ export default function CollectiblesPublicPage() {
 
       {/* CTA Footer */}
       {!user && (
-        <div className="bg-primary/10 border-t border-[#333] py-20 text-center">
+        <div className="bg-primary/10 border-t border-line py-20 text-center">
           <div className="container mx-auto px-4">
             <h2 className="font-heading text-3xl md:text-5xl text-cream uppercase mb-6">
               Start collecting
             </h2>
-            <p className="text-gray-400 font-mono text-sm max-w-xl mx-auto mb-8 uppercase tracking-widest">
+            <p className="text-fg-muted font-mono text-sm max-w-xl mx-auto mb-8 uppercase tracking-widest">
               Create an account to save your progress and unlock rewards.
             </p>
             <Button
               onClick={() => openAuthModal("register")}
-              className="bg-primary text-black hover:bg-white font-heading uppercase tracking-widest px-10 py-6 rounded-none text-xl"
+              className="bg-primary text-ink hover:bg-cream font-heading uppercase tracking-widest px-10 py-6 rounded-none text-xl"
             >
               Create account
             </Button>

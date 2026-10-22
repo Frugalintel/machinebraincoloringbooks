@@ -1,4 +1,4 @@
-import { CAMPAIGN_TEMPLATES } from "@/lib/campaign-templates";
+import { resolveCampaignTheme } from "@/lib/campaign-templates";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
 import { getProductById, getProductsByCategory } from "@/lib/store-data";
 import type { CampaignSettings, CampaignTheme, Product } from "@/lib/types";
@@ -137,16 +137,16 @@ export function resolveHeroCardProps(
 
 function resolveTheme(campaign?: CampaignSettings | null): CampaignTheme {
   if (campaign?.isActive && campaign.theme) {
-    return campaign.theme;
+    return resolveCampaignTheme(campaign.theme);
   }
-  return CAMPAIGN_TEMPLATES.default;
+  return resolveCampaignTheme();
 }
 
 function shouldUseCampaignCopy(
   campaign: CampaignSettings | null,
   theme: CampaignTheme,
 ): boolean {
-  return Boolean(campaign?.isActive && theme.id !== "default");
+  return Boolean(campaign?.isActive && theme.id !== "brand");
 }
 
 function resolveBadgeLabel(

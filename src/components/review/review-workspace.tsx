@@ -94,14 +94,14 @@ function SortablePageCard({
         transform: CSS.Transform.toString(transform),
         transition,
       }}
-      className={`rounded-lg border border-[#2a2a2a] bg-background p-4 ${
+      className={`rounded-lg border border-line bg-background p-4 ${
         isDragging ? "opacity-70" : ""
       }`}
     >
       <div className="mb-3 flex justify-start">
         <button
           type="button"
-          className="rounded p-2 text-muted-foreground hover:bg-[#1a1a1a]"
+          className="rounded p-2 text-muted-foreground hover:bg-surface-1"
           aria-label="Drag to reorder"
           {...attributes}
           {...listeners}
@@ -439,7 +439,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
 
   return (
     <main className="pb-24">
-      <header className="sticky top-0 z-30 border-b border-[#222] bg-background/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-line bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
@@ -543,7 +543,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
           </div>
 
           {insertOpen ? (
-            <div className="rounded-md border border-[#333] bg-background p-4">
+            <div className="rounded-md border border-line bg-background p-4">
               <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground">
                 New page description
                 <textarea
@@ -551,7 +551,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                   value={insertDescription}
                   onChange={(event) => setInsertDescription(event.target.value)}
                   rows={3}
-                  className="mt-2 w-full rounded border border-[#333] bg-background px-2 py-2 text-sm text-foreground"
+                  className="mt-2 w-full rounded border border-line bg-background px-2 py-2 text-sm text-foreground"
                 />
               </label>
               <div className="mt-3 flex gap-2">
@@ -682,11 +682,11 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                                 <img
                                   src={page.colorUrl}
                                   alt={`Color art for page ${page.number}`}
-                                  className="w-full rounded border border-[#222] bg-white"
+                                  className="w-full rounded border border-line bg-paper"
                                   loading={index < 4 ? "eager" : "lazy"}
                                 />
                               ) : (
-                                <div className="flex aspect-[8.5/11] items-center justify-center rounded border border-dashed border-[#333] text-xs text-muted-foreground">
+                                <div className="flex aspect-[8.5/11] items-center justify-center rounded border border-dashed border-line text-xs text-muted-foreground">
                                   No color art
                                 </div>
                               )}
@@ -700,11 +700,11 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                                 <img
                                   src={page.linePngUrl}
                                   alt={`Line art for page ${page.number}`}
-                                  className="w-full rounded border border-[#222] bg-white"
+                                  className="w-full rounded border border-line bg-paper"
                                   loading={index < 4 ? "eager" : "lazy"}
                                 />
                               ) : (
-                                <div className="flex aspect-[8.5/11] items-center justify-center rounded border border-dashed border-[#333] text-xs text-muted-foreground">
+                                <div className="flex aspect-[8.5/11] items-center justify-center rounded border border-dashed border-line text-xs text-muted-foreground">
                                   No line art
                                 </div>
                               )}
@@ -724,7 +724,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                             </figure>
                           </div>
                         ) : (
-                          <p className="rounded border border-dashed border-[#333] p-4 text-sm">
+                          <p className="rounded border border-dashed border-line p-4 text-sm">
                             {insert?.description || "Inserted page"}
                           </p>
                         )}
@@ -742,7 +742,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                               }))
                             }
                             rows={2}
-                            className="mt-1 w-full rounded border border-[#333] bg-background px-2 py-2 text-sm text-foreground"
+                            className="mt-1 w-full rounded border border-line bg-background px-2 py-2 text-sm text-foreground"
                           />
                         </label>
                       </div>
@@ -767,7 +767,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
                 return (
                   <li
                     key={id}
-                    className="flex items-center justify-between rounded border border-[#333] bg-background px-3 py-2"
+                    className="flex items-center justify-between rounded border border-line bg-background px-3 py-2"
                   >
                     <span className="font-mono text-sm">{label}</span>
                     <Button

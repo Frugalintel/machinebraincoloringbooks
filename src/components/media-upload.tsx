@@ -76,7 +76,7 @@ export function MediaUpload({
   return (
     <div className="w-full">
       {url ? (
-        <div className="relative w-full bg-[#222] rounded-lg overflow-hidden border border-[#333] group p-2">
+        <div className="relative w-full bg-surface-2 rounded-lg overflow-hidden border border-line group p-2">
           {type === "image" && (
             <div className="relative aspect-video w-full overflow-hidden rounded">
               <img
@@ -109,13 +109,13 @@ export function MediaUpload({
           <button
             type="button"
             onClick={removeFile}
-            className="absolute top-2 right-2 bg-red-500 text-cream p-1 rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+            className="absolute top-2 right-2 bg-danger text-cream p-1 rounded-full hover:bg-danger-strong transition-colors opacity-0 group-hover:opacity-100"
           >
             <X size={14} />
           </button>
         </div>
       ) : (
-        <div className="relative h-24 w-full bg-background border border-dashed border-[#333] rounded-lg hover:border-primary/50 transition-colors flex flex-col items-center justify-center cursor-pointer group">
+        <div className="relative h-24 w-full bg-background border border-dashed border-line rounded-lg hover:border-primary/50 transition-colors flex flex-col items-center justify-center cursor-pointer group">
           <input
             type="file"
             accept={acceptMap[type]}
@@ -123,7 +123,7 @@ export function MediaUpload({
             disabled={uploading}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
           />
-          <div className="flex flex-col items-center gap-1 text-gray-500 group-hover:text-primary transition-colors">
+          <div className="flex flex-col items-center gap-1 text-fg-muted group-hover:text-primary transition-colors">
             {uploading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
             ) : (
