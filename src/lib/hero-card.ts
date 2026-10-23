@@ -1,21 +1,12 @@
 import { resolveCampaignTheme } from "@/lib/campaign-templates";
+import { HERO_FALLBACK_COVER, HOME_HERO_COPY } from "@/lib/home";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
 import { getProductById, getProductsByCategory } from "@/lib/store-data";
 import type { CampaignSettings, CampaignTheme, Product } from "@/lib/types";
 
-export const HERO_FALLBACK_COVER = "/covers/hero-example.jpg";
-export const DEFAULT_HERO_ACCENT = "#FF4F00";
+export { HERO_FALLBACK_COVER } from "@/lib/home";
 
 export type HeroCta = {
-  label: string;
-  href: string;
-};
-
-export type HeroFeatureChip = {
-  label: string;
-};
-
-export type HeroCollectionLink = {
   label: string;
   href: string;
 };
@@ -27,15 +18,12 @@ export type HeroCardProps = {
   subcopy: string;
   primaryCta: HeroCta;
   secondaryCta: HeroCta;
-  featureChips: HeroFeatureChip[];
   coverImage: string;
   coverAlt?: string;
   coverHref?: string;
   badgeLabel: string;
   price: string;
   originalPrice?: string;
-  accentColor: string;
-  collectionLink: HeroCollectionLink;
 };
 
 export type HeroCardSource = {
@@ -44,28 +32,17 @@ export type HeroCardSource = {
 };
 
 export const DEFAULT_HERO_CARD: HeroCardProps = {
-  brandEyebrow: "Machine Brain Coloring Books",
-  headlineWhite: "Color",
-  headlineAccent: "The Machine",
-  subcopy:
-    "Sci-fi coloring books with hidden stories inside. Thick paper, unlock codes, and collectible digital rewards.",
-  primaryCta: { label: "Browse Books", href: "/store" },
-  secondaryCta: { label: "Read Stories", href: "/stories" },
-  featureChips: [
-    { label: "100+ pages" },
-    { label: "Hidden code" },
-    { label: "Free shipping" },
-  ],
+  brandEyebrow: HOME_HERO_COPY.brandEyebrow,
+  headlineWhite: HOME_HERO_COPY.headlineWhite,
+  headlineAccent: HOME_HERO_COPY.headlineAccent,
+  subcopy: HOME_HERO_COPY.subcopy,
+  primaryCta: { ...HOME_HERO_COPY.primaryCta },
+  secondaryCta: { ...HOME_HERO_COPY.secondaryCta },
   coverImage: HERO_FALLBACK_COVER,
-  coverAlt: "Featured coloring book cover",
+  coverAlt: "Featured coloring book art",
   coverHref: "/store",
   badgeLabel: "HOLIDAY",
   price: "$15.00",
-  accentColor: DEFAULT_HERO_ACCENT,
-  collectionLink: {
-    label: "View Sci-Fi Collection",
-    href: "#store-section",
-  },
 };
 
 export function resolveFeaturedFromCatalog(
@@ -111,21 +88,13 @@ export function resolveHeroCardProps(
       : DEFAULT_HERO_CARD.subcopy,
     primaryCta: DEFAULT_HERO_CARD.primaryCta,
     secondaryCta: DEFAULT_HERO_CARD.secondaryCta,
-    featureChips: DEFAULT_HERO_CARD.featureChips,
     coverImage: product?.image_url || HERO_FALLBACK_COVER,
-    coverAlt: `${product?.title || "Featured coloring book"} cover`,
+    coverAlt: `${product?.title || "Featured coloring book"} art`,
     coverHref: product ? `/store/${product.id}` : DEFAULT_HERO_CARD.coverHref,
     badgeLabel: resolveBadgeLabel(product, campaign, theme),
     price: formatPrice(
       priceInfo.hasDiscount ? priceInfo.finalPrice : priceInfo.originalPrice,
     ),
-    accentColor: campaign?.isActive
-      ? theme.colors.primary
-      : DEFAULT_HERO_ACCENT,
-    collectionLink: {
-      label: `View ${useCampaignCopy ? theme.text.storyTag : "Sci-Fi"} Collection`,
-      href: "#store-section",
-    },
   };
 
   if (priceInfo.hasDiscount) {

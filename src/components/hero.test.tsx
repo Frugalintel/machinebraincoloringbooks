@@ -62,15 +62,15 @@ describe("Hero", () => {
       screen.getByRole("heading", { name: /color\s+the machine/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/sci-fi coloring books with hidden stories inside/i),
+      screen.getByText(/look closer\. hidden parts wait in the lines/i),
     ).toBeInTheDocument();
 
     const browse = screen.getByRole("link", { name: /browse books/i });
     expect(browse).toHaveAttribute("href", "/store");
 
-    const stories = screen.getByRole("link", { name: /read stories/i });
-    expect(stories).toHaveAttribute("href", "/stories");
-    expect(stories.tagName).toBe("A");
+    const how = screen.getByRole("link", { name: /how it works/i });
+    expect(how).toHaveAttribute("href", "#how-it-works");
+    expect(how.tagName).toBe("A");
 
     expect(screen.getByRole("region")).toHaveAttribute(
       "aria-labelledby",
@@ -78,20 +78,20 @@ describe("Hero", () => {
     );
   });
 
-  it("keeps trust stats visible in the copy column", () => {
+  it("does not render hype chips", () => {
     render(<Hero />);
 
-    expect(screen.getByText("100+ pages")).toBeInTheDocument();
-    expect(screen.getByText("Hidden code")).toBeInTheDocument();
-    expect(screen.getByText("Free shipping")).toBeInTheDocument();
+    expect(screen.queryByText("100+ pages")).not.toBeInTheDocument();
+    expect(screen.queryByText("Free shipping")).not.toBeInTheDocument();
+    expect(screen.queryByText("Unlock Rewards")).not.toBeInTheDocument();
   });
 
-  it("uses the local cover fallback and catalog holiday badge when image_url is missing", () => {
+  it("uses the local portrait fallback and catalog holiday badge when image_url is missing", () => {
     render(<Hero />);
 
-    const cover = screen.getByRole("img");
+    const cover = screen.getByRole("img", { name: /cover|art/i });
     expect(cover).toHaveAttribute("src", HERO_FALLBACK_COVER);
-    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("HOLIDAY");
+    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("Holiday");
     expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("$15.00");
     expect(screen.getByTestId("hero-price-badge")).not.toHaveTextContent(
       "HOLIDAYHOLIDAY",
@@ -104,34 +104,26 @@ describe("Hero", () => {
     render(<Hero />);
 
     await waitFor(() => {
-      expect(screen.getByRole("img")).toHaveAttribute(
-        "src",
-        featuredProduct.image_url,
-      );
+      expect(
+        screen.getByRole("img", { name: /neon circuit/i }),
+      ).toHaveAttribute("src", featuredProduct.image_url);
     });
 
-    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("SCI-FI");
+    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("Sci-fi");
     expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("$24.00");
     expect(screen.getByTestId("hero-price-badge")).not.toHaveTextContent(
       "Neon Circuit",
     );
     expect(
-      screen.getByRole("link", { name: /neon circuit cover/i }),
+      screen.getByRole("link", { name: /neon circuit art/i }),
     ).toHaveAttribute("href", "/store/book-42");
   });
 
   it("accepts CMS overrides on the Hero wrapper", () => {
-    render(
-      <Hero
-        headlineWhite="Ink"
-        headlineAccent="The Relay"
-        featureChips={[{ label: "Limited drop" }]}
-      />,
-    );
+    render(<Hero headlineWhite="Ink" headlineAccent="the relay" />);
 
     expect(
       screen.getByRole("heading", { name: /ink\s+the relay/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Limited drop")).toBeInTheDocument();
   });
 });

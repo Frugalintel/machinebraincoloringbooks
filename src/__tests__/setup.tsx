@@ -19,6 +19,30 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
+// Mock next/image
+vi.mock("next/image", () => ({
+  default: ({
+    src,
+    alt,
+    fill: _fill,
+    priority: _priority,
+    sizes: _sizes,
+    ...props
+  }: {
+    src: string | { src: string };
+    alt: string;
+    fill?: boolean;
+    priority?: boolean;
+    sizes?: string;
+  } & React.ImgHTMLAttributes<HTMLImageElement>) => {
+    void _fill;
+    void _priority;
+    void _sizes;
+    const resolved = typeof src === "string" ? src : src.src;
+    return <img src={resolved} alt={alt} {...props} />;
+  },
+}));
+
 // Mock next/link
 vi.mock("next/link", () => ({
   default: ({

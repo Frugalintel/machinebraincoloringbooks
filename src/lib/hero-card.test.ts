@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { CAMPAIGN_TEMPLATES } from "@/lib/campaign-templates";
+import { HERO_FALLBACK_COVER, HOME_HERO_COPY } from "@/lib/home";
 import {
-  DEFAULT_HERO_ACCENT,
   DEFAULT_HERO_CARD,
-  HERO_FALLBACK_COVER,
   resolveFeaturedFromCatalog,
   resolveHeroCardProps,
   type HeroCardProps,
@@ -18,12 +17,9 @@ const contractKeys: (keyof HeroCardProps)[] = [
   "subcopy",
   "primaryCta",
   "secondaryCta",
-  "featureChips",
   "coverImage",
   "badgeLabel",
   "price",
-  "accentColor",
-  "collectionLink",
 ];
 
 const neonCircuit: Product = {
@@ -69,31 +65,23 @@ describe("HeroCard prop contract", () => {
       expect(DEFAULT_HERO_CARD[key]).toBeDefined();
     }
 
-    expect(DEFAULT_HERO_CARD.brandEyebrow).toBe("Machine Brain Coloring Books");
+    expect(DEFAULT_HERO_CARD.brandEyebrow).toBe(HOME_HERO_COPY.brandEyebrow);
     expect(DEFAULT_HERO_CARD.headlineWhite).toBe("Color");
-    expect(DEFAULT_HERO_CARD.headlineAccent).toBe("The Machine");
-    expect(DEFAULT_HERO_CARD.subcopy).toMatch(/hidden stories/i);
+    expect(DEFAULT_HERO_CARD.headlineAccent).toBe("the machine");
+    expect(DEFAULT_HERO_CARD.subcopy).toMatch(/look closer/i);
     expect(DEFAULT_HERO_CARD.primaryCta).toEqual({
-      label: "Browse Books",
+      label: "Browse books",
       href: "/store",
     });
     expect(DEFAULT_HERO_CARD.secondaryCta).toEqual({
-      label: "Read Stories",
-      href: "/stories",
+      label: "How it works",
+      href: "#how-it-works",
     });
-    expect(DEFAULT_HERO_CARD.featureChips.map((chip) => chip.label)).toEqual([
-      "100+ pages",
-      "Hidden code",
-      "Free shipping",
-    ]);
     expect(DEFAULT_HERO_CARD.coverImage).toBe(HERO_FALLBACK_COVER);
     expect(DEFAULT_HERO_CARD.badgeLabel).toBe("HOLIDAY");
     expect(DEFAULT_HERO_CARD.price).toBe("$15.00");
-    expect(DEFAULT_HERO_CARD.accentColor).toBe(DEFAULT_HERO_ACCENT);
-    expect(DEFAULT_HERO_CARD.collectionLink).toEqual({
-      label: "View Sci-Fi Collection",
-      href: "#store-section",
-    });
+    expect(DEFAULT_HERO_CARD).not.toHaveProperty("featureChips");
+    expect(DEFAULT_HERO_CARD).not.toHaveProperty("accentColor");
   });
 
   it("resolves the local catalog holiday book when no live product is passed", () => {
@@ -105,7 +93,6 @@ describe("HeroCard prop contract", () => {
     expect(resolved.badgeLabel).toBe("HOLIDAY");
     expect(resolved.price).toBe("$15.00");
     expect(resolved.coverImage).toBe(HERO_FALLBACK_COVER);
-    expect(resolved.accentColor).toBe(DEFAULT_HERO_ACCENT);
   });
 
   it("prefers product.image_url, catalog category, and calculated price", () => {
@@ -119,7 +106,7 @@ describe("HeroCard prop contract", () => {
     expect(resolved.originalPrice).toBeUndefined();
   });
 
-  it("falls back to the local JPEG when image_url is missing", () => {
+  it("falls back to the local portrait art when image_url is missing", () => {
     const { image_url: _unused, ...withoutCover } = neonCircuit;
     void _unused;
 
@@ -174,7 +161,6 @@ describe("HeroCard prop contract", () => {
     expect(Object.keys(resolved).sort()).toEqual(
       Object.keys(resolveHeroCardProps({ product: neonCircuit })).sort(),
     );
-    expect(resolved.accentColor).toBe(CAMPAIGN_TEMPLATES.brand.colors.primary);
     expect(resolved.headlineWhite).toBe(DEFAULT_HERO_CARD.headlineWhite);
     expect(resolved.headlineAccent).toBe(DEFAULT_HERO_CARD.headlineAccent);
     expect(resolved.badgeLabel).toBe("SCI-FI");
@@ -189,22 +175,20 @@ describe("HeroCard prop contract", () => {
     expect(resolved.price).toBe("$12.00");
   });
 
-  it("lets explicit CMS overrides swap cover, chips, and headline", () => {
+  it("lets explicit CMS overrides swap cover and headline", () => {
     const resolved = resolveHeroCardProps(
       { product: neonCircuit },
       {
         headlineWhite: "Paint",
-        headlineAccent: "The Archive",
+        headlineAccent: "the archive",
         coverImage: "https://cdn.example.com/archive.jpg",
-        featureChips: [{ label: "200+ pages" }],
         price: "$9.00",
       },
     );
 
     expect(resolved.headlineWhite).toBe("Paint");
-    expect(resolved.headlineAccent).toBe("The Archive");
+    expect(resolved.headlineAccent).toBe("the archive");
     expect(resolved.coverImage).toBe("https://cdn.example.com/archive.jpg");
-    expect(resolved.featureChips).toEqual([{ label: "200+ pages" }]);
     expect(resolved.price).toBe("$9.00");
     expect(resolved.badgeLabel).toBe("SCI-FI");
   });

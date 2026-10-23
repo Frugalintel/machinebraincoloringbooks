@@ -1,31 +1,22 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { HeroCard } from "@/components/hero-card";
+import { FRAME_PORTRAIT_SRC, HERO_FALLBACK_COVER } from "@/lib/home";
 import { DEFAULT_HERO_CARD, type HeroCardProps } from "@/lib/hero-card";
 
 const swapped: HeroCardProps = {
   ...DEFAULT_HERO_CARD,
-  brandEyebrow: "Archive Press",
+  brandEyebrow: "Archive press",
   headlineWhite: "Paint",
-  headlineAccent: "The Archive",
+  headlineAccent: "the archive",
   subcopy: "Swap this featured book without touching layout.",
-  primaryCta: { label: "Shop Archive", href: "/store?cat=archive" },
-  secondaryCta: { label: "Open Lore", href: "/stories?set=archive" },
-  featureChips: [
-    { label: "80 pages" },
-    { label: "Secret gate" },
-    { label: "Night drop" },
-  ],
+  primaryCta: { label: "Shop archive", href: "/store?cat=archive" },
+  secondaryCta: { label: "How it works", href: "#how-it-works" },
   coverImage: "https://cdn.example.com/archive.jpg",
-  coverAlt: "Archive hardcover",
+  coverAlt: "Archive art",
   coverHref: "/store/archive-1",
   badgeLabel: "ARCHIVE",
   price: "$9.00",
-  accentColor: "#00e5ff",
-  collectionLink: {
-    label: "View Archive Collection",
-    href: "/store?cat=archive",
-  },
 };
 
 describe("HeroCard", () => {
@@ -36,31 +27,33 @@ describe("HeroCard", () => {
       screen.getByRole("heading", { name: /color\s+the machine/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/sci-fi coloring books with hidden stories inside/i),
+      screen.getByText(/look closer\. hidden parts wait in the lines/i),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /browse books/i })).toHaveAttribute(
       "href",
       "/store",
     );
-    expect(screen.getByRole("link", { name: /read stories/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /how it works/i })).toHaveAttribute(
       "href",
-      "/stories",
+      "#how-it-works",
     );
-    expect(screen.getByText("100+ pages")).toBeInTheDocument();
-    expect(screen.getByText("Hidden code")).toBeInTheDocument();
-    expect(screen.getByText("Free shipping")).toBeInTheDocument();
-    expect(screen.getByRole("img")).toHaveAttribute(
-      "src",
-      DEFAULT_HERO_CARD.coverImage,
-    );
-    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("HOLIDAY");
-    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("$15.00");
+    expect(screen.queryByText("Free shipping")).not.toBeInTheDocument();
+    expect(screen.queryByText("100+ pages")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /view sci-fi collection/i }),
-    ).toHaveAttribute("href", "#store-section");
+      screen.getByRole("img", { name: DEFAULT_HERO_CARD.coverAlt }),
+    ).toHaveAttribute("src", HERO_FALLBACK_COVER);
+    expect(screen.getByTestId("hero-portrait-frame")).toBeInTheDocument();
+    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("Holiday");
+    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("$15.00");
+    expect(screen.getByTestId("hero-price-badge").className).toMatch(
+      /bg-cream/,
+    );
+    expect(screen.getByTestId("hero-price-badge").className).not.toMatch(
+      /bg-white|bg-paper/,
+    );
   });
 
-  it("swaps copy, cover, chips, and price from props without a second layout", () => {
+  it("swaps copy, cover, and price from props without a second layout", () => {
     const { rerender } = render(<HeroCard {...DEFAULT_HERO_CARD} />);
     const defaultLayout = screen.getByTestId("hero-layout").className;
 
@@ -70,7 +63,7 @@ describe("HeroCard", () => {
     expect(
       screen.getByRole("heading", { name: /paint\s+the archive/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Archive Press")).toBeInTheDocument();
+    expect(screen.getByText("Archive press")).toBeInTheDocument();
     expect(
       screen.getByText(/swap this featured book without touching layout/i),
     ).toBeInTheDocument();
@@ -78,25 +71,18 @@ describe("HeroCard", () => {
       "href",
       "/store?cat=archive",
     );
-    expect(screen.getByRole("link", { name: /open lore/i })).toHaveAttribute(
-      "href",
-      "/stories?set=archive",
-    );
-    expect(screen.getByText("80 pages")).toBeInTheDocument();
-    expect(screen.getByText("Secret gate")).toBeInTheDocument();
-    expect(screen.getByText("Night drop")).toBeInTheDocument();
-    expect(screen.getByRole("img")).toHaveAttribute(
+    expect(screen.getByRole("img", { name: "Archive art" })).toHaveAttribute(
       "src",
       "https://cdn.example.com/archive.jpg",
     );
-    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("ARCHIVE");
+    expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("Archive");
     expect(screen.getByTestId("hero-price-badge")).toHaveTextContent("$9.00");
     expect(screen.getByTestId("hero-price-badge")).not.toHaveTextContent(
       "ARCHIVEARCHIVE",
     );
   });
 
-  it("stacks copy above the book and keeps the cover in flow, not behind a HUD", () => {
+  it("stacks copy above the portrait frame and keeps the cover in flow", () => {
     render(<HeroCard {...DEFAULT_HERO_CARD} />);
 
     const layout = screen.getByTestId("hero-layout");
@@ -110,18 +96,20 @@ describe("HeroCard", () => {
     expect(
       copy.compareDocumentPosition(cover) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+    expect(screen.getByTestId("hero-portrait-frame").innerHTML).toContain(
+      FRAME_PORTRAIT_SRC,
+    );
+    expect(cover.innerHTML).not.toMatch(/hero-book-3d|scale-x-\[-1\]/);
   });
 
-  it("applies the accent color as a CSS custom property", () => {
-    render(<HeroCard {...swapped} />);
-
-    expect(screen.getByRole("region")).toHaveStyle({
-      "--hero-accent": "#00e5ff",
-    });
-  });
-
-  it("renders a flat token surface without grain or campaign texture tiles", () => {
+  it("uses a single Redaction H1 and cream CTAs without orange fills", () => {
     const { container } = render(<HeroCard {...DEFAULT_HERO_CARD} />);
+    const displays = container.querySelectorAll(".font-display");
+    expect(displays).toHaveLength(1);
+    expect(displays[0]?.tagName).toBe("H1");
+    expect(container.innerHTML).not.toMatch(
+      /bg-primary|bg-signal|bg-\(--hero-accent\)/,
+    );
     expect(container.innerHTML).not.toContain("noise.svg");
     expect(container.innerHTML).not.toContain("scanlines");
   });
