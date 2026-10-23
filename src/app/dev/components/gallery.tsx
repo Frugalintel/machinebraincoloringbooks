@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { SystemLoading } from "@/components/system-loading";
+import { SystemState } from "@/components/system-state";
 
 function Section({
   title,
@@ -213,6 +215,14 @@ export function ComponentGallery() {
                 </p>
               </SheetContent>
             </Sheet>
+          </div>
+        </Section>
+
+        <Section title="System states">
+          <div className="flex flex-col gap-12">
+            <SystemState kind="notFound" />
+            <SystemState kind="error" reset={() => undefined} />
+            <SystemLoading variant="catalog" />
           </div>
         </Section>
       </div>

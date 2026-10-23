@@ -16,7 +16,12 @@ import {
   Gift,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  notFound,
+  useParams,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/context/auth-context";
 import { Input } from "@/components/ui/input";
@@ -365,20 +370,7 @@ export default function StoryDetailPage() {
   }
 
   if (!story) {
-    return (
-      <main className="min-h-screen bg-background text-cream flex items-center justify-center font-mono">
-        <div className="text-center">
-          <h1 className="font-display text-title text-cream mb-4">Error 404</h1>
-          <p className="text-fg-muted">STORY FILE NOT FOUND</p>
-          <Link
-            href="/stories"
-            className="mt-8 inline-block border-b border-primary text-primary pb-1 hover:text-cream transition-colors"
-          >
-            RETURN TO ADVENTURES
-          </Link>
-        </div>
-      </main>
-    );
+    notFound();
   }
 
   const currentChapter =
