@@ -657,3 +657,20 @@ export const achievements: Achievement[] = [
     details: [{ label: "Found", value: "No" }],
   },
 ];
+
+export function findCollectibleById(
+  id: string | undefined | null,
+): { item: CollectibleItem; set: CollectionSet } | null {
+  if (!id) {
+    return null;
+  }
+
+  for (const set of collectionSets) {
+    const item = set.items.find((entry) => entry.id === id);
+    if (item) {
+      return { item, set };
+    }
+  }
+
+  return null;
+}
