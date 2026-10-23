@@ -29,34 +29,27 @@ import {
 } from "@/lib/site-shell";
 import { cn } from "@/lib/utils";
 
-const WORDMARK_CLASS = "text-[16px] md:text-[18px] lg:text-[20px]";
+const WORDMARK_CLASS = "text-[11px] leading-none";
 
+/** Stacked lockup: S3 small cut below `lg`, full mark-v6 at 48 px from `lg`. */
 function HeaderLockups() {
   return (
     <>
       <BrandLockup
-        layout="horizontal"
+        layout="stacked"
+        wordmark="mono"
         markSize={HEADER_MARK_SIZE_MOBILE_PX}
         ink="cream"
         className="lg:hidden"
         wordmarkClassName={WORDMARK_CLASS}
-        subtitle={
-          <span className="font-label mt-1 tracking-[0.08em] text-fg-muted">
-            Coloring books
-          </span>
-        }
       />
       <BrandLockup
-        layout="horizontal"
+        layout="stacked"
+        wordmark="mono"
         markSize={HEADER_MARK_SIZE_DESKTOP_PX}
         ink="cream"
         className="hidden lg:inline-flex"
         wordmarkClassName={WORDMARK_CLASS}
-        subtitle={
-          <span className="font-label mt-1 tracking-[0.08em] text-fg-muted">
-            Coloring books
-          </span>
-        }
       />
     </>
   );
@@ -70,7 +63,7 @@ function MinimalHeader() {
       style={{ backgroundColor: "var(--base)" }}
     >
       <nav
-        className="container mx-auto flex h-16 items-center justify-between px-4"
+        className="container mx-auto flex h-16 items-center justify-between px-4 lg:h-20"
         aria-label="Minimal"
       >
         <HeaderLockups />

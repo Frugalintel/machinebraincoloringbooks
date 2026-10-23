@@ -91,6 +91,22 @@ describe("Navbar", () => {
     );
   });
 
+  it("uses the stacked lockup: S3 at 32 px below lg, full mark at 48 px", () => {
+    render(<Navbar />);
+
+    const lockups = screen.getAllByRole("link", { name: "Machine Brain" });
+    const marks = lockups.map((link) => link.querySelector("img")!);
+    expect(marks.map((img) => img.getAttribute("src"))).toEqual([
+      "/brand/mb-mark-S3-small-cream.svg",
+      "/brand/mb-mark-full-cream.svg",
+    ]);
+    expect(marks.map((img) => img.getAttribute("width"))).toEqual(["32", "48"]);
+    for (const link of lockups) {
+      expect(link.querySelector("span")).toHaveClass("flex-col");
+      expect(within(link).getByText("Machine Brain")).toHaveClass("font-mono");
+    }
+  });
+
   it("opens and closes the mobile menu with aria-expanded and aria-controls", () => {
     render(<Navbar />);
 
