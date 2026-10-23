@@ -2,129 +2,202 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  FRAME_PORTRAIT_HEIGHT,
-  FRAME_PORTRAIT_SRC,
-  FRAME_PORTRAIT_WIDTH,
-  HOME_CLOSE_COPY,
+  COVER_FRAME,
+  COVER_WINDOW_POLYGON,
+  HERO_ART,
+  HERO_CROP,
+  HERO_CROPS,
   HOME_HERO_COPY,
+  HOME_SPEC_PLATE,
   HOME_UNLOCK_STEPS,
+  HOME_UNLOCKS_COPY,
+  coverWindowClipPath,
 } from "@/lib/home";
 
 const ROOT = process.cwd();
 const SRC = join(ROOT, "src");
+const PUBLIC = join(ROOT, "public");
 
 const HOME_FILES = [
   "src/app/page.tsx",
-  "src/components/hero.tsx",
-  "src/components/hero-card.tsx",
-  "src/components/home-how-it-works.tsx",
-  "src/components/home-featured.tsx",
-  "src/components/home-close.tsx",
-  "src/components/portrait-frame.tsx",
-  "src/components/cover-art.tsx",
-  "src/lib/hero-card.ts",
+  "src/components/cover-frame.tsx",
+  "src/components/home-hero.tsx",
+  "src/components/home-library.tsx",
+  "src/components/home-qr.tsx",
+  "src/components/home-section.tsx",
+  "src/components/home-spec-plate.tsx",
+  "src/components/home-unlocks.tsx",
   "src/lib/home.ts",
 ];
 
-const BANNED = [
-  "hero-book-3d",
-  "hero-book-front",
-  "hero-book-spine",
-  "hero-example.jpg",
-  "--hero-accent",
-  "Free shipping",
-  "Unlock Rewards",
-  "Unlock rewards",
-];
-
-function walk(dir: string): string[] {
+function walk(dir: string, pattern: RegExp): string[] {
   const out: string[] = [];
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
     if (statSync(full).isDirectory()) {
-      out.push(...walk(full));
+      out.push(...walk(full, pattern));
       continue;
     }
-    if (/\.(tsx|ts|css)$/.test(name)) out.push(full);
+    if (pattern.test(name)) out.push(full);
   }
   return out;
 }
 
-describe("P1 home brand guardrail", () => {
-  it("ships a portrait cream frame well under 150 KB", () => {
-    const path = join(ROOT, "public", FRAME_PORTRAIT_SRC.replace(/^\//, ""));
-    expect(existsSync(path)).toBe(true);
-    const buf = readFileSync(path);
-    expect(buf.length).toBeLessThan(150 * 1024);
-    const width = buf.readUInt32BE(16);
-    const height = buf.readUInt32BE(20);
-    expect(width).toBe(FRAME_PORTRAIT_WIDTH);
-    expect(height).toBe(FRAME_PORTRAIT_HEIGHT);
-    expect(width / height).toBeLessThan(1);
+function publicFile(src: string): string {
+  return join(PUBLIC, src.replace(/^\//, ""));
+}
+
+describe("P1 home: canonical cover frame", () => {
+  it("ships frame-front-web-full.svg as the hero frame", () => {
+    expect(COVER_FRAME.fullSrc).toBe("/frames/frame-front-web-full.svg");
+    const svg = readFileSync(publicFile(COVER_FRAME.fullSrc), "utf8");
+    expect(svg).toContain('viewBox="0 0 1700 2200"');
+    expect(svg.length).toBeLessThan(20 * 1024);
+
+    const inks = new Set(
+      [...svg.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toUpperCase()),
+    );
+    expect([...inks].sort()).toEqual(["#F2EAD8", "#FF4F00"]);
+    expect(svg).not.toMatch(/<rect|<image|fill="#(?!F2EAD8|FF4F00)/i);
   });
 
-  it("removes the fake hardcover JPEG and 3D hero styles", () => {
-    expect(existsSync(join(ROOT, "public/covers/hero-example.jpg"))).toBe(
+  it("ships the closed variant in the same single cream ink", () => {
+    const svg = readFileSync(publicFile(COVER_FRAME.closedSrc), "utf8");
+    expect(svg).toContain('viewBox="0 0 1700 2200"');
+    const inks = new Set(
+      [...svg.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toUpperCase()),
+    );
+    expect([...inks]).toEqual(["#F2EAD8"]);
+  });
+
+  it("removes the rejected guidelines-v2 frame and its PNG", () => {
+    expect(existsSync(join(PUBLIC, "frames/frame-portrait-cream.png"))).toBe(
       false,
     );
-    const css = readFileSync(join(SRC, "app/globals.css"), "utf8");
-    expect(css).not.toMatch(/hero-book|hero-cover-stage|--page-1/);
+    const hits = walk(SRC, /\.(tsx?|css)$/)
+      .filter((file) => !/\.test\.tsx?$/.test(file))
+      .filter((file) =>
+        /frame-portrait|portrait-frame|hero-book-3d|hero-example\.jpg/.test(
+          readFileSync(file, "utf8"),
+        ),
+      );
+    expect(hits).toEqual([]);
   });
 
-  it("keeps home copy in the locked voice", () => {
-    const joined = [
-      HOME_HERO_COPY.subcopy,
-      HOME_CLOSE_COPY.body,
-      ...HOME_UNLOCK_STEPS.map((step) => `${step.label} ${step.copy}`),
-    ].join(" ");
-
-    expect(joined).not.toMatch(/!/);
-    expect(joined.toLowerCase()).not.toMatch(/\bwe\b|\bour\b/);
-    expect(HOME_UNLOCK_STEPS.map((step) => step.label)).toEqual([
-      "Scan the code",
-      "Scan your colored pages to earn points",
-      "Spend points on more unlocks",
-    ]);
+  it("keeps the frame portrait and the window at Studio's geometry", () => {
+    expect(COVER_FRAME.width / COVER_FRAME.height).toBeCloseTo(1700 / 2200);
+    expect(COVER_FRAME.window).toEqual({
+      x: 140,
+      y: 614,
+      width: 1420,
+      height: 1310,
+    });
+    expect(COVER_WINDOW_POLYGON).toHaveLength(20);
+    const clip = coverWindowClipPath();
+    expect(clip.startsWith("polygon(0% 3.9695%, 1.831% 3.9695%")).toBe(true);
+    expect(clip).toContain("100% 96.0305%");
   });
 
-  it("uses one Redaction H1 and no orange fills on home", () => {
-    const hits: string[] = [];
+  it("drives the hero art from one crop value with every crop on disk", () => {
+    expect(HERO_CROPS[HERO_CROP]).toBe(HERO_ART);
+    expect(HERO_CROP).toBe("H1");
+    for (const crop of Object.values(HERO_CROPS)) {
+      const path = publicFile(crop.src);
+      expect(existsSync(path)).toBe(true);
+      expect(statSync(path).size).toBeLessThan(400 * 1024);
+      expect(crop.alt.length).toBeGreaterThan(10);
+    }
+  });
+});
+
+describe("P1 home: type, color and texture guardrails", () => {
+  it("uses Redaction exactly once on home, for the H1", () => {
     let displayCount = 0;
+    for (const relative of HOME_FILES) {
+      const text = readFileSync(join(ROOT, relative), "utf8");
+      displayCount += text.match(/font-display/g)?.length ?? 0;
+    }
+    expect(displayCount).toBe(1);
+    const hero = readFileSync(
+      join(ROOT, "src/components/home-hero.tsx"),
+      "utf8",
+    );
+    expect(hero).toMatch(/<h1[\s\S]{0,80}font-display cover-title/);
+  });
 
+  it("paints no orange fills and no fourth face on home", () => {
+    const hits: string[] = [];
     for (const relative of HOME_FILES) {
       const text = readFileSync(join(ROOT, relative), "utf8");
       text.split("\n").forEach((line, index) => {
-        if (line.includes("font-display")) displayCount += 1;
         if (
-          /bg-(?:primary|signal|brand-orange)|bg-\[#(?:ff4f00|FF4F00)\]|bg-\(--hero-accent\)/i.test(
+          /bg-(?:primary|signal|brand-orange|accent)\b|bg-\[#ff4f00\]|fill="#ff4f00"|border-signal|Rajdhani|Oswald/i.test(
             line,
           )
         ) {
           hits.push(`${relative}:${index + 1}:${line.trim()}`);
         }
-        for (const token of BANNED) {
-          if (line.includes(token)) {
-            hits.push(`${relative}:${index + 1}:${token}`);
-          }
-        }
       });
     }
-
     expect(hits).toEqual([]);
-    expect(displayCount).toBe(1);
   });
 
-  it("does not reintroduce 3D hero utilities anywhere in src", () => {
-    const files = walk(SRC);
-    const hits: string[] = [];
-    for (const file of files) {
-      if (file.endsWith(".test.ts") || file.endsWith(".test.tsx")) continue;
-      if (file.endsWith("ui-brand.ts")) continue;
-      const text = readFileSync(file, "utf8");
-      if (/hero-book-3d|hero-example\.jpg|--hero-accent/.test(text)) {
-        hits.push(file);
-      }
-    }
+  it("keeps texture off every site surface", () => {
+    const sources = walk(SRC, /\.(tsx?|css)$/).filter(
+      (file) => !/\.test\.tsx?$/.test(file),
+    );
+    const hits = sources.filter((file) =>
+      /fleck|noise\.svg/i.test(readFileSync(file, "utf8")),
+    );
     expect(hits).toEqual([]);
+    expect(walk(PUBLIC, /fleck|texture|noise/i)).toEqual([]);
+
+    for (const relative of HOME_FILES) {
+      const text = readFileSync(join(ROOT, relative), "utf8");
+      expect(text).not.toMatch(/background-image|bg-\[url/);
+    }
+  });
+});
+
+describe("P1 home: copy and values", () => {
+  it("keeps the unlocks steps word for word from the guide", () => {
+    expect(HOME_UNLOCK_STEPS.map((step) => step.label)).toEqual([
+      "Scan the code",
+      "Scan your colored pages to earn points",
+      "Spend points on more unlocks",
+    ]);
+    expect(HOME_UNLOCK_STEPS.map((step) => step.number)).toEqual([
+      "01",
+      "02",
+      "03",
+    ]);
+  });
+
+  it("speaks to you, without hype", () => {
+    const joined = [
+      HOME_HERO_COPY.tagline,
+      HOME_HERO_COPY.body,
+      HOME_UNLOCKS_COPY.heading,
+      HOME_UNLOCKS_COPY.qrCaption,
+      ...HOME_UNLOCK_STEPS.map((step) => step.label),
+    ].join(" ");
+    expect(joined).not.toMatch(/!/);
+    expect(joined.toLowerCase()).not.toMatch(/\bwe\b|\bour\b|free|prize/);
+  });
+
+  it("ships no SAMPLE values or captions", () => {
+    const text = HOME_FILES.map((relative) =>
+      readFileSync(join(ROOT, relative), "utf8"),
+    ).join("\n");
+    expect(text).not.toMatch(/sample/i);
+    expect(text).not.toMatch(/MB-GNS|CAT NO|qr-MB/i);
+    expect(HOME_SPEC_PLATE.rows.map((row) => row.label)).not.toContain(
+      "Cat no",
+    );
+  });
+
+  it("points the QR at the site's own scan route", () => {
+    expect(HOME_UNLOCKS_COPY.qrPath).toBe("/scan");
+    expect(existsSync(join(SRC, "app/scan/page.tsx"))).toBe(true);
   });
 });

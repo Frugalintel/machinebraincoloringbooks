@@ -24,22 +24,33 @@ vi.mock("next/image", () => ({
   default: ({
     src,
     alt,
-    fill: _fill,
-    priority: _priority,
-    sizes: _sizes,
+    fill,
+    priority,
+    preload,
+    unoptimized: _unoptimized,
+    sizes,
     ...props
   }: {
     src: string | { src: string };
     alt: string;
     fill?: boolean;
     priority?: boolean;
+    preload?: boolean;
+    unoptimized?: boolean;
     sizes?: string;
   } & React.ImgHTMLAttributes<HTMLImageElement>) => {
-    void _fill;
-    void _priority;
-    void _sizes;
+    void _unoptimized;
     const resolved = typeof src === "string" ? src : src.src;
-    return <img src={resolved} alt={alt} {...props} />;
+    return (
+      <img
+        src={resolved}
+        alt={alt}
+        sizes={sizes}
+        data-fill={fill ? "" : undefined}
+        data-preload={preload || priority ? "" : undefined}
+        {...props}
+      />
+    );
   },
 }));
 

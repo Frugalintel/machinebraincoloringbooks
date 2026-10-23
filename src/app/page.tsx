@@ -1,15 +1,13 @@
-import { Hero } from "@/components/hero";
-import { HomeClose } from "@/components/home-close";
-import { HomeFeatured } from "@/components/home-featured";
-import { HomeHowItWorks } from "@/components/home-how-it-works";
+import { HomeHero } from "@/components/home-hero";
+import { HomeLibrary } from "@/components/home-library";
+import { HomeUnlocks } from "@/components/home-unlocks";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <Hero />
-      <HomeHowItWorks />
-      <HomeFeatured />
-      <HomeClose />
+      <HomeHero />
+      <HomeLibrary />
+      <HomeUnlocks />
     </main>
   );
 }
