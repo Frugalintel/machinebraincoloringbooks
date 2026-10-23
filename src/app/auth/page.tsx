@@ -268,17 +268,6 @@ function AuthPageContent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background overflow-hidden relative font-sans">
-      {/* Technical Background */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-10"
-        style={{
-          backgroundImage:
-            "linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      ></div>
-      <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
-
       {/* Main Container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

@@ -294,7 +294,6 @@ export default function ScanPage() {
     <div className="min-h-screen bg-background text-cream selection:bg-cream selection:text-ink">
       {/* Header Banner */}
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="flex items-center justify-center gap-2 mb-4 text-primary font-mono uppercase tracking-widest text-xs">
             <Scan size={14} />
@@ -608,7 +607,6 @@ export default function ScanPage() {
 
               {/* 3D Trophy Celebration */}
               <div className="w-40 h-40 mb-6 relative">
-                <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none z-10 rounded-full"></div>
                 <TrophyCanvas
                   size="small"
                   rarity="Rare"

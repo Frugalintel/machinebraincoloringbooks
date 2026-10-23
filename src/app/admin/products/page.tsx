@@ -486,8 +486,6 @@ export default function AdminProductsPage() {
                       <div
                         className={`absolute inset-0 opacity-20 ${product.color || "bg-line"}`}
                       ></div>
-                      <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-overlay"></div>
-
                       {product.image_url ? (
                         <img
                           src={product.image_url}

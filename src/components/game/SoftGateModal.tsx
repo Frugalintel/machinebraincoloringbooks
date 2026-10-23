@@ -53,9 +53,6 @@ export function SoftGateModal({
             className="bg-background border border-line w-full max-w-md relative overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Background texture */}
-            <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
-
             {/* Header */}
             <div className="border-b border-line p-6 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-warning/10 to-transparent pointer-events-none" />

@@ -339,7 +339,7 @@ export function AchievementForm({
             <label className="text-sm font-mono text-fg-muted uppercase">
               Unlock Notification Preview
             </label>
-            <div className="bg-background/40 border border-line p-8 rounded-lg flex items-center justify-center min-h-[300px] bg-[url('/textures/noise.svg')] bg-opacity-5 relative overflow-hidden">
+            <div className="bg-background/40 border border-line p-8 rounded-lg flex items-center justify-center min-h-[300px] relative overflow-hidden">
               {/* Simulated Game UI Background */}
               <div
                 className="absolute inset-0 pointer-events-none opacity-20"
@@ -359,18 +359,11 @@ export function AchievementForm({
                     formData.custom_color ||
                     RARITY_TIERS.find((t) => t.id === formData.rarity)?.color ||
                     "#fff",
-                  boxShadow: `0 0 30px ${formData.custom_color || RARITY_TIERS.find((t) => t.id === formData.rarity)?.color || "#fff"}20`,
                 }}
               >
-                {/* Premium Glow Effect for High Rarity */}
-                {(formData.rarity === "Epic" ||
-                  formData.rarity === "Legendary") && (
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                )}
-
                 {/* Side Accent Bar */}
                 <div
-                  className="absolute top-0 left-0 w-1 h-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                  className="absolute top-0 left-0 w-1 h-full"
                   style={{
                     backgroundColor:
                       formData.custom_color ||

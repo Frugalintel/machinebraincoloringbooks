@@ -71,7 +71,6 @@ export default function CollectiblesPublicPage() {
     <main className="min-h-screen bg-background text-cream font-sans">
       {/* Hero Section */}
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         {/* Abstract Background Element */}
         <div className="absolute -right-20 -top-20 w-96 h-96 bg-cream/10 rounded-full blur-3xl"></div>
 

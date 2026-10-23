@@ -119,4 +119,10 @@ describe("HeroCard", () => {
       "--hero-accent": "#00e5ff",
     });
   });
+
+  it("renders a flat token surface without grain or campaign texture tiles", () => {
+    const { container } = render(<HeroCard {...DEFAULT_HERO_CARD} />);
+    expect(container.innerHTML).not.toContain("noise.svg");
+    expect(container.innerHTML).not.toContain("scanlines");
+  });
 });

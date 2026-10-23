@@ -389,8 +389,6 @@ export default function EditProductPage({
                 <div
                   className={`absolute inset-0 opacity-20 ${formData.color || "bg-line"}`}
                 ></div>
-                <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-overlay"></div>
-
                 {formData.image_url ? (
                   <img
                     src={formData.image_url}

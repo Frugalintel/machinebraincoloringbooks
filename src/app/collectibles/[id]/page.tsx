@@ -183,8 +183,6 @@ export default function CollectibleDetail() {
           <div className="lg:col-span-5 flex flex-col gap-6">
             <div className="relative aspect-square w-full bg-background border border-line overflow-hidden rounded-sm shadow-2xl">
               {/* Background Effects */}
-              <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none z-10"></div>
-
               {/* Three.js Trophy Viewport with entropy and season */}
               <motion.div
                 initial={{ opacity: 0 }}

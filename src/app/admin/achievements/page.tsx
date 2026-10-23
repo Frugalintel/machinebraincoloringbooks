@@ -175,7 +175,7 @@ export default function AdminAchievementsPage() {
                 return (
                   <div
                     key={achievement.id}
-                    className={`group relative border rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${styles.bg} ${styles.border} ${styles.glow}`}
+                    className={`group relative border rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${styles.bg} ${styles.border}`}
                   >
                     {/* Colored Accent Bar */}
                     <div

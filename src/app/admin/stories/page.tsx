@@ -175,8 +175,6 @@ export default function AdminStoriesPage() {
                     >
                       {/* Cover Image */}
                       <div className="aspect-[4/3] relative w-full overflow-hidden bg-background">
-                        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-overlay z-10 pointer-events-none"></div>
-
                         {story.cover_url ? (
                           <img
                             src={story.cover_url}

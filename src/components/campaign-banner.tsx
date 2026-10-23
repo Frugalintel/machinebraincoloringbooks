@@ -57,9 +57,7 @@ export function CampaignBanner({ campaign }: { campaign: CampaignSettings }) {
           className={
             theme.animation === "marquee"
               ? "site-banner-marquee w-full text-center"
-              : theme.animation === "glitch"
-                ? "site-banner-glitch"
-                : ""
+              : ""
           }
         >
           <span>{campaign.banner.text}</span>

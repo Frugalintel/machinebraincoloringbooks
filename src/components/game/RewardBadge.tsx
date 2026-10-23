@@ -185,14 +185,6 @@ export function RewardUnlockAnimation({
         transition={{ type: "spring", damping: 15, delay: 0.2 }}
         className="text-center"
       >
-        {/* Glow effect */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: [0, 1, 0.5], scale: [0.5, 1.5, 1] }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className={`absolute inset-0 blur-3xl ${config.bgColor} opacity-50`}
-        />
-
         {/* Icon */}
         <motion.div
           initial={{ y: 20 }}

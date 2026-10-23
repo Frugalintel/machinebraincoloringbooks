@@ -164,7 +164,6 @@ export default function AchievementsPage() {
     <main className="min-h-screen bg-background text-cream font-sans">
       {/* Header */}
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="mb-6">
             <Link href="/profile/me">
@@ -336,7 +335,6 @@ export default function AchievementsPage() {
           <div className="container mx-auto px-4 md:px-6 py-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="relative aspect-square max-w-[300px] mx-auto md:mx-0 bg-background border border-line overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none z-10"></div>
                 <TrophyCanvas
                   size="large"
                   rarity={

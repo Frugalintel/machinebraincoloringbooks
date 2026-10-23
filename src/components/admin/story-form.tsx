@@ -225,8 +225,6 @@ export function StoryForm({ initialData, isEditing = false }: StoryFormProps) {
             </h3>
             <div className="group relative bg-surface-1 border border-line hover:border-line-strong rounded-xl overflow-hidden shadow-2xl mx-auto w-[280px]">
               <div className="aspect-[4/3] relative w-full overflow-hidden bg-background">
-                <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-overlay z-10 pointer-events-none"></div>
-
                 {formData.cover_url ? (
                   <img
                     src={formData.cover_url}

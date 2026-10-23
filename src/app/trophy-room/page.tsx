@@ -168,7 +168,6 @@ export default function TrophyRoomPage() {
     <main className="min-h-screen bg-background text-cream font-sans">
       {/* Header Banner */}
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="mb-6">
             <Link href="/profile/me">
@@ -339,7 +338,6 @@ export default function TrophyRoomPage() {
                 exit={{ opacity: 0 }}
                 className="bg-gradient-to-b from-background to-background border border-primary/50 p-8 text-center relative overflow-hidden"
               >
-                <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-overlay"></div>
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,79,0,0.15),transparent)] animate-pulse"></div>
 
                 <Trophy size={48} className="mx-auto text-primary mb-4" />

@@ -93,7 +93,6 @@ export default function StorePage() {
     <main className="min-h-screen bg-background text-cream font-sans">
       {/* Header Banner */}
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="mb-4 flex items-center gap-2 text-primary">
             <ShoppingBag size={14} />
@@ -259,7 +258,6 @@ export default function StorePage() {
                                 className={`w-10 h-10 bg-cream/10 rounded-full backdrop-blur-md`}
                               ></div>
                             </div>
-                            <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-40 mix-blend-multiply"></div>
                           </div>
                           {/* Quick Add Button Overlay */}
                           <button

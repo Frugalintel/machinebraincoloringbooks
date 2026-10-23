@@ -176,7 +176,7 @@ export default function AdminCollectiblesPage() {
                 return (
                   <div
                     key={collectible.id}
-                    className={`group relative border rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${styles.bg} ${styles.border} ${styles.glow}`}
+                    className={`group relative border rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${styles.bg} ${styles.border}`}
                   >
                     {/* Colored Accent Bar */}
                     <div
