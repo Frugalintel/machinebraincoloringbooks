@@ -199,7 +199,6 @@ export default function AdminLayout({
 
         {/* Main Content */}
         <main className="flex-1 md:ml-64 min-h-screen bg-background relative w-full">
-          <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-5 pointer-events-none fixed"></div>
           <div className="p-4 pt-20 md:p-8 md:pt-8 relative z-10">
             {children}
           </div>

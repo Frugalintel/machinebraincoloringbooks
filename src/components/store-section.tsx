@@ -151,8 +151,6 @@ export function StoreSection() {
                             className={`w-10 h-10 bg-cream/10 rounded-full backdrop-blur-md`}
                           ></div>
                         </div>
-                        {/* Dither Pattern */}
-                        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-40 mix-blend-multiply"></div>
                       </div>
 
                       {/* Quick Add Button Overlay (Inside Image Container) */}

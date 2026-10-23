@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { HeroCard } from "@/components/hero-card";
 import { useSettings } from "@/context/settings-context";
-import { resolveCampaignTheme } from "@/lib/campaign-templates";
 import {
   resolveFeaturedFromCatalog,
   resolveHeroCardProps,
@@ -69,14 +68,10 @@ export function Hero(overrides: Partial<HeroCardProps> = {}) {
     void fetchFeatured();
   }, [featuredProductId, isActive]);
 
-  const theme = resolveCampaignTheme(
-    campaign.isActive ? campaign.theme : undefined,
-  );
-
   const card = resolveHeroCardProps(
     { product: featuredProduct, campaign },
     overrides,
   );
 
-  return <HeroCard {...card} texture={theme.texture} />;
+  return <HeroCard {...card} />;
 }

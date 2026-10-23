@@ -47,7 +47,6 @@ export const getRarityStyles = (rarity?: string) => {
     case "legendary":
       return {
         border: "border-signal hover:border-signal",
-        glow: "shadow-[0_0_30px_-5px_color-mix(in_srgb,var(--signal)_40%,transparent)]",
         icon: "bg-cream/5 text-signal border-signal",
         text: "text-signal",
         bg: "bg-background",
@@ -58,7 +57,6 @@ export const getRarityStyles = (rarity?: string) => {
     case "epic":
       return {
         border: "border-cream hover:border-cream",
-        glow: "shadow-[0_0_20px_-5px_color-mix(in_srgb,var(--cream)_20%,transparent)]",
         icon: "bg-surface-3 text-cream border-cream",
         text: "text-cream",
         bg: "bg-surface-3",
@@ -69,7 +67,6 @@ export const getRarityStyles = (rarity?: string) => {
     case "rare":
       return {
         border: "border-fg-secondary hover:border-fg-secondary",
-        glow: "",
         icon: "bg-surface-2 text-cream border-fg-secondary",
         text: "text-cream",
         bg: "bg-surface-1",
@@ -80,7 +77,6 @@ export const getRarityStyles = (rarity?: string) => {
     case "uncommon":
       return {
         border: "border-fg-muted hover:border-fg-muted",
-        glow: "",
         icon: "bg-surface-2 text-fg-secondary border-fg-muted",
         text: "text-fg-secondary",
         bg: "bg-surface-1",
@@ -91,7 +87,6 @@ export const getRarityStyles = (rarity?: string) => {
     default:
       return {
         border: "border-line-strong hover:border-line-strong",
-        glow: "",
         icon: "bg-surface-2 text-fg-muted border-line-strong",
         text: "text-fg-muted",
         bg: "bg-surface-1",

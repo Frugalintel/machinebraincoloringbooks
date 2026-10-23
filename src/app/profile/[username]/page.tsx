@@ -58,8 +58,6 @@ export default function ProfilePage() {
       {/* Header Banner */}
       <div className="h-64 md:h-80 bg-background relative overflow-hidden border-b border-line">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#222,black)] opacity-50"></div>
-        <div className="absolute inset-0 opacity-10 bg-[url('/textures/noise.svg')] pointer-events-none"></div>
-
         {/* Grid Lines */}
         <div
           className="absolute inset-0"
@@ -212,7 +210,6 @@ export default function ProfilePage() {
 
               {/* Featured Trophy Showcase */}
               <div className="border border-line bg-gradient-to-b from-background to-background p-6 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-amber-500 to-transparent"></div>
 
                 <div className="flex items-center gap-2 text-primary font-label uppercase tracking-widest mb-4 relative z-10">
@@ -364,7 +361,6 @@ export default function ProfilePage() {
         ) : (
           <div className="mb-24 p-12 border border-line bg-background relative overflow-hidden text-center group">
             {/* Locked State Visuals */}
-            <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-5 pointer-events-none"></div>
             <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
               <Lock className="w-64 h-64 text-fg-muted" />
             </div>

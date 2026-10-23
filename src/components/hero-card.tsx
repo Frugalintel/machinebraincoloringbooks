@@ -3,49 +3,8 @@ import Link from "next/link";
 import { type CSSProperties } from "react";
 import { Button } from "@/components/ui/button";
 import type { HeroCardProps } from "@/lib/hero-card";
-import type { CampaignTheme } from "@/lib/types";
 
-const GRID_TEXTURE: CSSProperties = {
-  backgroundImage:
-    "linear-gradient(#33322F 1px, transparent 1px), linear-gradient(90deg, #33322F 1px, transparent 1px)",
-  backgroundSize: "40px 40px",
-  opacity: 0.1,
-};
-
-export function getHeroTextureStyle(
-  texture: CampaignTheme["texture"],
-): CSSProperties {
-  switch (texture) {
-    case "grid":
-      return GRID_TEXTURE;
-    case "dots":
-      return {
-        backgroundImage: "radial-gradient(#6A675F 1px, transparent 1px)",
-        backgroundSize: "20px 20px",
-        opacity: 0.2,
-      };
-    case "scanlines":
-      return {
-        backgroundImage:
-          "repeating-linear-gradient(0deg, transparent, transparent 2px, var(--base) 3px)",
-        opacity: 0.3,
-      };
-    case "noise":
-      return { backgroundImage: "url('/textures/noise.svg')", opacity: 0.1 };
-    case "none":
-    case undefined:
-      return GRID_TEXTURE;
-    default: {
-      const _exhaustive: never = texture;
-      void _exhaustive;
-      return GRID_TEXTURE;
-    }
-  }
-}
-
-export type HeroCardViewProps = HeroCardProps & {
-  texture?: CampaignTheme["texture"];
-};
+export type HeroCardViewProps = HeroCardProps;
 
 export function HeroCard({
   brandEyebrow,
@@ -63,7 +22,6 @@ export function HeroCard({
   originalPrice,
   accentColor,
   collectionLink,
-  texture,
 }: HeroCardViewProps) {
   return (
     <section
@@ -71,15 +29,6 @@ export function HeroCard({
       className="relative isolate w-full overflow-hidden bg-background"
       style={{ "--hero-accent": accentColor } as CSSProperties}
     >
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={getHeroTextureStyle(texture)}
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-0 bg-[url('/textures/noise.svg')] opacity-[0.05] mix-blend-overlay"
-        aria-hidden
-      />
       <div
         className="pointer-events-none absolute top-[42%] right-1/2 h-[42%] w-[80%] translate-x-1/2 rounded-full bg-cream/10 blur-3xl lg:top-1/2 lg:right-[12%] lg:h-[55%] lg:w-[38%] lg:translate-x-0"
         aria-hidden

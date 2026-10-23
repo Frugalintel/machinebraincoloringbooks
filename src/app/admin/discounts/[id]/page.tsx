@@ -508,35 +508,11 @@ export default function CampaignEditorPage({
                     transform: translateX(-100%);
                   }
                 }
-                @keyframes glitch {
-                  0% {
-                    transform: translate(0);
-                  }
-                  20% {
-                    transform: translate(-2px, 2px);
-                  }
-                  40% {
-                    transform: translate(-2px, -2px);
-                  }
-                  60% {
-                    transform: translate(2px, 2px);
-                  }
-                  80% {
-                    transform: translate(2px, -2px);
-                  }
-                  100% {
-                    transform: translate(0);
-                  }
-                }
                 .animate-marquee {
                   animation: marquee 10s linear infinite;
                   white-space: nowrap;
                   display: inline-block;
                   min-width: 100%;
-                }
-                .animate-glitch {
-                  animation: glitch 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)
-                    infinite;
                 }
                 .animate-pulse {
                   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -612,9 +588,7 @@ export default function CampaignEditorPage({
                     className={
                       campaign.theme?.animation === "marquee"
                         ? "animate-marquee"
-                        : campaign.theme?.animation === "glitch"
-                          ? "animate-glitch"
-                          : ""
+                        : ""
                     }
                   >
                     {campaign.banner.text}
@@ -639,10 +613,6 @@ export default function CampaignEditorPage({
                 className="h-48 bg-background relative flex items-center justify-center overflow-hidden"
                 style={{ backgroundColor: campaign.theme?.colors.background }}
               >
-                {/* Texture Overlay */}
-                {campaign.theme?.texture === "noise" && (
-                  <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20"></div>
-                )}
                 {campaign.theme?.texture === "grid" && (
                   <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
                 )}

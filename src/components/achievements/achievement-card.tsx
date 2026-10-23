@@ -52,9 +52,9 @@ export function AchievementCard({
     isCompleted
       ? styles.border
       : isActive
-        ? styles.border + " shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+        ? styles.border
         : "border-line hover:border-line-strong"
-  } ${isCompleted ? styles.glow : ""}`;
+  }`;
 
   // Compact/Modal Variant (Used in Swap Modal)
   if (variant === "modal") {

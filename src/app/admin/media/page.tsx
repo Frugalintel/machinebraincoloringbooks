@@ -118,7 +118,6 @@ export default function MediaLibraryPage() {
               >
                 <div className="aspect-square bg-background relative">
                   {/* Image with subtle overlay */}
-                  <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 pointer-events-none z-10"></div>
                   <img
                     src={data.publicUrl}
                     alt={img.name}

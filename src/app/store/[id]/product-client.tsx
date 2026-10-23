@@ -74,7 +74,6 @@ export function ProductClient({ product }: ProductClientProps) {
           <div className="lg:col-span-7">
             <div className="relative aspect-[3/4] md:aspect-square w-full bg-background border border-line p-8 md:p-16 flex items-center justify-center group overflow-hidden">
               {/* Background Effects */}
-              <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay"></div>
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1A1A19_0%,#0F0F0F_100%)] opacity-50"></div>
 
               {/* Book Mockup - Large */}
@@ -113,7 +112,6 @@ export function ProductClient({ product }: ProductClientProps) {
                             className={`w-20 h-20 bg-cream/10 rounded-full backdrop-blur-md`}
                           ></div>
                         </div>
-                        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-40 mix-blend-multiply"></div>
                       </div>
                     </>
                   )}
@@ -195,7 +193,6 @@ export function ProductClient({ product }: ProductClientProps) {
 
             {/* Collectible Trophy Bonus */}
             <div className="mb-8 border border-line bg-gradient-to-r from-background to-background p-4 relative overflow-hidden">
-              <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary via-amber-500 to-transparent"></div>
 
               <div className="flex items-start gap-4 relative z-10">

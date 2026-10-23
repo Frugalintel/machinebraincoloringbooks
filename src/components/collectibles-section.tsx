@@ -104,8 +104,6 @@ export function CollectiblesSection() {
           onMouseLeave={() => setIsHovering(false)}
         >
           {/* Decorative Background */}
-          <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay"></div>
-
           {user ? (
             /* Logged In Showcase */
             <>

@@ -145,8 +145,6 @@ export function InvitationCard({
       <div
         className={`absolute inset-0 bg-gradient-to-br ${config.bgGradient} pointer-events-none`}
       />
-      <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
-
       <div className="relative z-10 p-6">
         {/* Header */}
         <div className="flex items-start gap-4 mb-4">

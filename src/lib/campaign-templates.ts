@@ -38,7 +38,7 @@ export const BRAND_CAMPAIGN_TEMPLATE: CampaignTheme = {
     heroDescription:
       "We make sci-fi coloring books. Each one has a hidden code inside. Enter it to read the story behind the art.",
   },
-  texture: "dots",
+  texture: "none",
   animation: "none",
   fontMode: "default",
 };

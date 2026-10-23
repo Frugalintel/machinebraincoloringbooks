@@ -117,7 +117,6 @@ export default function StoriesPage() {
     <main className="min-h-screen bg-background text-cream font-sans selection:bg-cream selection:text-ink">
       {/* Header */}
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
             <div>

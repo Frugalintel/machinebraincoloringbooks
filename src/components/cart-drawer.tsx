@@ -151,7 +151,6 @@ export function CartDrawer() {
                             />
                           ) : (
                             <>
-                              <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-20 mix-blend-multiply"></div>
                               <div className="absolute inset-0 flex items-center justify-center text-fg-faint font-heading text-2xl opacity-50 font-bold">
                                 {item.title.charAt(0)}
                               </div>
