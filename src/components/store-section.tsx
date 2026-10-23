@@ -10,6 +10,7 @@ import { useAuth } from "@/context/auth-context";
 import { fetchPublishedProducts, productsOrCatalog } from "@/lib/products";
 import { Product } from "@/lib/types";
 import { logger } from "@/lib/logger";
+import { toSentenceCase } from "@/lib/display-text";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
 
 export function StoreSection() {
@@ -58,7 +59,7 @@ export function StoreSection() {
       {/* Decorative Section Header */}
       <div className="flex items-end justify-between mb-8">
         <div className="flex items-center gap-4">
-          <div className="h-8 w-4 bg-primary"></div>
+          <div className="h-8 w-4 bg-cream"></div>
           <div>
             <h2 className="font-heading text-h2 text-cream">Books</h2>
             <span className="font-label mt-1 block tracking-[0.08em] text-fg-muted">
@@ -166,7 +167,7 @@ export function StoreSection() {
                             image: cat.image_url,
                           });
                         }}
-                        className="absolute top-0 right-0 w-10 h-10 bg-primary text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-cream hover:text-ink shadow-lg border-l border-b border-background/20"
+                        className="absolute top-0 right-0 w-10 h-10 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-cream hover:text-ink shadow-lg border-l border-b border-background/20"
                       >
                         <Plus size={20} strokeWidth={3} />
                       </button>
@@ -179,7 +180,7 @@ export function StoreSection() {
                         <div className="flex items-center gap-2">
                           {priceInfo.hasDiscount ? (
                             <>
-                              <span className="text-fg-muted line-through text-[10px] font-mono">
+                              <span className="text-fg-muted line-through font-label">
                                 {formatPrice(priceInfo.originalPrice)}
                               </span>
                               <span className="price text-cream text-[18px] md:text-[22px]">
@@ -197,7 +198,7 @@ export function StoreSection() {
                             {[...Array(5)].map((_, i) => (
                               <div
                                 key={i}
-                                className={`w-1 h-1.5 rounded-[1px] ${i < cat.difficulty ? "bg-primary" : "bg-surface-2"}`}
+                                className={`w-1 h-1.5 rounded-[1px] ${i < cat.difficulty ? "bg-cream" : "bg-surface-2"}`}
                               ></div>
                             ))}
                           </div>
@@ -219,8 +220,8 @@ export function StoreSection() {
 
                 {/* Title Below */}
                 <div className="mt-3 text-center">
-                  <h3 className="font-heading text-h3 text-cream group-hover:text-primary transition-colors">
-                    {cat.title}
+                  <h3 className="font-heading text-h3 text-cream group-hover:text-cream transition-colors">
+                    {toSentenceCase(cat.title)}
                   </h3>
                 </div>
               </motion.div>

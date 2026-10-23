@@ -61,10 +61,10 @@ export function SoftGateModal({
               <div className="absolute inset-0 bg-gradient-to-r from-warning/10 to-transparent pointer-events-none" />
               <div className="flex items-center justify-between relative z-10">
                 <div>
-                  <div className="flex items-center gap-2 text-signal text-[10px] font-mono uppercase tracking-widest mb-2">
+                  <div className="flex items-center gap-2 text-signal font-label uppercase tracking-widest mb-2">
                     <Lock size={12} /> Gate Encountered
                   </div>
-                  <h3 className="font-heading text-xl text-cream uppercase">
+                  <h3 className="font-heading text-xl text-cream ">
                     {nodeTitle || "Locked Content"}
                   </h3>
                   {storyTitle ? (
@@ -125,19 +125,17 @@ export function SoftGateModal({
                     <Unlock size={18} />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-heading text-cream uppercase">
-                      Skip with XP
-                    </h4>
-                    <p className="text-[10px] text-fg-muted font-mono uppercase">
+                    <h4 className="font-heading text-cream ">Skip with XP</h4>
+                    <p className=" text-fg-muted font-label uppercase">
                       Cost: {bypassOptions.xpCost} XP
                     </p>
                   </div>
                   {bypassOptions.canAfford ? (
-                    <span className="text-[10px] text-primary font-mono uppercase tracking-widest">
+                    <span className=" text-primary font-label uppercase tracking-widest">
                       Available
                     </span>
                   ) : (
-                    <span className="text-[10px] text-danger font-mono uppercase tracking-widest">
+                    <span className=" text-danger font-label uppercase tracking-widest">
                       Not Enough XP
                     </span>
                   )}
@@ -148,7 +146,7 @@ export function SoftGateModal({
               {bypassOptions?.alternatives &&
               bypassOptions.alternatives.length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-[10px] text-fg-faint uppercase tracking-widest font-mono">
+                  <p className=" text-fg-faint uppercase tracking-widest font-label">
                     Or earn the requirement:
                   </p>
                   {bypassOptions.alternatives.map((alt, index) => (
@@ -158,7 +156,7 @@ export function SoftGateModal({
                         className="w-full p-3 border border-line bg-background hover:border-line-strong transition-all flex items-center justify-between"
                       >
                         <div>
-                          <span className="text-[10px] text-fg-muted uppercase font-mono">
+                          <span className=" text-fg-muted uppercase font-label">
                             {alt.type}
                           </span>
                           <p className="text-sm text-fg-secondary">

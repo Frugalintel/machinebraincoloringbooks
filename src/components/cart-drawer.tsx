@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import { Button } from "@/components/ui/button";
+import { toSentenceCase } from "@/lib/display-text";
 import { supabase } from "@/lib/supabase";
 
 interface SuggestedProduct {
@@ -103,8 +104,8 @@ export function CartDrawer() {
                   <h2 className="font-heading text-h2 text-cream">CART</h2>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <div className="w-1.5 h-1.5 bg-primary animate-pulse"></div>
-                  <p className="text-[10px] text-fg-muted font-mono tracking-widest uppercase">
+                  <div className="w-1.5 h-1.5 bg-cream animate-pulse"></div>
+                  <p className=" text-fg-muted font-label tracking-widest uppercase">
                     {items.length} items
                   </p>
                 </div>
@@ -129,7 +130,7 @@ export function CartDrawer() {
                         className="text-fg-muted group-hover:text-primary transition-colors"
                       />
                     </div>
-                    <p className="font-heading text-xl text-cream uppercase tracking-widest mb-1">
+                    <p className="font-heading text-xl text-cream tracking-widest mb-1">
                       Your cart is empty
                     </p>
                   </div>
@@ -145,7 +146,7 @@ export function CartDrawer() {
                           {item.image ? (
                             <img
                               src={item.image}
-                              alt={item.title}
+                              alt={toSentenceCase(item.title)}
                               className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                             />
                           ) : (
@@ -161,8 +162,8 @@ export function CartDrawer() {
                         <div className="flex-1 flex flex-col justify-between py-0.5">
                           <div>
                             <div className="flex justify-between items-start gap-2">
-                              <h3 className="font-heading text-base text-cream leading-none uppercase tracking-wide group-hover:text-primary transition-colors line-clamp-1">
-                                {item.title}
+                              <h3 className="font-heading text-base text-cream leading-none tracking-wide group-hover:text-primary transition-colors line-clamp-1">
+                                {toSentenceCase(item.title)}
                               </h3>
                               <button
                                 onClick={() => removeItem(item.id)}
@@ -171,7 +172,7 @@ export function CartDrawer() {
                                 <Trash2 size={14} />
                               </button>
                             </div>
-                            <p className="text-[9px] text-fg-muted font-mono tracking-widest mt-1 uppercase line-clamp-1">
+                            <p className=" text-fg-muted font-label tracking-widest mt-1 uppercase line-clamp-1">
                               {item.subtitle || "Standard Edition"}
                             </p>
                           </div>
@@ -186,7 +187,7 @@ export function CartDrawer() {
                               >
                                 <Minus size={10} />
                               </button>
-                              <span className="w-6 text-center text-[10px] font-mono text-cream border-x border-line h-4 flex items-center justify-center leading-none">
+                              <span className="w-6 text-center font-label text-cream border-x border-line h-4 flex items-center justify-center leading-none">
                                 {item.quantity}
                               </span>
                               <button
@@ -212,8 +213,8 @@ export function CartDrawer() {
               {/* Suggestions Section */}
               {suggestedProducts.length > 0 && (
                 <div className="pt-6 border-t border-line">
-                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-fg-muted mb-4 flex items-center gap-2">
-                    <span className="w-1 h-1 bg-primary rounded-full"></span>
+                  <h4 className="font-label tracking-widest text-fg-muted mb-4 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-cream rounded-full"></span>
                     You might also like
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
@@ -230,7 +231,7 @@ export function CartDrawer() {
                           {product.image_url ? (
                             <img
                               src={product.image_url}
-                              alt={product.title}
+                              alt={toSentenceCase(product.title)}
                               className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
                             />
                           ) : (
@@ -251,16 +252,16 @@ export function CartDrawer() {
                                 image: product.image_url,
                               });
                             }}
-                            className="absolute bottom-0 right-0 w-8 h-8 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary"
+                            className="absolute bottom-0 right-0 w-8 h-8 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cream"
                           >
                             <Plus size={16} />
                           </button>
                         </Link>
                         <div className="space-y-1">
-                          <h5 className="font-heading text-xs text-cream uppercase tracking-wide truncate">
-                            {product.title}
+                          <h5 className="font-heading text-xs text-cream tracking-wide truncate">
+                            {toSentenceCase(product.title)}
                           </h5>
-                          <p className="font-mono text-[10px] text-fg-muted">
+                          <p className="font-label text-fg-muted">
                             ${product.price.toFixed(2)}
                           </p>
                         </div>
@@ -290,7 +291,7 @@ export function CartDrawer() {
                 <div className="h-px w-full bg-surface-2 my-2"></div>
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col">
-                    <span className="font-heading text-xl text-cream uppercase tracking-wide">
+                    <span className="font-heading text-xl text-cream tracking-wide">
                       Total
                     </span>
                   </div>
@@ -302,7 +303,7 @@ export function CartDrawer() {
 
               <Button
                 disabled={items.length === 0}
-                className="w-full bg-primary text-ink hover:bg-cream border border-transparent hover:border-primary font-heading text-xl h-14 rounded-none tracking-widest uppercase transition-all group relative overflow-hidden"
+                className="w-full bg-cream text-ink hover:bg-cream border border-transparent hover:border-primary font-heading text-xl h-14 rounded-none tracking-widest transition-all group relative overflow-hidden"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Proceed to Checkout{" "}
@@ -314,7 +315,7 @@ export function CartDrawer() {
                 <div className="absolute inset-0 bg-cream transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0"></div>
               </Button>
 
-              <div className="mt-4 flex justify-center gap-4 text-[9px] text-fg-faint font-mono uppercase tracking-widest">
+              <div className="mt-4 flex justify-center gap-4 text-fg-faint font-label uppercase tracking-widest">
                 <span>Secure checkout</span>
               </div>
             </div>

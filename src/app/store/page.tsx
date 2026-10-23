@@ -18,6 +18,7 @@ import { fetchProductRatings } from "@/lib/reviews";
 import { categories, type Category } from "@/lib/store-data";
 import { Product, ProductRating } from "@/lib/types";
 import { logger } from "@/lib/logger";
+import { toSentenceCase } from "@/lib/display-text";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
 
 export default function StorePage() {
@@ -98,9 +99,7 @@ export default function StorePage() {
             <ShoppingBag size={14} />
             <span className="font-label tracking-[0.12em]">Store</span>
           </div>
-          <h1 className="font-display text-title uppercase text-cream mb-4">
-            All Books
-          </h1>
+          <h1 className="font-display text-title text-cream mb-4">All Books</h1>
           <p className="font-label max-w-md tracking-[0.08em] text-fg-muted">
             Our complete collection of sci-fi coloring books.
           </p>
@@ -118,12 +117,8 @@ export default function StorePage() {
                 onClick={() => setActiveCategory(cat)}
                 className={`font-label px-4 py-2 tracking-[0.08em] border transition-all ${
                   activeCategory === cat
-                    ? cat === "HOLIDAY"
-                      ? "bg-red-600 border-red-600 text-cream font-bold"
-                      : "bg-primary border-primary text-ink font-bold"
-                    : cat === "HOLIDAY"
-                      ? "bg-transparent border-danger/50 text-danger hover:border-danger hover:text-cream"
-                      : "bg-transparent border-line text-fg-muted hover:border-cream hover:text-cream"
+                    ? "bg-cream border-cream text-ink"
+                    : "bg-transparent border-line text-fg-muted hover:border-cream hover:text-cream"
                 }`}
               >
                 {cat}
@@ -154,7 +149,7 @@ export default function StorePage() {
             <p className="text-danger font-mono mb-4">{error}</p>
             <button
               onClick={retryFetch}
-              className="px-6 py-2 bg-primary text-ink font-heading font-semibold text-sm uppercase tracking-[0.06em] hover:bg-cream transition-colors"
+              className="px-6 py-2 bg-cream text-ink font-heading font-semibold text-sm tracking-[0.06em] hover:bg-cream transition-colors"
             >
               Retry
             </button>
@@ -220,7 +215,7 @@ export default function StorePage() {
                         <div className="flex-1 bg-surface-2 relative overflow-hidden">
                           <img
                             src={cat.image_url}
-                            alt={cat.title}
+                            alt={toSentenceCase(cat.title)}
                             className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"></div>
@@ -236,7 +231,7 @@ export default function StorePage() {
                                 image: cat.image_url,
                               });
                             }}
-                            className="absolute top-0 right-0 w-10 h-10 bg-primary text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-cream hover:text-ink shadow-lg border-l border-b border-background/20"
+                            className="absolute top-0 right-0 w-10 h-10 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-cream hover:text-ink shadow-lg border-l border-b border-background/20"
                           >
                             <Plus size={20} strokeWidth={3} />
                           </button>
@@ -278,7 +273,7 @@ export default function StorePage() {
                                 image: cat.image_url,
                               });
                             }}
-                            className="absolute top-0 right-0 w-10 h-10 bg-primary text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-cream hover:text-ink shadow-lg border-l border-b border-background/20"
+                            className="absolute top-0 right-0 w-10 h-10 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-30 hover:bg-cream hover:text-ink shadow-lg border-l border-b border-background/20"
                           >
                             <Plus size={20} strokeWidth={3} />
                           </button>
@@ -291,7 +286,7 @@ export default function StorePage() {
                           <div className="flex items-center gap-2">
                             {priceInfo.hasDiscount ? (
                               <>
-                                <span className="text-fg-muted line-through text-[10px] font-mono">
+                                <span className="text-fg-muted line-through font-label">
                                   {formatPrice(priceInfo.originalPrice)}
                                 </span>
                                 <span className="price text-cream text-[18px] md:text-[22px]">
@@ -309,7 +304,7 @@ export default function StorePage() {
                               {[...Array(5)].map((_, i) => (
                                 <div
                                   key={i}
-                                  className={`w-1 h-1.5 rounded-[1px] ${i < cat.difficulty ? "bg-primary" : "bg-surface-2"}`}
+                                  className={`w-1 h-1.5 rounded-[1px] ${i < cat.difficulty ? "bg-cream" : "bg-surface-2"}`}
                                 ></div>
                               ))}
                             </div>
@@ -331,7 +326,7 @@ export default function StorePage() {
                                   />
                                 ))}
                               </div>
-                              <span className="text-[8px] text-fg-muted font-mono">
+                              <span className=" text-fg-muted font-label">
                                 ({ratings[cat.id].review_count})
                               </span>
                             </div>
@@ -346,8 +341,8 @@ export default function StorePage() {
                   </Link>
 
                   <div className="mt-3 text-center">
-                    <h3 className="font-heading text-h3 text-cream group-hover:text-primary transition-colors">
-                      {cat.title}
+                    <h3 className="font-heading text-h3 text-cream group-hover:text-cream transition-colors">
+                      {toSentenceCase(cat.title)}
                     </h3>
                     <p className="font-label mt-1 tracking-[0.08em] text-fg-faint">
                       {cat.category}

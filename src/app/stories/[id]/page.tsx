@@ -368,7 +368,7 @@ export default function StoryDetailPage() {
     return (
       <main className="min-h-screen bg-background text-cream flex items-center justify-center font-mono">
         <div className="text-center">
-          <h1 className="text-4xl text-primary mb-4">ERROR 404</h1>
+          <h1 className="font-display text-title text-cream mb-4">Error 404</h1>
           <p className="text-fg-muted">STORY FILE NOT FOUND</p>
           <Link
             href="/stories"
@@ -386,7 +386,7 @@ export default function StoryDetailPage() {
   const theme = getStoryTheme(story.title);
 
   return (
-    <main className="min-h-screen bg-background text-cream font-sans selection:bg-primary selection:text-ink flex flex-col">
+    <main className="min-h-screen bg-background text-cream font-sans selection:bg-cream selection:text-ink flex flex-col">
       {/* Rewards Modal */}
       <AnimatePresence>
         {showRewards ? (
@@ -397,7 +397,7 @@ export default function StoryDetailPage() {
             className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4"
           >
             <div className="bg-background border border-primary p-8 rounded-lg max-w-lg w-full text-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-primary/5 animate-pulse pointer-events-none"></div>
+              <div className="absolute inset-0 bg-cream/5 animate-pulse pointer-events-none"></div>
               <Trophy size={48} className="mx-auto text-primary mb-6" />
               <h2 className="font-heading text-3xl text-cream mb-2">
                 Mission Complete
@@ -416,7 +416,7 @@ export default function StoryDetailPage() {
                       <Gift size={20} />
                     </div>
                     <div>
-                      <h4 className="font-bold text-cream uppercase text-sm">
+                      <h4 className="font-bold text-cream text-sm">
                         {reward.type} Reward
                       </h4>
                       <p className="text-xs text-fg-muted">
@@ -429,7 +429,7 @@ export default function StoryDetailPage() {
 
               <Button
                 onClick={() => setShowRewards(false)}
-                className="w-full bg-primary text-ink hover:bg-cream font-heading uppercase tracking-widest"
+                className="w-full bg-cream text-ink hover:bg-cream font-heading tracking-widest"
               >
                 Return to Archives
               </Button>
@@ -481,7 +481,7 @@ export default function StoryDetailPage() {
                   {ADVENTURES_COPY.badge}
                 </div>
               </div>
-              <h1 className="font-display text-title uppercase text-cream leading-tight">
+              <h1 className="font-display text-title text-cream leading-tight">
                 {story.title}
               </h1>
               {progress ? (
@@ -526,11 +526,11 @@ export default function StoryDetailPage() {
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono mb-1">
+                          <p className=" text-fg-muted uppercase tracking-widest font-label mb-1">
                             {chapter.challenge ? "Challenge" : "Chapter"}
                           </p>
                           <h4
-                            className={`font-heading text-base uppercase ${isActive ? "text-cream" : "text-fg-muted"}`}
+                            className={`font-heading text-base ${isActive ? "text-cream" : "text-fg-muted"}`}
                           >
                             {chapter.title}
                           </h4>

@@ -78,7 +78,16 @@
 }
 
 :root {
-  --radius: 0rem; /* Boxy feel */
+  --radius: 0rem; /* One radius: square corners */
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
 
   --type-hero: clamp(36px, 2.2rem + 3.2vw, 88px);
   --type-title: clamp(32px, 1.6rem + 2.4vw, 64px);
@@ -206,9 +215,23 @@
     position: relative;
   }
 
-  /* Global Selection Styling */
+  /* Global Selection Styling — cream on near-black, never signal fill */
   ::selection {
-    @apply bg-primary text-ink;
+    @apply bg-cream text-ink;
+  }
+
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--base),
+      0 0 0 4px var(--cream);
+  }
+
+  .focus-ring-on-cream:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--cream),
+      0 0 0 4px var(--ink);
   }
 
   body::before {
@@ -222,6 +245,23 @@
     z-index: 9999;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
     mix-blend-mode: overlay;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /*
+   * Do not set transition-duration on *. Framer Motion writes inline
+   * opacity/transform and a global !important duration leaves those
+   * nodes stuck at initial opacity 0 (blank auth card).
+   */
+  .animate-spin,
+  .animate-pulse,
+  .animate-bounce {
+    animation: none !important;
   }
 }
 

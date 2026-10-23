@@ -198,7 +198,7 @@ export default function AdminProductsPage() {
         </div>
         <Link
           href="/admin/products/new"
-          className="flex items-center justify-center gap-2 bg-primary text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
+          className="flex items-center justify-center gap-2 bg-cream text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
         >
           <Plus size={18} />
           <span>ADD PRODUCT</span>
@@ -239,12 +239,12 @@ export default function AdminProductsPage() {
 
       {/* Bulk Actions Toolbar */}
       {selectedIds.size > 0 && (
-        <div className="bg-primary/10 border border-primary/20 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4 animate-in slide-in-from-top-2">
+        <div className="bg-cream/10 border border-primary/20 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4 animate-in slide-in-from-top-2">
           <div className="flex items-center gap-4">
             <span className="text-primary font-bold">
               {selectedIds.size} selected
             </span>
-            <div className="h-6 w-px bg-primary/20 hidden sm:block"></div>
+            <div className="h-6 w-px bg-cream/20 hidden sm:block"></div>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => handleBulkStatus(true)}
@@ -511,7 +511,7 @@ export default function AdminProductsPage() {
                       <div className="absolute bottom-0 left-0 right-0 p-5">
                         <div className="flex justify-between items-end mb-2">
                           <div>
-                            <p className="text-[10px] font-mono text-primary uppercase tracking-widest mb-1">
+                            <p className=" font-label text-primary uppercase tracking-widest mb-1">
                               {product.category}
                             </p>
                             <h3 className="font-heading text-lg font-bold text-cream leading-tight mb-1 truncate pr-2">
@@ -525,7 +525,7 @@ export default function AdminProductsPage() {
 
                         <div className="flex items-center justify-between border-t border-cream/10 pt-3 mt-2">
                           <div className="flex flex-col">
-                            <span className="text-[10px] text-fg-muted font-mono uppercase">
+                            <span className=" text-fg-muted font-label uppercase">
                               Price
                             </span>
                             <span className="font-mono text-cream">
@@ -533,14 +533,14 @@ export default function AdminProductsPage() {
                             </span>
                           </div>
                           <div className="flex flex-col items-end">
-                            <span className="text-[10px] text-fg-muted font-mono uppercase">
+                            <span className=" text-fg-muted font-label uppercase">
                               Difficulty
                             </span>
                             <div className="flex gap-0.5">
                               {[...Array(5)].map((_, idx) => (
                                 <div
                                   key={idx}
-                                  className={`w-1 h-2 rounded-sm ${idx < (product.difficulty || 1) ? "bg-primary" : "bg-surface-3"}`}
+                                  className={`w-1 h-2 rounded-sm ${idx < (product.difficulty || 1) ? "bg-cream" : "bg-surface-3"}`}
                                 ></div>
                               ))}
                             </div>

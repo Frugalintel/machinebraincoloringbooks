@@ -202,7 +202,7 @@ export default function AdminDashboard() {
                 <div className={`p-3 rounded-lg ${stat.bg} ${stat.color}`}>
                   <Icon size={20} />
                 </div>
-                <span className="text-[10px] font-mono text-success bg-success-wash px-2 py-1 rounded border border-success/30">
+                <span className=" font-label text-success bg-success-wash px-2 py-1 rounded border border-success/30">
                   {stat.change}
                 </span>
               </div>
@@ -270,7 +270,7 @@ export default function AdminDashboard() {
                     <p className="text-sm font-bold text-cream truncate group-hover:text-primary transition-colors">
                       {item.message}
                     </p>
-                    <p className="text-[10px] text-fg-muted font-mono uppercase tracking-wide">
+                    <p className=" text-fg-muted font-label uppercase tracking-wide">
                       {formatDistanceToNow(new Date(item.time), {
                         addSuffix: true,
                       })}
@@ -298,14 +298,14 @@ export default function AdminDashboard() {
                 href="/admin/products/new"
                 className="flex items-center gap-4 p-4 bg-surface-1 hover:bg-surface-2 border border-line hover:border-line-strong rounded-lg transition-all group"
               >
-                <div className="p-2 bg-primary/10 text-primary rounded group-hover:bg-primary group-hover:text-ink transition-colors">
+                <div className="p-2 bg-cream/10 text-primary rounded group-hover:bg-cream group-hover:text-ink transition-colors">
                   <Plus size={20} />
                 </div>
                 <div>
                   <span className="block font-bold text-sm text-cream">
                     Add Product
                   </span>
-                  <span className="text-[10px] text-fg-muted font-mono uppercase tracking-wider">
+                  <span className=" text-fg-muted font-label uppercase tracking-wider">
                     Create listing
                   </span>
                 </div>
@@ -319,14 +319,14 @@ export default function AdminDashboard() {
                 href="/admin/discounts"
                 className="flex items-center gap-4 p-4 bg-surface-1 hover:bg-surface-2 border border-line hover:border-line-strong rounded-lg transition-all group"
               >
-                <div className="p-2 bg-cream/5 text-signal rounded group-hover:bg-cream group-hover:text-cream transition-colors">
+                <div className="p-2 bg-cream/5 text-signal rounded group-hover:bg-cream group-hover:text-ink transition-colors">
                   <Tags size={20} />
                 </div>
                 <div>
                   <span className="block font-bold text-sm text-cream">
                     New Campaign
                   </span>
-                  <span className="text-[10px] text-fg-muted font-mono uppercase tracking-wider">
+                  <span className=" text-fg-muted font-label uppercase tracking-wider">
                     Run promotion
                   </span>
                 </div>
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
                   <span className="block font-bold text-sm text-cream">
                     Settings
                   </span>
-                  <span className="text-[10px] text-fg-muted font-mono uppercase tracking-wider">
+                  <span className=" text-fg-muted font-label uppercase tracking-wider">
                     System config
                   </span>
                 </div>

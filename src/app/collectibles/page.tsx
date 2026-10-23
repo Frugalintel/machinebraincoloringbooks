@@ -73,7 +73,7 @@ export default function CollectiblesPublicPage() {
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/textures/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         {/* Abstract Background Element */}
-        <div className="absolute -right-20 -top-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute -right-20 -top-20 w-96 h-96 bg-cream/10 rounded-full blur-3xl"></div>
 
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <motion.div
@@ -88,7 +88,7 @@ export default function CollectiblesPublicPage() {
                   <Trophy size={14} />
                   <span>Rewards</span>
                 </div>
-                <h1 className="font-display text-title uppercase text-cream mb-4">
+                <h1 className="font-display text-title text-cream mb-4">
                   <span className="text-primary">Collectibles</span>
                 </h1>
                 <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl leading-relaxed">
@@ -106,7 +106,7 @@ export default function CollectiblesPublicPage() {
                   className="w-40 h-40 bg-background border border-line relative overflow-hidden flex-shrink-0"
                 >
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-amber-500 to-transparent"></div>
-                  <div className="absolute top-2 left-2 z-10 flex items-center gap-1 text-primary font-mono text-[8px] uppercase tracking-widest">
+                  <div className="absolute top-2 left-2 z-10 flex items-center gap-1 text-primary font-label uppercase tracking-widest">
                     <Sparkles size={8} />
                     <span>Recent</span>
                   </div>
@@ -128,13 +128,13 @@ export default function CollectiblesPublicPage() {
             {!user ? (
               <Button
                 onClick={() => openAuthModal("register")}
-                className="bg-cream text-ink hover:bg-primary hover:text-ink font-heading uppercase tracking-widest px-8 py-6 rounded-none text-lg transition-all transform hover:scale-105"
+                className="bg-cream text-ink hover:bg-cream hover:text-ink font-heading tracking-widest px-8 py-6 rounded-none text-lg transition-all transform hover:scale-105"
               >
                 <UserPlus className="mr-2" size={20} /> Create account
               </Button>
             ) : (
               <Link href="/trophy-room">
-                <Button className="bg-primary text-ink hover:bg-cream hover:text-ink font-heading uppercase tracking-widest px-8 py-6 rounded-none text-lg">
+                <Button className="bg-cream text-ink hover:bg-cream hover:text-ink font-heading tracking-widest px-8 py-6 rounded-none text-lg">
                   Go to Trophy Room <ArrowRight className="ml-2" size={20} />
                 </Button>
               </Link>
@@ -199,7 +199,7 @@ export default function CollectiblesPublicPage() {
                               />
                             </div>
                             {/* Collected badge */}
-                            <div className="absolute top-2 right-2 z-10 bg-primary/90 text-ink px-2 py-1 font-mono text-[8px] uppercase tracking-widest">
+                            <div className="absolute top-2 right-2 z-10 bg-cream/90 text-ink px-2 py-1 font-label uppercase tracking-widest">
                               Collected
                             </div>
                           </>
@@ -217,7 +217,7 @@ export default function CollectiblesPublicPage() {
 
                         {/* Overlay Info on Hover - Simplified to just show it's interactive if there's detailed data */}
                         <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 text-center pointer-events-none">
-                          <p className="text-[10px] text-primary uppercase tracking-widest font-mono mb-2">
+                          <p className=" text-primary uppercase tracking-widest font-label mb-2">
                             View Details
                           </p>
                           <p className="text-xs text-cream font-mono leading-relaxed">
@@ -228,7 +228,7 @@ export default function CollectiblesPublicPage() {
 
                       {/* Info & Action Area */}
                       <div className="flex-1 flex flex-col">
-                        <h3 className="font-heading text-xl text-cream uppercase mb-1 group-hover:text-primary transition-colors">
+                        <h3 className="font-heading text-xl text-cream mb-1 group-hover:text-primary transition-colors">
                           {item.name}
                         </h3>
                         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest mb-4">
@@ -248,7 +248,7 @@ export default function CollectiblesPublicPage() {
                           <div className="mt-auto pt-4 border-t border-line">
                             <div className="flex items-center gap-2 mb-2 text-fg-muted">
                               <Trophy size={12} className="text-primary" />
-                              <span className="text-[10px] font-mono uppercase tracking-wide">
+                              <span className=" font-label uppercase tracking-wide">
                                 Linked Mission
                               </span>
                             </div>
@@ -272,7 +272,7 @@ export default function CollectiblesPublicPage() {
 
       {/* CTA Footer */}
       {!user && (
-        <div className="bg-primary/10 border-t border-line py-20 text-center">
+        <div className="bg-cream/10 border-t border-line py-20 text-center">
           <div className="container mx-auto px-4">
             <h2 className="font-heading text-3xl md:text-5xl text-cream mb-6">
               Start collecting
@@ -282,7 +282,7 @@ export default function CollectiblesPublicPage() {
             </p>
             <Button
               onClick={() => openAuthModal("register")}
-              className="bg-primary text-ink hover:bg-cream font-heading uppercase tracking-widest px-10 py-6 rounded-none text-xl"
+              className="bg-cream text-ink hover:bg-cream font-heading tracking-widest px-10 py-6 rounded-none text-xl"
             >
               Create account
             </Button>

@@ -94,7 +94,7 @@ function SortableNodeItem({
               <span className="font-heading text-sm text-fg-secondary">
                 SECTION {index + 1}
               </span>
-              <span className="text-[10px] font-mono text-fg-faint uppercase hidden md:inline-block">
+              <span className=" font-label text-fg-faint uppercase hidden md:inline-block">
                 ID: {node.id.slice(0, 8)}...
               </span>
             </div>
@@ -111,7 +111,7 @@ function SortableNodeItem({
           {/* Left: Content */}
           <div className="space-y-4">
             <div>
-              <label className="text-[10px] font-mono text-fg-muted uppercase mb-2 block">
+              <label className=" font-label text-fg-muted uppercase mb-2 block">
                 Adventure Text
               </label>
               <textarea
@@ -125,7 +125,7 @@ function SortableNodeItem({
             </div>
 
             <div>
-              <label className="text-[10px] font-mono text-fg-muted uppercase mb-2 block">
+              <label className=" font-label text-fg-muted uppercase mb-2 block">
                 Interactivity
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-surface-1 p-1 rounded border border-line">
@@ -139,11 +139,11 @@ function SortableNodeItem({
                     key={type.id}
                     type="button"
                     onClick={() => setChallengeType(node.id, type.id as any)}
-                    className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-3 sm:py-2 rounded text-[10px] uppercase font-mono transition-colors
+                    className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-3 sm:py-2 rounded uppercase font-label transition-colors
                                       ${
                                         (node.challenge?.type || "none") ===
                                         type.id
-                                          ? "bg-primary text-ink font-bold"
+                                          ? "bg-cream text-ink font-bold"
                                           : "text-fg-muted hover:text-cream hover:bg-surface-2"
                                       }
                                   `}
@@ -220,7 +220,7 @@ function SortableNodeItem({
 
           {/* Right: Media */}
           <div className="space-y-4">
-            <label className="text-[10px] font-mono text-fg-muted uppercase mb-2 block">
+            <label className=" font-label text-fg-muted uppercase mb-2 block">
               Media Assets
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -241,7 +241,7 @@ function SortableNodeItem({
             {/* Choices (Simplified) */}
             <div className="pt-4 border-t border-line">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[10px] font-mono text-fg-muted uppercase">
+                <label className=" font-label text-fg-muted uppercase">
                   Next Step
                 </label>
               </div>
@@ -261,7 +261,7 @@ function SortableNodeItem({
                         &quot;{choice.text}&quot;
                       </span>
                       <span className="text-fg-muted">→</span>
-                      <span className="font-mono text-fg-muted text-[10px] truncate">
+                      <span className="font-label text-fg-muted truncate">
                         {choice.nextNodeId}
                       </span>
                     </div>
@@ -429,21 +429,21 @@ export function StoryNodeEditor({ nodes, onChange }: StoryNodeEditorProps) {
             <button
               type="button"
               onClick={() => setViewMode("builder")}
-              className={`px-3 py-1 text-xs font-mono rounded transition-colors whitespace-nowrap ${viewMode === "builder" ? "bg-primary text-ink font-bold" : "text-fg-muted hover:text-cream"}`}
+              className={`px-3 py-1 text-xs font-mono rounded transition-colors whitespace-nowrap ${viewMode === "builder" ? "bg-cream text-ink font-bold" : "text-fg-muted hover:text-cream"}`}
             >
               EASY BUILDER
             </button>
             <button
               type="button"
               onClick={() => setViewMode("visual")}
-              className={`px-3 py-1 text-xs font-mono rounded transition-colors whitespace-nowrap ${viewMode === "visual" ? "bg-primary text-ink font-bold" : "text-fg-muted hover:text-cream"}`}
+              className={`px-3 py-1 text-xs font-mono rounded transition-colors whitespace-nowrap ${viewMode === "visual" ? "bg-cream text-ink font-bold" : "text-fg-muted hover:text-cream"}`}
             >
               VISUAL GRAPH
             </button>
             <button
               type="button"
               onClick={() => setViewMode("json")}
-              className={`px-3 py-1 text-xs font-mono rounded transition-colors whitespace-nowrap ${viewMode === "json" ? "bg-primary text-ink font-bold" : "text-fg-muted hover:text-cream"}`}
+              className={`px-3 py-1 text-xs font-mono rounded transition-colors whitespace-nowrap ${viewMode === "json" ? "bg-cream text-ink font-bold" : "text-fg-muted hover:text-cream"}`}
             >
               JSON
             </button>
@@ -484,7 +484,7 @@ export function StoryNodeEditor({ nodes, onChange }: StoryNodeEditorProps) {
             <div className="sticky bottom-4 z-20 flex justify-center pb-4 pt-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="bg-primary text-ink hover:bg-cream w-full md:w-auto md:px-12 h-14 shadow-lg shadow-primary/20 font-bold uppercase tracking-widest text-sm rounded-full">
+                  <Button className="bg-cream text-ink hover:bg-cream w-full md:w-auto md:px-12 h-14 shadow-lg shadow-primary/20 font-bold uppercase tracking-widest text-sm rounded-full">
                     <Plus size={18} className="mr-2" /> Add Next Section
                   </Button>
                 </DropdownMenuTrigger>

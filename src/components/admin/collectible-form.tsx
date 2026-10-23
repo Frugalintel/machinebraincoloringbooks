@@ -456,7 +456,7 @@ export function CollectibleForm({
                     {formData.name || "Untitled"}
                   </h3>
                   <p
-                    className="text-[10px] font-mono uppercase tracking-wide mb-1"
+                    className=" font-label uppercase tracking-wide mb-1"
                     style={{ color: rarityColor }}
                   >
                     {formData.type || "Artifact"}
@@ -482,7 +482,7 @@ export function CollectibleForm({
         <Button
           type="submit"
           disabled={loading}
-          className="bg-primary text-ink hover:bg-cream font-bold px-8"
+          className="bg-cream text-ink hover:bg-cream font-bold px-8"
         >
           {loading ? (
             "SAVING..."

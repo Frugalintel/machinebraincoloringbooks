@@ -113,7 +113,7 @@ export default function AchievementsPage() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
             <Lock className="w-12 h-12 text-fg-muted mx-auto" />
-            <h1 className="text-2xl font-heading uppercase">
+            <h1 className="font-display text-title text-cream">
               Restricted Access
             </h1>
             <p className="text-fg-muted font-mono text-xs max-w-xs mx-auto">
@@ -122,7 +122,7 @@ export default function AchievementsPage() {
             </p>
             <Button
               onClick={() => openAuthModal("login")}
-              className="bg-primary text-ink hover:bg-cream uppercase tracking-widest"
+              className="bg-cream text-ink hover:bg-cream"
             >
               Login Required
             </Button>
@@ -183,7 +183,7 @@ export default function AchievementsPage() {
                 <Trophy size={14} />
                 <span>Achievements</span>
               </div>
-              <h1 className="font-display text-title uppercase text-cream mb-4">
+              <h1 className="font-display text-title text-cream mb-4">
                 Achievements
               </h1>
               <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">
@@ -220,7 +220,7 @@ export default function AchievementsPage() {
               </div>
 
               {isFull ? (
-                <p className="text-[10px] text-signal/70 font-mono uppercase tracking-widest text-center">
+                <p className=" text-signal/70 font-label uppercase tracking-widest text-center">
                   Swap mode enabled
                 </p>
               ) : null}
@@ -243,7 +243,7 @@ export default function AchievementsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Progress Overview */}
             <div className="bg-background border border-line p-6">
-              <div className="flex items-center gap-2 text-signal font-mono text-[10px] uppercase tracking-widest mb-4">
+              <div className="flex items-center gap-2 text-signal font-label uppercase tracking-widest mb-4">
                 <Star size={12} />
                 <span>Achievement Progress</span>
               </div>
@@ -264,10 +264,10 @@ export default function AchievementsPage() {
                 />
                 {achievementMilestone ? (
                   <div className="pt-2 border-t border-line">
-                    <span className="text-[10px] text-fg-muted font-mono">
+                    <span className=" text-fg-muted font-label">
                       Current Title:
                     </span>
-                    <p className="text-signal font-heading uppercase">
+                    <p className="text-signal font-heading ">
                       {achievementMilestone.reward.label}
                     </p>
                   </div>
@@ -290,7 +290,7 @@ export default function AchievementsPage() {
             {/* Cross-Pillar Bonus Preview */}
             {Object.keys(activeCategories).length > 0 && (
               <div className="bg-background border border-line p-6">
-                <div className="flex items-center gap-2 text-primary font-mono text-[10px] uppercase tracking-widest mb-4">
+                <div className="flex items-center gap-2 text-primary font-label uppercase tracking-widest mb-4">
                   <Sparkles size={12} />
                   <span>Story Mode Bonuses</span>
                 </div>
@@ -351,12 +351,12 @@ export default function AchievementsPage() {
                   autoRotate={true}
                   isInteractive={true}
                 />
-                <div className="absolute bottom-3 left-0 right-0 text-center text-[10px] font-mono text-fg-muted uppercase pointer-events-none z-20">
+                <div className="absolute bottom-3 left-0 right-0 text-center font-label text-fg-muted uppercase pointer-events-none z-20">
                   Drag to Rotate
                 </div>
               </div>
               <div className="space-y-4">
-                <h3 className="font-heading text-2xl text-cream uppercase">
+                <h3 className="font-heading text-2xl text-cream ">
                   Achievement Trophy
                 </h3>
                 <p className="text-fg-muted font-mono text-sm">
@@ -369,7 +369,7 @@ export default function AchievementsPage() {
                     <p className="font-heading text-2xl text-cream">
                       {unlockedAchievements.length}
                     </p>
-                    <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+                    <p className=" text-fg-muted uppercase tracking-widest font-label">
                       Unlocked
                     </p>
                   </div>
@@ -377,7 +377,7 @@ export default function AchievementsPage() {
                     <p className="font-heading text-2xl text-cream">
                       {activeAchievementIds.length}
                     </p>
-                    <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+                    <p className=" text-fg-muted uppercase tracking-widest font-label">
                       Equipped
                     </p>
                   </div>
@@ -385,13 +385,13 @@ export default function AchievementsPage() {
                     <p className="font-heading text-2xl text-cream">
                       {achievementScore}
                     </p>
-                    <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+                    <p className=" text-fg-muted uppercase tracking-widest font-label">
                       Score
                     </p>
                   </div>
                 </div>
                 <Link href="/trophy-room">
-                  <Button className="w-full bg-transparent border border-line text-signal hover:bg-cream hover:text-ink font-heading uppercase tracking-widest h-12 rounded-none">
+                  <Button className="w-full bg-transparent border border-line text-signal hover:bg-cream hover:text-ink font-heading tracking-widest h-12 rounded-none">
                     <Trophy size={16} className="mr-2" /> View Trophy Room
                   </Button>
                 </Link>
@@ -405,10 +405,10 @@ export default function AchievementsPage() {
         {/* Active Loadout Preview (Sticky) */}
         <div className="mb-12 sticky top-20 z-30 bg-background/80 backdrop-blur-md border border-line p-6 shadow-2xl">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading text-xl text-cream uppercase flex items-center gap-2">
+            <h3 className="font-heading text-xl text-cream flex items-center gap-2">
               <Zap size={16} className="text-primary" /> Your badges
             </h3>
-            <span className="text-[10px] text-fg-muted font-mono uppercase">
+            <span className=" text-fg-muted font-label uppercase">
               {loadoutSlots} slots available
             </span>
           </div>
@@ -430,7 +430,7 @@ export default function AchievementsPage() {
                       <div className="text-primary mb-2 scale-75 md:scale-100">
                         <AchievementIcon icon={ach.icon} size={24} />
                       </div>
-                      <span className="text-[8px] md:text-[10px] font-mono text-fg-muted uppercase text-center leading-tight px-1 hidden md:block">
+                      <span className=" md: font-label text-fg-muted uppercase text-center leading-tight px-1 hidden md:block">
                         {ach.title}
                       </span>
                       <button
@@ -441,7 +441,7 @@ export default function AchievementsPage() {
                       </button>
                     </>
                   ) : (
-                    <span className="text-[10px] text-fg-faint uppercase font-mono">
+                    <span className=" text-fg-faint uppercase font-label">
                       Empty
                     </span>
                   )}
@@ -456,21 +456,21 @@ export default function AchievementsPage() {
           <Button
             variant={sortMethod === "default" ? "default" : "outline"}
             onClick={() => setSortMethod("default")}
-            className={`text-[10px] uppercase tracking-widest h-8 ${sortMethod === "default" ? "bg-primary text-ink" : "border-line text-fg-muted"}`}
+            className={`text-[10px] uppercase tracking-widest h-8 ${sortMethod === "default" ? "bg-cream text-ink" : "border-line text-fg-muted"}`}
           >
             <ArrowUpDown size={12} className="mr-2" /> Default
           </Button>
           <Button
             variant={sortMethod === "name" ? "default" : "outline"}
             onClick={() => setSortMethod("name")}
-            className={`text-[10px] uppercase tracking-widest h-8 ${sortMethod === "name" ? "bg-primary text-ink" : "border-line text-fg-muted"}`}
+            className={`text-[10px] uppercase tracking-widest h-8 ${sortMethod === "name" ? "bg-cream text-ink" : "border-line text-fg-muted"}`}
           >
             <ArrowDownAZ size={12} className="mr-2" /> Name
           </Button>
           <Button
             variant={sortMethod === "status" ? "default" : "outline"}
             onClick={() => setSortMethod("status")}
-            className={`text-[10px] uppercase tracking-widest h-8 ${sortMethod === "status" ? "bg-primary text-ink" : "border-line text-fg-muted"}`}
+            className={`text-[10px] uppercase tracking-widest h-8 ${sortMethod === "status" ? "bg-cream text-ink" : "border-line text-fg-muted"}`}
           >
             <LayoutList size={12} className="mr-2" /> Status
           </Button>
@@ -520,10 +520,10 @@ export default function AchievementsPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-warning/10 to-transparent pointer-events-none" />
                 <div className="flex items-center justify-between relative z-10">
                   <div>
-                    <div className="flex items-center gap-2 text-signal text-[10px] font-mono uppercase tracking-widest mb-2">
+                    <div className="flex items-center gap-2 text-signal font-label uppercase tracking-widest mb-2">
                       <ArrowRightLeft size={12} /> Swap Mission
                     </div>
-                    <h3 className="font-heading text-xl text-cream uppercase">
+                    <h3 className="font-heading text-xl text-cream ">
                       Select Mission to Replace
                     </h3>
                   </div>
@@ -551,10 +551,10 @@ export default function AchievementsPage() {
                         <AchievementIcon icon={newMission.icon} size={16} />
                       </div>
                       <div>
-                        <h4 className="font-heading text-cream uppercase">
+                        <h4 className="font-heading text-cream ">
                           {newMission.title}
                         </h4>
-                        <p className="text-[10px] text-fg-muted font-mono uppercase">
+                        <p className=" text-fg-muted font-label uppercase">
                           {newMission.description}
                         </p>
                       </div>
@@ -589,14 +589,14 @@ export default function AchievementsPage() {
                           />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-heading text-cream uppercase group-hover:text-danger transition-colors">
+                          <h4 className="font-heading text-cream group-hover:text-danger transition-colors">
                             {activeMission.title}
                           </h4>
-                          <p className="text-[10px] text-fg-muted font-mono uppercase">
+                          <p className=" text-fg-muted font-label uppercase">
                             {activeMission.progress || "In Progress"}
                           </p>
                         </div>
-                        <div className="text-[10px] text-fg-faint group-hover:text-danger font-mono uppercase tracking-widest transition-colors">
+                        <div className=" text-fg-faint group-hover:text-danger font-label uppercase tracking-widest transition-colors">
                           Remove
                         </div>
                       </motion.button>

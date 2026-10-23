@@ -309,7 +309,7 @@ export function StoriesSection() {
                       <div className="flex items-center gap-2 mb-1">
                         <h4
                           className={`
-                          font-heading text-lg uppercase tracking-tight truncate transition-colors duration-300
+ font-heading text-lg tracking-tight truncate transition-colors duration-300
                           ${isActive ? theme.textAccent : "text-cream"}
                         `}
                         >

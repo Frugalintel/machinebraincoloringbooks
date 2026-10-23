@@ -1,7 +1,7 @@
 import { Story } from "@/lib/types";
 
 const DEFAULT_THEME_CLASSES = {
-  bgAccent: "bg-signal",
+  bgAccent: "bg-cream",
   bgAccentLight: "bg-cream/5",
   textAccent: "text-signal",
   borderAccent: "border-line",

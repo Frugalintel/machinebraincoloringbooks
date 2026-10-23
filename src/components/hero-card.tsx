@@ -81,7 +81,7 @@ export function HeroCard({
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute top-[42%] right-1/2 h-[42%] w-[80%] translate-x-1/2 rounded-full bg-(--hero-accent)/12 blur-3xl lg:top-1/2 lg:right-[12%] lg:h-[55%] lg:w-[38%] lg:translate-x-0"
+        className="pointer-events-none absolute top-[42%] right-1/2 h-[42%] w-[80%] translate-x-1/2 rounded-full bg-cream/10 blur-3xl lg:top-1/2 lg:right-[12%] lg:h-[55%] lg:w-[38%] lg:translate-x-0"
         aria-hidden
       />
 
@@ -98,21 +98,16 @@ export function HeroCard({
           </p>
           <h1
             id="home-hero-heading"
-            className="font-display text-hero uppercase text-cream"
+            className="font-display text-hero text-cream"
           >
             <span className="block">{headlineWhite}</span>
-            <span className="mt-1 block text-(--hero-accent)">
-              {headlineAccent}
-            </span>
+            <span className="mt-1 block text-cream">{headlineAccent}</span>
           </h1>
           <p className="mt-4 max-w-md text-base leading-relaxed text-fg-muted sm:mt-6 sm:leading-7">
             {subcopy}
           </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:gap-4 lg:items-start">
-            <Button
-              asChild
-              className="h-11 rounded-md bg-(--hero-accent) px-8 font-heading font-semibold text-sm uppercase tracking-[0.06em] text-ink hover:bg-cream hover:text-ink sm:h-12"
-            >
+            <Button asChild size="lg" className="px-8">
               <Link href={primaryCta.href}>{primaryCta.label}</Link>
             </Button>
             <Link

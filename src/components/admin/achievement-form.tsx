@@ -279,7 +279,7 @@ export function AchievementForm({
                     }
                     className={`aspect-square flex items-center justify-center rounded border transition-all ${
                       formData.icon === opt.id
-                        ? "bg-primary text-ink border-primary"
+                        ? "bg-cream text-ink border-primary"
                         : "bg-surface-2 text-fg-muted border-line hover:border-line-strong hover:text-cream"
                     }`}
                   >
@@ -402,7 +402,7 @@ export function AchievementForm({
 
                 <div className="min-w-0 flex-1">
                   <h4
-                    className="text-[10px] font-mono uppercase tracking-widest mb-0.5 flex items-center justify-between"
+                    className=" font-label uppercase tracking-widest mb-0.5 flex items-center justify-between"
                     style={{
                       color:
                         formData.custom_color ||
@@ -543,7 +543,7 @@ export function AchievementForm({
         <Button
           type="submit"
           disabled={loading}
-          className="bg-primary text-ink hover:bg-cream font-bold px-8"
+          className="bg-cream text-ink hover:bg-cream font-bold px-8"
         >
           {loading ? (
             "SAVING..."

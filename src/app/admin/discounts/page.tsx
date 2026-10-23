@@ -261,13 +261,13 @@ export default function DiscountsPage() {
         <TabsList className="bg-surface-1 border border-line mb-6">
           <TabsTrigger
             value="campaigns"
-            className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-ink font-mono uppercase tracking-wider text-xs"
+            className="gap-2 data-[state=active]:bg-cream data-[state=active]:text-ink font-mono uppercase tracking-wider text-xs"
           >
             <LayoutTemplate size={14} /> Global Campaigns
           </TabsTrigger>
           <TabsTrigger
             value="codes"
-            className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-ink font-mono uppercase tracking-wider text-xs"
+            className="gap-2 data-[state=active]:bg-cream data-[state=active]:text-ink font-mono uppercase tracking-wider text-xs"
           >
             <Tag size={14} /> Promo Codes
           </TabsTrigger>
@@ -282,7 +282,7 @@ export default function DiscountsPage() {
             <button
               onClick={handleCreateCampaign}
               disabled={isCreatingCampaign}
-              className="flex items-center gap-2 bg-primary text-ink px-4 py-2 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 bg-cream text-ink px-4 py-2 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50"
             >
               {isCreatingCampaign ? (
                 <Loader2 className="animate-spin" size={16} />
@@ -349,7 +349,7 @@ export default function DiscountsPage() {
           <div className="flex justify-end mb-4">
             <button
               onClick={() => setIsCreatingCode(true)}
-              className="flex items-center justify-center gap-2 bg-primary text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
+              className="flex items-center justify-center gap-2 bg-cream text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
             >
               <Plus size={18} />
               <span>NEW CODE</span>

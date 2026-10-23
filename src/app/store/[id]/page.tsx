@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
+import { toSentenceCase } from "@/lib/display-text";
 import { Product } from "@/lib/types";
 import { ProductClient } from "./product-client";
 
@@ -80,15 +81,15 @@ export async function generateMetadata({
     process.env.NEXT_PUBLIC_SITE_URL || "https://machinebraincoloringbooks.com";
 
   return {
-    title: `${product.title} | MACHINE BRAIN Coloring Books`,
+    title: `${toSentenceCase(product.title)} | Machine Brain coloring books`,
     description:
       product.description ||
-      `${product.title} - ${product.subtitle}. Vintage Sci-Fi Coloring Book.`,
+      `${toSentenceCase(product.title)} - ${product.subtitle}. Vintage sci-fi coloring book.`,
     openGraph: {
-      title: `${product.title} | MACHINE BRAIN`,
+      title: `${toSentenceCase(product.title)} | Machine Brain`,
       description:
         product.description ||
-        `${product.title} - Vintage Sci-Fi Coloring Book`,
+        `${toSentenceCase(product.title)} - Vintage sci-fi coloring book`,
       type: "website",
       url: `${baseUrl}/store/${product.id}`,
       images: product.image_url
@@ -97,17 +98,17 @@ export async function generateMetadata({
               url: product.image_url,
               width: 800,
               height: 600,
-              alt: product.title,
+              alt: toSentenceCase(product.title),
             },
           ]
         : undefined,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${product.title} | MACHINE BRAIN`,
+      title: `${toSentenceCase(product.title)} | Machine Brain`,
       description:
         product.description ||
-        `${product.title} - Vintage Sci-Fi Coloring Book`,
+        `${toSentenceCase(product.title)} - Vintage sci-fi coloring book`,
       images: product.image_url ? [product.image_url] : undefined,
     },
   };

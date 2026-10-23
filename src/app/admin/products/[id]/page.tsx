@@ -209,7 +209,7 @@ export default function EditProductPage({
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex items-center gap-2 bg-primary text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-cream text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors disabled:opacity-50"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={18} />
@@ -227,7 +227,7 @@ export default function EditProductPage({
           {/* Step 1: Basic Info */}
           <div className="bg-surface-1 border border-line rounded-xl p-6">
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-primary text-ink flex items-center justify-center text-xs font-bold">
+              <span className="w-6 h-6 rounded-full bg-cream text-ink flex items-center justify-center text-xs font-bold">
                 1
               </span>
               Core Information
@@ -282,7 +282,7 @@ export default function EditProductPage({
           {/* Step 2: Pricing & Categorization */}
           <div className="bg-surface-1 border border-line rounded-xl p-6">
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-primary text-ink flex items-center justify-center text-xs font-bold">
+              <span className="w-6 h-6 rounded-full bg-cream text-ink flex items-center justify-center text-xs font-bold">
                 2
               </span>
               Market Data
@@ -362,7 +362,7 @@ export default function EditProductPage({
                       }
                       className={`px-3 py-2 rounded text-xs font-mono uppercase border transition-colors ${
                         formData.category === c
-                          ? "bg-primary text-ink border-primary font-bold"
+                          ? "bg-cream text-ink border-primary font-bold"
                           : "bg-surface-1 border-line text-fg-muted hover:border-cream"
                       }`}
                     >
@@ -378,7 +378,7 @@ export default function EditProductPage({
         <div className="lg:col-span-1 space-y-8 order-1 lg:order-2">
           {/* Live Preview Card */}
           <div className="space-y-4">
-            <h3 className="text-xs font-mono uppercase tracking-widest text-fg-muted">
+            <h3 className="text-xs font-mono tracking-widest text-fg-muted">
               Live Preview
             </h3>
             <div className="group relative bg-surface-1 border border-line rounded-xl overflow-hidden shadow-2xl mx-auto w-[280px]">
@@ -414,7 +414,7 @@ export default function EditProductPage({
                 <div className="absolute bottom-0 left-0 right-0 p-5">
                   <div className="flex justify-between items-end mb-2">
                     <div>
-                      <p className="text-[10px] font-mono text-primary uppercase tracking-widest mb-1">
+                      <p className=" font-label text-primary uppercase tracking-widest mb-1">
                         {formData.category || "CATEGORY"}
                       </p>
                       <h3 className="font-heading text-lg font-bold text-cream leading-tight mb-1 truncate pr-2">
@@ -428,7 +428,7 @@ export default function EditProductPage({
 
                   <div className="flex items-center justify-between border-t border-cream/10 pt-3 mt-2">
                     <div className="flex flex-col">
-                      <span className="text-[10px] text-fg-muted font-mono uppercase">
+                      <span className=" text-fg-muted font-label uppercase">
                         Price
                       </span>
                       <span className="font-mono text-cream">
@@ -436,14 +436,14 @@ export default function EditProductPage({
                       </span>
                     </div>
                     <div className="flex flex-col items-end">
-                      <span className="text-[10px] text-fg-muted font-mono uppercase">
+                      <span className=" text-fg-muted font-label uppercase">
                         Difficulty
                       </span>
                       <div className="flex gap-0.5">
                         {[...Array(5)].map((_, idx) => (
                           <div
                             key={idx}
-                            className={`w-1 h-2 rounded-sm ${idx < (formData.difficulty || 1) ? "bg-primary" : "bg-surface-3"}`}
+                            className={`w-1 h-2 rounded-sm ${idx < (formData.difficulty || 1) ? "bg-cream" : "bg-surface-3"}`}
                           ></div>
                         ))}
                       </div>
@@ -457,7 +457,7 @@ export default function EditProductPage({
           {/* Step 3: Media */}
           <div className="bg-surface-1 border border-line rounded-xl p-6">
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-primary text-ink flex items-center justify-center text-xs font-bold">
+              <span className="w-6 h-6 rounded-full bg-cream text-ink flex items-center justify-center text-xs font-bold">
                 3
               </span>
               Visual Assets

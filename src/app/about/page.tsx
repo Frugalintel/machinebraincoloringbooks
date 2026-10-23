@@ -10,9 +10,7 @@ export default function AboutPage() {
             <Info size={14} />
             <span className="font-label tracking-[0.12em]">Company</span>
           </div>
-          <h1 className="font-display text-title uppercase text-cream mb-4">
-            About Us
-          </h1>
+          <h1 className="font-display text-title text-cream mb-4">About Us</h1>
           <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">
             Building the future of interactive storytelling.
           </p>

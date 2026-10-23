@@ -111,7 +111,7 @@ export default function AdminCollectiblesPage() {
         </div>
         <Link
           href="/admin/collectibles/new"
-          className="flex items-center justify-center gap-2 bg-primary text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
+          className="flex items-center justify-center gap-2 bg-cream text-ink px-6 py-3 rounded font-bold hover:bg-cream transition-colors"
         >
           <Plus size={18} />
           <span>ADD COLLECTIBLE</span>
@@ -218,7 +218,7 @@ export default function AdminCollectiblesPage() {
                             {collectible.name}
                           </h3>
                           <p
-                            className={`text-[10px] font-mono uppercase tracking-wide mb-1 ${styles.text}`}
+                            className={` font-label uppercase tracking-wide mb-1 ${styles.text}`}
                           >
                             {collectible.type || "Artifact"}
                           </p>
@@ -235,12 +235,10 @@ export default function AdminCollectiblesPage() {
                       </p>
 
                       <div className="flex items-center justify-between pt-3 border-t border-cream/10 mt-3">
-                        <span className="text-[10px] text-fg-muted font-mono uppercase">
+                        <span className=" text-fg-muted font-label uppercase">
                           {collectible.generation || "Gen-0"}
                         </span>
-                        <span
-                          className={`text-[10px] font-mono ${styles.text}`}
-                        >
+                        <span className={` font-label ${styles.text}`}>
                           {collectible.found_in || "Unknown"}
                         </span>
                       </div>

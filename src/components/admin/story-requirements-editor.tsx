@@ -101,7 +101,7 @@ export function StoryRequirementsEditor({
           >
             <div className="flex items-center gap-3 text-fg-secondary">
               <span className="text-fg-muted">{getIcon(req.type)}</span>
-              <span className="uppercase text-[10px] font-mono tracking-wider text-fg-muted bg-surface-1 px-1.5 py-0.5 rounded border border-line">
+              <span className="uppercase font-label tracking-wider text-fg-muted bg-surface-1 px-1.5 py-0.5 rounded border border-line">
                 {req.type}
               </span>
               <span>{req.name}</span>
@@ -133,7 +133,7 @@ export function StoryRequirementsEditor({
                 className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider border rounded transition-colors
                   ${
                     type === t
-                      ? "bg-primary text-ink border-primary font-bold"
+                      ? "bg-cream text-ink border-primary font-bold"
                       : "text-fg-muted border-line hover:text-cream hover:border-line-strong"
                   }
                 `}
@@ -164,7 +164,7 @@ export function StoryRequirementsEditor({
             <Button
               onClick={handleAdd}
               size="sm"
-              className="bg-primary text-ink hover:bg-cream"
+              className="bg-cream text-ink hover:bg-cream"
             >
               <Plus size={16} />
             </Button>
@@ -183,7 +183,7 @@ export function StoryRequirementsEditor({
           type="button"
           onClick={() => setIsAdding(true)}
           variant="outline"
-          className="w-full border-dashed border-line text-fg-muted hover:text-primary hover:border-primary hover:bg-primary/5 h-10 text-xs uppercase tracking-widest"
+          className="w-full border-dashed border-line text-fg-muted hover:text-primary hover:border-primary hover:bg-cream/5 h-10 text-xs uppercase tracking-widest"
         >
           <Plus size={14} className="mr-2" /> Add Requirement
         </Button>

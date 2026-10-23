@@ -126,7 +126,7 @@ export function RewardBadge({
             </span>
           ) : null}
           <span
-            className={`block ${sizeConfig.value} ${config.color} font-heading uppercase truncate`}
+            className={`block ${sizeConfig.value} ${config.color} font-heading truncate`}
           >
             {value}
           </span>
@@ -209,12 +209,10 @@ export function RewardUnlockAnimation({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <p className="text-[10px] text-fg-muted uppercase tracking-widest font-mono mb-2">
+          <p className=" text-fg-muted uppercase tracking-widest font-label mb-2">
             Reward Unlocked
           </p>
-          <h2
-            className={`font-heading text-3xl ${config.color} uppercase tracking-wide`}
-          >
+          <h2 className={`font-heading text-3xl ${config.color} tracking-wide`}>
             {label}
           </h2>
         </motion.div>
@@ -263,7 +261,7 @@ export function MilestonePreview({
   if (!next) {
     return (
       <div className={`bg-background border border-line p-4 ${className}`}>
-        <div className="flex items-center gap-2 text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+        <div className="flex items-center gap-2 text-fg-muted uppercase tracking-widest font-label">
           <Star size={12} className="text-warning" fill="currentColor" />
           <span>All {pillarLabel} Milestones Complete!</span>
         </div>
@@ -276,10 +274,10 @@ export function MilestonePreview({
   return (
     <div className={`bg-background border border-line p-4 ${className}`}>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[10px] text-fg-muted uppercase tracking-widest font-mono">
+        <span className=" text-fg-muted uppercase tracking-widest font-label">
           Next {pillarLabel} Milestone
         </span>
-        <span className="text-[10px] text-fg-muted font-mono">
+        <span className=" text-fg-muted font-label">
           {current} / {next.threshold}
         </span>
       </div>

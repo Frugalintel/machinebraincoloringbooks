@@ -2,6 +2,9 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { FieldError, Label } from "@/components/ui/label";
 import {
   reviewLoginErrorMessage,
   type ReviewLoginError,
@@ -59,45 +62,33 @@ export function ReviewLoginForm({
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-16">
-      <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-primary">
-        Private QA
-      </p>
-      <h1 className="mt-3 font-heading text-3xl uppercase tracking-tight">
-        Unlock review
-      </h1>
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="font-label tracking-[0.12em] text-signal">Private QA</p>
+      <h1 className="mt-3 font-display text-title text-cream">Unlock review</h1>
+      <p className="mt-3 text-base text-fg-muted">
         Enter the review password to open{" "}
-        <span className="font-mono text-foreground">{slug}</span>.
+        <span className="font-mono text-cream">{slug}</span>.
       </p>
-      {message ? (
-        <p className="mt-4 rounded border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {message}
-        </p>
-      ) : null}
+      {message ? <FieldError className="mt-4">{message}</FieldError> : null}
       <form
         action="/api/review/login"
         method="post"
-        className="mt-8 space-y-4"
+        className="mt-8 flex flex-col gap-4"
         onSubmit={handleSubmit}
       >
         <input type="hidden" name="next" value={`/review/${slug}`} />
-        <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground">
-          Password
-          <input
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="review-password">Password</Label>
+          <Input
+            id="review-password"
             type="password"
             name="password"
             required
             autoComplete="current-password"
-            className="mt-2 h-11 w-full rounded-md border border-line bg-background px-3 text-base text-foreground outline-none focus-visible:border-primary"
           />
-        </label>
-        <button
-          type="submit"
-          disabled={pending}
-          className="h-11 w-full rounded-md bg-primary font-heading uppercase tracking-wide text-ink"
-        >
+        </div>
+        <Button type="submit" className="w-full" loading={pending}>
           Unlock
-        </button>
+        </Button>
       </form>
     </main>
   );
