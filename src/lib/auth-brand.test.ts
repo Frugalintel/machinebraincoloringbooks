@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { AUTH_COPY, authModeCopy } from "@/lib/auth-ui";
+import { AUTH_COPY, authErrorMessage, authModeCopy } from "@/lib/auth-ui";
 
 const AUTH_FILES = [
   "src/app/auth/page.tsx",
@@ -98,5 +98,23 @@ describe("Sign in brand guardrails (AUTH-01, AUTH-02, SW-ORANGE-USE-01, SW-LOGO-
       expect(title.slice(1)).toBe(title.slice(1).toLowerCase());
       expect(label.slice(1)).toBe(label.slice(1).toLowerCase());
     }
+  });
+});
+
+describe("authErrorMessage", () => {
+  it("maps known Supabase and network errors onto the brand voice", () => {
+    expect(authErrorMessage(new Error("Invalid login credentials"))).toBe(
+      AUTH_COPY.invalidLogin,
+    );
+    expect(authErrorMessage(new Error("Email not confirmed"))).toBe(
+      AUTH_COPY.emailNotConfirmed,
+    );
+    expect(authErrorMessage(new TypeError("Failed to fetch"))).toBe(
+      AUTH_COPY.networkError,
+    );
+    expect(authErrorMessage(new Error("Signups not allowed"))).toBe(
+      "Signups not allowed",
+    );
+    expect(authErrorMessage("nope")).toBe(AUTH_COPY.genericError);
   });
 });

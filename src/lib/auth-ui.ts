@@ -58,6 +58,8 @@ export const AUTH_COPY = {
   emailNotConfirmed: "Confirm your email first. The link is in your inbox.",
   confirmEmail: "Check your email for the confirmation link.",
   genericError: "Something went wrong. Please try again.",
+  networkError:
+    "Sign in couldn’t reach the server. Check your connection and try again.",
 } as const;
 
 /** Maps Supabase auth errors onto the brand voice; unknown errors pass through. */
@@ -70,6 +72,9 @@ export function authErrorMessage(error: unknown): string {
   }
   if (error.message.includes("Email not confirmed")) {
     return AUTH_COPY.emailNotConfirmed;
+  }
+  if (/Failed to fetch|NetworkError|Load failed/.test(error.message)) {
+    return AUTH_COPY.networkError;
   }
   return error.message;
 }
