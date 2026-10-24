@@ -26,15 +26,26 @@ const SOURCE = STORE_FILES.map(read).join("\n");
 const CSS = read("src/app/store/store.css");
 
 describe("Store brand guardrails (STORE-01, STORE-02, SW-ORANGE-USE-01, SW-PALETTE-01, SW-TEX-01)", () => {
-  it("sets Redaction on exactly one H1 per page", () => {
+  it("sets Redaction on the single H1 and the fitted plate titles", () => {
     const listing = read("src/app/store/store-listing.tsx");
     const product = read("src/app/store/[id]/product-client.tsx");
-    for (const page of [listing, product]) {
-      expect(page.match(/font-display/g)).toHaveLength(1);
-      expect(page).toMatch(/<h1[^>]*className="s-h1 font-display"/);
+    expect(listing).toMatch(/<h1[^>]*className="s-h1 font-display"/);
+    const headings = listing.match(/<h1\b[^>]*>/g) ?? [];
+    expect(headings.length).toBeGreaterThan(0);
+    for (const heading of headings) {
+      expect(heading).toMatch(/font-display/);
     }
+    expect(listing).toMatch(/className="tl font-display"/);
+    expect(listing).toMatch(/className="ix-line font-display"/);
+    expect(product).toMatch(/<h1[^>]*className="s-h1 font-display"/);
+    expect(product).toMatch(/className="lk font-display"/);
+    expect(product.match(/font-display/g)).toHaveLength(2);
+    expect(CSS).toMatch(/\.tl \{[^}]*var\(--font-display\)/);
+    expect(CSS).toMatch(/\.ix-line \{[^}]*var\(--font-display\)/);
+    expect(CSS).toMatch(/\.lk \{[^}]*var\(--font-display\)/);
+    expect(CSS).toMatch(/\.s-plate \.t \{[^}]*var\(--font-display\)/);
     const others = STORE_FILES.filter(
-      (file) => !/store-listing|product-client/.test(file),
+      (file) => !/store-listing|product-client|store\.css/.test(file),
     );
     for (const file of others) {
       expect(read(file), file).not.toMatch(/font-display|redaction/i);
@@ -45,9 +56,14 @@ describe("Store brand guardrails (STORE-01, STORE-02, SW-ORANGE-USE-01, SW-PALET
     expect(SOURCE).not.toMatch(
       /(?:bg|border|ring|fill|from|via|to)-(?:primary|signal|brand-orange)|text-primary|#ff4f00|255 79 0/i,
     );
-    expect(CSS).not.toMatch(/--signal/);
+    expect(CSS).not.toMatch(
+      /(?:background|border|box-shadow):[^;]*var\(--signal\)/,
+    );
+    expect(CSS).toMatch(/\.fstat \{[^}]*color:\s*var\(--signal\)/);
+    expect(CSS).toMatch(/outline:\s*2px solid var\(--signal\)/);
+    expect(CSS.match(/var\(--signal\)/g)).toHaveLength(2);
     const signal = SOURCE.match(/[\w:-]*signal\b/g) ?? [];
-    expect(new Set(signal)).toEqual(new Set(["text-signal"]));
+    expect(new Set(signal)).toEqual(new Set(["text-signal", "--signal"]));
     for (const line of SOURCE.split("\n").filter((l) =>
       /text-signal/.test(l),
     )) {
@@ -114,6 +130,16 @@ describe("Store brand guardrails (STORE-01, STORE-02, SW-ORANGE-USE-01, SW-PALET
       /if\s*\(!product\)\s*\{\s*notFound\(\)/,
     );
     expect(read("src/app/store/[id]/page.tsx")).not.toMatch(/MACHINE BRAIN/);
+  });
+
+  it("lets the mobile shelf scroll inside the page", () => {
+    const mobile = CSS.slice(CSS.indexOf("@media (max-width: 760px)"));
+    const shelf = mobile.match(/\.store-e2 \.shelf \{([^}]+)\}/)?.[1] ?? "";
+    expect(shelf).toMatch(/overflow-x:\s*auto/);
+    expect(shelf).toMatch(/min-width:\s*0/);
+    expect(shelf).toMatch(/width:\s*100%/);
+    expect(shelf).not.toMatch(/margin-right:\s*calc\(-1 \* var\(--m\)\)/);
+    expect(mobile).toMatch(/\.store-e2 \.shelf li \{[^}]*flex:\s*0 0 148px/);
   });
 
   it("shares Home's plates, nav and footer", () => {

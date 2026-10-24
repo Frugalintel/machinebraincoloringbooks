@@ -14,6 +14,26 @@ export interface Product {
   is_published: boolean;
   created_at?: string;
   updated_at?: string;
+  pages?: number;
+  /** "single" when the book is printed single-sided. */
+  sides?: string;
+  /** Trim as printed, e.g. "8.5 × 11 in". */
+  trim?: string;
+  binding?: string;
+  /** Detail on the catalogue's 5-point scale. */
+  detail?: number;
+  /** Two-line title; a newline marks the break. */
+  lines?: string;
+}
+
+/** Optional book spec columns; absent until the spec migration is applied. */
+export interface DatabaseBookSpecs {
+  pages?: number | string | null;
+  sides?: string | null;
+  trim?: string | null;
+  binding?: string | null;
+  detail?: number | string | null;
+  lines?: string | null;
 }
 
 export interface Collectible {
@@ -262,7 +282,7 @@ export interface AdminActivity {
 }
 
 // Database row types for direct queries
-export interface DatabaseProduct {
+export interface DatabaseProduct extends DatabaseBookSpecs {
   id: string;
   title: string;
   subtitle: string;

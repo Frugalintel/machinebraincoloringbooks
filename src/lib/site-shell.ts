@@ -120,6 +120,10 @@ export function hidesCustomerFooter(pathname: string): boolean {
   return headerVariantFor(pathname) !== "full";
 }
 
+export function cartLabel(count: number): string {
+  return `Cart, ${count} ${count === 1 ? "item" : "items"}`;
+}
+
 export function isNavLinkActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }

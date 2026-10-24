@@ -1,6 +1,7 @@
 import { PostgrestError } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { products as catalogProducts } from "@/lib/store-data";
+import { readBookSpecs } from "@/lib/book-specs";
 import { Product, DatabaseProduct } from "@/lib/types";
 
 /** Local catalog when live products fail to load (preview / no database). */
@@ -22,7 +23,7 @@ export const mapDatabaseProduct = (p: DatabaseProduct): Product => ({
   price: Number(p.price),
   discount_percent: Number(p.discount_percent || 0),
   difficulty: Number(p.difficulty || 1),
-  age: p.age || "All Ages",
+  age: typeof p.age === "string" ? p.age.trim() : "",
   category: p.category,
   color: p.color || "bg-background",
   accent: p.accent || "bg-cream",
@@ -30,6 +31,7 @@ export const mapDatabaseProduct = (p: DatabaseProduct): Product => ({
   is_published: p.is_published,
   created_at: p.created_at,
   updated_at: p.updated_at,
+  ...readBookSpecs(p),
 });
 
 export async function fetchPublishedProducts(
@@ -39,7 +41,8 @@ export async function fetchPublishedProducts(
     .from("products")
     .select("*")
     .eq("is_published", true)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: true });
 
   if (limit) {
     query = query.limit(limit);
@@ -65,7 +68,8 @@ export async function fetchAllProducts(): Promise<{
   const { data, error } = await supabase
     .from("products")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: true });
 
   if (error) {
     return { data: null, error };
