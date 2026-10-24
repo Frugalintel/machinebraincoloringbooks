@@ -6,6 +6,7 @@ import {
   headerVariantFor,
   hidesCustomerFooter,
   isNavLinkActive,
+  overlayLinksFor,
 } from "@/lib/site-shell";
 
 describe("site shell routes", () => {
@@ -58,8 +59,23 @@ describe("headerVariantFor", () => {
     expect(hidesCustomerFooter("/")).toBe(true);
   });
 
-  it("uses the minimal lockup header on auth, scan, and review", () => {
-    expect(headerVariantFor("/auth")).toBe("minimal");
+  it("overlays the nav on the sign-in plate, which owns Home's footer", () => {
+    expect(headerVariantFor("/auth")).toBe("overlay");
+    expect(hidesCustomerFooter("/auth")).toBe(true);
+    expect(overlayLinksFor("/auth").map((link) => link.href)).toEqual([
+      "/store",
+      "/stories",
+      "/about",
+    ]);
+    expect(overlayLinksFor("/").map((link) => link.name)).toEqual([
+      "Books",
+      "Worlds",
+      "About",
+    ]);
+  });
+
+  it("uses the minimal lockup header on scan and review", () => {
+    expect(headerVariantFor("/auth/callback")).toBe("minimal");
     expect(headerVariantFor("/scan")).toBe("minimal");
     expect(headerVariantFor("/review")).toBe("minimal");
     expect(headerVariantFor("/review/ottoline-garden")).toBe("minimal");
