@@ -3,7 +3,6 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { MOCK_CATALOG } from "@/__tests__/store-catalog";
 import {
-  SILVER_CITADEL_COVER,
   STORE_COPY,
   PRODUCT_COPY,
   bookName,
@@ -11,8 +10,17 @@ import {
   filterByWorld,
   labelForWorld,
   parseWorldParam,
+  displayEm,
+  fittedEms,
+  mobileTitleLines,
+  plateBackground,
+  plateSentence,
   plateCode,
   productDescription,
+  shelfBasis,
+  shortSpec,
+  specRows,
+  volumeLabel,
   productGallery,
   storeHref,
   storeShowsSamples,
@@ -66,6 +74,69 @@ describe("store worlds and the ?world= filter", () => {
     expect(plateCode(0)).toBe("Pl. 01a");
     expect(plateCode(8)).toBe("Pl. 01i");
   });
+
+  it("fits every plate title from the longest line, about the sample's 11.06vw", () => {
+    const deep = displayEm("Into the Deep Forest");
+    expect(deep).toBeCloseTo(20 * 0.5 + 19 * -0.06, 5);
+    const fitted = fittedEms([
+      { one: "The Far Station", lines: ["The Far", "Station"] },
+      { one: "Into the Deep Forest", lines: ["Into the", "Deep Forest"] },
+      { one: "The Wandering Keep", lines: ["The Wandering", "Keep"] },
+    ]);
+    expect(fitted.desktop).toBeCloseTo(deep, 5);
+    expect(fitted.mobile).toBeCloseTo(displayEm("The Wandering"), 5);
+    const at1440 = ((1440 - 80) / deep / 1440) * 100;
+    expect(at1440).toBeGreaterThan(10);
+    expect(at1440).toBeLessThan(12);
+  });
+
+  it("builds the short spec from the fields that exist", () => {
+    expect(shortSpec({})).toBeUndefined();
+    expect(shortSpec({ trim: "8 × 10 in" })).toBe("8 × 10 in");
+    expect(
+      shortSpec({ pages: 50, trim: "8.5 × 11 in", binding: "Paperback" }),
+    ).toBe("50 plates · 8.5 × 11 in · Paperback");
+    expect(mobileTitleLines(undefined)).toBeUndefined();
+    expect(mobileTitleLines("Realm\nWalker")).toEqual(["Realm", "Walker"]);
+    expect(volumeLabel(5)).toBe("Vol 06");
+    expect(plateSentence("One sentence. And another.")).toBe("One sentence.");
+  });
+
+  it("drops a spec row when its field is missing", () => {
+    expect(
+      specRows({ category: "FANTASY", age: "8+" }).map((row) => row.term),
+    ).toEqual(["World", "Age"]);
+    expect(
+      specRows({
+        category: "FANTASY",
+        pages: 50,
+        sides: "single",
+        trim: "8.5 × 11 in",
+        binding: "Paperback",
+        detail: 3,
+        age: "All ages",
+      }).map((row) => row.value),
+    ).toEqual([
+      "Fantasy",
+      "50, printed single-sided",
+      "8.5 × 11 in",
+      "Paperback",
+      "3 of 5",
+      "All ages",
+    ]);
+    expect(specRows({ pages: 0, detail: 0, age: "  " })).toEqual([]);
+  });
+
+  it("shrinks the shelf so every cover fits, and never past the six-up width", () => {
+    expect(shelfBasis(6)).toBe(
+      "min(var(--shelf-six), calc((100% - 5 * var(--shelf-gap)) / 6))",
+    );
+    expect(shelfBasis(9)).toBe(
+      "min(var(--shelf-six), calc((100% - 8 * var(--shelf-gap)) / 9))",
+    );
+    expect(shelfBasis(2)).toContain("var(--shelf-six)");
+    expect(shelfBasis(0)).toBe(shelfBasis(1));
+  });
 });
 
 describe("cover art and the SAMPLE switch", () => {
@@ -75,18 +146,16 @@ describe("cover art and the SAMPLE switch", () => {
     expect(storeShowsSamples(undefined)).toBe(true);
   });
 
-  it("falls back to the typographic plate in production for every book but Fantasy", () => {
+  it("letters every book in production, Realm Walker included, with no borrowed art", () => {
     for (const product of MOCK_CATALOG) {
-      const cover = coverFor(product, false);
-      if (product.category === "FANTASY") {
-        expect(cover).toMatchObject({
-          kind: "art",
-          art: { src: SILVER_CITADEL_COVER, sample: false },
-        });
-      } else {
-        expect(cover).toEqual({ kind: "plate" });
-      }
+      expect(coverFor(product, false)).toEqual({ kind: "plate" });
     }
+    expect(coverFor(byName("Realm Walker"), true)).toEqual({ kind: "plate" });
+    expect(plateBackground(byName("Realm Walker"), true)).toBeNull();
+    expect(plateBackground(byName("Star Drifter"), false)).toBeNull();
+    expect(plateBackground(byName("Star Drifter"), true)).toMatch(
+      /^\/home\/sample\//,
+    );
   });
 
   it("uses Studio's SAMPLE covers on previews, labelled, and only from the sample folder", () => {
@@ -121,11 +190,8 @@ describe("cover art and the SAMPLE switch", () => {
   });
 
   it("builds the product gallery from real art, plus a SAMPLE world plate on previews", () => {
-    const fantasy = productGallery(byName("Realm Walker"), false);
-    expect(fantasy.map((item) => item.key)).toEqual(["cover", "page", "color"]);
-    for (const item of fantasy) {
-      expect(item.cover.kind === "art" && item.cover.art.sample).toBe(false);
-    }
+    expect(productGallery(byName("Realm Walker"), false)).toHaveLength(1);
+    expect(productGallery(byName("Realm Walker"), true)).toHaveLength(1);
     expect(productGallery(byName("Star Drifter"), false)).toHaveLength(1);
     const preview = productGallery(byName("Star Drifter"), true);
     expect(preview.map((item) => item.key)).toEqual(["cover", "world"]);
