@@ -14,6 +14,23 @@ export interface Product {
   is_published: boolean;
   created_at?: string;
   updated_at?: string;
+  page_count?: number;
+  trim_width_in?: number;
+  trim_height_in?: number;
+  paper?: string;
+  binding?: string;
+  /** Two-line mobile title; a newline marks the break. */
+  title_lines?: string;
+}
+
+/** Optional book spec columns; absent until the spec migration is applied. */
+export interface DatabaseBookSpecs {
+  page_count?: number | string | null;
+  trim_width_in?: number | string | null;
+  trim_height_in?: number | string | null;
+  paper?: string | null;
+  binding?: string | null;
+  title_lines?: string | null;
 }
 
 export interface Collectible {
@@ -262,7 +279,7 @@ export interface AdminActivity {
 }
 
 // Database row types for direct queries
-export interface DatabaseProduct {
+export interface DatabaseProduct extends DatabaseBookSpecs {
   id: string;
   title: string;
   subtitle: string;
