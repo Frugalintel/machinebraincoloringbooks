@@ -132,6 +132,16 @@ describe("Store brand guardrails (STORE-01, STORE-02, SW-ORANGE-USE-01, SW-PALET
     expect(read("src/app/store/[id]/page.tsx")).not.toMatch(/MACHINE BRAIN/);
   });
 
+  it("lets the mobile shelf scroll inside the page", () => {
+    const mobile = CSS.slice(CSS.indexOf("@media (max-width: 760px)"));
+    const shelf = mobile.match(/\.store-e2 \.shelf \{([^}]+)\}/)?.[1] ?? "";
+    expect(shelf).toMatch(/overflow-x:\s*auto/);
+    expect(shelf).toMatch(/min-width:\s*0/);
+    expect(shelf).toMatch(/width:\s*100%/);
+    expect(shelf).not.toMatch(/margin-right:\s*calc\(-1 \* var\(--m\)\)/);
+    expect(mobile).toMatch(/\.store-e2 \.shelf li \{[^}]*flex:\s*0 0 148px/);
+  });
+
   it("shares Home's plates, nav and footer", () => {
     const layout = read("src/app/store/layout.tsx");
     expect(layout).toMatch(/import "\.\.\/home\.css"/);
