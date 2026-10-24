@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star, ThumbsUp, User, Pencil, Trash2, Send } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Star, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,6 +23,9 @@ interface ReviewsSectionProps {
   productTitle?: string;
 }
 
+const FIELD =
+  "w-full border border-line-strong bg-background text-base text-cream placeholder:text-fg-muted";
+
 function StarRating({
   rating,
   onRate,
@@ -43,25 +45,40 @@ function StarRating({
     lg: "w-6 h-6",
   };
 
+  const stars = [1, 2, 3, 4, 5].map((star) => (
+    <Star
+      key={star}
+      aria-hidden="true"
+      className={`${sizeClasses[size]} ${
+        star <= (hoverRating || rating)
+          ? "fill-cream text-cream"
+          : "fill-transparent text-fg-faint"
+      }`}
+    />
+  ));
+
+  if (!interactive) {
+    return (
+      <span className="flex gap-0.5" role="img" aria-label={`${rating} of 5`}>
+        {stars}
+      </span>
+    );
+  }
+
   return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((star) => (
+    <div className="flex gap-1" role="group" aria-label="Your rating">
+      {stars.map((icon, index) => (
         <button
-          key={star}
+          key={index}
           type="button"
-          disabled={!interactive}
-          onClick={() => onRate?.(star)}
-          onMouseEnter={() => interactive && setHoverRating(star)}
-          onMouseLeave={() => interactive && setHoverRating(0)}
-          className={`${interactive ? "cursor-pointer hover:scale-110" : "cursor-default"} transition-transform`}
+          aria-label={`${index + 1} of 5`}
+          aria-pressed={rating === index + 1}
+          onClick={() => onRate?.(index + 1)}
+          onMouseEnter={() => setHoverRating(index + 1)}
+          onMouseLeave={() => setHoverRating(0)}
+          className="flex size-11 items-center justify-center"
         >
-          <Star
-            className={`${sizeClasses[size]} ${
-              star <= (hoverRating || rating)
-                ? "fill-primary text-primary"
-                : "fill-transparent text-fg-faint"
-            } transition-colors`}
-          />
+          {icon}
         </button>
       ))}
     </div>
@@ -81,7 +98,7 @@ function ReviewCard({
   onDelete: () => void;
   onHelpful: () => void;
 }) {
-  const displayName = review.user?.display_name || "Anonymous User";
+  const displayName = review.user?.display_name || "Anonymous";
   const initials = displayName.substring(0, 2).toUpperCase();
   const date = new Date(review.created_at).toLocaleDateString("en-US", {
     year: "numeric",
@@ -90,86 +107,80 @@ function ReviewCard({
   });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className="border border-line bg-background p-6 relative group"
-    >
-      {/* Accent bar */}
-      <div className="absolute top-0 left-0 w-1 h-full bg-cream opacity-50"></div>
-
+    <li className="border-t border-line py-6">
       <div className="flex items-start gap-4">
-        <Avatar className="w-10 h-10 border border-line">
+        <Avatar className="h-10 w-10 border border-line">
           {review.user?.avatar_url ? (
-            <AvatarImage src={review.user.avatar_url} alt={displayName} />
+            <AvatarImage src={review.user.avatar_url} alt="" />
           ) : null}
-          <AvatarFallback className="bg-surface-2 text-primary font-mono text-xs">
+          <AvatarFallback className="bg-surface-2 font-label text-cream">
             {initials}
           </AvatarFallback>
         </Avatar>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-4 mb-2">
+        <div className="min-w-0 flex-1">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
             <div className="flex items-center gap-3">
-              <span className="font-mono text-sm text-cream">
+              <span className="text-base font-semibold text-cream">
                 {displayName}
               </span>
               {review.is_verified_purchase ? (
-                <span className=" font-label uppercase tracking-widest text-success border border-success/50 px-2 py-0.5 bg-success-wash">
-                  Verified
+                <span className="font-label border border-line-strong px-2 py-0.5 text-fg-secondary">
+                  Verified purchase
                 </span>
               ) : null}
             </div>
-            <span className=" font-label text-fg-faint uppercase tracking-widest">
-              {date}
-            </span>
+            <span className="font-label text-fg-muted">{date}</span>
           </div>
 
-          <div className="flex items-center gap-3 mb-3">
+          <div className="mb-3 flex flex-wrap items-center gap-3">
             <StarRating rating={review.rating} size="sm" />
             {review.title ? (
-              <span className="font-heading text-cream tracking-wide text-sm">
+              <span className="text-base font-semibold text-cream">
                 {review.title}
               </span>
             ) : null}
           </div>
 
           {review.comment ? (
-            <p className="text-fg-muted text-sm leading-relaxed mb-4">
+            <p className="mb-4 text-base leading-relaxed text-fg-secondary">
               {review.comment}
             </p>
           ) : null}
 
           <div className="flex items-center justify-between">
             <button
+              type="button"
               onClick={onHelpful}
-              className="flex items-center gap-2 font-label uppercase tracking-widest text-fg-muted hover:text-primary transition-colors"
+              className="font-label min-h-11 text-fg-muted hover:text-cream"
             >
-              <ThumbsUp size={12} />
-              <span>Helpful ({review.helpful_count})</span>
+              Helpful ({review.helpful_count})
             </button>
 
             {isOwn ? (
-              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-1">
                 <button
+                  type="button"
                   onClick={onEdit}
-                  className="p-2 text-fg-muted hover:text-cream transition-colors"
+                  aria-label="Edit your review"
+                  className="flex size-11 items-center justify-center text-fg-muted hover:text-cream"
                 >
-                  <Pencil size={14} />
+                  <Pencil size={16} aria-hidden="true" />
                 </button>
                 <button
+                  type="button"
                   onClick={onDelete}
-                  className="p-2 text-fg-muted hover:text-danger transition-colors"
+                  aria-label="Delete your review"
+                  className="flex size-11 items-center justify-center text-fg-muted hover:text-cream"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={16} aria-hidden="true" />
                 </button>
               </div>
             ) : null}
           </div>
         </div>
       </div>
-    </motion.div>
+    </li>
   );
 }
 
@@ -209,81 +220,70 @@ function ReviewForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="border border-line bg-background p-6"
-    >
-      <div className="flex items-center gap-4 mb-6">
-        <div className="h-8 w-1 bg-cream"></div>
-        <h3 className="font-heading text-xl tracking-wide text-cream">
-          {existingReview ? "Edit Your Review" : "Write a Review"}
-        </h3>
-      </div>
+    <form onSubmit={handleSubmit} className="border border-line p-6">
+      <h3 className="mb-6 text-h3 text-cream">
+        {existingReview ? "Edit your review" : "Write a review"}
+      </h3>
 
       <div className="space-y-6">
         <div>
-          <label className="block font-label uppercase tracking-widest text-primary mb-3">
-            Your Rating *
-          </label>
+          <p className="font-label mb-2 text-fg-secondary">Your rating</p>
           <StarRating
             rating={rating}
             onRate={setRating}
             interactive
             size="lg"
           />
-          {rating === 0 && (
-            <p className=" font-label text-fg-muted mt-2">Click to rate</p>
-          )}
+          {rating === 0 ? (
+            <p className="mt-2 text-base text-fg-muted">Choose 1 to 5 stars.</p>
+          ) : null}
         </div>
 
         <div>
-          <label className="block font-label uppercase tracking-widest text-primary mb-2">
-            Review Title
+          <label
+            htmlFor="review-title"
+            className="font-label mb-2 block text-fg-secondary"
+          >
+            Title
           </label>
           <Input
+            id="review-title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Summarize your experience..."
-            className="bg-background border-line text-cream placeholder:text-fg-muted focus:border-primary h-11"
+            placeholder="In a few words"
+            className={`${FIELD} h-11`}
           />
         </div>
 
         <div>
-          <label className="block font-label uppercase tracking-widest text-primary mb-2">
-            Your Review
+          <label
+            htmlFor="review-comment"
+            className="font-label mb-2 block text-fg-secondary"
+          >
+            Your review
           </label>
           <textarea
+            id="review-comment"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Share your thoughts about this product..."
+            placeholder="What was it like to color?"
             rows={4}
-            className="w-full bg-background border border-line text-cream placeholder:text-fg-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 p-3 text-sm resize-none"
+            className={`${FIELD} focus-ring resize-none p-3`}
           />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Button
             type="submit"
+            size="lg"
             disabled={rating === 0 || isSubmitting}
-            className="h-12 px-8 bg-cream hover:bg-cream hover:text-ink text-ink font-heading tracking-widest rounded-none transition-all disabled:opacity-50"
+            loading={isSubmitting}
           >
-            {isSubmitting ? (
-              <span className="animate-pulse">Submitting...</span>
-            ) : (
-              <>
-                <Send size={16} className="mr-2" />
-                {existingReview ? "Update Review" : "Submit Review"}
-              </>
-            )}
+            {existingReview ? "Update review" : "Submit review"}
           </Button>
 
           {onCancel ? (
-            <Button
-              type="button"
-              onClick={onCancel}
-              variant="ghost"
-              className="h-12 px-6 text-fg-muted hover:text-cream font-mono uppercase tracking-widest"
-            >
+            <Button type="button" onClick={onCancel} variant="ghost" size="lg">
               Cancel
             </Button>
           ) : null}
@@ -342,26 +342,24 @@ export function ReviewsSection({
   }) => {
     if (userReview) {
       // Update existing review
-      const { data: updated, error } = await updateReview(userReview.id, data);
+      const { error } = await updateReview(userReview.id, data);
       if (error) {
-        showError("Failed to update review. Please try again.");
+        showError("Your review did not update. Try again.");
         return;
       }
-      success("Review updated successfully!");
+      success("Review updated");
       setIsEditing(false);
     } else {
       // Create new review
-      const { data: created, error } = await createReview({
+      const { error } = await createReview({
         product_id: productId,
         ...data,
       });
       if (error) {
-        showError(
-          error.message || "Failed to submit review. Please try again.",
-        );
+        showError(error.message || "Your review did not send. Try again.");
         return;
       }
-      success("Review submitted successfully!");
+      success("Review posted");
     }
 
     // Reload reviews
@@ -374,11 +372,11 @@ export function ReviewsSection({
 
     const { error } = await deleteReview(userReview.id);
     if (error) {
-      showError("Failed to delete review. Please try again.");
+      showError("Your review was not deleted. Try again.");
       return;
     }
 
-    success("Review deleted successfully!");
+    success("Review deleted");
     setUserReview(null);
     await loadReviews();
   };
@@ -389,38 +387,36 @@ export function ReviewsSection({
   };
 
   return (
-    <section className="border-t border-line pt-12 mt-12">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+    <section
+      className="border-t border-line pt-12 pb-4"
+      aria-labelledby="reviews-h"
+    >
+      <div className="mb-8 flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div>
-          <div className="flex items-center gap-4 mb-2">
-            <div className="h-8 w-2 bg-cream"></div>
-            <h2 className="font-heading text-h2 text-cream">
-              Customer Reviews
-            </h2>
-          </div>
-          <p className="font-mono text-sm text-fg-muted tracking-widest uppercase">
-            Feedback from verified neural network users
-          </p>
+          <h2 id="reviews-h" className="text-h2 text-cream">
+            Reviews
+          </h2>
+          {productTitle ? (
+            <p className="mt-2 text-base text-fg-secondary">
+              From people who colored this book.
+            </p>
+          ) : null}
         </div>
 
-        {/* Rating Summary */}
         {rating && rating.review_count > 0 ? (
-          <div className="flex items-center gap-6 bg-background border border-line px-6 py-4">
+          <div className="flex items-center gap-6 border border-line px-6 py-4">
             <div className="text-center">
-              <div className="font-heading text-4xl text-cream">
+              <div className="price text-[32px] leading-none text-cream">
                 {rating.average_rating.toFixed(1)}
               </div>
-              <div className=" font-label text-fg-muted uppercase tracking-widest">
-                out of 5
-              </div>
+              <div className="font-label mt-1 text-fg-muted">out of 5</div>
             </div>
             <div className="border-l border-line pl-6">
               <StarRating
                 rating={Math.round(rating.average_rating)}
                 size="md"
               />
-              <div className=" font-label text-fg-muted uppercase tracking-widest mt-1">
+              <div className="font-label mt-1 text-fg-muted">
                 {rating.review_count}{" "}
                 {rating.review_count === 1 ? "review" : "reviews"}
               </div>
@@ -429,15 +425,15 @@ export function ReviewsSection({
         ) : null}
       </div>
 
-      {/* Review Form or Login Prompt */}
       {user ? (
         userReview && !isEditing ? (
-          <div className="mb-8 p-4 border border-primary/30 bg-cream/5">
-            <p className="text-sm text-fg-muted font-mono">
-              You've already reviewed this product.{" "}
+          <div className="mb-8 border border-line p-4">
+            <p className="text-base text-fg-secondary">
+              You reviewed this book.{" "}
               <button
+                type="button"
                 onClick={() => setIsEditing(true)}
-                className="text-primary hover:underline"
+                className="text-cream underline underline-offset-4"
               >
                 Edit your review
               </button>
@@ -453,71 +449,61 @@ export function ReviewsSection({
           </div>
         )
       ) : (
-        <div className="mb-8 p-6 border border-line bg-background text-center">
-          <User size={24} className="mx-auto mb-3 text-fg-muted" />
-          <p className="text-fg-muted font-mono text-sm mb-4">
-            Sign in to leave a review
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border border-line p-6">
+          <p className="text-base text-fg-secondary">
+            Sign in to leave a review.
           </p>
           <Button
+            type="button"
+            size="lg"
             onClick={() => openAuthModal("login")}
-            className="h-10 px-6 bg-cream hover:bg-cream hover:text-ink text-ink font-heading tracking-widest rounded-none"
           >
-            Sign In
+            Sign in
           </Button>
         </div>
       )}
 
-      {/* Reviews List */}
       {loading ? (
-        <div className="space-y-4">
+        <ul className="space-y-4" aria-hidden="true">
           {[1, 2, 3].map((i) => (
-            <div
+            <li
               key={i}
-              className="border border-line bg-background p-6 animate-pulse"
+              className="border-t border-line py-6 motion-safe:animate-pulse"
             >
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-surface-2" />
+                <div className="h-10 w-10 rounded-full bg-surface-3" />
                 <div className="flex-1">
-                  <div className="h-4 bg-surface-2 w-1/4 mb-3 rounded" />
-                  <div className="h-3 bg-surface-2 w-1/3 mb-4 rounded" />
-                  <div className="h-3 bg-surface-2 w-full mb-2 rounded" />
-                  <div className="h-3 bg-surface-2 w-2/3 rounded" />
+                  <div className="mb-3 h-4 w-1/4 bg-surface-3" />
+                  <div className="mb-4 h-3 w-1/3 bg-surface-3" />
+                  <div className="mb-2 h-3 w-full bg-surface-3" />
+                  <div className="h-3 w-2/3 bg-surface-3" />
                 </div>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : reviews.length === 0 ? (
-        <div className="text-center py-12 border border-line bg-background">
-          <Star size={32} className="mx-auto mb-4 text-fg-faint" />
-          <p className="font-mono text-fg-muted uppercase tracking-widest text-sm">
-            No reviews yet
-          </p>
-          <p className="text-fg-faint text-sm mt-2">
-            Be the first to share your experience!
-          </p>
-        </div>
+        <p className="border-t border-line py-8 text-base text-fg-secondary">
+          No reviews yet.
+        </p>
       ) : (
-        <div className="space-y-4">
-          <AnimatePresence>
-            {reviews.map((review) => (
-              <ReviewCard
-                key={review.id}
-                review={review}
-                isOwn={user?.id === review.user_id}
-                onEdit={() => setIsEditing(true)}
-                onDelete={handleDeleteReview}
-                onHelpful={() => handleHelpful(review.id)}
-              />
-            ))}
-          </AnimatePresence>
-        </div>
+        <ul>
+          {reviews.map((review) => (
+            <ReviewCard
+              key={review.id}
+              review={review}
+              isOwn={user?.id === review.user_id}
+              onEdit={() => setIsEditing(true)}
+              onDelete={handleDeleteReview}
+              onHelpful={() => handleHelpful(review.id)}
+            />
+          ))}
+        </ul>
       )}
     </section>
   );
 }
 
-// Export a smaller component for showing ratings in product cards
 export function ProductRatingDisplay({
   productId,
   showCount = true,
@@ -541,7 +527,7 @@ export function ProductRatingDisplay({
     <div className="flex items-center gap-2">
       <StarRating rating={Math.round(rating.average_rating)} size={size} />
       {showCount ? (
-        <span className=" font-label text-fg-muted">
+        <span className="font-label text-fg-muted">
           ({rating.review_count})
         </span>
       ) : null}
