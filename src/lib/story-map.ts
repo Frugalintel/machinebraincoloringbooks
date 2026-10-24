@@ -23,7 +23,7 @@ export type StoryMapProgress = {
 
 export type StoryMapMode = "lit" | "open" | "ghost";
 export type StoryMapOrientation = "horizontal" | "vertical";
-export type StoryMapLabelScope = "fork" | "path" | "all";
+export type StoryMapLabelScope = "fork" | "path" | "all" | "none";
 
 export type StoryMapSize = {
   width: number;
@@ -91,6 +91,46 @@ export type StoryMapRequest = {
 };
 
 const PAD = 16;
+/** 11px mono plus 0.1em tracking. Used to keep labels inside the frame. */
+export const STORY_MAP_LABEL_CHAR = 7.6;
+const LABEL_CAP = 11;
+
+export function storyMapLabelWidth(text: string): number {
+  return text.length * STORY_MAP_LABEL_CHAR;
+}
+
+/**
+ * Wide maps label the whole drawing. The narrow vertical map only labels
+ * the path you are on, so a right-hand choice is not clipped at the edge.
+ */
+export function storyMapLabelScopes(
+  mode: StoryMapMode,
+  variant: "card" | "hero" | "reader",
+): { wide: StoryMapLabelScope; tall: StoryMapLabelScope } {
+  if (variant === "reader") {
+    return { wide: "path", tall: mode === "lit" ? "path" : "none" };
+  }
+  if (mode === "lit") return { wide: "all", tall: "path" };
+  if (mode === "ghost") return { wide: "none", tall: "none" };
+  return { wide: "fork", tall: "none" };
+}
+
+function placeLabel(
+  text: string,
+  anchorX: number,
+  anchorY: number,
+  size: StoryMapSize,
+  prefer: "above" | "below",
+): { x: number; y: number } {
+  const width = storyMapLabelWidth(text);
+  let x = anchorX + 14;
+  if (x + width > size.width - 8) x = size.width - 8 - width;
+  if (x < 8) x = 8;
+  let y = prefer === "above" ? anchorY - 12 : anchorY + 16;
+  if (y < LABEL_CAP) y = Math.min(size.height - 4, anchorY + 16);
+  if (y > size.height - 4) y = Math.max(LABEL_CAP, size.height - 4);
+  return { x, y };
+}
 
 function round(value: number): string {
   return (Math.round(value * 10) / 10).toFixed(1);
@@ -375,6 +415,7 @@ export function buildStoryMap(request: StoryMapRequest): StoryMapLayout {
     );
     const visible =
       request.mode !== "ghost" &&
+      scope !== "none" &&
       (scope === "all" ||
         (scope === "fork" && level <= 1) ||
         (scope === "path" && (role === "path" || role === "current")));
@@ -383,18 +424,26 @@ export function buildStoryMap(request: StoryMapRequest): StoryMapLayout {
         ? incoming || ownLabel
         : ownLabel;
     if (visible && text) {
+      const placed = placeLabel(text, point.x, point.y, size, "above");
       labels.push({
         text,
-        x: point.x + 14,
-        y: point.y - 12,
+        x: placed.x,
+        y: placed.y,
         kind: role === "next" ? "next" : role === "idle" ? "idle" : "path",
       });
     }
-    if (role === "current") {
+    if (role === "current" && scope !== "none" && request.mode === "lit") {
+      const placed = placeLabel(
+        "You are here",
+        point.x,
+        point.y,
+        size,
+        "below",
+      );
       labels.push({
         text: "You are here",
-        x: point.x + 14,
-        y: point.y + 8,
+        x: placed.x,
+        y: placed.y,
         kind: "here",
       });
     }

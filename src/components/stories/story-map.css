@@ -10,8 +10,9 @@
 .story-map {
   display: block;
   width: 100%;
+  max-width: 100%;
   height: auto;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .story-map .e {
@@ -102,7 +103,10 @@
 
 .stories-b .map-frame {
   display: grid;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
+  overflow: hidden;
 }
 
 .stories-b .map-frame.card {
@@ -124,12 +128,14 @@
 
 .stories-b .map-reader {
   width: 100%;
-  max-width: 420px;
+  min-width: 0;
+  max-width: min(420px, 100%);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 640px) {
   .stories-b .map-frame.card,
-  .stories-b .map-frame.hero {
+  .stories-b .map-frame.hero,
+  .stories-b .skeleton-map {
     aspect-ratio: 350 / 440;
   }
 
@@ -142,6 +148,6 @@
   }
 
   .stories-b .map-reader {
-    max-width: 300px;
+    max-width: min(300px, 100%);
   }
 }

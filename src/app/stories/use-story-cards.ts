@@ -92,7 +92,7 @@ function cardFromSample(
     currentId: reading ? story.currentId : null,
     currentLabel: reading ? current?.label : undefined,
     hasNext: reading ? (current?.choices?.length ?? 0) > 0 : false,
-    codeNeeded: !unlocked,
+    codeNeeded: false,
     signedIn: reader,
   };
 }

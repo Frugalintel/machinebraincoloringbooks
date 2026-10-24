@@ -1,8 +1,13 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { sampleStories } from "@/lib/story-samples";
 import {
   STORY_MAP_CARD_H,
   STORY_MAP_V,
   buildStoryMap,
+  storyMapLabelScopes,
+  storyMapLabelWidth,
   type StoryMapNodeInput,
 } from "@/lib/story-map";
 
@@ -163,5 +168,96 @@ describe("buildStoryMap", () => {
     expect(node(wide, "c").y).toBeGreaterThan(node(wide, "b").y);
     expect(node(tall, "b").y).toBeGreaterThan(node(tall, "a").y);
     expect(node(tall, "b").x).not.toBeCloseTo(node(tall, "c").x);
+  });
+
+  it("labels only the path on the vertical map and keeps every label inside", () => {
+    expect(storyMapLabelScopes("lit", "hero")).toEqual({
+      wide: "all",
+      tall: "path",
+    });
+    expect(storyMapLabelScopes("open", "card").tall).toBe("none");
+    expect(storyMapLabelScopes("lit", "reader").tall).toBe("path");
+
+    const lantern = sampleStories(true).find((story) => story.id === "lantern");
+    if (!lantern) throw new Error("missing lantern sample");
+    const layout = buildStoryMap({
+      title: lantern.title,
+      nodes: lantern.nodes,
+      mode: "lit",
+      orientation: "vertical",
+      size: STORY_MAP_V,
+      labelScope: storyMapLabelScopes("lit", "hero").tall,
+      progress: {
+        completedIds: lantern.completedIds,
+        currentId: lantern.currentId,
+      },
+    });
+    const labels = layout.nodes.flatMap((node) => node.labels);
+    expect(labels.some((label) => /cold/i.test(label.text))).toBe(false);
+    expect(labels.some((label) => label.text === "You are here")).toBe(true);
+    for (const label of labels) {
+      expect(label.x).toBeGreaterThanOrEqual(8);
+      expect(label.x + storyMapLabelWidth(label.text)).toBeLessThanOrEqual(
+        STORY_MAP_V.width - 8,
+      );
+      expect(label.y).toBeGreaterThanOrEqual(11);
+      expect(label.y).toBeLessThanOrEqual(STORY_MAP_V.height);
+    }
+
+    const open = buildStoryMap({
+      title: "Door",
+      nodes: tree,
+      mode: "open",
+      orientation: "vertical",
+      size: STORY_MAP_V,
+      labelScope: "none",
+    });
+    expect(open.nodes.every((node) => node.labels.length === 0)).toBe(true);
+  });
+
+  it("shifts a long vertical label back inside the frame", () => {
+    const layout = buildStoryMap({
+      title: "Test",
+      nodes: [
+        {
+          id: "a",
+          label: "Start",
+          choices: [
+            { text: "Left", nextNodeId: "b" },
+            {
+              text: "The cold lantern stays on the right",
+              nextNodeId: "c",
+            },
+          ],
+        },
+        { id: "b", label: "Left", choices: [] },
+        {
+          id: "c",
+          label: "The cold lantern stays on the right",
+          choices: [],
+        },
+      ],
+      mode: "open",
+      orientation: "vertical",
+      size: STORY_MAP_V,
+      labelScope: "all",
+    });
+    for (const label of layout.nodes.flatMap((node) => node.labels)) {
+      expect(label.x + storyMapLabelWidth(label.text)).toBeLessThanOrEqual(
+        STORY_MAP_V.width - 8,
+      );
+    }
+  });
+
+  it("switches index maps to the vertical frame at 640px", () => {
+    const css = readFileSync(
+      join(process.cwd(), "src/components/stories/story-map.css"),
+      "utf8",
+    );
+    const mobile = css.slice(css.indexOf("@media (max-width: 640px)"));
+    expect(mobile).toMatch(/\.maph\s*\{[^}]*display:\s*none/);
+    expect(mobile).toMatch(/\.mapv\s*\{[^}]*display:\s*block/);
+    expect(mobile).toMatch(/aspect-ratio:\s*350\s*\/\s*440/);
+    expect(css).not.toMatch(/max-width:\s*760px/);
   });
 });

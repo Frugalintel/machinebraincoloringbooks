@@ -7,7 +7,15 @@ export type StoryAction =
   | { type: "begin"; href: string; label: "Begin" }
   | { type: "sign-in"; label: "Sign in to read" }
   | { type: "book"; href: string; label: "Get the book" }
-  | { type: "code"; label: "Code required" };
+  | { type: "code"; label: "Code required" }
+  | {
+      type: "unlock";
+      label: string;
+      cost: number;
+      title: string;
+      sample: boolean;
+    }
+  | { type: "none" };
 
 export function storyMapMode(input: {
   signedIn: boolean;
@@ -40,6 +48,11 @@ export function storyAction(input: {
   reading: boolean;
   productHref?: string;
   href: string;
+  codeNeeded?: boolean;
+  cost?: number;
+  balance?: number;
+  title?: string;
+  sample?: boolean;
 }): StoryAction {
   if (input.unlocked && input.reading) {
     return { type: "continue", href: input.href, label: "Continue" };
@@ -51,7 +64,20 @@ export function storyAction(input: {
     return { type: "book", href: input.productHref, label: "Get the book" };
   }
   if (!input.signedIn) return { type: "sign-in", label: "Sign in to read" };
-  return { type: "code", label: "Code required" };
+  if (input.cost !== undefined && input.balance !== undefined) {
+    if (input.balance >= input.cost) {
+      return {
+        type: "unlock",
+        label: `Unlock for ${input.cost} pts`,
+        cost: input.cost,
+        title: input.title?.trim() || "this story",
+        sample: Boolean(input.sample),
+      };
+    }
+    return { type: "none" };
+  }
+  if (input.codeNeeded) return { type: "code", label: "Code required" };
+  return { type: "none" };
 }
 
 export function storyPointsNote(input: {

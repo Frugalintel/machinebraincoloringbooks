@@ -173,7 +173,68 @@ describe("story catalog rules", () => {
     ).toBe("30 pts");
   });
 
-  it("does not turn a locked story into a points purchase", () => {
+  it("unlocks for points only when a price and a balance both exist", () => {
+    expect(
+      storyAction({
+        signedIn: true,
+        unlocked: false,
+        reading: false,
+        href: "/stories/station",
+        cost: 30,
+        balance: 34,
+        title: "Last Light at Far Station",
+        sample: true,
+      }),
+    ).toEqual({
+      type: "unlock",
+      label: "Unlock for 30 pts",
+      cost: 30,
+      title: "Last Light at Far Station",
+      sample: true,
+    });
+    expect(
+      storyAction({
+        signedIn: true,
+        unlocked: false,
+        reading: false,
+        href: "/stories/station",
+        cost: 30,
+        balance: 30,
+        title: "Last Light at Far Station",
+        sample: true,
+      }).type,
+    ).toBe("unlock");
+    expect(
+      storyAction({
+        signedIn: true,
+        unlocked: false,
+        reading: false,
+        href: "/stories/fox",
+        cost: 40,
+        balance: 34,
+        title: "Fox",
+        sample: true,
+      }),
+    ).toEqual({ type: "none" });
+    expect(
+      storyAction({
+        signedIn: true,
+        unlocked: false,
+        reading: false,
+        href: "/stories/1",
+        codeNeeded: true,
+      }),
+    ).toEqual({ type: "code", label: "Code required" });
+    expect(
+      storyAction({
+        signedIn: true,
+        unlocked: false,
+        reading: false,
+        href: "/stories/1",
+        cost: 30,
+        codeNeeded: true,
+      }),
+    ).toEqual({ type: "code", label: "Code required" });
     expect(
       storyAction({
         signedIn: true,
@@ -181,13 +242,15 @@ describe("story catalog rules", () => {
         reading: false,
         href: "/stories/1",
       }),
-    ).toEqual({ type: "code", label: "Code required" });
+    ).toEqual({ type: "none" });
     expect(
       storyAction({
         signedIn: false,
         unlocked: false,
         reading: false,
         href: "/stories/1",
+        cost: 30,
+        balance: 34,
       }).type,
     ).toBe("sign-in");
     expect(
@@ -197,22 +260,24 @@ describe("story catalog rules", () => {
         reading: false,
         productHref: "/store/book",
         href: "/stories/1",
+        cost: 30,
+        balance: 34,
       }),
     ).toEqual({ type: "book", href: "/store/book", label: "Get the book" });
-    expect(
-      storyAction({
-        signedIn: true,
-        unlocked: true,
-        reading: true,
-        href: "/stories/1",
-      }).label,
-    ).toBe("Continue");
+    const reading = storyAction({
+      signedIn: true,
+      unlocked: true,
+      reading: true,
+      href: "/stories/1",
+    });
+    expect(reading.type === "continue" && reading.label).toBe("Continue");
     expect(storyPointsNote({ cost: 40, balance: 34, locked: true })).toBe(
       "This one is 40 pts. You have 34.",
     );
     expect(storyPointsNote({ cost: 20, balance: 34, locked: true })).toBe(
       "You have 34 pts.",
     );
+    expect(storyPointsNote({ cost: 30, locked: true })).toBeUndefined();
     expect(storyPointsNote({ locked: true })).toBeUndefined();
   });
 

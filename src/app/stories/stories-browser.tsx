@@ -89,6 +89,11 @@ export function StoriesBrowser({
         reading: lead.reading,
         productHref: lead.productHref,
         href: storyHref(lead.id, fixture),
+        codeNeeded: lead.codeNeeded,
+        cost: lead.cost,
+        balance: lead.balance,
+        title: lead.title,
+        sample: lead.sample,
       })
     : null;
 

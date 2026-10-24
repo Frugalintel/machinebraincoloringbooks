@@ -6,6 +6,7 @@ import {
   STORY_MAP_READER,
   STORY_MAP_V,
   buildStoryMap,
+  storyMapLabelScopes,
   type StoryMapLabelScope,
   type StoryMapLayout,
   type StoryMapMode,
@@ -118,17 +119,24 @@ export function StoryMap({
   labelScope?: StoryMapLabelScope;
   variant?: "card" | "hero" | "reader";
 }) {
-  const scope =
-    labelScope ??
-    (mode === "lit" ? (variant === "reader" ? "path" : "all") : "fork");
-  const shared = { title, nodes, mode, progress, sample, labelScope: scope };
+  const scopes = storyMapLabelScopes(mode, variant);
   const wide = buildStoryMap({
-    ...shared,
+    title,
+    nodes,
+    mode,
+    progress,
+    sample,
+    labelScope: labelScope ?? scopes.wide,
     orientation: "horizontal",
     size: variant === "hero" ? STORY_MAP_HERO_H : STORY_MAP_CARD_H,
   });
   const tall = buildStoryMap({
-    ...shared,
+    title,
+    nodes,
+    mode,
+    progress,
+    sample,
+    labelScope: labelScope ?? scopes.tall,
     orientation: "vertical",
     size: variant === "reader" ? STORY_MAP_READER : STORY_MAP_V,
   });

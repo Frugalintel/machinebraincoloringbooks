@@ -169,7 +169,7 @@ function SampleStory({
     hasNext:
       (story.nodes.find((node) => node.id === current)?.choices?.length ?? 0) >
       0,
-    codeNeeded: !unlocked,
+    codeNeeded: false,
     signedIn: fixture,
   };
 
@@ -666,6 +666,11 @@ function StoryView({
     reading: card.reading,
     productHref: card.productHref,
     href: storyHref(card.id, fixture),
+    codeNeeded: card.codeNeeded,
+    cost: card.cost,
+    balance: card.balance,
+    title: card.title,
+    sample: card.sample,
   });
   const note = storyPointsNote({
     cost: card.cost,
@@ -724,10 +729,12 @@ function StoryView({
                 <StoryCta action={action} onSignIn={onSignIn} />
                 {note ? <p className="an">{note}</p> : null}
               </div>
-              <p className="an">{POINTS_EARN_COPY}</p>
-              <Link className="quiet" href="/scan?mode=code">
-                Enter a page code
-              </Link>
+              {note ? <p className="an">{POINTS_EARN_COPY}</p> : null}
+              {note || card.codeNeeded ? (
+                <Link className="quiet" href="/scan?mode=code">
+                  Enter a page code
+                </Link>
+              ) : null}
             </div>
             <div className="mp">
               <StoryMap

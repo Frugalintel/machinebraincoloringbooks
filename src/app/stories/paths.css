@@ -635,8 +635,20 @@
   .stories-b .ch .c {
     font-size: 22px;
   }
+}
 
-  .stories-b .skeleton-map {
-    aspect-ratio: 350 / 440;
-  }
+.stories-b .story-status {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 60;
+  transform: translateX(-50%);
+  max-width: min(560px, calc(100vw - 40px));
+  margin: 0;
+  padding: 12px 18px;
+  border-radius: 6px;
+  background: var(--cream);
+  color: var(--ink);
+  font: 500 15px/22px var(--sans);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.4);
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { RunningHead } from "@/components/home-plate";
 import { StoryMap } from "@/components/stories/story-map";
 import { StoryPointsBalance } from "@/components/stories/story-points-balance";
@@ -19,6 +19,42 @@ import type { StoryCard } from "./use-story-cards";
 
 export function storyHref(id: string, fixture: boolean): string {
   return fixture ? `/stories/${id}?reader=sample` : `/stories/${id}`;
+}
+
+function UnlockButton({
+  action,
+}: {
+  action: Extract<StoryAction, { type: "unlock" }>;
+}) {
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (!message) return;
+    const timer = window.setTimeout(() => setMessage(""), 4200);
+    return () => window.clearTimeout(timer);
+  }, [message]);
+
+  return (
+    <>
+      <button
+        type="button"
+        className="btn"
+        onClick={() => {
+          if (!action.sample) return;
+          setMessage(
+            `Prototype: the live page spends ${action.cost} pts and opens ${action.title}.`,
+          );
+        }}
+      >
+        {action.label}
+      </button>
+      {message ? (
+        <p className="story-status" role="status">
+          {message}
+        </p>
+      ) : null}
+    </>
+  );
 }
 
 export function StoryCta({
@@ -49,6 +85,10 @@ export function StoryCta({
           {action.label}
         </button>
       );
+    case "unlock":
+      return <UnlockButton action={action} />;
+    case "none":
+      return null;
     default: {
       const exhaustive: never = action;
       return exhaustive;
@@ -76,6 +116,11 @@ export function StoryPlate({
     reading: card.reading,
     productHref: card.productHref,
     href,
+    codeNeeded: card.codeNeeded,
+    cost: card.cost,
+    balance: card.balance,
+    title: card.title,
+    sample: card.sample,
   });
   const mode = storyMapMode({
     signedIn: card.signedIn,
