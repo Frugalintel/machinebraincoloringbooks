@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { Folio, RunningHead } from "@/components/home-plate";
+import { Mark } from "@/components/mark";
 import { StoreCoverView } from "@/components/store-cover";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
@@ -17,20 +19,29 @@ import {
   STORE_WORLD_PARAM,
   bookName,
   coverFor,
+  displayEm,
   filterByWorld,
+  fittedEms,
   labelForWorld,
+  linesOf,
+  mobileTitleLines,
   parseWorldParam,
+  plateBackground,
+  plateSentence,
   plateCode,
   shelfBasis,
+  shortSpec,
   storeHref,
   storeWorlds,
+  volumeLabel,
   worldLabel,
+  worldSlug,
 } from "@/lib/store";
 import type { GlobalDiscountSettings, Product } from "@/lib/types";
 
-export const CARD_SIZES =
-  "(max-width: 760px) calc(50vw - 27px), (max-width: 1099px) calc(33vw - 40px), calc(25vw - 35px)";
-const SKELETON_CARDS = 8;
+const SHELF_SIZES = "(max-width: 760px) 148px, 16vw";
+const PLATE_SIZES = "(max-width: 760px) 72vw, 440px";
+const ROW_SIZES = "72px";
 
 /** The listing's discount shape, unchanged from the previous store page. */
 function listingCampaign(
@@ -57,68 +68,33 @@ function listingCampaign(
     : null;
 }
 
-function StoreHead({
-  title,
-  samples,
-  children,
+function useBookPrice(product: Product) {
+  const { globalDiscount } = useSettings();
+  return calculatePrice(product, listingCampaign(globalDiscount));
+}
+
+function Price({
+  priceInfo,
+  sample,
 }: {
-  title: string;
-  samples: boolean;
-  children?: ReactNode;
+  priceInfo: ReturnType<typeof calculatePrice>;
+  sample: boolean;
 }) {
-  return (
-    <section className="plate shead" aria-labelledby="store-h">
-      <RunningHead
-        items={[
-          "Machine Brain",
-          "The books",
-          samples ? STORE_COPY.sampleNote : "Coloring books",
-        ]}
-      />
-      <p className="mono text-signal">{STORE_COPY.label}</p>
-      <h1 id="store-h" className="s-h1 font-display">
-        {title}
-      </h1>
-      <p className="lead">{STORE_COPY.lede}</p>
-      {children}
-    </section>
+  const price = formatPrice(
+    priceInfo.hasDiscount ? priceInfo.finalPrice : priceInfo.originalPrice,
   );
-}
-
-function SkeletonGrid() {
   return (
-    <ul className="s-grid" aria-hidden="true">
-      {Array.from({ length: SKELETON_CARDS }, (_, index) => (
-        <li key={index}>
-          <span className="cover s-bone motion-safe:animate-pulse" />
-          <span className="s-cap">
-            <span className="s-bone block h-6 w-2/3" />
-            <span className="s-bone block h-5 w-1/3" />
-          </span>
-          <span className="s-buy">
-            <span className="s-bone block h-6 w-16" />
-            <span className="s-bone block h-11 w-full min-[1100px]:w-28" />
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-/** F7 loading for the store: same plates and card frames, so nothing shifts. */
-export function StoreListingSkeleton({ samples }: { samples: boolean }) {
-  return (
-    <main id="main" aria-busy="true">
-      <StoreHead title={STORE_COPY.title} samples={samples} />
-      <section className="plate page s-list" aria-label="Books">
-        <RunningHead items={["Pl. 01", "All", "Shown reduced"]} />
-        <p className="s-status mono" role="status" aria-live="polite">
-          {STORE_COPY.loading}
-        </p>
-        <SkeletonGrid />
-        <Folio number="01" />
-      </section>
-    </main>
+    <p className="price">
+      <span className="vh">Price </span>
+      <b>{price}</b>
+      {priceInfo.hasDiscount ? (
+        <s>
+          <span className="vh">, was </span>
+          {formatPrice(priceInfo.originalPrice)}
+        </s>
+      ) : null}
+      {sample ? <span className="mono">Sample</span> : null}
+    </p>
   );
 }
 
@@ -129,7 +105,6 @@ function BookShelf({
   products: Product[];
   samples: boolean;
 }) {
-  const { globalDiscount } = useSettings();
   if (products.length === 0) return null;
 
   return (
@@ -140,16 +115,6 @@ function BookShelf({
     >
       {products.map((product, index) => {
         const name = bookName(product);
-        const world = worldLabel(product.category ?? "");
-        const priceInfo = calculatePrice(
-          product,
-          listingCampaign(globalDiscount),
-        );
-        const price = formatPrice(
-          priceInfo.hasDiscount
-            ? priceInfo.finalPrice
-            : priceInfo.originalPrice,
-        );
         return (
           <li key={product.id}>
             <Link
@@ -158,8 +123,12 @@ function BookShelf({
             >
               <StoreCoverView
                 cover={coverFor(product, samples)}
-                plate={{ world, title: name, price }}
-                sizes="(max-width: 760px) 148px, 16vw"
+                plate={{
+                  world: worldLabel(product.category ?? ""),
+                  title: name,
+                  price: formatPrice(product.price),
+                }}
+                sizes={SHELF_SIZES}
                 priority={index < 6}
                 decorative
               />
@@ -171,7 +140,77 @@ function BookShelf({
   );
 }
 
-function BookCard({
+function StoreHero({
+  samples,
+  products,
+  notice,
+}: {
+  samples: boolean;
+  products: Product[];
+  notice?: ReactNode;
+}) {
+  return (
+    <section className="plate shead s-hero" aria-labelledby="store-h">
+      <RunningHead items={["Pl. 00", "The store", "Machine Brain · Books"]} />
+      <h1 id="store-h" className="s-h1 font-display">
+        <span>{STORE_COPY.title}</span>
+      </h1>
+      <BookShelf products={products} samples={samples} />
+      {samples ? <p className="smp mono">{STORE_COPY.sampleHero}</p> : null}
+      {notice}
+    </section>
+  );
+}
+
+function WorldBar({
+  worlds,
+  worldParam,
+  worldName,
+}: {
+  worlds: { slug: string; label: string }[];
+  worldParam: string | null;
+  worldName: string | null;
+}) {
+  return (
+    <div className="fbar">
+      <p className="mono lab">{STORE_COPY.worldsLabel}</p>
+      <div
+        id="worlds"
+        className="chips"
+        role="group"
+        aria-label={`${STORE_COPY.worldsLabel} filter`}
+      >
+        <Link
+          className="chip mono"
+          href={storeHref(null)}
+          scroll={false}
+          aria-pressed={worldParam ? "false" : "true"}
+        >
+          {STORE_COPY.allWorlds}
+        </Link>
+        {worlds.map((world) => (
+          <Link
+            key={world.slug}
+            className="chip mono"
+            href={storeHref(world.slug)}
+            scroll={false}
+            aria-pressed={worldParam === world.slug ? "true" : "false"}
+          >
+            {world.label}
+          </Link>
+        ))}
+      </div>
+      <p className="fstat mono" role="status">
+        {worldName ?? ""}
+      </p>
+      <Link className="mono jump" href="#ix">
+        {STORE_COPY.jump} <span aria-hidden="true">↓</span>
+      </Link>
+    </div>
+  );
+}
+
+function BookPlate({
   product,
   index,
   samples,
@@ -180,33 +219,130 @@ function BookCard({
   index: number;
   samples: boolean;
 }) {
-  const { addItem } = useCart();
-  const { globalDiscount } = useSettings();
-  const priceInfo = calculatePrice(product, listingCampaign(globalDiscount));
+  const { addItem, setIsCartOpen } = useCart();
+  const priceInfo = useBookPrice(product);
   const name = bookName(product);
   const world = worldLabel(product.category ?? "");
+  const cover = coverFor(product, samples);
+  const background = plateBackground(product, samples);
+  const lines = mobileTitleLines(linesOf(product));
+  const spec = shortSpec(product);
+  const sentence = plateSentence(product.description);
+  const code = plateCode(index);
+  const sampleArt = cover.kind === "art" && cover.art.sample;
+
+  return (
+    <section
+      id={`b-${product.id}`}
+      className={index % 2 === 0 ? "plate bk even" : "plate bk odd"}
+      data-world={worldSlug(product.category ?? "")}
+      aria-labelledby={`t-${product.id}`}
+    >
+      {background ? (
+        <Image className="bg" src={background} alt="" fill sizes="100vw" />
+      ) : null}
+      <RunningHead
+        items={[
+          code,
+          world,
+          sampleArt ? `${volumeLabel(index)} · Sample` : volumeLabel(index),
+        ]}
+      />
+      <Link
+        className="cv"
+        href={`/store/${product.id}`}
+        tabIndex={-1}
+        aria-hidden="true"
+      >
+        <StoreCoverView
+          cover={cover}
+          plate={{
+            world,
+            title: name,
+            price: formatPrice(priceInfo.finalPrice),
+          }}
+          sizes={PLATE_SIZES}
+          priority={index === 0}
+          decorative
+        />
+      </Link>
+      <h2 id={`t-${product.id}`} className="tl font-display">
+        <Link href={`/store/${product.id}`}>
+          <span className="one">{name}</span>
+          {lines ? (
+            <span className="two">
+              <span>{lines[0]}</span>
+              <span>{lines[1]}</span>
+            </span>
+          ) : null}
+        </Link>
+      </h2>
+      <div className="meta">
+        {sentence ? <p className="sub">{sentence}</p> : <p className="sub" />}
+        {spec ? <p className="sl mono">{spec}</p> : <p className="sl" />}
+        <Price priceInfo={priceInfo} sample={sampleArt} />
+        <div className="act">
+          <button
+            type="button"
+            className="quiet"
+            aria-label={`${STORE_COPY.addToCart}: ${name}`}
+            onClick={() => {
+              addItem({
+                id: product.id,
+                title: product.title,
+                price: priceInfo.finalPrice,
+                subtitle: product.subtitle,
+                image: product.image_url,
+              });
+              setIsCartOpen(true);
+            }}
+          >
+            {STORE_COPY.addToCart}
+          </button>
+          <Link className="btn" href={`/store/${product.id}`}>
+            {STORE_COPY.seeBook} <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </div>
+      <Folio number={code.replace("Pl. ", "")} />
+    </section>
+  );
+}
+
+function IndexRow({
+  product,
+  index,
+  samples,
+}: {
+  product: Product;
+  index: number;
+  samples: boolean;
+}) {
+  const { addItem, setIsCartOpen } = useCart();
+  const priceInfo = useBookPrice(product);
+  const name = bookName(product);
+  const world = worldLabel(product.category ?? "");
+  const spec = shortSpec(product);
   const price = formatPrice(
     priceInfo.hasDiscount ? priceInfo.finalPrice : priceInfo.originalPrice,
   );
 
   return (
-    <li>
-      <Link className="s-link" href={`/store/${product.id}`}>
-        <StoreCoverView
-          cover={coverFor(product, samples)}
-          plate={{ world, title: name, price }}
-          sizes={CARD_SIZES}
-          priority={index < 4}
-          decorative
-        />
-        <span className="s-cap">
-          <span className="mono">{plateCode(index)}</span>
-          <b>{name}</b>
-          <span className="d">{world}</span>
+    <li data-world={worldSlug(product.category ?? "")}>
+      <Link className="row" href={`/store/${product.id}`}>
+        <span className="th">
+          <StoreCoverView
+            cover={coverFor(product, samples)}
+            plate={{ world, title: name, price }}
+            sizes={ROW_SIZES}
+            decorative
+          />
         </span>
-      </Link>
-      <div className="s-buy">
-        <p className="s-price">
+        <span className="no mono">{plateCode(index)}</span>
+        <span className="t">{name}</span>
+        <span className="w mono">{world}</span>
+        <span className="spc">{spec ?? ""}</span>
+        <span className="p">
           <span className="vh">Price </span>
           {price}
           {priceInfo.hasDiscount ? (
@@ -215,27 +351,51 @@ function BookCard({
               {formatPrice(priceInfo.originalPrice)}
             </s>
           ) : null}
-        </p>
-        <Button
-          type="button"
-          tone="cream"
-          size="lg"
-          className="w-full px-5 min-[1100px]:w-auto"
-          aria-label={`${STORE_COPY.addToCart}: ${name}`}
-          onClick={() =>
-            addItem({
-              id: product.id,
-              title: product.title,
-              price: priceInfo.finalPrice,
-              subtitle: product.subtitle,
-              image: product.image_url,
-            })
-          }
-        >
-          {STORE_COPY.addToCart}
-        </Button>
-      </div>
+        </span>
+      </Link>
+      <button
+        type="button"
+        className="quiet"
+        aria-label={`${STORE_COPY.addToCart}: ${name}`}
+        onClick={() => {
+          addItem({
+            id: product.id,
+            title: product.title,
+            price: priceInfo.finalPrice,
+            subtitle: product.subtitle,
+            image: product.image_url,
+          });
+          setIsCartOpen(true);
+        }}
+      >
+        Add
+      </button>
     </li>
+  );
+}
+
+/** F7 loading for the store: the hero frame, so the shelf does not jump in. */
+export function StoreListingSkeleton({ samples }: { samples: boolean }) {
+  return (
+    <main id="main" aria-busy="true">
+      <section className="plate shead s-hero" aria-labelledby="store-h">
+        <RunningHead items={["Pl. 00", "The store", "Machine Brain · Books"]} />
+        <h1 id="store-h" className="s-h1 font-display">
+          <span>{STORE_COPY.title}</span>
+        </h1>
+        <ol className="shelf" aria-hidden="true">
+          {Array.from({ length: 6 }, (_, index) => (
+            <li key={index}>
+              <span className="cover s-bone" />
+            </li>
+          ))}
+        </ol>
+        {samples ? <p className="smp mono">{STORE_COPY.sampleHero}</p> : null}
+      </section>
+      <p className="s-status mono" role="status" aria-live="polite">
+        {STORE_COPY.loading}
+      </p>
+    </main>
   );
 }
 
@@ -296,79 +456,50 @@ export function StoreListing({ samples }: { samples: boolean }) {
   const worlds = storeWorlds(products);
   const shown = filterByWorld(products, worldParam);
   const worldName = worldParam ? labelForWorld(worldParam, worlds) : null;
-  const count = `${shown.length} ${shown.length === 1 ? "book" : "books"}`;
+  const order = new Map(products.map((product, index) => [product.id, index]));
+  const fit = fittedEms(
+    products.map((product) => {
+      const lines = mobileTitleLines(linesOf(product));
+      return { one: bookName(product), lines };
+    }),
+  );
+
+  const notice = loadFailed ? (
+    <div className="s-notice" role="status">
+      <div>
+        <b>{STORE_COPY.loadFailed.title}</b>
+        <p>{STORE_COPY.loadFailed.body}</p>
+      </div>
+      <Button type="button" size="lg" onClick={retryFetch}>
+        {STORE_COPY.loadFailed.retry}
+      </Button>
+    </div>
+  ) : null;
 
   return (
-    <main id="main">
-      <StoreHead title={worldName ?? STORE_COPY.title} samples={samples}>
-        <BookShelf products={products} samples={samples} />
-        {loadFailed ? (
-          <div className="s-notice" role="status">
-            <div>
-              <b>{STORE_COPY.loadFailed.title}</b>
-              <p>{STORE_COPY.loadFailed.body}</p>
-            </div>
-            <Button type="button" size="lg" onClick={retryFetch}>
-              {STORE_COPY.loadFailed.retry}
-            </Button>
-          </div>
-        ) : null}
-      </StoreHead>
-      <section className="plate page s-list" aria-label="Books">
-        <RunningHead
-          items={["Pl. 01", worldName ?? STORE_COPY.allWorlds, "Shown reduced"]}
-        />
-        <div className="s-bar">
-          <nav
-            id="worlds"
-            className="s-worlds"
-            aria-label={`${STORE_COPY.worldsLabel} filter`}
-          >
-            <ul>
-              <li>
-                <Link
-                  className="mono"
-                  href={storeHref(null)}
-                  scroll={false}
-                  aria-current={worldParam ? undefined : "page"}
-                >
-                  {STORE_COPY.allWorlds}
-                </Link>
-              </li>
-              {worlds.map((world) => (
-                <li key={world.slug}>
-                  <Link
-                    className="mono"
-                    href={storeHref(world.slug)}
-                    scroll={false}
-                    aria-current={
-                      worldParam === world.slug ? "page" : undefined
-                    }
-                  >
-                    {world.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          {shown.length > 0 ? (
-            <p className="s-count mono" aria-live="polite">
-              {count}
-            </p>
-          ) : null}
-        </div>
-        {shown.length > 0 ? (
-          <ul className="s-grid">
-            {shown.map((product, index) => (
-              <BookCard
-                key={product.id}
-                product={product}
-                index={index}
-                samples={samples}
-              />
-            ))}
-          </ul>
-        ) : (
+    <main
+      id="main"
+      style={
+        {
+          "--fit-em": fit.desktop,
+          "--fit-em-m": fit.mobile,
+          "--ix-em": displayEm(STORE_COPY.everyBook, -0.01),
+        } as CSSProperties
+      }
+    >
+      <StoreHero samples={samples} products={products} notice={notice} />
+      <WorldBar worlds={worlds} worldParam={worldParam} worldName={worldName} />
+      {shown.length > 0 ? (
+        shown.map((product) => (
+          <BookPlate
+            key={product.id}
+            product={product}
+            index={order.get(product.id) ?? 0}
+            samples={samples}
+          />
+        ))
+      ) : (
+        <section className="plate page s-empty-plate">
           <div className="s-empty" role="status">
             <h2>{STORE_COPY.empty.title}</h2>
             <p>{STORE_COPY.empty.body}</p>
@@ -376,8 +507,50 @@ export function StoreListing({ samples }: { samples: boolean }) {
               <Link href={storeHref(null)}>{STORE_COPY.empty.cta}</Link>
             </Button>
           </div>
-        )}
-        <Folio number="01" />
+        </section>
+      )}
+      <section className="plate page idx" aria-labelledby="ix">
+        <RunningHead
+          items={[
+            "Pl. 02",
+            "Every book",
+            samples ? "Sample titles, covers and prices" : "Titles and prices",
+          ]}
+        />
+        <h2
+          id="ix"
+          className="ix-line font-display"
+          style={
+            {
+              "--ix-em": displayEm(STORE_COPY.everyBook, -0.01),
+            } as CSSProperties
+          }
+        >
+          {STORE_COPY.everyBook}
+        </h2>
+        <div className="lhd mono" aria-hidden="true">
+          <span>Plate</span>
+          <span>Title</span>
+          <span>World</span>
+          <span>Spec</span>
+          <span>Price</span>
+        </div>
+        {shown.length > 0 ? (
+          <ol className="list">
+            {shown.map((product) => (
+              <IndexRow
+                key={product.id}
+                product={product}
+                index={order.get(product.id) ?? 0}
+                samples={samples}
+              />
+            ))}
+          </ol>
+        ) : null}
+        <p className="folio mono">
+          <Mark size={16} ink="ink" decorative />
+          Machine Brain · Books
+        </p>
       </section>
     </main>
   );

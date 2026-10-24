@@ -10,9 +10,16 @@ import {
   filterByWorld,
   labelForWorld,
   parseWorldParam,
+  displayEm,
+  fittedEms,
+  mobileTitleLines,
+  plateBackground,
+  plateSentence,
   plateCode,
   productDescription,
   shelfBasis,
+  shortSpec,
+  volumeLabel,
   productGallery,
   storeHref,
   storeShowsSamples,
@@ -67,6 +74,33 @@ describe("store worlds and the ?world= filter", () => {
     expect(plateCode(8)).toBe("Pl. 01i");
   });
 
+  it("fits every plate title from the longest line, about the sample's 11.06vw", () => {
+    const deep = displayEm("Into the Deep Forest");
+    expect(deep).toBeCloseTo(20 * 0.5 + 19 * -0.06, 5);
+    const fitted = fittedEms([
+      { one: "The Far Station", lines: ["The Far", "Station"] },
+      { one: "Into the Deep Forest", lines: ["Into the", "Deep Forest"] },
+      { one: "The Wandering Keep", lines: ["The Wandering", "Keep"] },
+    ]);
+    expect(fitted.desktop).toBeCloseTo(deep, 5);
+    expect(fitted.mobile).toBeCloseTo(displayEm("The Wandering"), 5);
+    const at1440 = ((1440 - 80) / deep / 1440) * 100;
+    expect(at1440).toBeGreaterThan(10);
+    expect(at1440).toBeLessThan(12);
+  });
+
+  it("builds the short spec from the fields that exist", () => {
+    expect(shortSpec({})).toBeUndefined();
+    expect(shortSpec({ trim: "8 × 10 in" })).toBe("8 × 10 in");
+    expect(
+      shortSpec({ pages: 50, trim: "8.5 × 11 in", binding: "Paperback" }),
+    ).toBe("50 plates · 8.5 × 11 in · Paperback");
+    expect(mobileTitleLines(undefined)).toBeUndefined();
+    expect(mobileTitleLines("Realm\nWalker")).toEqual(["Realm", "Walker"]);
+    expect(volumeLabel(5)).toBe("Vol 06");
+    expect(plateSentence("One sentence. And another.")).toBe("One sentence.");
+  });
+
   it("shrinks the shelf so every cover fits, and never past the six-up width", () => {
     expect(shelfBasis(6)).toBe(
       "min(var(--shelf-six), calc((100% - 5 * var(--shelf-gap)) / 6))",
@@ -91,6 +125,11 @@ describe("cover art and the SAMPLE switch", () => {
       expect(coverFor(product, false)).toEqual({ kind: "plate" });
     }
     expect(coverFor(byName("Realm Walker"), true)).toEqual({ kind: "plate" });
+    expect(plateBackground(byName("Realm Walker"), true)).toBeNull();
+    expect(plateBackground(byName("Star Drifter"), false)).toBeNull();
+    expect(plateBackground(byName("Star Drifter"), true)).toMatch(
+      /^\/home\/sample\//,
+    );
   });
 
   it("uses Studio's SAMPLE covers on previews, labelled, and only from the sample folder", () => {
