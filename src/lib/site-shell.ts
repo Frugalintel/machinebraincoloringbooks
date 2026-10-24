@@ -13,8 +13,11 @@ export type FooterLinkGroup = {
   links: readonly SiteLink[];
 };
 
-/** "overlay": home draws the nav over its hero plate and owns its footer. */
-export type HeaderVariant = "full" | "overlay" | "minimal" | "hidden";
+/**
+ * "overlay": home draws the nav over its hero plate and owns its footer.
+ * "solid": the same home nav on near-black; the store owns its footer too.
+ */
+export type HeaderVariant = "full" | "overlay" | "solid" | "minimal" | "hidden";
 
 export const SITE_NAV_LINKS: readonly SiteLink[] = [
   { name: "Store", href: "/store" },
@@ -79,7 +82,14 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   if (pathname === "/") {
     return "overlay";
   }
+  if (isStorePath(pathname)) {
+    return "solid";
+  }
   return "full";
+}
+
+export function isStorePath(pathname: string): boolean {
+  return pathname === "/store" || pathname.startsWith("/store/");
 }
 
 export function hidesCustomerFooter(pathname: string): boolean {

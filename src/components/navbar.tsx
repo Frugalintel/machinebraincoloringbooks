@@ -25,6 +25,7 @@ import {
   SITE_NAV_LINKS,
   headerVariantFor,
   isNavLinkActive,
+  isStorePath,
   type HeaderVariant,
 } from "@/lib/site-shell";
 import { cn } from "@/lib/utils";
@@ -111,14 +112,53 @@ function useAccountLinks(): MobileNavAccountLink[] {
       ];
 }
 
-/** Home only (R-E2 p3): Books, Worlds, About over the hero; Menu below 761 px. */
+/** Home's nav (R-E2 p3): Books, Worlds, About; Menu below 761 px. */
 const OVERLAY_LINKS = [
   { name: "Books", href: "/store" },
   { name: "Worlds", href: "/store" },
   { name: "About", href: "/about" },
 ] as const;
 
-function OverlayHeader() {
+/** The store already is "Books", so Worlds jumps to its world filter. */
+const SOLID_LINKS = [
+  { name: "Books", href: "/store" },
+  { name: "Worlds", href: "/store#worlds" },
+  { name: "About", href: "/about" },
+] as const;
+
+const HOME_NAV_TEXT = "text-[15px] leading-6 font-medium";
+
+/** Desktop account entry for the solid nav; below 761 px it lives in Menu. */
+function SolidAccountLink() {
+  const { user, openAuthModal } = useAuth();
+  const className = cn(
+    HOME_NAV_TEXT,
+    "text-cream/66 hover:text-cream max-[760px]:hidden",
+    SHELL_FOCUS,
+  );
+  if (user) {
+    return (
+      <Link href="/profile/me" className={className}>
+        Account
+      </Link>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => openAuthModal("login")}
+      className={className}
+    >
+      Sign in
+    </button>
+  );
+}
+
+/**
+ * `overlay` sits on the home hero and shows Cart once it has items.
+ * `solid` is the store's sticky bar: Cart and account always reachable.
+ */
+function HomeNavHeader({ solid }: { solid: boolean }) {
   const { setIsCartOpen, cartCount } = useCart();
   const { campaign } = useSettings();
   const pathname = usePathname();
@@ -126,16 +166,27 @@ function OverlayHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
+  const links = solid ? SOLID_LINKS : OVERLAY_LINKS;
 
   return (
     <header
-      data-site-chrome="overlay"
-      className="relative z-20 pt-[env(safe-area-inset-top)]"
+      data-site-chrome={solid ? "solid" : "overlay"}
+      className={cn(
+        "pt-[env(safe-area-inset-top)]",
+        solid
+          ? "sticky top-0 z-[10000] border-b border-line bg-background"
+          : "relative z-20",
+      )}
     >
       <CampaignBanner campaign={campaign} />
       <nav
         aria-label="Primary"
-        className="absolute inset-x-0 top-full flex items-center justify-between px-10 py-7 max-[760px]:px-5 max-[760px]:py-5"
+        className={cn(
+          "flex items-center justify-between",
+          solid
+            ? "h-16 px-10 max-[760px]:px-5"
+            : "absolute inset-x-0 top-full px-10 py-7 max-[760px]:px-5 max-[760px]:py-5",
+        )}
       >
         <BrandLockup
           layout="horizontal"
@@ -145,29 +196,41 @@ function OverlayHeader() {
           className={cn("[&>span]:!gap-3", SHELL_FOCUS)}
           wordmarkClassName="text-[11px] tracking-[0.1em]"
         />
-        <div className="flex items-center gap-9">
-          <ul className="flex gap-9 text-[15px] leading-6 font-medium text-cream/66 max-[760px]:hidden">
-            {OVERLAY_LINKS.map((link) => (
-              <li key={link.name}>
-                <Link
-                  href={link.href}
-                  className={cn("hover:text-cream", SHELL_FOCUS)}
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
+        <div className="flex items-center gap-9 max-[760px]:gap-6">
+          <ul
+            className={cn(
+              HOME_NAV_TEXT,
+              "flex gap-9 text-cream/66 max-[760px]:hidden",
+            )}
+          >
+            {links.map((link) => {
+              const current =
+                solid && link.name === "Books" && isStorePath(pathname);
+              return (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    aria-current={current ? "page" : undefined}
+                    className={cn(
+                      "hover:text-cream",
+                      current && "text-cream",
+                      SHELL_FOCUS,
+                    )}
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
-          {cartCount > 0 ? (
+          {solid ? <SolidAccountLink /> : null}
+          {solid || cartCount > 0 ? (
             <button
               type="button"
               onClick={() => setIsCartOpen(true)}
-              className={cn(
-                "text-[15px] leading-6 font-medium text-cream",
-                SHELL_FOCUS,
-              )}
+              className={cn(HOME_NAV_TEXT, "text-cream", SHELL_FOCUS)}
             >
-              Cart {cartCount}
+              Cart{cartCount > 0 ? ` ${cartCount}` : ""}
             </button>
           ) : null}
           <button
@@ -177,7 +240,8 @@ function OverlayHeader() {
             aria-controls={menuId}
             onClick={() => setIsMobileMenuOpen(true)}
             className={cn(
-              "hidden text-[15px] leading-6 font-medium text-cream max-[760px]:block",
+              HOME_NAV_TEXT,
+              "hidden text-cream max-[760px]:block",
               SHELL_FOCUS,
             )}
           >
@@ -476,7 +540,9 @@ export function Navbar() {
     case "minimal":
       return <MinimalHeader />;
     case "overlay":
-      return <OverlayHeader />;
+      return <HomeNavHeader solid={false} />;
+    case "solid":
+      return <HomeNavHeader solid />;
     case "full":
       return <FullHeader />;
     default: {
