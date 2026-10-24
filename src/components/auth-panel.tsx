@@ -415,7 +415,7 @@ export function AuthPanel({
           size="lg"
           loading={loading}
           disabled={disabled}
-          className="h-12 w-full text-base"
+          className="h-12 w-full text-base aria-busy:disabled:opacity-100"
         >
           {loading ? copy.submitting : copy.submit}
         </Button>
