@@ -21,7 +21,7 @@ vi.mock("next/navigation", () => ({
 
 describe("Footer", () => {
   beforeEach(() => {
-    nav.pathname = "/";
+    nav.pathname = "/store";
   });
 
   it("renders grouped links, legal, and the F3 lockup", () => {
@@ -52,8 +52,8 @@ describe("Footer", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("hides on auth, scan, review, and admin", () => {
-    for (const path of ["/auth", "/scan", "/review", "/admin"]) {
+  it("hides on home (it has its own footer plate), auth, scan, review, and admin", () => {
+    for (const path of ["/", "/auth", "/scan", "/review", "/admin"]) {
       nav.pathname = path;
       const { container, unmount } = render(<Footer />);
       expect(container).toBeEmptyDOMElement();

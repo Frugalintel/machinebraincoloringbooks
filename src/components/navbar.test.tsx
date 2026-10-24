@@ -59,7 +59,7 @@ function menuButton() {
 
 describe("Navbar", () => {
   beforeEach(() => {
-    nav.pathname = "/";
+    nav.pathname = "/store";
     nav.cartCount = 2;
     nav.user = null;
     nav.isAdmin = false;
@@ -194,6 +194,40 @@ describe("Navbar", () => {
       ).not.toBeInTheDocument();
       unmount();
     }
+  });
+
+  it("overlays the home hero with Books, Worlds, About and a Menu", () => {
+    nav.pathname = "/";
+    nav.cartCount = 0;
+    const { container } = render(<Navbar />);
+
+    const header = container.querySelector("header");
+    expect(header).toHaveAttribute("data-site-chrome", "overlay");
+    const primary = screen.getByRole("navigation", { name: "Primary" });
+    expect(
+      within(primary)
+        .getAllByRole("link")
+        .map((link) => [link.textContent, link.getAttribute("href")]),
+    ).toEqual([
+      ["Machine Brain", "/"],
+      ["Books", "/store"],
+      ["Worlds", "/store"],
+      ["About", "/about"],
+    ]);
+    expect(container.querySelector('a[href="#"]')).toBeNull();
+    expect(screen.queryByRole("button", { name: /cart/i })).toBeNull();
+
+    const menu = screen.getByRole("button", { name: "Menu" });
+    fireEvent.click(menu);
+    expect(menu).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("keeps the cart reachable from the home overlay once it has items", () => {
+    nav.pathname = "/";
+    nav.cartCount = 2;
+    render(<Navbar />);
+    fireEvent.click(screen.getByRole("button", { name: "Cart 2" }));
+    expect(nav.setIsCartOpen).toHaveBeenCalledWith(true);
   });
 
   it("hides the customer navbar on admin", () => {

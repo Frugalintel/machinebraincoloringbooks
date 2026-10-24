@@ -13,7 +13,8 @@ export type FooterLinkGroup = {
   links: readonly SiteLink[];
 };
 
-export type HeaderVariant = "full" | "minimal" | "hidden";
+/** "overlay": home draws the nav over its hero plate and owns its footer. */
+export type HeaderVariant = "full" | "overlay" | "minimal" | "hidden";
 
 export const SITE_NAV_LINKS: readonly SiteLink[] = [
   { name: "Store", href: "/store" },
@@ -74,6 +75,9 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   }
   if (isMinimalChromePath(pathname)) {
     return "minimal";
+  }
+  if (pathname === "/") {
+    return "overlay";
   }
   return "full";
 }

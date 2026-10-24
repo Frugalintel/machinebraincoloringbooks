@@ -81,31 +81,9 @@ function MinimalHeader() {
   );
 }
 
-function FullHeader() {
-  const { setIsCartOpen, cartCount } = useCart();
+function useAccountLinks(): MobileNavAccountLink[] {
   const { user, signOut, openAuthModal, isAdmin } = useAuth();
-  const { campaign } = useSettings();
-  const pathname = usePathname();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const profileRef = useRef<HTMLDivElement>(null);
-  const menuTriggerRef = useRef<HTMLButtonElement>(null);
-  const menuId = useId();
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(event.target as Node)
-      ) {
-        setIsProfileOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const accountLinks: MobileNavAccountLink[] = user
+  return user
     ? [
         { name: "Profile and orders", href: "/profile/me" },
         ...(isAdmin ? [{ name: "Admin", href: "/admin" }] : []),
@@ -131,6 +109,118 @@ function FullHeader() {
         },
         { name: "Order lookup", href: "/orders/lookup" },
       ];
+}
+
+/** Home only (R-E2 p3): Books, Worlds, About over the hero; Menu below 761 px. */
+const OVERLAY_LINKS = [
+  { name: "Books", href: "/store" },
+  { name: "Worlds", href: "/store" },
+  { name: "About", href: "/about" },
+] as const;
+
+function OverlayHeader() {
+  const { setIsCartOpen, cartCount } = useCart();
+  const { campaign } = useSettings();
+  const pathname = usePathname();
+  const accountLinks = useAccountLinks();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const menuId = useId();
+
+  return (
+    <header
+      data-site-chrome="overlay"
+      className="relative z-20 pt-[env(safe-area-inset-top)]"
+    >
+      <CampaignBanner campaign={campaign} />
+      <nav
+        aria-label="Primary"
+        className="absolute inset-x-0 top-full flex items-center justify-between px-10 py-7 max-[760px]:px-5 max-[760px]:py-5"
+      >
+        <BrandLockup
+          layout="horizontal"
+          wordmark="mono"
+          markSize={24}
+          ink="cream"
+          className={cn("[&>span]:!gap-3", SHELL_FOCUS)}
+          wordmarkClassName="text-[11px] tracking-[0.1em]"
+        />
+        <div className="flex items-center gap-9">
+          <ul className="flex gap-9 text-[15px] leading-6 font-medium text-cream/66 max-[760px]:hidden">
+            {OVERLAY_LINKS.map((link) => (
+              <li key={link.name}>
+                <Link
+                  href={link.href}
+                  className={cn("hover:text-cream", SHELL_FOCUS)}
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {cartCount > 0 ? (
+            <button
+              type="button"
+              onClick={() => setIsCartOpen(true)}
+              className={cn(
+                "text-[15px] leading-6 font-medium text-cream",
+                SHELL_FOCUS,
+              )}
+            >
+              Cart {cartCount}
+            </button>
+          ) : null}
+          <button
+            ref={menuTriggerRef}
+            type="button"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls={menuId}
+            onClick={() => setIsMobileMenuOpen(true)}
+            className={cn(
+              "hidden text-[15px] leading-6 font-medium text-cream max-[760px]:block",
+              SHELL_FOCUS,
+            )}
+          >
+            Menu
+          </button>
+        </div>
+      </nav>
+      <MobileNav
+        open={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        menuId={menuId}
+        triggerRef={menuTriggerRef}
+        pathname={pathname}
+        accountLinks={accountLinks}
+      />
+    </header>
+  );
+}
+
+function FullHeader() {
+  const { setIsCartOpen, cartCount } = useCart();
+  const { user, signOut, openAuthModal, isAdmin } = useAuth();
+  const { campaign } = useSettings();
+  const pathname = usePathname();
+  const accountLinks = useAccountLinks();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const menuId = useId();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header
@@ -385,6 +475,8 @@ export function Navbar() {
       return null;
     case "minimal":
       return <MinimalHeader />;
+    case "overlay":
+      return <OverlayHeader />;
     case "full":
       return <FullHeader />;
     default: {
