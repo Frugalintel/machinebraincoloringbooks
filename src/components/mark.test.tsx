@@ -56,6 +56,19 @@ describe("Mark", () => {
 });
 
 describe("BrandLockup", () => {
+  it("renders without a link when href is null", () => {
+    const { container } = render(
+      <BrandLockup layout="stacked" markSize={64} href={null} />,
+    );
+
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(container.querySelector("img")).toHaveAttribute(
+      "src",
+      "/brand/mb-mark-full-cream.svg",
+    );
+    expect(container).toHaveTextContent("Machine Brain");
+  });
+
   it("keeps the home link and Machine Brain accessible name", () => {
     render(<BrandLockup layout="horizontal" markSize={48} />);
 
