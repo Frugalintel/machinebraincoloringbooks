@@ -1,28 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useId, useRef } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Terminal,
-  Lock,
-  User,
-  ArrowRight,
-  AlertCircle,
-  Chrome,
-  Command,
-  Facebook,
-  Twitter,
-  CheckCircle,
-  X,
-  Loader2,
-  type LucideIcon,
-} from "lucide-react";
-import { BrandLockup } from "@/components/mark";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { X } from "lucide-react";
+import { AuthPanel } from "@/components/auth-panel";
 import { useAuth } from "@/context/auth-context";
+import {
+  AUTH_COPY,
+  AUTH_PASSWORD_MIN_LENGTH,
+  authErrorMessage,
+  type AuthFieldErrors,
+  type AuthMode,
+} from "@/lib/auth-ui";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { FOCUS_RING } from "@/lib/ui-brand";
+import { cn } from "@/lib/utils";
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function AuthModal() {
   const { authModal, closeAuthModal, signIn, signUp } = useAuth();
@@ -31,48 +26,102 @@ export function AuthModal() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const router = useRouter();
+  const titleId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (authModal.isOpen) {
       setIsLogin(authModal.view === "login");
       if (authModal.email) setEmail(authModal.email);
+      setFieldErrors({});
       setErrorMsg("");
       setSuccessMsg("");
     }
   }, [authModal]);
 
+  useEffect(() => {
+    if (!authModal.isOpen) return;
+    const dialog = dialogRef.current;
+    const returnFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialog?.querySelector<HTMLInputElement>("input")?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeAuthModal();
+        return;
+      }
+      if (event.key !== "Tab" || !dialog) return;
+      const focusable = [
+        ...dialog.querySelectorAll<HTMLElement>(FOCUSABLE),
+      ].filter((node) => !node.closest("fieldset:disabled"));
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      returnFocus?.focus();
+    };
+  }, [authModal.isOpen, closeAuthModal]);
+
+  const changeMode = (mode: AuthMode) => {
+    setIsLogin(mode === "login");
+    setFieldErrors({});
+    setErrorMsg("");
+    setSuccessMsg("");
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setFieldErrors({});
     setErrorMsg("");
     setSuccessMsg("");
 
     // Validation
     if (!email || !password) {
-      setErrorMsg("Please enter email and password.");
+      setFieldErrors({
+        ...(email ? {} : { email: AUTH_COPY.emailRequired }),
+        ...(password ? {} : { password: AUTH_COPY.passwordRequired }),
+      });
       setLoading(false);
       return;
     }
 
     if (!isLogin && password !== confirmPassword) {
-      setErrorMsg("Passwords do not match.");
+      setFieldErrors({ confirmPassword: AUTH_COPY.passwordMismatch });
       setLoading(false);
       return;
     }
 
-    if (!isLogin && password.length < 6) {
-      setErrorMsg("Password must be at least 6 characters.");
+    if (!isLogin && password.length < AUTH_PASSWORD_MIN_LENGTH) {
+      setFieldErrors({ password: AUTH_COPY.passwordTooShort });
       setLoading(false);
       return;
     }
 
     if (!isSupabaseConfigured) {
-      setErrorMsg(
-        "Database not configured. Please set up Supabase credentials.",
-      );
+      setErrorMsg(AUTH_COPY.notConfigured);
       setLoading(false);
       return;
     }
@@ -81,13 +130,7 @@ export function AuthModal() {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
-          if (error.message.includes("Invalid login")) {
-            setErrorMsg("Invalid email or password.");
-          } else if (error.message.includes("Email not confirmed")) {
-            setErrorMsg("Please check your email to confirm your account.");
-          } else {
-            setErrorMsg(error.message);
-          }
+          setErrorMsg(authErrorMessage(error));
           return;
         }
         // Success - update router and close modal (stay on current page)
@@ -102,7 +145,7 @@ export function AuthModal() {
             error.message.includes("already exists")
           ) {
             setIsLogin(true);
-            setErrorMsg("Account already exists. Please log in.");
+            setErrorMsg(AUTH_COPY.accountExists);
           } else {
             setErrorMsg(error.message);
           }
@@ -110,7 +153,7 @@ export function AuthModal() {
         }
 
         if (needsConfirmation) {
-          setSuccessMsg("Check your email for the confirmation link!");
+          setSuccessMsg(AUTH_COPY.confirmEmail);
         } else {
           // Auto-confirmed - update router and close modal
           router.refresh();
@@ -119,251 +162,64 @@ export function AuthModal() {
         }
       }
     } catch (error: unknown) {
-      setErrorMsg(
-        error instanceof Error
-          ? error.message
-          : "An authentication error occurred.",
-      );
+      setErrorMsg(authErrorMessage(error));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSocialAuth = (provider: string) => {
-    // OAuth providers (Google/Apple/FB/Twitter) via Supabase.auth.signInWithOAuth() - future enhancement
-    setErrorMsg(
-      `${provider} login coming soon. Please use email/password for now.`,
-    );
-  };
-
-  const SocialButton = ({
-    provider,
-    icon: Icon,
-    label,
-  }: {
-    provider: string;
-    icon: LucideIcon;
-    label: string;
-  }) => {
-    return (
-      <button
-        type="button"
-        onClick={() => handleSocialAuth(provider)}
-        className="h-12 border bg-background hover:bg-cream hover:text-ink transition-all flex items-center justify-center group border-line text-fg-muted hover:border-cream"
-      >
-        <Icon size={18} className="mr-2" />
-        <span className="text-sm font-medium uppercase tracking-[0.06em]">
-          {label}
-        </span>
-      </button>
-    );
-  };
-
-  const SocialSection = (
-    <div className="grid grid-cols-2 gap-3 mb-6">
-      <SocialButton provider="Google" icon={Chrome} label="Google" />
-      <SocialButton provider="Apple" icon={Command} label="Apple" />
-      <SocialButton provider="Facebook" icon={Facebook} label="Facebook" />
-      <SocialButton provider="Twitter" icon={Twitter} label="Twitter" />
-    </div>
-  );
-
-  const Divider = ({ text }: { text: string }) => (
-    <div className="relative py-2 mb-6">
-      <div className="absolute inset-0 flex items-center">
-        <span className="w-full border-t border-line" />
-      </div>
-      <div className="relative flex justify-center font-label tracking-[0.08em] text-fg-faint">
-        <span className="bg-background px-2">{text}</span>
-      </div>
-    </div>
-  );
-
-  const FormSection = (
-    <form onSubmit={handleAuth} className="space-y-6 mb-6">
-      <div className="space-y-2">
-        <label className="font-label flex items-center gap-2 tracking-[0.10em] text-fg-muted">
-          <User size={10} /> Email
-        </label>
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-sans text-base placeholder:text-fg-muted"
-          placeholder="you@example.com"
-          disabled={loading}
-        />
-      </div>
-      <div className="space-y-2">
-        <label className="font-label flex items-center gap-2 tracking-[0.10em] text-fg-muted">
-          <Lock size={10} /> Password
-        </label>
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-sans text-base placeholder:text-fg-muted"
-          placeholder="••••••••"
-          disabled={loading}
-        />
-      </div>
-
-      {!isLogin && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="space-y-2 overflow-hidden"
-        >
-          <label className="font-label flex items-center gap-2 tracking-[0.10em] text-fg-muted">
-            <CheckCircle size={10} /> Confirm Password
-          </label>
-          <Input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="bg-background border-line text-cream focus:border-primary focus:ring-0 h-12 rounded-none font-sans text-base placeholder:text-fg-muted"
-            placeholder="••••••••"
-            disabled={loading}
-          />
-        </motion.div>
-      )}
-
-      <Button
-        type="submit"
-        disabled={loading}
-        className="w-full h-14 bg-cream text-ink hover:bg-cream/80 font-heading font-semibold text-sm tracking-[0.06em] rounded-none transition-all mt-4 group disabled:opacity-50"
-      >
-        {loading ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
-        ) : (
-          <>
-            {isLogin ? "Sign In" : "Create Account"}
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </>
-        )}
-      </Button>
-    </form>
-  );
+  if (!authModal.isOpen) {
+    return null;
+  }
 
   return (
-    <AnimatePresence>
-      {authModal.isOpen ? (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-md z-[100]"
+    <div className="fixed inset-0 z-[10010] overflow-y-auto overscroll-contain">
+      <div
+        aria-hidden="true"
+        data-testid="auth-modal-backdrop"
+        className="fixed inset-0 bg-background/90"
+        onClick={closeAuthModal}
+      />
+      <div className="pointer-events-none relative flex min-h-full justify-center md:items-center md:p-8">
+        <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          data-testid="auth-modal"
+          className="pointer-events-auto relative flex w-full justify-center bg-background px-5 pt-16 pb-10 md:max-w-[480px] md:border md:border-line md:px-10 md:pt-14"
+        >
+          <button
+            type="button"
             onClick={closeAuthModal}
-          />
-
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-[101] p-4"
+            aria-label="Close"
+            className={cn(
+              "absolute top-[max(0.5rem,env(safe-area-inset-top))] right-2 flex size-11 items-center justify-center text-fg-secondary transition-colors hover:text-cream",
+              FOCUS_RING,
+            )}
           >
-            <div className="bg-background border border-line shadow-2xl relative">
-              <div className="h-2 w-full bg-cream"></div>
-
-              {/* Close Button */}
-              <button
-                onClick={closeAuthModal}
-                className="absolute top-4 right-4 text-fg-muted hover:text-cream"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="p-8">
-                <div className="text-center mb-8">
-                  <BrandLockup
-                    layout="stacked"
-                    markSize={48}
-                    ink="cream"
-                    className="mb-2"
-                    wordmarkClassName="text-[24px]"
-                  />
-                  <div className="flex items-center justify-center gap-2 font-label mt-2 tracking-[0.08em] text-primary">
-                    <Terminal size={12} />
-                    <span>{isLogin ? "Sign in" : "Create account"}</span>
-                  </div>
-                </div>
-
-                {/* Supabase not configured warning */}
-                {!isSupabaseConfigured && (
-                  <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-900/50 text-xs text-warning font-mono">
-                    <AlertCircle size={14} className="inline mr-2" />
-                    Database not configured. Add Supabase credentials to
-                    .env.local
-                  </div>
-                )}
-
-                {errorMsg ? (
-                  <div className="mb-6 p-3 bg-danger-wash border border-danger/50 flex items-start gap-3 text-xs text-danger font-mono">
-                    <AlertCircle size={14} className="mt-0.5 flex-shrink-0" />
-                    <span>{errorMsg}</span>
-                  </div>
-                ) : null}
-
-                {successMsg ? (
-                  <div className="mb-6 p-3 bg-success-wash border border-success/50 flex items-start gap-3 text-xs text-success font-mono">
-                    <CheckCircle size={14} className="mt-0.5 flex-shrink-0" />
-                    <span>{successMsg}</span>
-                  </div>
-                ) : null}
-
-                {/* Tabs */}
-                <div className="flex mb-8 border-b border-line">
-                  <button
-                    onClick={() => {
-                      setIsLogin(true);
-                      setErrorMsg("");
-                      setSuccessMsg("");
-                    }}
-                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${isLogin ? "border-primary text-cream" : "border-transparent text-fg-faint hover:text-fg-muted"}`}
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsLogin(false);
-                      setErrorMsg("");
-                      setSuccessMsg("");
-                    }}
-                    className={`flex-1 pb-3 text-xs tracking-[0.2em] uppercase transition-all border-b-2 ${!isLogin ? "border-primary text-cream" : "border-transparent text-fg-faint hover:text-fg-muted"}`}
-                  >
-                    Register
-                  </button>
-                </div>
-
-                {isLogin ? (
-                  <>
-                    {FormSection}
-                    <Divider text="Or access via provider" />
-                    {SocialSection}
-                    <div className="mt-4 text-center border-t border-line pt-4">
-                      <button
-                        onClick={() => {}}
-                        className="text-sm font-medium uppercase tracking-[0.04em] text-fg-faint hover:text-primary transition-colors"
-                      >
-                        Forgot Password?
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {SocialSection}
-                    <Divider text="Or register with email" />
-                    {FormSection}
-                  </>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        </>
-      ) : null}
-    </AnimatePresence>
+            <X aria-hidden="true" className="size-5" strokeWidth={1.75} />
+          </button>
+          <AuthPanel
+            context="modal"
+            titleId={titleId}
+            mode={isLogin ? "login" : "register"}
+            onModeChange={changeMode}
+            email={email}
+            onEmailChange={setEmail}
+            password={password}
+            onPasswordChange={setPassword}
+            confirmPassword={confirmPassword}
+            onConfirmPasswordChange={setConfirmPassword}
+            onSubmit={handleAuth}
+            loading={loading}
+            configured={isSupabaseConfigured}
+            fieldErrors={fieldErrors}
+            formError={errorMsg}
+            notice={successMsg}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

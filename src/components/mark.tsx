@@ -56,7 +56,8 @@ export type BrandLockupProps = {
   ink?: MarkInk;
   /** `mono`: Plex Mono 500, +0.08em, the header lockup. */
   wordmark?: BrandLockupWordmark;
-  href?: string;
+  /** `null` renders the lockup without a link (e.g. inside a form or dialog). */
+  href?: string | null;
   className?: string;
   wordmarkClassName?: string;
   subtitle?: ReactNode;
@@ -128,43 +129,58 @@ export function BrandLockup({
   const asset = resolveMarkAsset(markSize, ink);
   const inkClass = ink === "cream" ? "text-cream" : "text-ink";
 
+  const lockup = (
+    <span
+      className={cn("inline-flex min-w-0", lockupDirection(layout))}
+      style={
+        asset
+          ? {
+              gap: `calc(${markSize}px * ${MARK_CORNER_ARM_RATIO})`,
+            }
+          : undefined
+      }
+    >
+      <Mark size={markSize} ink={ink} decorative />
+      <span
+        className={cn(
+          "flex min-w-0 flex-col leading-none",
+          layout === "stacked" && "items-center",
+        )}
+      >
+        <WordmarkTag
+          headingLevel={headingLevel}
+          className={cn(
+            "whitespace-nowrap uppercase",
+            wordmarkFace(wordmark),
+            inkClass,
+            wordmarkClassName,
+          )}
+        >
+          Machine Brain
+        </WordmarkTag>
+        {subtitle}
+      </span>
+    </span>
+  );
+
+  if (href === null) {
+    return (
+      <span
+        data-slot="brand-lockup"
+        className={cn("inline-flex min-w-0", className)}
+      >
+        {lockup}
+      </span>
+    );
+  }
+
   return (
     <Link
       href={href}
       aria-label="Machine Brain"
       className={cn("inline-flex min-w-0 no-underline", className)}
     >
-      <span
-        className={cn("inline-flex min-w-0", lockupDirection(layout))}
-        style={
-          asset
-            ? {
-                gap: `calc(${markSize}px * ${MARK_CORNER_ARM_RATIO})`,
-              }
-            : undefined
-        }
-      >
-        <Mark size={markSize} ink={ink} decorative />
-        <span
-          className={cn(
-            "flex min-w-0 flex-col leading-none",
-            layout === "stacked" && "items-center",
-          )}
-        >
-          <WordmarkTag
-            headingLevel={headingLevel}
-            className={cn(
-              "whitespace-nowrap uppercase",
-              wordmarkFace(wordmark),
-              inkClass,
-              wordmarkClassName,
-            )}
-          >
-            Machine Brain
-          </WordmarkTag>
-          {subtitle}
-        </span>
-      </span>
+      {lockup}
     </Link>
   );
 }
