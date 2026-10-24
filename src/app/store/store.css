@@ -243,6 +243,12 @@
   gap: 8px;
 }
 
+@container (max-width: 240px) {
+  .store-e2 .s-plate .f span:first-child {
+    display: none;
+  }
+}
+
 .store-e2 .s-plate.paper {
   background: var(--paper);
   color: var(--ink);
