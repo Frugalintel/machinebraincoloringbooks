@@ -78,7 +78,9 @@ describe("Store listing", () => {
     expect(cards()).toHaveLength(MOCK_CATALOG.length);
     expect(screen.getByText("9 books")).toBeInTheDocument();
 
-    const flora = screen.getByRole("link", { name: /Flora/ });
+    const flora = within(
+      screen.getByRole("region", { name: "Books" }),
+    ).getByRole("link", { name: /Flora/ });
     expect(flora).toHaveAttribute(
       "href",
       "/store/10000000-0000-0000-0000-000000000008",
@@ -175,7 +177,10 @@ describe("Store listing", () => {
   it("letters every cover in production, with no art borrowed from Home", async () => {
     const { container } = await renderStore({ samples: false });
 
-    expect(container.querySelectorAll(".s-plate")).toHaveLength(
+    expect(container.querySelectorAll(".s-list .s-plate")).toHaveLength(
+      MOCK_CATALOG.length,
+    );
+    expect(container.querySelectorAll(".shelf .s-plate")).toHaveLength(
       MOCK_CATALOG.length,
     );
     expect(container.querySelectorAll("img")).toHaveLength(0);

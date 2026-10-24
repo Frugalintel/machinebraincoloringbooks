@@ -118,6 +118,15 @@ export function storeHref(slug: string | null): string {
     : "/store";
 }
 
+/**
+ * One shelf track: every cover fits the row, and none grows past the
+ * six-up width (five 16px gaps). The count comes from the catalog.
+ */
+export function shelfBasis(count: number): string {
+  const n = Math.max(1, Math.floor(count));
+  return `min(var(--shelf-six), calc((100% - ${n - 1} * var(--shelf-gap)) / ${n}))`;
+}
+
 const PLATE_LETTERS = "abcdefghijklmnopqrstuvwxyz";
 
 /** Home numbers its books Pl. 01a–e; the store continues the same scheme. */

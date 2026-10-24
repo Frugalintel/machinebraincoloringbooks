@@ -24,6 +24,38 @@
   margin-top: 24px;
 }
 
+/* Shelf: one row of every cover. Width is set per catalog count, capped at six-up. */
+.store-e2 .shelf {
+  --shelf-gap: 16px;
+  --shelf-six: calc((100% - 5 * var(--shelf-gap)) / 6);
+  display: flex;
+  gap: var(--shelf-gap);
+  align-items: flex-end;
+  margin: 48px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.store-e2 .shelf li {
+  flex: 0 0 var(--shelf-item, var(--shelf-six));
+  min-width: 0;
+}
+
+.store-e2 .shelf a {
+  display: block;
+  color: inherit;
+  transition: transform 0.2s;
+}
+
+.store-e2 .shelf a:hover {
+  transform: translateY(-8px);
+}
+
+.store-e2 .shelf .cover {
+  width: 100%;
+  box-shadow: none;
+}
+
 /* Load-failed notice: cream on near-black, never orange. */
 .store-e2 .s-notice {
   display: flex;
@@ -199,7 +231,7 @@
   color: var(--cream);
 }
 
-/* Typographic cover plate: no art yet, so title, world and price, framed. */
+/* Lettered cover: ink on cream, one tone on the shelf, the plates and the book. */
 .store-e2 .s-plate {
   position: absolute;
   inset: 0;
@@ -208,15 +240,15 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 11% 10%;
-  background: var(--base);
-  color: var(--cream);
+  background: var(--cream);
+  color: var(--ink);
 }
 
 .store-e2 .s-plate::before {
   content: "";
   position: absolute;
   inset: 5%;
-  border: 1px solid var(--c4);
+  border: 1px solid rgb(20 20 20 / 0.42);
   pointer-events: none;
 }
 
@@ -228,7 +260,7 @@
 }
 
 .store-e2 .s-plate .w {
-  color: var(--c2);
+  color: rgb(20 20 20 / 0.66);
 }
 
 .store-e2 .s-plate .t {
@@ -249,18 +281,7 @@
   }
 }
 
-.store-e2 .s-plate.paper {
-  background: var(--paper);
-  color: var(--ink);
-}
-
-.store-e2 .s-plate.paper::before {
-  border-color: rgb(20 20 20 / 0.42);
-}
-
-.store-e2 .s-plate.paper .w {
-  color: rgb(20 20 20 / 0.66);
-}
+/* Paper and dark plates share the same lettered cover. */
 
 /* Product page */
 .store-e2 .sp {
@@ -417,6 +438,28 @@
 }
 
 @media (max-width: 760px) {
+  .store-e2 .shelf {
+    margin-right: calc(-1 * var(--m));
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+  }
+
+  .store-e2 .shelf::-webkit-scrollbar {
+    display: none;
+  }
+
+  .store-e2 .shelf li {
+    flex: 0 0 148px;
+    scroll-snap-align: start;
+  }
+
+  .store-e2 .shelf li:last-child {
+    padding-right: var(--m);
+    flex-basis: calc(148px + var(--m));
+    box-sizing: border-box;
+  }
+
   .store-e2 .shead {
     padding: 72px var(--m) 48px;
   }

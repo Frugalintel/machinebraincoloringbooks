@@ -12,6 +12,7 @@ import {
   parseWorldParam,
   plateCode,
   productDescription,
+  shelfBasis,
   productGallery,
   storeHref,
   storeShowsSamples,
@@ -64,6 +65,17 @@ describe("store worlds and the ?world= filter", () => {
     expect(bookName({ title: "FLORA", subtitle: "" })).toBe("Flora");
     expect(plateCode(0)).toBe("Pl. 01a");
     expect(plateCode(8)).toBe("Pl. 01i");
+  });
+
+  it("shrinks the shelf so every cover fits, and never past the six-up width", () => {
+    expect(shelfBasis(6)).toBe(
+      "min(var(--shelf-six), calc((100% - 5 * var(--shelf-gap)) / 6))",
+    );
+    expect(shelfBasis(9)).toBe(
+      "min(var(--shelf-six), calc((100% - 8 * var(--shelf-gap)) / 9))",
+    );
+    expect(shelfBasis(2)).toContain("var(--shelf-six)");
+    expect(shelfBasis(0)).toBe(shelfBasis(1));
   });
 });
 

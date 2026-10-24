@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { Folio, RunningHead } from "@/components/home-plate";
 import { StoreCoverView } from "@/components/store-cover";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
   labelForWorld,
   parseWorldParam,
   plateCode,
+  shelfBasis,
   storeHref,
   storeWorlds,
   worldLabel,
@@ -118,6 +119,55 @@ export function StoreListingSkeleton({ samples }: { samples: boolean }) {
         <Folio number="01" />
       </section>
     </main>
+  );
+}
+
+function BookShelf({
+  products,
+  samples,
+}: {
+  products: Product[];
+  samples: boolean;
+}) {
+  const { globalDiscount } = useSettings();
+  if (products.length === 0) return null;
+
+  return (
+    <ol
+      className="shelf"
+      aria-label="Every book"
+      style={{ "--shelf-item": shelfBasis(products.length) } as CSSProperties}
+    >
+      {products.map((product, index) => {
+        const name = bookName(product);
+        const world = worldLabel(product.category ?? "");
+        const priceInfo = calculatePrice(
+          product,
+          listingCampaign(globalDiscount),
+        );
+        const price = formatPrice(
+          priceInfo.hasDiscount
+            ? priceInfo.finalPrice
+            : priceInfo.originalPrice,
+        );
+        return (
+          <li key={product.id}>
+            <Link
+              href={`#b-${product.id}`}
+              aria-label={`${name}, jump to its plate`}
+            >
+              <StoreCoverView
+                cover={coverFor(product, samples)}
+                plate={{ world, title: name, price }}
+                sizes="(max-width: 760px) 148px, 16vw"
+                priority={index < 6}
+                decorative
+              />
+            </Link>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -251,6 +301,7 @@ export function StoreListing({ samples }: { samples: boolean }) {
   return (
     <main id="main">
       <StoreHead title={worldName ?? STORE_COPY.title} samples={samples}>
+        <BookShelf products={products} samples={samples} />
         {loadFailed ? (
           <div className="s-notice" role="status">
             <div>
