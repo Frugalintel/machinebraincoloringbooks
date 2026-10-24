@@ -91,9 +91,11 @@ export type StoryMapRequest = {
 };
 
 const PAD = 16;
-/** 11px mono plus 0.1em tracking. Used to keep labels inside the frame. */
-export const STORY_MAP_LABEL_CHAR = 7.6;
+/** 11px Plex Mono, uppercase, plus 0.1em tracking. Measured at 8.1px per glyph. */
+export const STORY_MAP_LABEL_CHAR = 8.1;
 const LABEL_CAP = 11;
+/** Baseline gap that puts "You are here" on its own line under the node name. */
+export const STORY_MAP_HERE_GAP = 34;
 
 export function storyMapLabelWidth(text: string): number {
   return text.length * STORY_MAP_LABEL_CHAR;
@@ -127,9 +129,77 @@ function placeLabel(
   if (x + width > size.width - 8) x = size.width - 8 - width;
   if (x < 8) x = 8;
   let y = prefer === "above" ? anchorY - 12 : anchorY + 16;
-  if (y < LABEL_CAP) y = Math.min(size.height - 4, anchorY + 16);
-  if (y > size.height - 4) y = Math.max(LABEL_CAP, size.height - 4);
+  if (y < LABEL_CAP) y = LABEL_CAP;
+  if (y > size.height - 4) y = size.height - 4;
   return { x, y };
+}
+
+/** Name and "You are here" share a left edge, with the status on the next line. */
+function stackHereLabel(
+  nameX: number,
+  nameY: number,
+  nameText: string,
+  size: StoryMapSize,
+): { x: number; nameY: number; hereY: number } {
+  let yName = nameY;
+  let yHere = nameY + STORY_MAP_HERE_GAP;
+  if (yName < LABEL_CAP) {
+    const shift = LABEL_CAP - yName;
+    yName += shift;
+    yHere += shift;
+  }
+  if (yHere > size.height - 4) {
+    const shift = yHere - (size.height - 4);
+    yHere -= shift;
+    yName = Math.max(LABEL_CAP, yName - shift);
+  }
+  const width = Math.max(
+    storyMapLabelWidth(nameText),
+    storyMapLabelWidth("You are here"),
+  );
+  let x = nameX;
+  if (x + width > size.width - 8) x = size.width - 8 - width;
+  if (x < 8) x = 8;
+  return { x, nameY: yName, hereY: yHere };
+}
+
+const LABEL_BOX_TOP = 11;
+const LABEL_BOX_BELOW = 2;
+const LABEL_CLEAR = 4;
+
+function labelsHit(a: StoryMapLabel, b: StoryMapLabel): boolean {
+  const aRight = a.x + storyMapLabelWidth(a.text);
+  const bRight = b.x + storyMapLabelWidth(b.text);
+  const aTop = a.y - LABEL_BOX_TOP;
+  const bTop = b.y - LABEL_BOX_TOP;
+  return (
+    a.x < bRight &&
+    b.x < aRight &&
+    aTop < b.y + LABEL_BOX_BELOW &&
+    bTop < a.y + LABEL_BOX_BELOW
+  );
+}
+
+/** Nudge a lower label down until it clears the one above it. */
+function separateLabels(labels: StoryMapLabel[], size: StoryMapSize): void {
+  const step = LABEL_BOX_BELOW + LABEL_CLEAR + LABEL_BOX_TOP;
+  for (let pass = 0; pass < labels.length * 2; pass += 1) {
+    let moved = false;
+    for (let i = 0; i < labels.length; i += 1) {
+      for (let j = i + 1; j < labels.length; j += 1) {
+        const a = labels[i];
+        const b = labels[j];
+        if (!a || !b || !labelsHit(a, b)) continue;
+        const lower = a.y > b.y || (a.y === b.y && a.x >= b.x) ? a : b;
+        const upper = lower === a ? b : a;
+        const next = upper.y + step;
+        if (next <= size.height - 4) lower.y = next;
+        else if (upper.y - step >= LABEL_CAP) upper.y = lower.y - step;
+        moved = true;
+      }
+    }
+    if (!moved) return;
+  }
 }
 
 function round(value: number): string {
@@ -433,19 +503,32 @@ export function buildStoryMap(request: StoryMapRequest): StoryMapLayout {
       });
     }
     if (role === "current" && scope !== "none" && request.mode === "lit") {
-      const placed = placeLabel(
-        "You are here",
-        point.x,
-        point.y,
-        size,
-        "below",
-      );
-      labels.push({
-        text: "You are here",
-        x: placed.x,
-        y: placed.y,
-        kind: "here",
-      });
+      const name = labels[labels.length - 1];
+      if (name && name.kind !== "here") {
+        const stacked = stackHereLabel(name.x, name.y, name.text, size);
+        name.x = stacked.x;
+        name.y = stacked.nameY;
+        labels.push({
+          text: "You are here",
+          x: stacked.x,
+          y: stacked.hereY,
+          kind: "here",
+        });
+      } else {
+        const placed = placeLabel(
+          "You are here",
+          point.x,
+          point.y,
+          size,
+          "below",
+        );
+        labels.push({
+          text: "You are here",
+          x: placed.x,
+          y: placed.y,
+          kind: "here",
+        });
+      }
     }
     return {
       id: node.id,
@@ -458,6 +541,10 @@ export function buildStoryMap(request: StoryMapRequest): StoryMapLayout {
   });
 
   const choices = choiceList(request, ordered, byId, path, currentId);
+  separateLabels(
+    nodes.flatMap((node) => node.labels),
+    size,
+  );
 
   return {
     viewBox: `0 0 ${size.width} ${size.height}`,

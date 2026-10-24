@@ -1,5 +1,5 @@
-import { displayEm } from "@/lib/store";
 import type { StoryMapMode, StoryMapNodeInput } from "@/lib/story-map";
+import { interTitleEm } from "@/lib/story-title-fit";
 import type { StoryWorld } from "@/lib/story-world";
 
 export type StoryAction =
@@ -146,22 +146,21 @@ export function titleLines(
   return [words.slice(0, mid).join(" "), words.slice(mid).join(" ")];
 }
 
-/** Shared Inter size so the longest card title stays inside the column. */
+/**
+ * Inter size for a plate title. Each line is fitted on its own, so a
+ * two-line title uses the longer line and not the joined string.
+ * Desktop and mobile share that em: the column changes, the ratio does not.
+ */
 export function cardTitleFit(lines: readonly (readonly string[])[]): {
   desktop: number;
   mobile: number;
 } {
-  let desktop = 0;
-  let mobile = 0;
+  let line = 0;
   for (const group of lines) {
-    const joined = group.join(" ");
-    desktop = Math.max(desktop, displayEm(joined));
-    for (const line of group) mobile = Math.max(mobile, displayEm(line));
+    for (const text of group) line = Math.max(line, interTitleEm(text));
   }
-  return {
-    desktop: desktop || 1,
-    mobile: mobile || 1,
-  };
+  const em = line || 1;
+  return { desktop: em, mobile: em };
 }
 
 export function plateNumber(index: number): string {

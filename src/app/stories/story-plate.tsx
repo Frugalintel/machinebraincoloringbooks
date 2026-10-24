@@ -6,6 +6,7 @@ import { RunningHead } from "@/components/home-plate";
 import { StoryMap } from "@/components/stories/story-map";
 import { StoryPointsBalance } from "@/components/stories/story-points-balance";
 import {
+  cardTitleFit,
   minutesLabel,
   plateNumber,
   storyAction,
@@ -140,6 +141,7 @@ export function StoryPlate({
     locked: !card.unlocked,
   });
   const minutes = minutesLabel(card.minutes);
+  const titleFit = cardTitleFit([card.lines]);
   const locked = mode === "ghost";
   const short =
     action.type === "code" ||
@@ -152,7 +154,13 @@ export function StoryPlate({
     <article
       className={locked ? "plate sp is-locked" : "plate sp"}
       aria-labelledby={`story-${card.id}`}
-      style={style}
+      style={
+        {
+          ...style,
+          "--card-em": titleFit.desktop,
+          "--card-em-m": titleFit.mobile,
+        } as CSSProperties
+      }
     >
       {card.cover ? <img className="bg" src={card.cover} alt="" /> : null}
       <RunningHead

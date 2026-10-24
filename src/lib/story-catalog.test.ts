@@ -17,6 +17,7 @@ import {
   sampleStories,
   storiesShowSamples,
 } from "@/lib/story-samples";
+import { redactionTitleEm } from "@/lib/story-title-fit";
 import { storyWorld, storyWorlds } from "@/lib/story-world";
 
 describe("getStoryPoints", () => {
@@ -300,8 +301,16 @@ describe("story catalog rules", () => {
       }),
     ).toBe(true);
     expect(titleLines("The Lantern Road")).toEqual(["The Lantern", "Road"]);
-    expect(cardTitleFit([["The Door", "in the Tide"]]).mobile).toBeGreaterThan(
-      0,
-    );
+    const fitted = cardTitleFit([["The Door", "in the Tide"]]);
+    const station = cardTitleFit([["Last Light at", "Far Station"]]);
+    const letter = cardTitleFit([["The Letter Under", "the Teapot"]]);
+    expect(fitted.desktop).toBe(fitted.mobile);
+    expect(fitted.desktop).toBeCloseTo(4.22, 2);
+    expect(station.desktop).toBeCloseTo(4.99, 2);
+    expect(letter.desktop).toBeCloseTo(6.91, 2);
+    expect(station.desktop).toBeGreaterThan(fitted.desktop);
+    expect(letter.desktop).toBeGreaterThan(station.desktop);
+    expect(redactionTitleEm("The Lantern")).toBeCloseTo(5.95, 2);
+    expect(redactionTitleEm("Last Light at")).toBeCloseTo(5.98, 2);
   });
 });

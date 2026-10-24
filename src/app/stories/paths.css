@@ -275,13 +275,14 @@
 .stories-b .tx {
   grid-column: 1 / 6;
   min-width: 0;
+  container-type: inline-size;
 }
 
 .stories-b .bt {
   margin: 0 0 28px;
   color: var(--cream);
   font: 700 1em/0.86 var(--sans);
-  font-size: calc((100vw - 2 * var(--m)) * 0.4 / var(--card-em, 8));
+  font-size: calc(100cqi / var(--card-em, 6));
   letter-spacing: -0.06em;
 }
 
@@ -389,6 +390,9 @@
   bottom: 18px;
   z-index: 2;
   color: rgb(242 234 216 / 0.7);
+  font: 500 11px/16px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .stories-b .rd {
@@ -556,6 +560,12 @@
     justify-self: start;
   }
 
+  .stories-b .tx,
+  .stories-b .lg .tx {
+    width: 100%;
+    justify-self: stretch;
+  }
+
   .stories-b .hero {
     display: block;
     height: auto;
@@ -603,10 +613,15 @@
     mask-image: linear-gradient(180deg, transparent 30%, #000 80%);
   }
 
-  .stories-b .bt {
-    font-size: calc(
-      (100vw - 2 * var(--m)) / var(--card-em-m, var(--card-em, 6))
-    );
+  .stories-b .chips {
+    flex: 0 0 auto;
+    width: calc(100% + 2 * var(--m));
+    max-width: none;
+    min-width: 0;
+    margin-left: calc(var(--m) * -1);
+    margin-right: calc(var(--m) * -1);
+    padding: 2px var(--m);
+    box-sizing: border-box;
   }
 
   .stories-b .mp {

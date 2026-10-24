@@ -1,0 +1,186 @@
+/**
+ * Fitted story titles. Advances are the font's glyph widths at weight 700,
+ * measured from the files the page loads. Tracking is the CSS letter-spacing,
+ * added between glyphs. A line's em is what `font-size: column / em` needs
+ * in order to land on the mock's fitted size.
+ */
+
+const INTER_ADVANCE: Record<string, number> = {
+  "0": 0.65,
+  "1": 0.39,
+  "2": 0.6,
+  "3": 0.62,
+  "4": 0.66,
+  "5": 0.6,
+  "6": 0.62,
+  "7": 0.55,
+  "8": 0.61,
+  "9": 0.62,
+  A: 0.71,
+  B: 0.64,
+  C: 0.73,
+  D: 0.7,
+  E: 0.61,
+  F: 0.58,
+  G: 0.74,
+  H: 0.72,
+  I: 0.26,
+  J: 0.56,
+  K: 0.69,
+  L: 0.56,
+  M: 0.89,
+  N: 0.73,
+  O: 0.75,
+  P: 0.63,
+  Q: 0.75,
+  R: 0.65,
+  S: 0.65,
+  T: 0.63,
+  U: 0.7,
+  V: 0.71,
+  W: 1.0,
+  X: 0.7,
+  Y: 0.69,
+  Z: 0.63,
+  a: 0.55,
+  b: 0.6,
+  c: 0.56,
+  d: 0.6,
+  e: 0.56,
+  f: 0.37,
+  g: 0.6,
+  h: 0.59,
+  i: 0.25,
+  j: 0.25,
+  k: 0.55,
+  l: 0.25,
+  m: 0.88,
+  n: 0.59,
+  o: 0.58,
+  p: 0.6,
+  q: 0.6,
+  r: 0.37,
+  s: 0.52,
+  t: 0.37,
+  u: 0.59,
+  v: 0.55,
+  w: 0.82,
+  x: 0.54,
+  y: 0.55,
+  z: 0.52,
+  " ": 0.21,
+  ".": 0.24,
+  ",": 0.24,
+  "\u00b7": 0.24,
+  "'": 0.27,
+  "\u2019": 0.23,
+  "-": 0.44,
+  "&": 0.65,
+};
+
+const REDACTION_ADVANCE: Record<string, number> = {
+  "0": 0.65,
+  "1": 0.35,
+  "2": 0.55,
+  "3": 0.55,
+  "4": 0.65,
+  "5": 0.55,
+  "6": 0.6,
+  "7": 0.55,
+  "8": 0.6,
+  "9": 0.6,
+  A: 0.75,
+  B: 0.7,
+  C: 0.65,
+  D: 0.8,
+  E: 0.7,
+  F: 0.7,
+  G: 0.8,
+  H: 0.85,
+  I: 0.4,
+  J: 0.65,
+  K: 0.8,
+  L: 0.7,
+  M: 1.0,
+  N: 0.8,
+  O: 0.8,
+  P: 0.7,
+  Q: 0.8,
+  R: 0.75,
+  S: 0.65,
+  T: 0.7,
+  U: 0.8,
+  V: 0.75,
+  W: 1.1,
+  X: 0.75,
+  Y: 0.75,
+  Z: 0.7,
+  a: 0.55,
+  b: 0.6,
+  c: 0.5,
+  d: 0.6,
+  e: 0.5,
+  f: 0.35,
+  g: 0.5,
+  h: 0.65,
+  i: 0.3,
+  j: 0.3,
+  k: 0.6,
+  l: 0.3,
+  m: 0.95,
+  n: 0.65,
+  o: 0.55,
+  p: 0.6,
+  q: 0.6,
+  r: 0.5,
+  s: 0.45,
+  t: 0.4,
+  u: 0.65,
+  v: 0.6,
+  w: 0.9,
+  x: 0.6,
+  y: 0.6,
+  z: 0.5,
+  " ": 0.25,
+  ".": 0.25,
+  ",": 0.25,
+  "\u00b7": 0.25,
+  "'": 0.25,
+  "\u2019": 0.25,
+  "-": 0.4,
+  "&": 0.75,
+};
+
+const INTER_TRACKING = -0.06;
+const REDACTION_TRACKING = -0.01;
+const INTER_FALLBACK = 0.6;
+const REDACTION_FALLBACK = 0.65;
+
+function lineEm(
+  text: string,
+  advances: Record<string, number>,
+  tracking: number,
+  fallback: number,
+): number {
+  const chars = Array.from(text);
+  if (chars.length === 0) return 0;
+  let width = 0;
+  for (const char of chars) width += advances[char] ?? fallback;
+  width += (chars.length - 1) * tracking;
+  return width;
+}
+
+/** Inter 700 plate title, with the −0.06em tracking on `.bt`. */
+export function interTitleEm(text: string): number {
+  return lineEm(text, INTER_ADVANCE, INTER_TRACKING, INTER_FALLBACK);
+}
+
+/** Redaction 700 story title, with the −0.01em tracking on the story H1. */
+export function redactionTitleEm(text: string): number {
+  return lineEm(
+    text,
+    REDACTION_ADVANCE,
+    REDACTION_TRACKING,
+    REDACTION_FALLBACK,
+  );
+}

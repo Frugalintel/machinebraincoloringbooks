@@ -1,13 +1,15 @@
 import type { CSSProperties } from "react";
+import { redactionTitleEm } from "@/lib/story-title-fit";
 import "./story-display-title.css";
 
+/** Longest Redaction line, so the H1 fills the story-page measure. */
 function displayEm(lines: readonly string[]): number {
   let max = 1;
   for (const line of lines) {
-    const count = Array.from(line).length;
-    if (count > max) max = count;
+    const width = redactionTitleEm(line);
+    if (width > max) max = width;
   }
-  return max * 0.72;
+  return max;
 }
 
 export function StoryDisplayTitle({

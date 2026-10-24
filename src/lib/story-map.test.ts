@@ -4,10 +4,14 @@ import { describe, expect, it } from "vitest";
 import { sampleStories } from "@/lib/story-samples";
 import {
   STORY_MAP_CARD_H,
+  STORY_MAP_HERO_H,
+  STORY_MAP_HERE_GAP,
+  STORY_MAP_READER,
   STORY_MAP_V,
   buildStoryMap,
   storyMapLabelScopes,
   storyMapLabelWidth,
+  type StoryMapLabel,
   type StoryMapNodeInput,
 } from "@/lib/story-map";
 
@@ -246,6 +250,60 @@ describe("buildStoryMap", () => {
       expect(label.x + storyMapLabelWidth(label.text)).toBeLessThanOrEqual(
         STORY_MAP_V.width - 8,
       );
+    }
+  });
+
+  function labelBoxes(labels: readonly StoryMapLabel[]) {
+    return labels.map((label) => ({
+      text: label.text,
+      x1: label.x,
+      x2: label.x + storyMapLabelWidth(label.text),
+      y1: label.y - 11,
+      y2: label.y + 2,
+    }));
+  }
+
+  function boxesOverlap(
+    a: ReturnType<typeof labelBoxes>[number],
+    b: ReturnType<typeof labelBoxes>[number],
+  ) {
+    return a.x1 < b.x2 && b.x1 < a.x2 && a.y1 < b.y2 && b.y1 < a.y2;
+  }
+
+  it("puts You are here on its own line under the node name", () => {
+    const lantern = sampleStories(true).find((story) => story.id === "lantern");
+    if (!lantern) throw new Error("missing lantern sample");
+    for (const size of [STORY_MAP_HERO_H, STORY_MAP_CARD_H, STORY_MAP_READER]) {
+      const layout = buildStoryMap({
+        title: lantern.title,
+        nodes: lantern.nodes,
+        mode: "lit",
+        orientation: size === STORY_MAP_READER ? "vertical" : "horizontal",
+        size,
+        labelScope: "all",
+        progress: {
+          completedIds: lantern.completedIds,
+          currentId: lantern.currentId,
+        },
+      });
+      const labels = layout.nodes.flatMap((node) => node.labels);
+      const name = labels.find((label) => label.text === "The miller's bridge");
+      const here = labels.find((label) => label.text === "You are here");
+      if (!name || !here) throw new Error("missing reading labels");
+      expect(here.x).toBe(name.x);
+      expect(here.y - name.y).toBeGreaterThanOrEqual(STORY_MAP_HERE_GAP - 1);
+      const boxes = labelBoxes(labels);
+      for (let i = 0; i < boxes.length; i += 1) {
+        for (let j = i + 1; j < boxes.length; j += 1) {
+          const left = boxes[i];
+          const right = boxes[j];
+          if (!left || !right) continue;
+          expect(
+            boxesOverlap(left, right),
+            `${left.text} / ${right.text}`,
+          ).toBe(false);
+        }
+      }
     }
   });
 
