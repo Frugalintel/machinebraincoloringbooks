@@ -19,6 +19,7 @@ import {
   productDescription,
   shelfBasis,
   shortSpec,
+  specRows,
   volumeLabel,
   productGallery,
   storeHref,
@@ -99,6 +100,31 @@ describe("store worlds and the ?world= filter", () => {
     expect(mobileTitleLines("Realm\nWalker")).toEqual(["Realm", "Walker"]);
     expect(volumeLabel(5)).toBe("Vol 06");
     expect(plateSentence("One sentence. And another.")).toBe("One sentence.");
+  });
+
+  it("drops a spec row when its field is missing", () => {
+    expect(
+      specRows({ category: "FANTASY", age: "8+" }).map((row) => row.term),
+    ).toEqual(["World", "Age"]);
+    expect(
+      specRows({
+        category: "FANTASY",
+        pages: 50,
+        sides: "single",
+        trim: "8.5 × 11 in",
+        binding: "Paperback",
+        detail: 3,
+        age: "All ages",
+      }).map((row) => row.value),
+    ).toEqual([
+      "Fantasy",
+      "50, printed single-sided",
+      "8.5 × 11 in",
+      "Paperback",
+      "3 of 5",
+      "All ages",
+    ]);
+    expect(specRows({ pages: 0, detail: 0, age: "  " })).toEqual([]);
   });
 
   it("shrinks the shelf so every cover fits, and never past the six-up width", () => {

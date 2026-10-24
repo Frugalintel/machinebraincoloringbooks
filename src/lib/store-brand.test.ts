@@ -37,10 +37,12 @@ describe("Store brand guardrails (STORE-01, STORE-02, SW-ORANGE-USE-01, SW-PALET
     }
     expect(listing).toMatch(/className="tl font-display"/);
     expect(listing).toMatch(/className="ix-line font-display"/);
-    expect(product.match(/font-display/g)).toHaveLength(1);
     expect(product).toMatch(/<h1[^>]*className="s-h1 font-display"/);
+    expect(product).toMatch(/className="lk font-display"/);
+    expect(product.match(/font-display/g)).toHaveLength(2);
     expect(CSS).toMatch(/\.tl \{[^}]*var\(--font-display\)/);
     expect(CSS).toMatch(/\.ix-line \{[^}]*var\(--font-display\)/);
+    expect(CSS).toMatch(/\.lk \{[^}]*var\(--font-display\)/);
     expect(CSS).toMatch(/\.s-plate \.t \{[^}]*var\(--font-display\)/);
     const others = STORE_FILES.filter(
       (file) => !/store-listing|product-client|store\.css/.test(file),

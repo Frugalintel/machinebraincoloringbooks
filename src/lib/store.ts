@@ -42,16 +42,32 @@ export const STORE_COPY = {
 } as const;
 
 export const PRODUCT_COPY = {
-  breadcrumb: "Breadcrumb",
   allBooks: "All books",
-  galleryLabel: "Images of the book",
-  details: "Details",
   world: "World",
+  plates: "Plates",
+  trim: "Trim",
+  binding: "Binding",
+  detail: "Detail",
   age: "Age",
-  difficulty: "Difficulty",
   addToCart: "Add to cart",
   price: "Price",
   was: "Was",
+  look: "Look closer.",
+  inside: "Inside",
+  inLine: "In line",
+  colored: "Colored · Sample",
+  sampleCover: "Sample cover · AI art",
+  samplePages: "Sample pages",
+  unlocks: "Unlocks",
+  inEvery: "In every book",
+  more: "More books",
+  register: "Register a book",
+  qr: "The QR registers your book.",
+  code: "A page code.",
+  scan: "A code plus a scan of the colored page.",
+  added: "In your cart.",
+  buy: "Buy",
+  buyShort: "Buy, short",
 } as const;
 
 export type StoreWorld = { slug: string; label: string };
@@ -171,6 +187,43 @@ export function mobileTitleLines(
 
 export function volumeLabel(index: number): string {
   return `Vol ${String(index + 1).padStart(2, "0")}`;
+}
+
+/**
+ * Spec rows from the fields a book actually has. A missing field drops its row.
+ * Detail is shown as "n of 5", the catalogue's detail scale.
+ */
+export function specRows(book: {
+  category?: string;
+  age?: string;
+  pages?: number;
+  sides?: string;
+  trim?: string;
+  binding?: string;
+  detail?: number;
+}): { term: string; value: string }[] {
+  const rows: { term: string; value: string }[] = [];
+  const world = worldLabel(book.category ?? "");
+  if (world) rows.push({ term: PRODUCT_COPY.world, value: world });
+  if (book.pages && book.pages > 0) {
+    const single = book.sides?.trim().toLowerCase() === "single";
+    rows.push({
+      term: PRODUCT_COPY.plates,
+      value: single
+        ? `${book.pages}, printed single-sided`
+        : String(book.pages),
+    });
+  }
+  const trim = book.trim?.trim();
+  const binding = book.binding?.trim();
+  if (trim) rows.push({ term: PRODUCT_COPY.trim, value: trim });
+  if (binding) rows.push({ term: PRODUCT_COPY.binding, value: binding });
+  if (book.detail && book.detail > 0) {
+    rows.push({ term: PRODUCT_COPY.detail, value: `${book.detail} of 5` });
+  }
+  const age = book.age?.trim();
+  if (age) rows.push({ term: PRODUCT_COPY.age, value: age });
+  return rows;
 }
 
 /** The short line under a plate. Omitted when pages, trim and binding are all missing. */
