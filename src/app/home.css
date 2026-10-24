@@ -710,6 +710,23 @@
   object-position: 50% 8%;
 }
 
+/* Production: the real colored plate is busy, so the line reads in cream. */
+.home-e2 .worlds.real::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgb(15 15 15 / 0.7), transparent 45%);
+}
+
+.home-e2 .worlds.real .line {
+  color: var(--cream);
+}
+
+.home-e2 .worlds.real .rh {
+  color: rgb(242 234 216 / 0.62);
+}
+
 .home-e2 .worlds::after {
   content: "";
   position: absolute;
@@ -784,6 +801,7 @@
 
 /* Production: type only, no AI plates. */
 .home-e2 .strip.type a {
+  height: 200px;
   background: var(--ink);
   box-shadow: inset 0 0 0 1px var(--c3);
 }
@@ -1329,6 +1347,11 @@
 
   .home-e2 .smp2 {
     text-align: left;
+  }
+
+  .home-e2 .strip.type a,
+  .home-e2 .strip.type li:first-child a {
+    height: 132px;
   }
 
   .home-e2 .ft {
