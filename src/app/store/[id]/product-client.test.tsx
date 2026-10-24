@@ -146,13 +146,19 @@ describe("Product page", () => {
     expect(container.textContent).toMatch(/Vol 02/);
   });
 
-  it("shows the sample world, inside pages and cover line on previews", () => {
+  it("shows the sample world and inside pages, and letters a cover from another title", () => {
     const { container } = renderBook(scifi, true);
 
-    expect(screen.getByText("Sample cover · AI art")).toBeInTheDocument();
+    expect(screen.queryByText("Sample cover · AI art")).toBeNull();
+    expect(
+      screen.getByRole("img", {
+        name: "Star Drifter, Sci-fi coloring book, typographic cover",
+      }),
+    ).toBeInTheDocument();
     const images = [...container.querySelectorAll("img")].map((img) =>
       img.getAttribute("src"),
     );
+    expect(images.some((src) => src?.includes("cover-scifi"))).toBe(false);
     expect(images.some((src) => src?.includes("/home/sample/"))).toBe(true);
     expect(images.some((src) => src?.includes("/home/page-line.webp"))).toBe(
       true,
@@ -168,7 +174,8 @@ describe("Product page", () => {
     expect(within(look).getByText("In line")).toBeInTheDocument();
     expect(within(look).getByText("Colored · Sample")).toBeInTheDocument();
     expect(container.textContent).toMatch(/Pl\. 01b/);
-    expect(container.textContent).toMatch(/Vol 02 · Sample/);
+    expect(container.textContent).toMatch(/Vol 02/);
+    expect(container.textContent).not.toMatch(/Vol 02 · Sample/);
   });
 
   it("shows only the spec fields a book has, and sizes the cover from its trim", () => {

@@ -194,16 +194,23 @@ describe("Store listing", () => {
     expect(screen.queryByText("Sample")).toBeNull();
   });
 
-  it("labels Studio's SAMPLE covers on previews", async () => {
+  it("letters every cover whose title has no matching sample", async () => {
     const { container } = await renderStore({ samples: true });
 
-    const sampled = [...container.querySelectorAll("img")].filter((img) =>
-      img.getAttribute("src")!.startsWith("/home/sample/"),
+    expect(container.querySelectorAll(".s-plate")).toHaveLength(
+      MOCK_CATALOG.length * 3,
     );
-    expect(sampled.length).toBeGreaterThan(0);
-    for (const img of sampled) {
-      const marked = img.closest(".bk, .cover, .shelf li, .list li");
-      expect(marked?.textContent?.toLowerCase()).toMatch(/sample/);
+    const titled = [...container.querySelectorAll("img")].map(
+      (img) => img.getAttribute("alt") ?? "",
+    );
+    for (const title of [
+      "The Far Station",
+      "The Silver Citadel",
+      "The Wandering Keep",
+      "Into the Deep Forest",
+      "A Quiet Night In",
+    ]) {
+      expect(titled.some((alt) => alt.includes(title))).toBe(false);
     }
     expect(screen.getAllByText("Sample titles and art").length).toBeGreaterThan(
       0,

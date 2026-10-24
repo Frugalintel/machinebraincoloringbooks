@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { MOCK_CATALOG } from "@/__tests__/store-catalog";
+import { SAMPLE_BOOKS } from "@/lib/home";
 import {
   STORE_COPY,
   PRODUCT_COPY,
@@ -158,22 +159,48 @@ describe("cover art and the SAMPLE switch", () => {
     );
   });
 
-  it("uses Studio's SAMPLE covers on previews, labelled, and only from the sample folder", () => {
-    const samples = MOCK_CATALOG.map((product) => coverFor(product, true));
-    const sampled = samples.filter(
-      (cover) => cover.kind === "art" && cover.art.sample,
-    );
-    expect(sampled.length).toBeGreaterThan(0);
-    for (const cover of sampled) {
-      if (cover.kind !== "art") continue;
-      expect(cover.art.src.startsWith("/home/sample/")).toBe(true);
+  it("uses a SAMPLE cover only when that sample's title is the book's own", () => {
+    for (const product of MOCK_CATALOG) {
+      const cover = coverFor(product, true);
+      if (cover.kind !== "art" || !cover.art.sample) continue;
+      const owner = SAMPLE_BOOKS.find((entry) => entry.cover === cover.art.src);
+      expect(owner?.title.toLowerCase()).toBe(bookName(product).toLowerCase());
+      expect(cover.art.alt.toLowerCase()).toContain(
+        bookName(product).toLowerCase(),
+      );
       expect(cover.art.alt.toLowerCase()).toContain("sample");
       expect(existsSync(join(process.cwd(), "public", cover.art.src))).toBe(
         true,
       );
     }
+    expect(coverFor(byName("Star Drifter"), true)).toEqual({ kind: "plate" });
     expect(coverFor(byName("The Origin"), true)).toEqual({ kind: "plate" });
     expect(coverFor(byName("Retrowave"), true)).toEqual({ kind: "plate" });
+
+    const far = coverFor(
+      { ...byName("Star Drifter"), subtitle: "The Far Station" },
+      true,
+    );
+    expect(far).toMatchObject({
+      kind: "art",
+      art: {
+        src: "/home/sample/cover-scifi.webp",
+        alt: "The Far Station, front cover. Sample",
+        sample: true,
+      },
+    });
+    if (far.kind === "art") {
+      expect(far.art.alt).not.toContain("Star Drifter");
+    }
+
+    const citadel = coverFor(
+      { ...byName("Realm Walker"), subtitle: "The Silver Citadel" },
+      true,
+    );
+    expect(citadel).toMatchObject({
+      kind: "art",
+      art: { src: "/home/cover-fantasy.webp", sample: true },
+    });
   });
 
   it("prefers a real upload over any fallback", () => {

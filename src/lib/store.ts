@@ -295,7 +295,12 @@ export const SAMPLE_WORLD_FOR: Readonly<Record<string, string>> = {
   horror: "Surreal",
 };
 
-function sampleFor(product: Pick<Product, "category">) {
+function titlesMatch(a: string, b: string): boolean {
+  return a.trim().toLowerCase() === b.trim().toLowerCase();
+}
+
+/** World plate behind a book. Not a cover: it carries no other book's title. */
+function sampleWorld(product: Pick<Product, "category">) {
   const world = SAMPLE_WORLD_FOR[worldSlug(product.category ?? "")];
   if (!world) return null;
   const book = SAMPLE_BOOKS.find((entry) => entry.world === world);
@@ -304,9 +309,15 @@ function sampleFor(product: Pick<Product, "category">) {
   return { world, book, plate };
 }
 
+/** A SAMPLE cover belongs to one title. Anything else stays a lettered plate. */
+function sampleCover(product: Pick<Product, "title" | "subtitle">) {
+  const name = bookName(product);
+  return SAMPLE_BOOKS.find((entry) => titlesMatch(entry.title, name)) ?? null;
+}
+
 /**
- * A real upload wins, then (previews only) Studio's SAMPLE cover, else the
- * lettered plate. No book borrows another book's art on production.
+ * A real upload wins. A SAMPLE cover is used only when that sample's title
+ * is this book's own name. Otherwise the lettered plate (ink on cream).
  */
 export function coverFor(
   product: Pick<Product, "title" | "subtitle" | "category" | "image_url">,
@@ -325,13 +336,13 @@ export function coverFor(
       },
     };
   }
-  const sample = samples ? sampleFor(product) : null;
-  if (sample) {
+  const book = samples ? sampleCover(product) : null;
+  if (book) {
     return {
       kind: "art",
       art: {
-        src: sample.book.cover,
-        alt: `Sample cover art standing in for ${name} (Studio's ${sample.world} sample, ${sample.book.title})`,
+        src: book.cover,
+        alt: `${book.title}, front cover. Sample`,
         ...COVER_SIZE,
         remote: false,
         sample: true,
@@ -347,7 +358,7 @@ export function plateBackground(
   samples: boolean,
 ): string | null {
   if (!samples) return null;
-  return sampleFor(product)?.plate.art ?? null;
+  return sampleWorld(product)?.plate.art ?? null;
 }
 
 export type GalleryItem = {
@@ -364,7 +375,7 @@ export function productGallery(
   const items: GalleryItem[] = [
     { key: "cover", label: "Cover", cover: coverFor(product, samples) },
   ];
-  const sample = samples ? sampleFor(product) : null;
+  const sample = samples ? sampleWorld(product) : null;
   if (sample) {
     items.push({
       key: "world",
