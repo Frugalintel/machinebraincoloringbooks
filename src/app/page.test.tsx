@@ -186,4 +186,18 @@ describe("Home SAMPLE flag", () => {
     expect(field).not.toHaveAttribute("placeholder");
     expect(field).toHaveAccessibleDescription("From the foot of any page");
   });
+
+  it("does not hard-code a book count in the shop plate", () => {
+    renderHome("production");
+    const shop = screen
+      .getByRole("heading", { name: "Pick a world." })
+      .closest("section")!;
+    const lead = shop.querySelector(".lead");
+    expect(lead).toHaveTextContent(
+      "The books, one world each. Start with the one that pulls you in.",
+    );
+    expect(lead?.textContent).not.toMatch(
+      /\b(one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+books?\b/i,
+    );
+  });
 });
