@@ -5,7 +5,13 @@ import { useEffect, useRef, type RefObject } from "react";
 import { X } from "lucide-react";
 import { BrandLockup } from "@/components/mark";
 import { HEADER_MARK_SIZE_MOBILE_PX } from "@/lib/mark";
-import { SHELL_FOCUS, SITE_NAV_LINKS, isNavLinkActive } from "@/lib/site-shell";
+import {
+  SHELL_FOCUS,
+  SITE_NAV_LINKS,
+  isNavLinkActive,
+  isOverlayLinkCurrent,
+  type SiteLink,
+} from "@/lib/site-shell";
 import { cn } from "@/lib/utils";
 
 const FOCUSABLE =
@@ -24,6 +30,7 @@ export function MobileNav({
   triggerRef,
   pathname,
   accountLinks,
+  links = SITE_NAV_LINKS,
 }: {
   open: boolean;
   onClose: () => void;
@@ -31,6 +38,7 @@ export function MobileNav({
   triggerRef: RefObject<HTMLButtonElement | null>;
   pathname: string;
   accountLinks: readonly MobileNavAccountLink[];
+  links?: readonly SiteLink[];
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -128,8 +136,10 @@ export function MobileNav({
           <div>
             <p className="font-label mb-4 text-signal tracking-[0.1em]">Menu</p>
             <ul className="flex flex-col gap-1">
-              {SITE_NAV_LINKS.map((link, index) => {
-                const active = isNavLinkActive(pathname, link.href);
+              {links.map((link, index) => {
+                const active = link.href.includes("#")
+                  ? isOverlayLinkCurrent(pathname, link)
+                  : isNavLinkActive(pathname, link.href);
                 return (
                   <li key={link.href}>
                     <Link

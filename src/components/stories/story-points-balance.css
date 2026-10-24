@@ -1,0 +1,19 @@
+/**
+ * Off-guide: the points balance numeral. Absent when no balance field exists.
+ */
+.story-points-balance {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 6px 0 10px;
+}
+
+.story-points-balance b {
+  font: 700 52px/1 var(--sans);
+  letter-spacing: -0.04em;
+  color: var(--cream);
+}
+
+.story-points-balance span {
+  font: 600 17px/1 var(--sans);
+}

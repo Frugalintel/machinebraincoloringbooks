@@ -6,6 +6,7 @@ import {
   headerVariantFor,
   hidesCustomerFooter,
   isNavLinkActive,
+  isOverlayLinkCurrent,
   isStorePath,
   overlayLinksFor,
 } from "@/lib/site-shell";
@@ -50,10 +51,39 @@ describe("site shell routes", () => {
 });
 
 describe("headerVariantFor", () => {
-  it("uses the full chrome on customer pages outside home and the store", () => {
-    expect(headerVariantFor("/stories")).toBe("full");
+  it("uses the full chrome on customer pages outside home, the store, and stories", () => {
     expect(headerVariantFor("/collectibles")).toBe("full");
-    expect(hidesCustomerFooter("/stories")).toBe(false);
+    expect(headerVariantFor("/help")).toBe("full");
+    expect(hidesCustomerFooter("/collectibles")).toBe(false);
+  });
+
+  it("gives stories the store nav, plus Stories, and lets the page own its footer", () => {
+    expect(headerVariantFor("/stories")).toBe("solid");
+    expect(headerVariantFor("/stories/lantern")).toBe("solid");
+    expect(headerVariantFor("/storyteller")).toBe("full");
+    expect(hidesCustomerFooter("/stories")).toBe(true);
+    expect(hidesCustomerFooter("/stories/lantern")).toBe(true);
+    expect(overlayLinksFor("/stories").map((link) => link.name)).toEqual([
+      "Books",
+      "Worlds",
+      "Stories",
+      "About",
+    ]);
+    expect(overlayLinksFor("/stories/1").map((link) => link.href)).toEqual([
+      "/store",
+      "/store#worlds",
+      "/stories",
+      "/about",
+    ]);
+    expect(
+      isOverlayLinkCurrent("/stories/1", { name: "Stories", href: "/stories" }),
+    ).toBe(true);
+    expect(
+      isOverlayLinkCurrent("/stories", { name: "Books", href: "/store" }),
+    ).toBe(false);
+    expect(
+      isOverlayLinkCurrent("/store", { name: "Worlds", href: "/store#worlds" }),
+    ).toBe(false);
   });
 
   it("gives the store Home's nav on a solid bar and lets it own its footer", () => {

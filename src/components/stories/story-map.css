@@ -1,0 +1,147 @@
+/**
+ * Off-guide: the story-map diagram and the orange current-node dot.
+ * Kept here so the graphic can change without touching the page layout.
+ */
+.story-map-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.story-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.story-map .e {
+  fill: none;
+  stroke: rgb(242 234 216 / 0.5);
+  stroke-width: 1.5;
+}
+
+.story-map .e.is-path {
+  stroke: var(--cream);
+  stroke-width: 3.5;
+}
+
+.story-map .e.is-next {
+  stroke: var(--cream);
+  stroke-width: 2;
+  stroke-dasharray: 1 7;
+  stroke-linecap: round;
+}
+
+.story-map .n {
+  fill: var(--base);
+  stroke: var(--cream);
+  stroke-width: 1.5;
+}
+
+.story-map .n.is-path {
+  fill: var(--cream);
+}
+
+.story-map .n.is-current {
+  fill: var(--signal);
+  stroke: var(--signal);
+}
+
+.story-map .halo {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+.story-map .lb {
+  font: 500 11px/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: rgb(242 234 216 / 0.72);
+  stroke: var(--base);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+
+.story-map .lb.is-path,
+.story-map .lb.is-next {
+  fill: var(--cream);
+}
+
+.story-map .lb.is-here {
+  fill: var(--signal);
+}
+
+.story-map.is-ghost .e {
+  stroke: rgb(242 234 216 / 0.34);
+  stroke-dasharray: 3 6;
+}
+
+.story-map.is-ghost .n {
+  stroke: rgb(242 234 216 / 0.45);
+}
+
+.story-map.is-open .e {
+  stroke: rgb(242 234 216 / 0.7);
+  stroke-width: 2;
+}
+
+.story-map-choices {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.stories-b .map-frame {
+  display: grid;
+  min-width: 0;
+}
+
+.stories-b .map-frame.card {
+  aspect-ratio: 820 / 380;
+}
+
+.stories-b .map-frame.hero {
+  aspect-ratio: 1360 / 430;
+}
+
+.stories-b .map-frame .story-map-wrap {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+.stories-b .map-frame .mapv {
+  display: none;
+}
+
+.stories-b .map-reader {
+  width: 100%;
+  max-width: 420px;
+}
+
+@media (max-width: 760px) {
+  .stories-b .map-frame.card,
+  .stories-b .map-frame.hero {
+    aspect-ratio: 350 / 440;
+  }
+
+  .stories-b .map-frame .maph {
+    display: none;
+  }
+
+  .stories-b .map-frame .mapv {
+    display: block;
+  }
+
+  .stories-b .map-reader {
+    max-width: 300px;
+  }
+}

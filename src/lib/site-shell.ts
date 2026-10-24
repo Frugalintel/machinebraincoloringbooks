@@ -82,9 +82,34 @@ export const STORE_NAV_LINKS: readonly SiteLink[] = [
   { name: "About", href: "/about" },
 ];
 
+/**
+ * Stories uses the same solid nav as the store, with Stories in the list.
+ * Worlds stays on the store filter: there is no /worlds route yet.
+ */
+export const STORIES_NAV_LINKS: readonly SiteLink[] = [
+  { name: "Books", href: "/store" },
+  { name: "Worlds", href: "/store#worlds" },
+  { name: "Stories", href: "/stories" },
+  { name: "About", href: "/about" },
+];
+
+export function isStoriesPath(pathname: string): boolean {
+  return pathname === "/stories" || pathname.startsWith("/stories/");
+}
+
 export function overlayLinksFor(pathname: string): readonly SiteLink[] {
+  if (isStoriesPath(pathname)) return STORIES_NAV_LINKS;
   if (isStorePath(pathname)) return STORE_NAV_LINKS;
   return pathname === "/auth" ? AUTH_OVERLAY_LINKS : HOME_OVERLAY_LINKS;
+}
+
+export function isOverlayLinkCurrent(
+  pathname: string,
+  link: SiteLink,
+): boolean {
+  if (link.href.includes("#")) return false;
+  if (link.href === "/store") return isStorePath(pathname);
+  return isNavLinkActive(pathname, link.href);
 }
 
 export function isMinimalChromePath(pathname: string): boolean {
@@ -106,7 +131,7 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   if (pathname === "/" || pathname === "/auth") {
     return "overlay";
   }
-  if (isStorePath(pathname)) {
+  if (isStorePath(pathname) || isStoriesPath(pathname)) {
     return "solid";
   }
   return "full";
