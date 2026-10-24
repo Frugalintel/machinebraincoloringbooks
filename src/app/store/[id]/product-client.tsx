@@ -191,8 +191,8 @@ export function ProductClient({
   const sentence = plateSentence(product.description);
   const description = product.description?.replace(/\s+/g, " ").trim();
   const rest =
-    description && sentence && description !== sentence
-      ? description
+    description && sentence && description.length > sentence.length
+      ? description.slice(sentence.length).trim()
       : undefined;
   const spec = shortSpec(product);
   const rows = specRows(product);

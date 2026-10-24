@@ -200,6 +200,16 @@ describe("Product page", () => {
     expect(Number(frame.style.aspectRatio)).toBeCloseTo(8 / 10);
   });
 
+  it("shows the first sentence, then only the rest of the description", () => {
+    renderBook({
+      ...scifi,
+      description: "First sentence. The rest of it.",
+    });
+
+    expect(screen.getAllByText("First sentence.")).toHaveLength(1);
+    expect(screen.getByText("The rest of it.")).toBeInTheDocument();
+  });
+
   it("keeps Realm Walker lettered in production, with no Silver Citadel art", () => {
     const { container } = renderBook(fantasy);
 
