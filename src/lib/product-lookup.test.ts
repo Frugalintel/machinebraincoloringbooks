@@ -80,14 +80,14 @@ describe("fetchProductById", () => {
       discount_percent: null,
       is_published: true,
       image_url: null,
-      page_count: "48",
-      trim_width_in: null,
-      paper: null,
+      pages: "48",
+      trim: null,
+      sides: null,
     };
     const product = await fetchProductById("u1");
-    expect(product).toMatchObject({ page_count: 48, discount_percent: 0 });
-    expect(product).not.toHaveProperty("trim_width_in");
-    expect(product).not.toHaveProperty("paper");
+    expect(product).toMatchObject({ pages: 48, discount_percent: 0 });
+    expect(product).not.toHaveProperty("trim");
+    expect(product).not.toHaveProperty("sides");
     expect(product?.image_url).toBeUndefined();
   });
 });

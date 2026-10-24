@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
+import { coverAspect } from "@/lib/book-specs";
 import { logger } from "@/lib/logger";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
 import { fetchPublishedProducts, productsOrCatalog } from "@/lib/products";
@@ -131,6 +132,7 @@ function BookShelf({
                 sizes={SHELF_SIZES}
                 priority={index < 6}
                 decorative
+                aspect={coverAspect(product)}
               />
             </Link>
           </li>
@@ -264,6 +266,7 @@ function BookPlate({
           sizes={PLATE_SIZES}
           priority={index === 0}
           decorative
+          aspect={coverAspect(product)}
         />
       </Link>
       <h2 id={`t-${product.id}`} className="tl font-display">
@@ -336,6 +339,7 @@ function IndexRow({
             plate={{ world, title: name, price }}
             sizes={ROW_SIZES}
             decorative
+            aspect={coverAspect(product)}
           />
         </span>
         <span className="no mono">{plateCode(index)}</span>

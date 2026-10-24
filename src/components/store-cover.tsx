@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import { CoverArt } from "@/components/cover-art";
 import { STORE_COPY, type StoreCover } from "@/lib/store";
 
@@ -19,6 +20,7 @@ export function StoreCoverView({
   priority = false,
   decorative = false,
   tone = "base",
+  aspect,
 }: {
   cover: StoreCover;
   plate: StorePlateText;
@@ -26,13 +28,17 @@ export function StoreCoverView({
   priority?: boolean;
   decorative?: boolean;
   tone?: "base" | "paper";
+  /** Trim aspect. The CSS frame stays 720 / 932 when this is omitted. */
+  aspect?: number;
 }) {
+  const frame: CSSProperties | undefined =
+    aspect && aspect > 0 ? { aspectRatio: aspect } : undefined;
   switch (cover.kind) {
     case "art": {
       const { art } = cover;
       const alt = decorative ? "" : art.alt;
       return (
-        <span className="cover">
+        <span className="cover" style={frame}>
           {art.remote ? (
             <CoverArt
               src={art.src}
@@ -57,7 +63,7 @@ export function StoreCoverView({
     }
     case "plate":
       return (
-        <span className="cover">
+        <span className="cover" style={frame}>
           <span
             className={tone === "paper" ? "s-plate paper" : "s-plate"}
             {...(decorative

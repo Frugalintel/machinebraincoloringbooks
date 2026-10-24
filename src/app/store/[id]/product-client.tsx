@@ -9,6 +9,7 @@ import { ReviewsSection } from "@/components/reviews-section";
 import { StoreCoverView } from "@/components/store-cover";
 import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
+import { coverAspect } from "@/lib/book-specs";
 import { HOME_ART } from "@/lib/home";
 import { logger } from "@/lib/logger";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
@@ -126,6 +127,7 @@ function MoreBook({
           plate={{ world, title: name, price }}
           sizes={MORE_SIZES}
           decorative
+          aspect={coverAspect(product)}
         />
         <span className="mono">
           {plateCode(index)} · {world}
@@ -245,6 +247,7 @@ export function ProductClient({
               }}
               sizes={COVER_SIZES}
               priority
+              aspect={coverAspect(product)}
             />
             {sampleArt ? (
               <figcaption className="mono smp">

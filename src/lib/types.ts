@@ -14,23 +14,26 @@ export interface Product {
   is_published: boolean;
   created_at?: string;
   updated_at?: string;
-  page_count?: number;
-  trim_width_in?: number;
-  trim_height_in?: number;
-  paper?: string;
+  pages?: number;
+  /** "single" when the book is printed single-sided. */
+  sides?: string;
+  /** Trim as printed, e.g. "8.5 × 11 in". */
+  trim?: string;
   binding?: string;
-  /** Two-line mobile title; a newline marks the break. */
-  title_lines?: string;
+  /** Detail on the catalogue's 5-point scale. */
+  detail?: number;
+  /** Two-line title; a newline marks the break. */
+  lines?: string;
 }
 
 /** Optional book spec columns; absent until the spec migration is applied. */
 export interface DatabaseBookSpecs {
-  page_count?: number | string | null;
-  trim_width_in?: number | string | null;
-  trim_height_in?: number | string | null;
-  paper?: string | null;
+  pages?: number | string | null;
+  sides?: string | null;
+  trim?: string | null;
   binding?: string | null;
-  title_lines?: string | null;
+  detail?: number | string | null;
+  lines?: string | null;
 }
 
 export interface Collectible {

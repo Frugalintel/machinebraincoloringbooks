@@ -23,7 +23,7 @@ export const mapDatabaseProduct = (p: DatabaseProduct): Product => ({
   price: Number(p.price),
   discount_percent: Number(p.discount_percent || 0),
   difficulty: Number(p.difficulty || 1),
-  age: p.age || "All Ages",
+  age: typeof p.age === "string" ? p.age.trim() : "",
   category: p.category,
   color: p.color || "bg-background",
   accent: p.accent || "bg-cream",

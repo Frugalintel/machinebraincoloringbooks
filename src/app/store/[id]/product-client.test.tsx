@@ -171,6 +171,35 @@ describe("Product page", () => {
     expect(container.textContent).toMatch(/Vol 02 · Sample/);
   });
 
+  it("shows only the spec fields a book has, and sizes the cover from its trim", () => {
+    const { container } = renderBook({
+      ...classics,
+      lines: "The\nOrigin",
+      pages: 40,
+      sides: "single",
+      trim: "8 × 10 in",
+      binding: "Paperback",
+      detail: 2,
+    });
+
+    expect(
+      [...container.querySelectorAll("h1 span")].map(
+        (span) => span.textContent,
+      ),
+    ).toEqual(["The", "Origin"]);
+    expect(
+      [...container.querySelectorAll("dl dt")].map((dt) => dt.textContent),
+    ).toEqual(["World", "Plates", "Trim", "Binding", "Detail", "Age"]);
+    expect(container.querySelector("dl")).toHaveTextContent(
+      "40, printed single-sided",
+    );
+    expect(container.querySelector(".buyb .sl")).toHaveTextContent(
+      "40 plates · 8 × 10 in · Paperback",
+    );
+    const frame = container.querySelector(".top .cover") as HTMLElement;
+    expect(Number(frame.style.aspectRatio)).toBeCloseTo(8 / 10);
+  });
+
   it("keeps Realm Walker lettered in production, with no Silver Citadel art", () => {
     const { container } = renderBook(fantasy);
 
