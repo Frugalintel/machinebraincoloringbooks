@@ -127,14 +127,12 @@ describe("Product page", () => {
     expect(screen.getByText("Cover art · Sample")).toBeInTheDocument();
   });
 
-  it("shows the real Silver Citadel art for the Fantasy book in production", () => {
+  it("keeps Realm Walker lettered in production, with no Silver Citadel art", () => {
     render(<ProductClient product={fantasy} />);
 
-    const main = document.querySelector(".sp-gallery > .cover img")!;
-    expect(main).toHaveAttribute("src", "/home/cover-fantasy.webp");
-    expect(main).toHaveAttribute("sizes");
-    expect(main).toHaveAttribute("data-preload");
-    expect(screen.getAllByRole("button", { name: /^Show / })).toHaveLength(3);
+    expect(document.querySelector(".sp-gallery img")).toBeNull();
+    expect(document.querySelector(".sp-gallery .s-plate")).not.toBeNull();
+    expect(screen.queryByRole("button", { name: /^Show / })).toBeNull();
     expect(screen.queryByText(/sample/i)).toBeNull();
   });
 });

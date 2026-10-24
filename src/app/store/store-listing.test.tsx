@@ -172,16 +172,14 @@ describe("Store listing", () => {
     expect(cards()).toHaveLength(MOCK_CATALOG.length);
   });
 
-  it("uses typographic plates in production and the real Fantasy cover", async () => {
+  it("letters every cover in production, with no art borrowed from Home", async () => {
     const { container } = await renderStore({ samples: false });
 
-    expect(container.querySelectorAll(".s-plate")).toHaveLength(8);
-    const images = [...container.querySelectorAll("img")];
-    expect(images.map((img) => img.getAttribute("src"))).toEqual([
-      "/home/cover-fantasy.webp",
-    ]);
+    expect(container.querySelectorAll(".s-plate")).toHaveLength(
+      MOCK_CATALOG.length,
+    );
+    expect(container.querySelectorAll("img")).toHaveLength(0);
     expect(screen.queryByText("Sample")).toBeNull();
-    for (const img of images) expect(img).toHaveAttribute("sizes");
   });
 
   it("labels Studio's SAMPLE covers on previews", async () => {

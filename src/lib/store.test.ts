@@ -3,7 +3,6 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { MOCK_CATALOG } from "@/__tests__/store-catalog";
 import {
-  SILVER_CITADEL_COVER,
   STORE_COPY,
   PRODUCT_COPY,
   bookName,
@@ -75,18 +74,11 @@ describe("cover art and the SAMPLE switch", () => {
     expect(storeShowsSamples(undefined)).toBe(true);
   });
 
-  it("falls back to the typographic plate in production for every book but Fantasy", () => {
+  it("letters every book in production, Realm Walker included, with no borrowed art", () => {
     for (const product of MOCK_CATALOG) {
-      const cover = coverFor(product, false);
-      if (product.category === "FANTASY") {
-        expect(cover).toMatchObject({
-          kind: "art",
-          art: { src: SILVER_CITADEL_COVER, sample: false },
-        });
-      } else {
-        expect(cover).toEqual({ kind: "plate" });
-      }
+      expect(coverFor(product, false)).toEqual({ kind: "plate" });
     }
+    expect(coverFor(byName("Realm Walker"), true)).toEqual({ kind: "plate" });
   });
 
   it("uses Studio's SAMPLE covers on previews, labelled, and only from the sample folder", () => {
@@ -121,11 +113,8 @@ describe("cover art and the SAMPLE switch", () => {
   });
 
   it("builds the product gallery from real art, plus a SAMPLE world plate on previews", () => {
-    const fantasy = productGallery(byName("Realm Walker"), false);
-    expect(fantasy.map((item) => item.key)).toEqual(["cover", "page", "color"]);
-    for (const item of fantasy) {
-      expect(item.cover.kind === "art" && item.cover.art.sample).toBe(false);
-    }
+    expect(productGallery(byName("Realm Walker"), false)).toHaveLength(1);
+    expect(productGallery(byName("Realm Walker"), true)).toHaveLength(1);
     expect(productGallery(byName("Star Drifter"), false)).toHaveLength(1);
     const preview = productGallery(byName("Star Drifter"), true);
     expect(preview.map((item) => item.key)).toEqual(["cover", "world"]);

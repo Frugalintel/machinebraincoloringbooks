@@ -5,7 +5,6 @@
 import { toSentenceCase } from "@/lib/display-text";
 import {
   COVER_SIZE,
-  HOME_ART,
   HOME_WORLDS,
   SAMPLE_BOOKS,
   homeShowsSamples,
@@ -140,13 +139,6 @@ export type StoreArt = {
 
 export type StoreCover = { kind: "art"; art: StoreArt } | { kind: "plate" };
 
-const FANTASY = "fantasy";
-
-/** The real Silver Citadel cover, from Home's Fantasy book. */
-export const SILVER_CITADEL_COVER =
-  SAMPLE_BOOKS.find((book) => book.world === "Fantasy")?.cover ??
-  "/home/cover-fantasy.webp";
-
 /**
  * Preview only: which of Studio's SAMPLE worlds stands in for a catalog world.
  * Worlds with no close match keep the typographic plate on previews too.
@@ -159,10 +151,6 @@ export const SAMPLE_WORLD_FOR: Readonly<Record<string, string>> = {
   horror: "Surreal",
 };
 
-function isFantasy(product: Pick<Product, "category">): boolean {
-  return worldSlug(product.category ?? "") === FANTASY;
-}
-
 function sampleFor(product: Pick<Product, "category">) {
   const world = SAMPLE_WORLD_FOR[worldSlug(product.category ?? "")];
   if (!world) return null;
@@ -173,8 +161,8 @@ function sampleFor(product: Pick<Product, "category">) {
 }
 
 /**
- * A real upload wins, then the real Silver Citadel art for the Fantasy book,
- * then (previews only) Studio's SAMPLE cover, else the typographic plate.
+ * A real upload wins, then (previews only) Studio's SAMPLE cover, else the
+ * lettered plate. No book borrows another book's art on production.
  */
 export function coverFor(
   product: Pick<Product, "title" | "subtitle" | "category" | "image_url">,
@@ -189,18 +177,6 @@ export function coverFor(
         alt: `${name}, front cover`,
         ...COVER_SIZE,
         remote: true,
-        sample: false,
-      },
-    };
-  }
-  if (isFantasy(product)) {
-    return {
-      kind: "art",
-      art: {
-        src: SILVER_CITADEL_COVER,
-        alt: `${name}, front cover: The Silver Citadel art`,
-        ...COVER_SIZE,
-        remote: false,
         sample: false,
       },
     };
@@ -227,7 +203,7 @@ export type GalleryItem = {
   cover: StoreCover;
 };
 
-/** Cover first; real interior plates for the Fantasy book; SAMPLE world plate on previews. */
+/** Cover first, then a SAMPLE world plate on previews. */
 export function productGallery(
   product: Pick<Product, "title" | "subtitle" | "category" | "image_url">,
   samples: boolean,
@@ -235,37 +211,6 @@ export function productGallery(
   const items: GalleryItem[] = [
     { key: "cover", label: "Cover", cover: coverFor(product, samples) },
   ];
-  if (isFantasy(product)) {
-    items.push(
-      {
-        key: "page",
-        label: "A page in line",
-        cover: {
-          kind: "art",
-          art: {
-            ...HOME_ART.page,
-            alt: "A printed page from The Silver Citadel, in line, before coloring",
-            remote: false,
-            sample: false,
-          },
-        },
-      },
-      {
-        key: "color",
-        label: "The same plate, colored",
-        cover: {
-          kind: "art",
-          art: {
-            ...HOME_ART.color,
-            alt: "A plate from The Silver Citadel, colored",
-            remote: false,
-            sample: false,
-          },
-        },
-      },
-    );
-    return items;
-  }
   const sample = samples ? sampleFor(product) : null;
   if (sample) {
     items.push({
