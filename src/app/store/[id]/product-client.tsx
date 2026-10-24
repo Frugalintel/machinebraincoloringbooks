@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Folio, RunningHead } from "@/components/home-plate";
 import { Mark } from "@/components/mark";
 import { ReviewsSection } from "@/components/reviews-section";
@@ -150,10 +150,22 @@ export function ProductClient({
 }: ProductClientProps) {
   const { addItem, setIsCartOpen } = useCart();
   const { campaign } = useSettings();
+  const buyPanel = useRef<HTMLDivElement>(null);
+  const [buyAway, setBuyAway] = useState(false);
   const [addedFor, setAddedFor] = useState<string | null>(null);
   const [loaded, setLoaded] = useState<readonly Product[] | null>(
     catalog ?? null,
   );
+
+  useEffect(() => {
+    const panel = buyPanel.current;
+    if (!panel || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setBuyAway(!entry.isIntersecting);
+    });
+    observer.observe(panel);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (catalog) return;
@@ -271,7 +283,7 @@ export function ProductClient({
             </h1>
             {sentence ? <p className="sub">{sentence}</p> : null}
             {rest ? <p className="ds">{rest}</p> : null}
-            <div className="buyb" aria-label={PRODUCT_COPY.buy}>
+            <div className="buyb" ref={buyPanel} aria-label={PRODUCT_COPY.buy}>
               <BuyPrice
                 priceInfo={priceInfo}
                 campaignName={
@@ -425,7 +437,10 @@ export function ProductClient({
           <ReviewsSection productId={product.id} productTitle={product.title} />
         </div>
       </main>
-      <div className="mbar" aria-label={PRODUCT_COPY.buyShort}>
+      <div
+        className={buyAway ? "mbar is-on" : "mbar"}
+        aria-label={PRODUCT_COPY.buyShort}
+      >
         <BuyPrice
           priceInfo={priceInfo}
           campaignName={

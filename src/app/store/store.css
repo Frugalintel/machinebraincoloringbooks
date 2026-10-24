@@ -1506,7 +1506,7 @@
     line-height: 24px;
   }
 
-  .store-e2 .mbar {
+  .store-e2 .mbar.is-on {
     display: flex;
     position: fixed;
     bottom: 0;
@@ -1532,7 +1532,7 @@
     font-size: 22px;
   }
 
-  .store-e2:has(.mbar) {
+  .store-e2:has(.mbar.is-on) {
     padding-bottom: calc(76px + env(safe-area-inset-bottom));
   }
 }

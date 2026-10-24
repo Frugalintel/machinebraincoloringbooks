@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MOCK_CATALOG } from "@/__tests__/store-catalog";
 import { ProductClient } from "@/app/store/[id]/product-client";
 
@@ -29,6 +29,10 @@ beforeEach(() => {
   shop.addItem.mockReset();
   shop.setIsCartOpen.mockReset();
   shop.campaign = { isActive: false, name: "" };
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
 });
 
 function renderBook(product: typeof classics, samples = false) {
@@ -126,6 +130,44 @@ describe("Product page", () => {
     fireEvent.click(buttons[1]);
     expect(shop.addItem).toHaveBeenCalledTimes(2);
     expect(shop.setIsCartOpen).toHaveBeenCalledTimes(2);
+  });
+
+  it("shows the fixed buy bar only once the buy panel has left the screen", () => {
+    let onIntersect: IntersectionObserverCallback | undefined;
+    const disconnect = vi.fn();
+    class Observer {
+      constructor(callback: IntersectionObserverCallback) {
+        onIntersect = callback;
+      }
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = disconnect;
+      takeRecords = () => [];
+      root = null;
+      rootMargin = "";
+      thresholds = [];
+    }
+    vi.stubGlobal("IntersectionObserver", Observer);
+
+    const { container } = renderBook(classics);
+    const bar = container.querySelector(".mbar") as HTMLElement;
+    expect(bar.classList.contains("is-on")).toBe(false);
+
+    act(() => {
+      onIntersect?.(
+        [{ isIntersecting: false } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+    expect(bar.classList.contains("is-on")).toBe(true);
+
+    act(() => {
+      onIntersect?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+    expect(bar.classList.contains("is-on")).toBe(false);
   });
 
   it("falls back to a labelled typographic cover in production", () => {
