@@ -21,7 +21,7 @@ vi.mock("next/navigation", () => ({
 
 describe("Footer", () => {
   beforeEach(() => {
-    nav.pathname = "/store";
+    nav.pathname = "/stories";
   });
 
   it("renders grouped links, legal, and the F3 lockup", () => {

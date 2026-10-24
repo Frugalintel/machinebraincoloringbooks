@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import { toSentenceCase } from "@/lib/display-text";
 import { fetchProductById } from "@/lib/product-lookup";
 import { SITE_URL } from "@/lib/site-url";
+import { bookName, productDescription, storeShowsSamples } from "@/lib/store";
 import { ProductClient } from "./product-client";
 
 interface PageProps {
@@ -45,43 +45,27 @@ export async function generateMetadata({
 
   if (!product) {
     return {
-      title: "Product Not Found | MACHINE BRAIN",
-      description: "The requested product could not be found.",
+      title: "Book not found | Machine Brain",
+      description: "This book is not in the catalog.",
     };
   }
 
-  const baseUrl = SITE_URL;
+  const title = `${bookName(product)} | Machine Brain`;
+  const description = productDescription(product);
 
   return {
-    title: `${toSentenceCase(product.title)} | Machine Brain coloring books`,
-    description:
-      product.description ||
-      `${toSentenceCase(product.title)} - ${product.subtitle}. Vintage sci-fi coloring book.`,
+    title,
+    description,
     openGraph: {
-      title: `${toSentenceCase(product.title)} | Machine Brain`,
-      description:
-        product.description ||
-        `${toSentenceCase(product.title)} - Vintage sci-fi coloring book`,
+      title,
+      description,
       type: "website",
-      url: `${baseUrl}/store/${product.id}`,
-      images: product.image_url
-        ? [
-            {
-              url: product.image_url,
-              width: 800,
-              height: 600,
-              alt: toSentenceCase(product.title),
-            },
-          ]
-        : undefined,
+      url: `${SITE_URL}/store/${product.id}`,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${toSentenceCase(product.title)} | Machine Brain`,
-      description:
-        product.description ||
-        `${toSentenceCase(product.title)} - Vintage sci-fi coloring book`,
-      images: product.image_url ? [product.image_url] : undefined,
+      title,
+      description,
     },
   };
 }
@@ -94,5 +78,10 @@ export default async function ProductPage({ params }: PageProps) {
     notFound();
   }
 
-  return <ProductClient product={product} />;
+  return (
+    <ProductClient
+      product={product}
+      samples={storeShowsSamples(process.env.VERCEL_ENV)}
+    />
+  );
 }

@@ -59,7 +59,7 @@ function menuButton() {
 
 describe("Navbar", () => {
   beforeEach(() => {
-    nav.pathname = "/store";
+    nav.pathname = "/stories";
     nav.cartCount = 2;
     nav.user = null;
     nav.isAdmin = false;
@@ -251,6 +251,50 @@ describe("Navbar", () => {
     render(<Navbar />);
     fireEvent.click(screen.getByRole("button", { name: "Cart 2" }));
     expect(nav.setIsCartOpen).toHaveBeenCalledWith(true);
+  });
+
+  it("gives the store Home's nav on a solid bar, with cart and sign in always reachable", () => {
+    for (const path of ["/store", "/store/abc"]) {
+      nav.pathname = path;
+      nav.cartCount = 0;
+      const { container, unmount } = render(<Navbar />);
+
+      expect(container.querySelector("header")).toHaveAttribute(
+        "data-site-chrome",
+        "solid",
+      );
+      const primary = screen.getByRole("navigation", { name: "Primary" });
+      expect(
+        within(primary)
+          .getAllByRole("link")
+          .map((link) => [link.textContent, link.getAttribute("href")]),
+      ).toEqual([
+        ["Machine Brain", "/"],
+        ["Books", "/store"],
+        ["Worlds", "/store#worlds"],
+        ["About", "/about"],
+      ]);
+      expect(
+        within(primary).getByRole("link", { name: "Books" }),
+      ).toHaveAttribute("aria-current", "page");
+
+      fireEvent.click(screen.getByRole("button", { name: "Cart" }));
+      expect(nav.setIsCartOpen).toHaveBeenCalledWith(true);
+      fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+      expect(nav.openAuthModal).toHaveBeenCalledWith("login");
+      unmount();
+    }
+  });
+
+  it("shows Account instead of Sign in on the store once you are signed in", () => {
+    nav.pathname = "/store";
+    nav.user = { email: "you@example.com", id: "u1", initials: "YO" };
+    render(<Navbar />);
+    expect(screen.getByRole("link", { name: "Account" })).toHaveAttribute(
+      "href",
+      "/profile/me",
+    );
+    expect(screen.queryByRole("button", { name: "Sign in" })).toBeNull();
   });
 
   it("hides the customer navbar on admin", () => {

@@ -1,5 +1,8 @@
-import { SystemLoading } from "@/components/system-loading";
+import { storeShowsSamples } from "@/lib/store";
+import { StoreListingSkeleton } from "./store-listing";
 
 export default function StoreLoading() {
-  return <SystemLoading variant="catalog" />;
+  return (
+    <StoreListingSkeleton samples={storeShowsSamples(process.env.VERCEL_ENV)} />
+  );
 }
