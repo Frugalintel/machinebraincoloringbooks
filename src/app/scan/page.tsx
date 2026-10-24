@@ -257,7 +257,7 @@ function ScanFlow({ entry }: { entry: ScanEntry }) {
   // --- Step 3: Upload Logic ---
   const handleUpload = async () => {
     if (!user) {
-      openAuthModal();
+      openAuthModal("login", undefined, scannedCode ?? undefined);
       return;
     }
     if (!capturedImage || !scannedCode) return;

@@ -1,0 +1,404 @@
+/*
+ * Sign in, Studio S3 "One line": one dark plate, one giant Redaction line that
+ * changes with the state (the single H1), a one-row form band under a cream
+ * rule. Shared by /auth and AuthModal. Orange only on near-black: the small
+ * mono labels, the folio dot glyph and the 2px focus ring. Never a fill.
+ * Unlayered on purpose: the vw line sizes must beat `.font-display`.
+ */
+.sa {
+  --sa-m: 40px;
+  --sa-c2: rgb(242 234 216 / 0.66);
+  --sa-c4: rgb(242 234 216 / 0.42);
+  --sa-sans: var(--font-inter), system-ui, sans-serif;
+  --sa-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --sa-display: var(--font-redaction-50), Georgia, serif;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: max(100vh, 900px);
+  padding: 0 var(--sa-m) 72px;
+  background: var(--base);
+  color: var(--cream);
+  font: 400 17px/1.55 var(--sa-sans);
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+
+.sa[data-auth-context="modal"] {
+  min-height: max(100svh, 760px);
+}
+
+.sa-mono {
+  font: 500 11px/16px var(--sa-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sa-vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sa-top {
+  position: absolute;
+  z-index: 9;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 40px;
+}
+
+.sa-close {
+  font: 500 15px/24px var(--sa-sans);
+  color: var(--cream);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.sa-rh {
+  position: absolute;
+  z-index: 8;
+  left: var(--sa-m);
+  right: var(--sa-m);
+  top: 88px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  color: rgb(242 234 216 / 0.62);
+}
+
+.sa-rh span:nth-child(2) {
+  text-align: center;
+}
+
+.sa-rh span:last-child {
+  text-align: right;
+}
+
+.sa-h1 {
+  margin: 142px 0 0 -0.04em;
+  font: 700 18.2vw/0.8 var(--sa-display);
+  letter-spacing: -0.01em;
+  color: var(--cream);
+}
+
+.sa-h1:focus {
+  outline: none;
+}
+
+.sa-lines {
+  display: block;
+}
+
+.sa-lines[data-fit="in"] {
+  font-size: 22.3vw;
+}
+
+.sa-lines[data-fit="up"],
+.sa-lines[data-fit="code"] {
+  font-size: 19.7vw;
+}
+
+.sa-lines[data-fit="check"] {
+  font-size: 17.8vw;
+}
+
+.sa-l {
+  display: block;
+  white-space: nowrap;
+}
+
+.sa-l + .sa-l {
+  margin-top: 0.04em;
+}
+
+.sa-band {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 2px solid var(--cream);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.sa-side {
+  grid-column: 1 / 5;
+}
+
+.sa-main {
+  grid-column: 5 / 13;
+}
+
+.sa-why {
+  font: 400 16px/25px var(--sa-sans);
+  color: var(--sa-c2);
+  max-width: 21em;
+  text-wrap: pretty;
+}
+
+.sa-held {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.sa-signal {
+  color: var(--signal);
+}
+
+.sa-code {
+  font: 500 18px/1 var(--sa-mono);
+  letter-spacing: 0.3em;
+  padding: 9px 6px 9px 14px;
+  border: 2px solid currentColor;
+}
+
+.sa-held-text {
+  flex-basis: 100%;
+  font: 400 15px/22px var(--sa-sans);
+  color: var(--sa-c2);
+  max-width: 24em;
+}
+
+.sa-check-text {
+  font: 400 17px/26px var(--sa-sans);
+  margin: 10px 0 20px;
+  max-width: 26em;
+}
+
+.sa-quiet {
+  font: 500 16px/24px var(--sa-sans);
+  color: var(--cream);
+  padding: 0 0 2px;
+  border: 0;
+  background: linear-gradient(var(--sa-c4), var(--sa-c4)) 0 100% / 100% 1px
+    no-repeat;
+  cursor: pointer;
+}
+
+.sa-sum {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 2px solid var(--cream);
+  font: 400 15px/22px var(--sa-sans);
+}
+
+.sa-sum[data-tone="note"] {
+  border-color: var(--sa-c4);
+  color: var(--sa-c2);
+}
+
+.sa-sum b,
+.sa-msg b {
+  font: 600 11px/16px var(--sa-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--signal);
+}
+
+.sa-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0 16px;
+  align-items: start;
+}
+
+.sa-fields[data-mode="register"] {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+}
+
+.sa-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--sa-c2);
+}
+
+.sa-input {
+  display: block;
+  width: 100%;
+  height: 64px;
+  padding: 0 18px;
+  font: 400 17px/1 var(--sa-sans);
+  color: var(--cream);
+  background: transparent;
+  border: 2px solid var(--sa-c4);
+  border-radius: 0;
+  outline: 0;
+  appearance: none;
+}
+
+.sa-input[aria-invalid="true"] {
+  border-color: var(--cream);
+}
+
+.sa-input:focus-visible {
+  border-color: var(--cream);
+  background: var(--ink);
+  box-shadow:
+    0 0 0 2px var(--base),
+    0 0 0 4px var(--signal);
+}
+
+.sa-hint,
+.sa-msg {
+  margin-top: 8px;
+  font: 400 14px/20px var(--sa-sans);
+  text-wrap: pretty;
+}
+
+.sa-hint {
+  color: var(--sa-c2);
+}
+
+.sa-msg {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  color: var(--cream);
+}
+
+.sa-go {
+  padding-top: 26px;
+}
+
+.sa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 0;
+  font: 600 17px/1 var(--sa-sans);
+  white-space: nowrap;
+  color: var(--ink);
+  background: var(--cream);
+  cursor: pointer;
+}
+
+.sa-arrow {
+  display: inline-block;
+  width: 1em;
+  text-align: center;
+}
+
+.sa-btn[aria-disabled="true"] {
+  cursor: progress;
+}
+
+.sa-swap {
+  margin-top: 18px;
+  font: 400 15px/22px var(--sa-sans);
+  color: var(--sa-c2);
+}
+
+.sa-link {
+  font: 500 15px/22px var(--sa-sans);
+  color: var(--cream);
+  padding: 0 0 1px;
+  border: 0;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px
+    no-repeat;
+  cursor: pointer;
+}
+
+.sa :is(.sa-btn, .sa-link, .sa-quiet, .sa-close):focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 4px;
+}
+
+.sa-folio {
+  position: absolute;
+  z-index: 8;
+  left: 0;
+  right: 0;
+  bottom: 28px;
+  text-align: center;
+  color: rgb(242 234 216 / 0.5);
+}
+
+/* /auth sits on Home's footer plate, flush under the sign-in plate. */
+.home-e2.sa-page .ft {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  .sa {
+    --sa-m: 20px;
+    min-height: 0;
+    padding-bottom: 88px;
+  }
+
+  .sa[data-auth-context="modal"] {
+    min-height: 100svh;
+  }
+
+  .sa-top {
+    padding: 20px;
+  }
+
+  .sa-rh {
+    top: 76px;
+    grid-template-columns: 1fr auto;
+  }
+
+  .sa-rh span:nth-child(2) {
+    display: none;
+  }
+
+  .sa-h1 {
+    margin-top: 124px;
+  }
+
+  .sa-lines[data-fit="in"] {
+    font-size: 21.5vw;
+  }
+
+  .sa-lines[data-fit="up"],
+  .sa-lines[data-fit="code"] {
+    font-size: 18.9vw;
+  }
+
+  .sa-lines[data-fit="check"] {
+    font-size: 17vw;
+  }
+
+  .sa-band {
+    margin-top: 48px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .sa-side,
+  .sa-main {
+    grid-column: 1;
+  }
+
+  .sa-fields,
+  .sa-fields[data-mode="register"] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .sa-go {
+    padding-top: 4px;
+  }
+
+  .sa-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

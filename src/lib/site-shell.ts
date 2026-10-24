@@ -14,7 +14,7 @@ export type FooterLinkGroup = {
 };
 
 /**
- * "overlay": home draws the nav over its hero plate and owns its footer.
+ * "overlay": home and /auth draw the nav over their first plate and own their footer.
  * "solid": the same home nav on near-black; the store owns its footer too.
  */
 export type HeaderVariant = "full" | "overlay" | "solid" | "minimal" | "hidden";
@@ -62,9 +62,33 @@ export function isAdminPath(pathname: string): boolean {
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
+/** Over-plate nav links. Home keeps R-E2's Worlds; /auth (Studio S3) has Stories. */
+export const HOME_OVERLAY_LINKS: readonly SiteLink[] = [
+  { name: "Books", href: "/store" },
+  { name: "Worlds", href: "/store" },
+  { name: "About", href: "/about" },
+];
+
+export const AUTH_OVERLAY_LINKS: readonly SiteLink[] = [
+  { name: "Books", href: "/store" },
+  { name: "Stories", href: "/stories" },
+  { name: "About", href: "/about" },
+];
+
+/** The store already is "Books", so Worlds jumps to its world filter. */
+export const STORE_NAV_LINKS: readonly SiteLink[] = [
+  { name: "Books", href: "/store" },
+  { name: "Worlds", href: "/store#worlds" },
+  { name: "About", href: "/about" },
+];
+
+export function overlayLinksFor(pathname: string): readonly SiteLink[] {
+  if (isStorePath(pathname)) return STORE_NAV_LINKS;
+  return pathname === "/auth" ? AUTH_OVERLAY_LINKS : HOME_OVERLAY_LINKS;
+}
+
 export function isMinimalChromePath(pathname: string): boolean {
   return (
-    pathname === "/auth" ||
     pathname.startsWith("/auth/") ||
     pathname === "/scan" ||
     pathname === "/review" ||
@@ -79,7 +103,7 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   if (isMinimalChromePath(pathname)) {
     return "minimal";
   }
-  if (pathname === "/") {
+  if (pathname === "/" || pathname === "/auth") {
     return "overlay";
   }
   if (isStorePath(pathname)) {

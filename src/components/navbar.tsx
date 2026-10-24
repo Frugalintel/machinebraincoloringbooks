@@ -26,6 +26,7 @@ import {
   headerVariantFor,
   isNavLinkActive,
   isStorePath,
+  overlayLinksFor,
   type HeaderVariant,
 } from "@/lib/site-shell";
 import { cn } from "@/lib/utils";
@@ -112,20 +113,6 @@ function useAccountLinks(): MobileNavAccountLink[] {
       ];
 }
 
-/** Home's nav (R-E2 p3): Books, Worlds, About; Menu below 761 px. */
-const OVERLAY_LINKS = [
-  { name: "Books", href: "/store" },
-  { name: "Worlds", href: "/store" },
-  { name: "About", href: "/about" },
-] as const;
-
-/** The store already is "Books", so Worlds jumps to its world filter. */
-const SOLID_LINKS = [
-  { name: "Books", href: "/store" },
-  { name: "Worlds", href: "/store#worlds" },
-  { name: "About", href: "/about" },
-] as const;
-
 const HOME_NAV_TEXT = "text-[15px] leading-6 font-medium";
 
 /** Desktop account entry for the solid nav; below 761 px it lives in Menu. */
@@ -155,7 +142,7 @@ function SolidAccountLink() {
 }
 
 /**
- * `overlay` sits on the home hero and shows Cart once it has items.
+ * `overlay` sits on the first plate of home and /auth and shows Cart once it has items.
  * `solid` is the store's sticky bar: Cart and account always reachable.
  */
 function HomeNavHeader({ solid }: { solid: boolean }) {
@@ -166,7 +153,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
-  const links = solid ? SOLID_LINKS : OVERLAY_LINKS;
+  const links = overlayLinksFor(pathname);
 
   return (
     <header

@@ -27,6 +27,8 @@ type AuthModalState = {
   isOpen: boolean;
   view: "login" | "register";
   email?: string;
+  /** A page code the popup is holding, e.g. from /scan; shows "Keep your / code." */
+  code?: string;
 };
 
 type AuthContextType = {
@@ -40,7 +42,11 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   isLoading: boolean;
   authModal: AuthModalState;
-  openAuthModal: (view?: "login" | "register", email?: string) => void;
+  openAuthModal: (
+    view?: "login" | "register",
+    email?: string,
+    code?: string,
+  ) => void;
   closeAuthModal: () => void;
   isAdmin: boolean;
 };
@@ -231,8 +237,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   const openAuthModal = useCallback(
-    (view: "login" | "register" = "login", email?: string) => {
-      setAuthModal({ isOpen: true, view, email });
+    (view: "login" | "register" = "login", email?: string, code?: string) => {
+      setAuthModal({ isOpen: true, view, email, code });
     },
     [],
   );
