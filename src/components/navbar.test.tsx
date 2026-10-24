@@ -249,8 +249,20 @@ describe("Navbar", () => {
     nav.pathname = "/";
     nav.cartCount = 2;
     render(<Navbar />);
-    fireEvent.click(screen.getByRole("button", { name: "Cart 2" }));
+    const cart = screen.getByRole("button", { name: "Cart, 2 items" });
+    expect(cart).toHaveTextContent("Cart2");
+    expect(cart).toHaveClass("bg-cream", "text-ink");
+    fireEvent.click(cart);
     expect(nav.setIsCartOpen).toHaveBeenCalledWith(true);
+  });
+
+  it("says one item in the singular and fills the store's cart cream once it has items", () => {
+    nav.pathname = "/store";
+    nav.cartCount = 1;
+    render(<Navbar />);
+    const cart = screen.getByRole("button", { name: "Cart, 1 item" });
+    expect(cart).toHaveAttribute("data-filled");
+    expect(cart).toHaveClass("bg-cream");
   });
 
   it("gives the store Home's nav on a solid bar, with cart and sign in always reachable", () => {
@@ -278,7 +290,10 @@ describe("Navbar", () => {
         within(primary).getByRole("link", { name: "Books" }),
       ).toHaveAttribute("aria-current", "page");
 
-      fireEvent.click(screen.getByRole("button", { name: "Cart" }));
+      const cart = screen.getByRole("button", { name: "Cart, 0 items" });
+      expect(cart).not.toHaveAttribute("data-filled");
+      expect(cart).not.toHaveClass("bg-cream");
+      fireEvent.click(cart);
       expect(nav.setIsCartOpen).toHaveBeenCalledWith(true);
       fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
       expect(nav.openAuthModal).toHaveBeenCalledWith("login");

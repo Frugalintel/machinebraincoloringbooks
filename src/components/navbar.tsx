@@ -23,6 +23,7 @@ import {
 import {
   SHELL_FOCUS,
   SITE_NAV_LINKS,
+  cartLabel,
   headerVariantFor,
   isNavLinkActive,
   isStorePath,
@@ -215,9 +216,20 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
             <button
               type="button"
               onClick={() => setIsCartOpen(true)}
-              className={cn(HOME_NAV_TEXT, "text-cream", SHELL_FOCUS)}
+              aria-label={cartLabel(cartCount)}
+              data-filled={cartCount > 0 ? "" : undefined}
+              className={cn(
+                HOME_NAV_TEXT,
+                "text-cream",
+                cartCount > 0 &&
+                  "inline-flex h-8 items-center gap-2 bg-cream px-3 text-ink",
+                SHELL_FOCUS,
+              )}
             >
-              Cart{cartCount > 0 ? ` ${cartCount}` : ""}
+              Cart
+              {cartCount > 0 ? (
+                <span className="tabular-nums">{cartCount}</span>
+              ) : null}
             </button>
           ) : null}
           <button
@@ -457,6 +469,7 @@ function FullHeader() {
             <button
               type="button"
               onClick={() => setIsCartOpen(true)}
+              aria-label={cartLabel(cartCount)}
               className={cn(
                 "relative inline-flex h-10 items-center gap-2 border border-line-strong px-3 text-[14px] font-semibold text-cream hover:bg-cream hover:text-ink",
                 SHELL_FOCUS,
