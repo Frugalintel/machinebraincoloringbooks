@@ -52,6 +52,24 @@ vi.mock("next/image", () => ({
       />
     );
   },
+  getImageProps: ({
+    src,
+    width,
+    height,
+    ...props
+  }: {
+    src: string;
+    width: number;
+    height: number;
+  } & React.ImgHTMLAttributes<HTMLImageElement>) => ({
+    props: {
+      ...props,
+      src,
+      width,
+      height,
+      srcSet: `${src} ${width}w`,
+    },
+  }),
 }));
 
 // Mock next/link

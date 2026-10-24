@@ -1,102 +1,189 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import Home from "@/app/page";
-import { COVER_FRAME, HERO_ART } from "@/lib/home";
-import { SITE_URL } from "@/lib/site-url";
+import { HOME_ART, SAMPLE_BOOKS } from "@/lib/home";
+import { products as catalogProducts } from "@/lib/store-data";
 
 vi.mock("@/lib/products", () => ({
   fetchPublishedProducts: vi.fn(async () => ({ data: null, error: null })),
 }));
 
-describe("Home page", () => {
-  it("renders one Redaction H1 in the canonical frame's title band", () => {
-    const { container } = render(<Home />);
+/** Routes that exist in src/app; home may link nowhere else. */
+const REAL_ROUTES = [
+  "/",
+  "/store",
+  "/stories",
+  "/scan",
+  "/scan?mode=code",
+  "/about",
+  "/help",
+  "/privacy",
+  "/terms",
+];
 
-    const headings = screen.getAllByRole("heading", { level: 1 });
-    expect(headings).toHaveLength(1);
-    expect(headings[0]).toHaveTextContent("Look Closer");
-    expect(headings[0]).toHaveClass("font-display", "cover-title");
+function renderHome(vercelEnv: string) {
+  vi.stubEnv("VERCEL_ENV", vercelEnv);
+  return render(<Home />);
+}
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
+describe("Home (R-E2 p3 Art book)", () => {
+  it("sets one Redaction H1 over the O3 hero and the plates in order", () => {
+    const { container } = renderHome("preview");
+
+    const h1 = screen.getByRole("heading", { level: 1 });
+    expect(h1).toHaveTextContent("Lookcloser.");
+    expect(h1).toHaveClass("font-display");
     expect(container.querySelectorAll(".font-display")).toHaveLength(1);
 
-    const hero = screen.getAllByTestId("cover-frame")[0];
-    expect(hero).toHaveAttribute("data-frame-src", COVER_FRAME.fullSrc);
-    expect(hero).toContainElement(headings[0]);
+    expect(
+      screen
+        .getAllByRole("heading", { level: 2 })
+        .map((heading) => heading.textContent?.replace(/\u00a0/g, " ")),
+    ).toEqual([
+      "Pick a world.",
+      "Every pagehas a code.",
+      "Points for every page",
+      "Type it in.",
+      "Step inside a world.",
+    ]);
+
+    const hero = screen.getByTestId("home-hero");
+    const source = hero.querySelector("picture source");
+    expect(source).toHaveAttribute("media", "(max-width: 760px)");
+    expect(source?.getAttribute("srcset")).toContain(HOME_ART.heroMobile.src);
+    const art = within(hero).getByRole("img");
+    expect(art).toHaveAttribute("src", HOME_ART.heroDesktop.src);
+    expect(art).toHaveAttribute("fetchpriority", "high");
+    expect(art).toHaveAttribute("sizes", "100vw");
   });
 
-  it("clips the preloaded hero art to the stepped window under the frame", () => {
-    render(<Home />);
-    const hero = screen.getAllByTestId("cover-frame")[0];
-    const window = within(hero).getByTestId("cover-frame-window");
+  it("links only to real routes, never to #", () => {
+    const { container } = renderHome("preview");
+    const hrefs = [...container.querySelectorAll("a")].map((a) =>
+      a.getAttribute("href"),
+    );
+    expect(hrefs.length).toBeGreaterThan(20);
+    for (const href of hrefs) {
+      expect(REAL_ROUTES).toContain(href);
+    }
+    expect(container.querySelector('a[href="#"], form[action="#"]')).toBeNull();
+    expect(container.textContent).not.toMatch(/@sample|Instagram|Pinterest/);
+  });
 
-    expect(window.style.clipPath).toMatch(/^polygon\(/);
-    const art = within(window).getByRole("img");
-    expect(art).toHaveAttribute("src", HERO_ART.src);
-    expect(art).toHaveAttribute("alt", HERO_ART.alt);
-    expect(art).toHaveAttribute("data-preload");
-    expect(art.getAttribute("sizes")).toContain("83.5vw");
+  it("submits the page code to /scan as mode=code&code=…", () => {
+    renderHome("preview");
+    const field = screen.getByLabelText("Page code");
+    const form = field.closest("form")!;
 
-    const frame = hero.querySelector(`img[src="${COVER_FRAME.fullSrc}"]`);
-    expect(frame).not.toBeNull();
-    expect(window.compareDocumentPosition(frame!)).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
+    expect(form).toHaveAttribute("action", "/scan");
+    expect(form).toHaveAttribute("method", "get");
+    const mode = form.querySelector('input[type="hidden"]');
+    expect(mode).toHaveAttribute("name", "mode");
+    expect(mode).toHaveAttribute("value", "code");
+
+    expect(field).toHaveAttribute("name", "code");
+    expect(field).toBeRequired();
+    expect(field).toHaveAttribute("autocapitalize", "characters");
+    expect(field).toHaveAccessibleDescription(
+      "From the foot of any page · sample format",
+    );
+    expect(within(form).getByRole("button", { name: "Enter" })).toHaveAttribute(
+      "type",
+      "submit",
     );
   });
 
-  it("keeps orange to the VOL 01 label and off every fill", () => {
-    const { container } = render(<Home />);
-    const orange = container.querySelectorAll('[class*="text-signal"]');
-    expect(orange).toHaveLength(1);
-    expect(orange[0]).toHaveTextContent(/^Vol 01$/);
+  it("serves every raster through next/image with sizes", () => {
+    const { container } = renderHome("preview");
+    const images = [...container.querySelectorAll("img")].filter(
+      (img) => !img.getAttribute("src")?.startsWith("/brand/"),
+    );
+    expect(images.length).toBeGreaterThan(10);
+    for (const img of images) {
+      expect(img.getAttribute("sizes"), img.getAttribute("src")!).toBeTruthy();
+    }
+  });
+
+  it("keeps orange to the hero plate dot, with no orange fills", () => {
+    const { container } = renderHome("preview");
+    const dots = container.querySelectorAll(".dot");
+    expect(dots).toHaveLength(1);
+    expect(screen.getByTestId("home-hero")).toContainElement(
+      dots[0] as HTMLElement,
+    );
     expect(
       container.querySelectorAll(
-        '[class*="bg-signal"], [class*="bg-primary"], [class*="bg-brand-orange"]',
+        '[class*="signal"], [class*="bg-primary"], [class*="brand-orange"]',
       ),
     ).toHaveLength(0);
   });
+});
 
-  it("links the CTAs to existing routes", () => {
-    render(<Home />);
+describe("Home SAMPLE flag", () => {
+  it("shows Studio's labelled samples on previews", () => {
+    const { container } = renderHome("preview");
+    expect(container.firstElementChild).toHaveAttribute("data-samples", "on");
+
+    const shop = screen
+      .getByRole("heading", { name: "Pick a world." })
+      .closest("section")!;
+    for (const book of SAMPLE_BOOKS) {
+      expect(within(shop).getByText(book.title)).toBeInTheDocument();
+    }
+    expect(screen.getByText("Cover art and titles · Sample")).toBeVisible();
+    expect(screen.getByText("World plates · Sample art · AI")).toBeVisible();
+    expect(screen.getByLabelText("New books by email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Page code")).toHaveAttribute(
+      "placeholder",
+      "• • • •",
+    );
     expect(
-      screen.getByRole("link", { name: "Browse the books" }),
-    ).toHaveAttribute("href", "/store");
-    expect(
-      screen.getByRole("link", { name: "How unlocks work" }),
-    ).toHaveAttribute("href", "#unlocks");
-    expect(document.getElementById("unlocks")).not.toBeNull();
+      container.querySelectorAll('img[src^="/home/sample/"]').length,
+    ).toBeGreaterThan(5);
   });
 
-  it("builds the plate as a live table without sample values", () => {
-    const { container } = render(<Home />);
-    const plate = screen.getByTestId("spec-plate");
-    expect(plate.tagName).toBe("TABLE");
-    const labels = within(plate)
-      .getAllByRole("rowheader")
-      .map((cell) => cell.textContent);
-    expect(labels).toEqual(["Series", "Spec", "Unlock"]);
-    expect(container.textContent).not.toMatch(/sample|MB-GNS|cat no/i);
-  });
+  it("falls back to real content in production", () => {
+    const { container } = renderHome("production");
+    expect(container.firstElementChild).toHaveAttribute("data-samples", "off");
 
-  it("encodes only the site's own /scan route in the QR", () => {
-    render(<Home />);
-    const qr = screen.getByTestId("home-qr");
-    expect(qr).toHaveAttribute("data-qr-value", `${SITE_URL}/scan`);
-    expect(qr).toHaveClass("bg-cream");
-    expect(qr.querySelector("path")).toHaveAttribute("fill", "#141414");
+    expect(container.textContent).not.toMatch(/sample/i);
+    expect(container.textContent).not.toContain("•");
+    expect(container.querySelector('img[src^="/home/sample/"]')).toBeNull();
+    const shop = screen
+      .getByRole("heading", { name: "Pick a world." })
+      .closest("section")!;
+    for (const book of SAMPLE_BOOKS) {
+      expect(within(shop).queryByText(book.title)).toBeNull();
+    }
     expect(
-      screen.getByRole("link", { name: "Open the scanner" }),
-    ).toHaveAttribute("href", "/scan");
-  });
+      within(shop).getByText(catalogProducts[0].subtitle!),
+    ).toBeInTheDocument();
+    expect(within(shop).getByText(/Vintage · \$/)).toBeInTheDocument();
+    const shopArt = [...shop.querySelectorAll("img")].map((img) =>
+      img.getAttribute("src"),
+    );
+    expect(new Set(shopArt)).toEqual(
+      new Set([HOME_ART.color.src, HOME_ART.lineCream.src]),
+    );
 
-  it("lists the three unlock steps in order", () => {
-    render(<Home />);
-    const section = document.getElementById("unlocks")!;
-    const steps = within(section)
-      .getAllByRole("listitem")
-      .map((item) => item.textContent);
-    expect(steps).toEqual([
-      "01Scan the code",
-      "02Scan your colored pages to earn points",
-      "03Spend points on more unlocks",
-    ]);
+    const worlds = screen
+      .getByRole("heading", { name: /Step inside a/ })
+      .closest("section")!;
+    expect(within(worlds).getByRole("img")).toHaveAttribute(
+      "src",
+      HOME_ART.color.src,
+    );
+    const strip = screen.getByRole("list", { name: "Worlds" });
+    expect(strip.querySelector("img")).toBeNull();
+    expect(within(strip).getAllByRole("link")).toHaveLength(5);
+
+    expect(screen.queryByLabelText("New books by email")).toBeNull();
+    const field = screen.getByLabelText("Page code");
+    expect(field).not.toHaveAttribute("placeholder");
+    expect(field).toHaveAccessibleDescription("From the foot of any page");
   });
 });

@@ -2,33 +2,37 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  COVER_FRAME,
-  COVER_WINDOW_POLYGON,
-  HERO_ART,
-  HERO_CROP,
-  HERO_CROPS,
+  HOME_ART,
+  HOME_ENTER_COPY,
+  HOME_FOOTER_COPY,
   HOME_HERO_COPY,
-  HOME_SPEC_PLATE,
-  HOME_UNLOCK_STEPS,
-  HOME_UNLOCKS_COPY,
-  coverWindowClipPath,
+  HOME_POINTS,
+  HOME_ROUTES,
+  HOME_WORLDS,
+  SAMPLE_BOOKS,
+  homeShowsSamples,
 } from "@/lib/home";
 
 const ROOT = process.cwd();
 const SRC = join(ROOT, "src");
 const PUBLIC = join(ROOT, "public");
+const CSS = readFileSync(join(SRC, "app/home.css"), "utf8");
 
 const HOME_FILES = [
   "src/app/page.tsx",
-  "src/components/cover-frame.tsx",
+  "src/app/home.css",
+  "src/components/home-footer.tsx",
   "src/components/home-hero.tsx",
-  "src/components/home-library.tsx",
-  "src/components/home-qr.tsx",
-  "src/components/home-section.tsx",
-  "src/components/home-spec-plate.tsx",
-  "src/components/home-unlocks.tsx",
+  "src/components/home-plate.tsx",
+  "src/components/home-plates.tsx",
+  "src/components/home-shop.tsx",
+  "src/components/home-worlds.tsx",
   "src/lib/home.ts",
 ];
+
+function read(relative: string): string {
+  return readFileSync(join(ROOT, relative), "utf8");
+}
 
 function walk(dir: string, pattern: RegExp): string[] {
   const out: string[] = [];
@@ -43,106 +47,132 @@ function walk(dir: string, pattern: RegExp): string[] {
   return out;
 }
 
-function publicFile(src: string): string {
-  return join(PUBLIC, src.replace(/^\//, ""));
+/** Top-level `selector { body }` rules in home.css (media blocks flattened). */
+function cssRules(): { selector: string; body: string }[] {
+  const flat = CSS.replace(/\/\*[\s\S]*?\*\//g, "").replace(
+    /@media[^{]+\{([\s\S]*?\})\s*\}/g,
+    "$1",
+  );
+  return [...flat.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+    selector: match[1].trim(),
+    body: match[2],
+  }));
 }
 
-describe("P1 home: canonical cover frame", () => {
-  it("ships frame-front-web-full.svg as the hero frame", () => {
-    expect(COVER_FRAME.fullSrc).toBe("/frames/frame-front-web-full.svg");
-    const svg = readFileSync(publicFile(COVER_FRAME.fullSrc), "utf8");
-    expect(svg).toContain('viewBox="0 0 1700 2200"');
-    expect(svg.length).toBeLessThan(20 * 1024);
-
-    const inks = new Set(
-      [...svg.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toUpperCase()),
-    );
-    expect([...inks].sort()).toEqual(["#F2EAD8", "#FF4F00"]);
-    expect(svg).not.toMatch(/<rect|<image|fill="#(?!F2EAD8|FF4F00)/i);
+describe("Home SAMPLE switch", () => {
+  it("shows samples everywhere except Vercel production", () => {
+    expect(homeShowsSamples("production")).toBe(false);
+    expect(homeShowsSamples("preview")).toBe(true);
+    expect(homeShowsSamples("development")).toBe(true);
+    expect(homeShowsSamples(undefined)).toBe(true);
   });
 
-  it("ships the closed variant in the same single cream ink", () => {
-    const svg = readFileSync(publicFile(COVER_FRAME.closedSrc), "utf8");
-    expect(svg).toContain('viewBox="0 0 1700 2200"');
-    const inks = new Set(
-      [...svg.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toUpperCase()),
-    );
-    expect([...inks]).toEqual(["#F2EAD8"]);
-  });
-
-  it("removes the rejected guidelines-v2 frame and its PNG", () => {
-    expect(existsSync(join(PUBLIC, "frames/frame-portrait-cream.png"))).toBe(
-      false,
-    );
-    const hits = walk(SRC, /\.(tsx?|css)$/)
-      .filter((file) => !/\.test\.tsx?$/.test(file))
-      .filter((file) =>
-        /frame-portrait|portrait-frame|hero-book-3d|hero-example\.jpg/.test(
-          readFileSync(file, "utf8"),
-        ),
-      );
-    expect(hits).toEqual([]);
-  });
-
-  it("keeps the frame portrait and the window at Studio's geometry", () => {
-    expect(COVER_FRAME.width / COVER_FRAME.height).toBeCloseTo(1700 / 2200);
-    expect(COVER_FRAME.window).toEqual({
-      x: 140,
-      y: 614,
-      width: 1420,
-      height: 1310,
-    });
-    expect(COVER_WINDOW_POLYGON).toHaveLength(20);
-    const clip = coverWindowClipPath();
-    expect(clip.startsWith("polygon(0% 3.9695%, 1.831% 3.9695%")).toBe(true);
-    expect(clip).toContain("100% 96.0305%");
-  });
-
-  it("drives the hero art from one crop value with every crop on disk", () => {
-    expect(HERO_CROPS[HERO_CROP]).toBe(HERO_ART);
-    expect(HERO_CROP).toBe("H1");
-    for (const crop of Object.values(HERO_CROPS)) {
-      const path = publicFile(crop.src);
-      expect(existsSync(path)).toBe(true);
-      expect(statSync(path).size).toBeLessThan(400 * 1024);
-      expect(crop.alt.length).toBeGreaterThan(10);
+  it("keeps sample art in its own folder, apart from the real art", () => {
+    for (const book of SAMPLE_BOOKS.filter((b) => b.world !== "Fantasy")) {
+      expect(book.cover.startsWith("/home/sample/")).toBe(true);
+    }
+    for (const world of HOME_WORLDS) {
+      expect(world.art.startsWith("/home/sample/")).toBe(true);
+    }
+    for (const art of Object.values(HOME_ART)) {
+      if (typeof art === "string") continue;
+      expect(art.src.startsWith("/home/sample/")).toBe(false);
+      expect(existsSync(join(PUBLIC, art.src))).toBe(true);
+    }
+    for (const src of [
+      ...SAMPLE_BOOKS.map((b) => b.cover),
+      ...HOME_WORLDS.map((w) => w.art),
+    ]) {
+      expect(existsSync(join(PUBLIC, src))).toBe(true);
     }
   });
 });
 
-describe("P1 home: type, color and texture guardrails", () => {
-  it("uses Redaction exactly once on home, for the H1", () => {
-    let displayCount = 0;
-    for (const relative of HOME_FILES) {
-      const text = readFileSync(join(ROOT, relative), "utf8");
-      displayCount += text.match(/font-display/g)?.length ?? 0;
+describe("Home routes", () => {
+  it("maps Studio's guessed routes onto routes that exist", () => {
+    for (const href of Object.values(HOME_ROUTES)) {
+      const path = href.split("?")[0];
+      expect(existsSync(join(SRC, "app", path, "page.tsx")), path).toBe(true);
     }
-    expect(displayCount).toBe(1);
-    const hero = readFileSync(
-      join(ROOT, "src/components/home-hero.tsx"),
-      "utf8",
+    const footer = HOME_FOOTER_COPY.groups.flatMap((group) =>
+      group.links.map((link) => link.href),
     );
-    expect(hero).toMatch(/<h1[\s\S]{0,80}font-display cover-title/);
+    expect(footer).not.toContain("#");
+    expect(footer.every((href) => href.startsWith("/"))).toBe(true);
   });
 
-  it("paints no orange fills and no fourth face on home", () => {
-    const hits: string[] = [];
+  it("does not ship placeholder social links", () => {
+    const text = HOME_FILES.map(read).join("\n");
+    expect(text).not.toMatch(/@sample|href="#"|action="#"/);
+  });
+});
+
+describe("Home type, color and texture guardrails", () => {
+  it("uses Redaction exactly once on home, for the hero H1", () => {
+    let count = 0;
     for (const relative of HOME_FILES) {
-      const text = readFileSync(join(ROOT, relative), "utf8");
-      text.split("\n").forEach((line, index) => {
-        if (
-          /bg-(?:primary|signal|brand-orange|accent)\b|bg-\[#ff4f00\]|fill="#ff4f00"|border-signal|Rajdhani|Oswald/i.test(
-            line,
-          )
-        ) {
-          hits.push(`${relative}:${index + 1}:${line.trim()}`);
-        }
-      });
+      count += read(relative).match(/font-display|redaction/gi)?.length ?? 0;
     }
-    expect(hits).toEqual([]);
+    expect(count).toBe(1);
+    expect(read("src/components/home-hero.tsx")).toMatch(
+      /<h1 className="h1 font-display">/,
+    );
   });
 
-  it("keeps texture off every site surface", () => {
+  it("sets every other face in Inter or Plex Mono, never a fourth face", () => {
+    for (const { selector, body } of cssRules()) {
+      const font = body.match(/font(?:-family)?:([^;]+)/)?.[1];
+      if (!font) continue;
+      expect(font, selector).toMatch(/var\(--(sans|mono)\)/);
+    }
+    expect(HOME_FILES.map(read).join("\n")).not.toMatch(/Rajdhani|Oswald/i);
+  });
+
+  it("keeps Inter display tracking inside the approved −0.055 to −0.065em", () => {
+    const display = cssRules().filter(({ selector }) =>
+      /\.line\b|\.say\b/.test(selector),
+    );
+    const values = display
+      .map(({ body }) => body.match(/letter-spacing:\s*(-?[\d.]+)em/)?.[1])
+      .filter((value): value is string => Boolean(value))
+      .map(Number);
+    expect(values.length).toBeGreaterThan(3);
+    for (const value of values) {
+      expect(value).toBeGreaterThanOrEqual(-0.065);
+      expect(value).toBeLessThanOrEqual(-0.055);
+    }
+  });
+
+  it("uses orange only for the hero dot and the code-field ring, both on near-black", () => {
+    const orange = cssRules()
+      .filter(({ body }) => /--signal|#ff4f00|255 79 0/i.test(body))
+      .map(({ selector }) => selector);
+    expect(orange).toEqual([".home-e2 .dot", ".home-e2 .frow:focus-within"]);
+
+    const dot = cssRules().find(({ selector }) => selector === ".home-e2 .dot");
+    expect(dot?.body).not.toMatch(/box-shadow|filter|blur/);
+    expect(read("src/components/home-hero.tsx")).toMatch(/className="dot"/);
+    expect(read("src/components/home-plates.tsx")).toMatch(
+      /className="plate enter"[\s\S]*className="frow"/,
+    );
+    const enter = cssRules().find(
+      ({ selector }) => selector === ".home-e2 .enter",
+    );
+    expect(enter?.body).toMatch(/background: var\(--base\)/);
+  });
+
+  it("draws the approved outline 1 and nothing else in outline", () => {
+    const stroked = cssRules()
+      .filter(({ body }) => /text-stroke/.test(body))
+      .map(({ selector }) => selector);
+    expect(stroked).toEqual([".home-e2 .n1 b"]);
+    expect(HOME_POINTS.map((point) => point.label)).toEqual([
+      "1 point",
+      "2 points",
+    ]);
+  });
+
+  it("keeps texture, fleck and glow off every site surface", () => {
     const sources = walk(SRC, /\.(tsx?|css)$/).filter(
       (file) => !/\.test\.tsx?$/.test(file),
     );
@@ -153,51 +183,46 @@ describe("P1 home: type, color and texture guardrails", () => {
     expect(walk(PUBLIC, /fleck|texture|noise/i)).toEqual([]);
 
     for (const relative of HOME_FILES) {
-      const text = readFileSync(join(ROOT, relative), "utf8");
-      expect(text).not.toMatch(/background-image|bg-\[url/);
+      expect(read(relative)).not.toMatch(/url\(|bg-\[url|mix-blend|filter:/);
+    }
+  });
+
+  it("removes the P1 frame, crops and QR", () => {
+    expect(existsSync(join(PUBLIC, "frames"))).toBe(false);
+    expect(existsSync(join(PUBLIC, "hero"))).toBe(false);
+    for (const gone of [
+      "components/cover-frame.tsx",
+      "components/home-spec-plate.tsx",
+      "components/home-library.tsx",
+      "components/home-unlocks.tsx",
+      "components/home-qr.tsx",
+      "lib/qr.ts",
+    ]) {
+      expect(existsSync(join(SRC, gone)), gone).toBe(false);
     }
   });
 });
 
-describe("P1 home: copy and values", () => {
-  it("keeps the unlocks steps word for word from the guide", () => {
-    expect(HOME_UNLOCK_STEPS.map((step) => step.label)).toEqual([
-      "Scan the code",
-      "Scan your colored pages to earn points",
-      "Spend points on more unlocks",
-    ]);
-    expect(HOME_UNLOCK_STEPS.map((step) => step.number)).toEqual([
-      "01",
-      "02",
-      "03",
-    ]);
-  });
-
+describe("Home copy", () => {
   it("speaks to you, without hype", () => {
     const joined = [
-      HOME_HERO_COPY.tagline,
-      HOME_HERO_COPY.body,
-      HOME_UNLOCKS_COPY.heading,
-      HOME_UNLOCKS_COPY.qrCaption,
-      ...HOME_UNLOCK_STEPS.map((step) => step.label),
+      HOME_HERO_COPY.lede,
+      HOME_ENTER_COPY.lead,
+      HOME_ENTER_COPY.register,
+      ...HOME_POINTS.map((point) => point.text),
     ].join(" ");
     expect(joined).not.toMatch(/!/);
     expect(joined.toLowerCase()).not.toMatch(/\bwe\b|\bour\b|free|prize/);
   });
 
-  it("ships no SAMPLE values or captions", () => {
-    const text = HOME_FILES.map((relative) =>
-      readFileSync(join(ROOT, relative), "utf8"),
-    ).join("\n");
-    expect(text).not.toMatch(/sample/i);
-    expect(text).not.toMatch(/MB-GNS|CAT NO|qr-MB/i);
-    expect(HOME_SPEC_PLATE.rows.map((row) => row.label)).not.toContain(
-      "Cat no",
-    );
-  });
-
-  it("points the QR at the site's own scan route", () => {
-    expect(HOME_UNLOCKS_COPY.qrPath).toBe("/scan");
-    expect(existsSync(join(SRC, "app/scan/page.tsx"))).toBe(true);
+  it("keeps the points copy word for word: 1 for a code, 2 with a scan", () => {
+    expect(HOME_POINTS).toEqual([
+      { value: "1", label: "1 point", text: "The code on its own" },
+      {
+        value: "2",
+        label: "2 points",
+        text: "The code, plus a scan of the page you colored",
+      },
+    ]);
   });
 });
