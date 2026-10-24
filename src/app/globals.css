@@ -206,8 +206,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /*
+   * Inter ships its opsz axis for home's fitted display lines. Everywhere
+   * else stays on the text cut (opsz 14); .home-e2 opts back into auto.
+   */
   body {
     @apply bg-background text-foreground;
+    font-optical-sizing: none;
   }
 
   /* Global Selection Styling — cream on near-black, never signal fill */
@@ -262,37 +267,6 @@
     .font-display {
       font-size: max(40px, 1em);
     }
-  }
-
-  /*
-   * Cover title in the frame's title band. Redaction's cap height is 0.7em,
-   * so 14.79cqw sets the cap at 176 of the frame's 1700 units.
-   */
-  .font-display.cover-title {
-    font-size: max(32px, 14.79cqw);
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  @media (min-width: 768px) {
-    .font-display.cover-title {
-      font-size: max(40px, 14.79cqw);
-    }
-  }
-
-  @container (min-width: 433px) {
-    .font-display.cover-title {
-      letter-spacing: -0.01em;
-    }
-  }
-
-  .cover-tile-title {
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: max(12px, 9cqw);
-    line-height: 1.05;
-    letter-spacing: -0.01em;
-    text-wrap: balance;
   }
 
   .font-heading {
@@ -438,85 +412,5 @@
   .site-mobile-backdrop {
     animation: none !important;
     transition: none !important;
-  }
-}
-
-/*
- * Home: the hero is the book front. The frame column tops out at 741 px
- * (960 px tall) on the 1200 px grid, and the copy column starts level
- * with the frame's window rule (614 of 1700 units down).
- */
-.home-hero-grid {
-  display: grid;
-  row-gap: 2.5rem;
-  padding-top: 1.5rem;
-  padding-bottom: 1rem;
-}
-
-.home-hero-frame {
-  width: 100%;
-  margin-inline: auto;
-}
-
-@media (min-width: 768px) {
-  .home-hero-frame {
-    max-width: 34rem;
-  }
-
-  .home-hero-copy {
-    max-width: 36rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .home-hero-grid {
-    --hero-frame-w: min(46.3125rem, calc(100vw - 4rem - 22rem - 3rem));
-    grid-template-columns: minmax(0, 1fr) var(--hero-frame-w);
-    column-gap: 3rem;
-    align-items: start;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-
-  .home-hero-frame {
-    grid-column: 2;
-    grid-row: 1;
-    max-width: none;
-  }
-
-  .home-hero-copy {
-    grid-column: 1;
-    grid-row: 1;
-    max-width: none;
-    padding-top: calc(var(--hero-frame-w) * 614 / 1700 - 0.375rem);
-  }
-}
-
-@media (min-width: 1280px) {
-  .home-hero-grid {
-    --hero-frame-w: min(46.3125rem, calc(100vw - 4rem - 25rem - 3.625rem));
-    column-gap: 3.625rem;
-  }
-}
-
-.home-unlocks-grid {
-  display: grid;
-  row-gap: 2.5rem;
-}
-
-@media (min-width: 768px) {
-  .home-unlocks-grid {
-    grid-template-columns: 164px minmax(0, 1fr);
-    column-gap: 2.25rem;
-  }
-
-  .home-unlocks-qr {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .home-unlocks-steps {
-    grid-column: 2;
-    grid-row: 1;
   }
 }

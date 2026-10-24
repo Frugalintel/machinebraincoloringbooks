@@ -10,7 +10,7 @@ export const displayFont = localFont({
   preload: true,
 });
 
-/** Inter variable (wght 400–700) — UI, body, headings below H1. */
+/** Inter 4 variable (wght 400–700, opsz 14–32) — UI, body, headings below H1. */
 export const sansFont = localFont({
   src: "../fonts/inter/Inter-Variable.woff2",
   weight: "400 700",
