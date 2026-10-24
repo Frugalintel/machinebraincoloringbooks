@@ -372,7 +372,7 @@ export function ProductClient({
             {UNLOCKS.map((item) => (
               <li key={item.hidden}>
                 <Link href="/scan">
-                  <p className="n">
+                  <p className="fig">
                     <span aria-hidden="true">
                       {item.figure}
                       {item.unit ? <i>{item.unit}</i> : null}

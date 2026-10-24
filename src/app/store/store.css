@@ -1323,7 +1323,8 @@
   color: inherit;
 }
 
-.store-e2 .u3 .n {
+.store-e2 .u3 .fig {
+  position: relative;
   margin: 0 0 0 -0.06em;
   font: 700 17vw/0.78 var(--sans);
   letter-spacing: -0.07em;
@@ -1331,12 +1332,12 @@
   color: var(--cream);
 }
 
-.store-e2 .u3 .n > span {
+.store-e2 .u3 .fig > span {
   display: inline-flex;
   align-items: flex-start;
 }
 
-.store-e2 .u3 .n i {
+.store-e2 .u3 .fig i {
   margin: 0.05em 0 0 0.08em;
   font-size: 0.3em;
   font-style: normal;
@@ -1468,16 +1469,19 @@
   }
 
   .store-e2 .u3 li {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 24px;
-    align-items: end;
     padding: 32px 0;
     border-left: 0;
     border-bottom: 1px solid var(--c3);
   }
 
-  .store-e2 .u3 .n {
+  .store-e2 .u3 a {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 24px;
+    align-items: end;
+  }
+
+  .store-e2 .u3 .fig {
     font-size: 30vw;
   }
 
