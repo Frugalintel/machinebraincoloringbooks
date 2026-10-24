@@ -25,6 +25,7 @@ import {
   SITE_NAV_LINKS,
   headerVariantFor,
   isNavLinkActive,
+  overlayLinksFor,
   type HeaderVariant,
 } from "@/lib/site-shell";
 import { cn } from "@/lib/utils";
@@ -111,13 +112,7 @@ function useAccountLinks(): MobileNavAccountLink[] {
       ];
 }
 
-/** Home only (R-E2 p3): Books, Worlds, About over the hero; Menu below 761 px. */
-const OVERLAY_LINKS = [
-  { name: "Books", href: "/store" },
-  { name: "Worlds", href: "/store" },
-  { name: "About", href: "/about" },
-] as const;
-
+/** Home and /auth: three links over the first plate; Menu below 761 px. */
 function OverlayHeader() {
   const { setIsCartOpen, cartCount } = useCart();
   const { campaign } = useSettings();
@@ -147,7 +142,7 @@ function OverlayHeader() {
         />
         <div className="flex items-center gap-9">
           <ul className="flex gap-9 text-[15px] leading-6 font-medium text-cream/66 max-[760px]:hidden">
-            {OVERLAY_LINKS.map((link) => (
+            {overlayLinksFor(pathname).map((link) => (
               <li key={link.name}>
                 <Link
                   href={link.href}

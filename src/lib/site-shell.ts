@@ -13,7 +13,7 @@ export type FooterLinkGroup = {
   links: readonly SiteLink[];
 };
 
-/** "overlay": home draws the nav over its hero plate and owns its footer. */
+/** "overlay": home and /auth draw the nav over their first plate and own their footer. */
 export type HeaderVariant = "full" | "overlay" | "minimal" | "hidden";
 
 export const SITE_NAV_LINKS: readonly SiteLink[] = [
@@ -59,9 +59,25 @@ export function isAdminPath(pathname: string): boolean {
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
+/** Over-plate nav links. Home keeps R-E2's Worlds; /auth (Studio S3) has Stories. */
+export const HOME_OVERLAY_LINKS: readonly SiteLink[] = [
+  { name: "Books", href: "/store" },
+  { name: "Worlds", href: "/store" },
+  { name: "About", href: "/about" },
+];
+
+export const AUTH_OVERLAY_LINKS: readonly SiteLink[] = [
+  { name: "Books", href: "/store" },
+  { name: "Stories", href: "/stories" },
+  { name: "About", href: "/about" },
+];
+
+export function overlayLinksFor(pathname: string): readonly SiteLink[] {
+  return pathname === "/auth" ? AUTH_OVERLAY_LINKS : HOME_OVERLAY_LINKS;
+}
+
 export function isMinimalChromePath(pathname: string): boolean {
   return (
-    pathname === "/auth" ||
     pathname.startsWith("/auth/") ||
     pathname === "/scan" ||
     pathname === "/review" ||
@@ -76,7 +92,7 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   if (isMinimalChromePath(pathname)) {
     return "minimal";
   }
-  if (pathname === "/") {
+  if (pathname === "/" || pathname === "/auth") {
     return "overlay";
   }
   return "full";

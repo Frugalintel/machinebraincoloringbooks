@@ -174,8 +174,8 @@ describe("Navbar", () => {
     );
   });
 
-  it("uses a minimal lockup header on auth, scan, and review", () => {
-    for (const path of ["/auth", "/scan", "/review", "/review/demo"]) {
+  it("uses a minimal lockup header on scan and review", () => {
+    for (const path of ["/scan", "/review", "/review/demo"]) {
       nav.pathname = path;
       const { unmount } = render(<Navbar />);
 
@@ -220,6 +220,29 @@ describe("Navbar", () => {
     const menu = screen.getByRole("button", { name: "Menu" });
     fireEvent.click(menu);
     expect(menu).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("overlays the sign-in plate with Studio S3's Books, Stories, About", () => {
+    nav.pathname = "/auth";
+    nav.cartCount = 0;
+    const { container } = render(<Navbar />);
+
+    expect(container.querySelector("header")).toHaveAttribute(
+      "data-site-chrome",
+      "overlay",
+    );
+    const primary = screen.getByRole("navigation", { name: "Primary" });
+    expect(
+      within(primary)
+        .getAllByRole("link")
+        .map((link) => [link.textContent, link.getAttribute("href")]),
+    ).toEqual([
+      ["Machine Brain", "/"],
+      ["Books", "/store"],
+      ["Stories", "/stories"],
+      ["About", "/about"],
+    ]);
+    expect(screen.getByRole("button", { name: "Menu" })).toBeInTheDocument();
   });
 
   it("keeps the cart reachable from the home overlay once it has items", () => {
