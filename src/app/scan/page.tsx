@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { Suspense, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import {
   Check,
@@ -17,7 +17,7 @@ import {
   Scan,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,11 @@ import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/context/toast-context";
 import { supabase } from "@/lib/supabase";
 import { logger } from "@/lib/logger";
+import {
+  normalizeBookCode,
+  scanEntryFromParams,
+  type ScanEntry,
+} from "@/lib/scan-params";
 
 // Dynamic import to prevent SSR issues with camera APIs
 const Scanner = dynamic(
@@ -59,13 +64,30 @@ type ScanStep =
   | "uploading"
   | "success";
 
+const CAMERA_ENTRY: ScanEntry = { mode: "camera" };
+
 export default function ScanPage() {
+  return (
+    <Suspense fallback={<ScanFlow entry={CAMERA_ENTRY} />}>
+      <ScanFlowFromParams />
+    </Suspense>
+  );
+}
+
+function ScanFlowFromParams() {
+  const entry = scanEntryFromParams(useSearchParams());
+  return <ScanFlow entry={entry} />;
+}
+
+function ScanFlow({ entry }: { entry: ScanEntry }) {
   const { user, openAuthModal } = useAuth();
   const { success, error: toastError } = useToast();
   const { isSecure, isLoading: secureLoading } = useSecureContext();
   const router = useRouter();
 
-  const [step, setStep] = useState<ScanStep>("permission"); // Start with permission primer
+  const [step, setStep] = useState<ScanStep>(() =>
+    entry.mode === "code" ? "qr" : "permission",
+  );
   const [scannedCode, setScannedCode] = useState<string | null>(null);
   const [bookInfo, setBookInfo] = useState<{
     title: string;
@@ -73,8 +95,10 @@ export default function ScanPage() {
   } | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [useCamera, setUseCamera] = useState(true);
-  const [manualCode, setManualCode] = useState("");
+  const [useCamera, setUseCamera] = useState(() => entry.mode !== "code");
+  const [manualCode, setManualCode] = useState(() =>
+    entry.mode === "code" ? entry.code : "",
+  );
 
   // Canvas ref for potential image processing if needed later
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -142,7 +166,7 @@ export default function ScanPage() {
       }
 
       // 4. Fallback: Standard Book Code (Existing Logic)
-      const code = rawString.toUpperCase();
+      const code = normalizeBookCode(rawString);
 
       // Validate against book_codes
       const { data: codeData, error } = await supabase
@@ -179,9 +203,8 @@ export default function ScanPage() {
   // Handle manual code entry
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!manualCode.trim()) return;
-
-    const code = manualCode.trim().toUpperCase();
+    const code = normalizeBookCode(manualCode);
+    if (!code) return;
 
     try {
       const { data: codeData, error } = await supabase

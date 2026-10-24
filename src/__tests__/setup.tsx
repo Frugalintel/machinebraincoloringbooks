@@ -19,6 +19,59 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
+// Mock next/image
+vi.mock("next/image", () => ({
+  default: ({
+    src,
+    alt,
+    fill,
+    priority,
+    preload,
+    unoptimized: _unoptimized,
+    sizes,
+    ...props
+  }: {
+    src: string | { src: string };
+    alt: string;
+    fill?: boolean;
+    priority?: boolean;
+    preload?: boolean;
+    unoptimized?: boolean;
+    sizes?: string;
+  } & React.ImgHTMLAttributes<HTMLImageElement>) => {
+    void _unoptimized;
+    const resolved = typeof src === "string" ? src : src.src;
+    return (
+      <img
+        src={resolved}
+        alt={alt}
+        sizes={sizes}
+        data-fill={fill ? "" : undefined}
+        data-preload={preload || priority ? "" : undefined}
+        {...props}
+      />
+    );
+  },
+  getImageProps: ({
+    src,
+    width,
+    height,
+    ...props
+  }: {
+    src: string;
+    width: number;
+    height: number;
+  } & React.ImgHTMLAttributes<HTMLImageElement>) => ({
+    props: {
+      ...props,
+      src,
+      width,
+      height,
+      srcSet: `${src} ${width}w`,
+    },
+  }),
+}));
+
 // Mock next/link
 vi.mock("next/link", () => ({
   default: ({

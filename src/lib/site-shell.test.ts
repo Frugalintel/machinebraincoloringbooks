@@ -49,8 +49,13 @@ describe("site shell routes", () => {
 
 describe("headerVariantFor", () => {
   it("uses the full chrome on catalog pages", () => {
-    expect(headerVariantFor("/")).toBe("full");
+    expect(headerVariantFor("/store")).toBe("full");
     expect(headerVariantFor("/store/1")).toBe("full");
+  });
+
+  it("overlays the nav on the home hero and lets home own its footer", () => {
+    expect(headerVariantFor("/")).toBe("overlay");
+    expect(hidesCustomerFooter("/")).toBe(true);
   });
 
   it("uses the minimal lockup header on auth, scan, and review", () => {

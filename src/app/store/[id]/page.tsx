@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { toSentenceCase } from "@/lib/display-text";
 import { fetchProductById } from "@/lib/product-lookup";
+import { SITE_URL } from "@/lib/site-url";
 import { ProductClient } from "./product-client";
 
 interface PageProps {
@@ -49,8 +50,7 @@ export async function generateMetadata({
     };
   }
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://machinebraincoloringbooks.com";
+  const baseUrl = SITE_URL;
 
   return {
     title: `${toSentenceCase(product.title)} | Machine Brain coloring books`,

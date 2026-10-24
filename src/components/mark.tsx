@@ -48,11 +48,14 @@ export function Mark({
 
 export type BrandLockupLayout = "horizontal" | "stacked";
 export type BrandLockupHeading = "h1" | "span";
+export type BrandLockupWordmark = "sans" | "mono";
 
 export type BrandLockupProps = {
   layout: BrandLockupLayout;
   markSize: number;
   ink?: MarkInk;
+  /** `mono`: Plex Mono 500, +0.08em, the header lockup. */
+  wordmark?: BrandLockupWordmark;
   href?: string;
   className?: string;
   wordmarkClassName?: string;
@@ -69,6 +72,19 @@ function lockupDirection(layout: BrandLockupLayout): string {
     default: {
       const _exhaustive: never = layout;
       throw new Error(`Unhandled lockup layout: ${String(_exhaustive)}`);
+    }
+  }
+}
+
+function wordmarkFace(wordmark: BrandLockupWordmark): string {
+  switch (wordmark) {
+    case "sans":
+      return "font-heading font-bold tracking-[0.02em]";
+    case "mono":
+      return "font-mono font-medium tracking-[0.08em]";
+    default: {
+      const _exhaustive: never = wordmark;
+      throw new Error(`Unhandled lockup wordmark: ${String(_exhaustive)}`);
     }
   }
 }
@@ -95,13 +111,14 @@ function WordmarkTag({
 }
 
 /**
- * Mark + Inter 700 "Machine Brain" lockup. Uses the S3 small cut below
+ * Mark + "Machine Brain" wordmark lockup. Uses the S3 small cut below
  * 48 px and the full mark-v6 at 48 px and up.
  */
 export function BrandLockup({
   layout,
   markSize,
   ink = "cream",
+  wordmark = "sans",
   href = "/",
   className,
   wordmarkClassName,
@@ -137,7 +154,8 @@ export function BrandLockup({
           <WordmarkTag
             headingLevel={headingLevel}
             className={cn(
-              "whitespace-nowrap font-heading font-bold uppercase tracking-[0.02em]",
+              "whitespace-nowrap uppercase",
+              wordmarkFace(wordmark),
               inkClass,
               wordmarkClassName,
             )}

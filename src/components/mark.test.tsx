@@ -80,6 +80,20 @@ describe("BrandLockup", () => {
     expect(link).toHaveTextContent("Machine Brain");
   });
 
+  it("sets the stacked header wordmark in Plex Mono under the mark", () => {
+    render(<BrandLockup layout="stacked" wordmark="mono" markSize={48} />);
+
+    const link = screen.getByRole("link", { name: "Machine Brain" });
+    const wordmark = screen.getByText("Machine Brain");
+    expect(wordmark).toHaveClass("font-mono", "font-medium", "uppercase");
+    expect(wordmark).not.toHaveClass("font-heading");
+    expect(link.querySelector("span")).toHaveClass("flex-col");
+    expect(link.querySelector("img")).toHaveAttribute(
+      "src",
+      "/brand/mb-mark-full-cream.svg",
+    );
+  });
+
   it("uses a stacked heading lockup for auth", () => {
     render(<BrandLockup layout="stacked" markSize={80} headingLevel="h1" />);
 
