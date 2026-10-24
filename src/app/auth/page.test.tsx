@@ -11,7 +11,6 @@ import AuthPage from "@/app/auth/page";
 import { supabase } from "@/lib/supabase";
 
 const nav = vi.hoisted(() => ({
-  params: new URLSearchParams(),
   push: vi.fn(),
   refresh: vi.fn(),
 }));
@@ -19,38 +18,42 @@ const nav = vi.hoisted(() => ({
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: nav.push, refresh: nav.refresh }),
   usePathname: () => "/auth",
-  useSearchParams: () => nav.params,
 }));
 
 const signIn = vi.mocked(supabase.auth.signInWithPassword);
 const signUp = vi.mocked(supabase.auth.signUp);
 
-function renderAuth(query = "") {
-  nav.params = new URLSearchParams(query);
-  return render(<AuthPage />);
+async function renderAuth(query = "") {
+  const searchParams = Object.fromEntries(new URLSearchParams(query));
+  return render(
+    await AuthPage({ searchParams: Promise.resolve(searchParams) }),
+  );
+}
+
+function form() {
+  return screen.getByRole("form", { name: "Account" });
 }
 
 function submit() {
-  fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
-}
-
-/** Status-hue classes that can apply; dormant `aria-invalid:` ones on valid nodes are skipped. */
-function liveOffPaletteClasses(root: HTMLElement): string[] {
-  const hits: string[] = [];
-  for (const node of root.querySelectorAll<HTMLElement>("[class]")) {
-    const invalid = node.getAttribute("aria-invalid") === "true";
-    for (const token of node.classList) {
-      if (!/danger|warning|success|yellow|red-|amber/.test(token)) continue;
-      if (token.startsWith("aria-invalid:") && !invalid) continue;
-      hits.push(`${node.tagName}:${token}`);
-    }
-  }
-  return hits;
+  fireEvent.submit(form());
 }
 
 function fill(label: string | RegExp, value: string) {
   fireEvent.change(screen.getByLabelText(label), { target: { value } });
 }
+
+function heading() {
+  return screen.getByRole("heading", { level: 1 });
+}
+
+function summary() {
+  return screen.getByTestId("auth-summary");
+}
+
+const signedIn = {
+  data: { user: {}, session: {} },
+  error: null,
+} as unknown as Awaited<ReturnType<typeof signIn>>;
 
 beforeEach(() => {
   nav.push.mockReset();
@@ -63,49 +66,44 @@ afterEach(() => {
   localStorage.clear();
 });
 
-describe("/auth rendering", () => {
-  it("sets one Redaction H1, the mono label and the official lockup", () => {
-    const { container } = renderAuth();
+describe("/auth S3 rendering", () => {
+  it("sets the one Redaction H1 as the giant per-state line", async () => {
+    const { container } = await renderAuth();
 
-    const h1 = screen.getByRole("heading", { level: 1 });
-    expect(h1).toHaveTextContent("Welcome back");
-    expect(h1).toHaveClass("font-display");
+    expect(heading()).toHaveTextContent("Sign in. Welcome back.");
+    expect(heading()).toHaveClass("font-display", "sa-h1");
     expect(container.querySelectorAll(".font-display")).toHaveLength(1);
     expect(container.querySelectorAll("h1")).toHaveLength(1);
-
-    const label = screen.getByTestId("auth-label");
-    expect(label).toHaveTextContent("Sign in");
-    expect(label).toHaveClass("font-label", "text-signal");
-
-    const mark = container.querySelector('img[src^="/brand/"]');
-    expect(mark).toHaveAttribute("src", "/brand/mb-mark-full-cream.svg");
-    expect(container.querySelector('a[aria-label="Machine Brain"]')).toBeNull();
+    expect(container.querySelector(".sa-lines")).toHaveAttribute(
+      "data-fit",
+      "in",
+    );
+    expect(screen.getByText(/keeps the books you register/)).toBeVisible();
   });
 
-  it("labels every input and wires autocomplete for password managers", () => {
-    renderAuth();
+  it("sits between the overlay shell and Home's footer plate", async () => {
+    const { container } = await renderAuth();
+    expect(screen.getByTestId("auth-page")).toHaveClass("home-e2", "sa-page");
+    expect(container.querySelector("footer.ft")).not.toBeNull();
+    expect(screen.getByText("Take your")).toBeInTheDocument();
+  });
+
+  it("labels every input and wires autocomplete for password managers", async () => {
+    await renderAuth();
 
     const email = screen.getByLabelText("Email");
     expect(email).toHaveAttribute("type", "email");
-    expect(email).toHaveAttribute("name", "email");
-    expect(email).toHaveAttribute("autocomplete", "username");
+    expect(email).toHaveAttribute("autocomplete", "email");
     expect(screen.getByLabelText("Password")).toHaveAttribute(
       "autocomplete",
       "current-password",
     );
     expect(screen.queryByLabelText("Confirm password")).toBeNull();
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Create account", pressed: false }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Create an account" }));
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Create your account",
-    );
-    expect(screen.getByLabelText("Email")).toHaveAttribute(
-      "autocomplete",
-      "email",
-    );
+    expect(heading()).toHaveTextContent("Create an account. Keep your pages.");
+    expect(heading()).toHaveFocus();
     const password = screen.getByLabelText("Password");
     expect(password).toHaveAttribute("autocomplete", "new-password");
     expect(password).toHaveAccessibleDescription("At least 6 characters.");
@@ -113,55 +111,71 @@ describe("/auth rendering", () => {
       "autocomplete",
       "new-password",
     );
-  });
-
-  it("opens in create-account mode from ?mode=register and keeps ?email", () => {
-    renderAuth("mode=register&email=you%40example.com");
-
     expect(
-      screen.getByRole("button", { name: "Create account", pressed: true }),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Email")).toHaveValue("you@example.com");
+      screen.getByRole("button", { name: "Create account" }),
+    ).toHaveAttribute("type", "submit");
   });
 
-  it("does not fake auth options or link a reset flow that does not exist", () => {
-    const { container } = renderAuth();
-    expect(container.textContent).not.toMatch(
-      /google|apple|facebook|twitter|forgot|provider/i,
+  it("opens sign-up from ?mode=register, or ?email alone, and keeps the email", async () => {
+    const { unmount } = await renderAuth(
+      "mode=register&email=you%40example.com",
+    );
+    expect(heading()).toHaveTextContent("Keep your pages.");
+    expect(screen.getByLabelText("Email")).toHaveValue("you@example.com");
+    unmount();
+
+    await renderAuth("email=you%40example.com");
+    expect(heading()).toHaveTextContent("Keep your pages.");
+  });
+
+  it("does not fake auth options or link a reset flow that does not exist", async () => {
+    const { container } = await renderAuth();
+    expect(container.querySelector(".sa")?.textContent).not.toMatch(
+      /google|apple|facebook|twitter|forgot|reset|provider/i,
     );
     expect(container.textContent).not.toContain("!");
-  });
-
-  it("toggles password visibility without losing the value", () => {
-    renderAuth();
-    fill("Password", "hunter22");
-    const toggle = screen.getByRole("button", { name: "Show password" });
-
-    expect(toggle).toHaveAttribute("aria-pressed", "false");
-    fireEvent.click(toggle);
-    expect(screen.getByLabelText("Password")).toHaveAttribute("type", "text");
-    expect(toggle).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByLabelText("Password")).toHaveValue("hunter22");
   });
 });
 
 describe("/auth errors and loading", () => {
-  it("ties empty-field errors to each input and focuses the first", () => {
-    renderAuth();
+  it("marks every bad field at once, summarises at the top and focuses the first", async () => {
+    await renderAuth();
     submit();
 
+    expect(summary()).toHaveTextContent("Check thisCheck the marked fields.");
+    expect(summary().closest('[role="alert"]')).not.toBeNull();
     const email = screen.getByLabelText("Email");
     const password = screen.getByLabelText("Password");
     expect(email).toHaveAttribute("aria-invalid", "true");
-    expect(email).toHaveAccessibleDescription("Enter your email.");
-    expect(password).toHaveAttribute("aria-invalid", "true");
-    expect(password).toHaveAccessibleDescription("Enter your password.");
+    expect(email).toHaveAccessibleDescription("Check this Enter your email.");
+    expect(password).toHaveAccessibleDescription(
+      "Check this Enter your password.",
+    );
     expect(email).toHaveFocus();
     expect(signIn).not.toHaveBeenCalled();
   });
 
-  it("puts the mismatch error on the confirm field", () => {
-    renderAuth("mode=register");
+  it("checks the email shape, the 6-character minimum and the match on sign-up", async () => {
+    await renderAuth("mode=register");
+    fill("Email", "you@example");
+    fill("Password", "abc");
+    fill("Confirm password", "abd");
+    submit();
+
+    expect(screen.getByLabelText("Email")).toHaveAccessibleDescription(
+      "Check this That doesn’t look like an email address.",
+    );
+    expect(screen.getByLabelText("Password")).toHaveAccessibleDescription(
+      "At least 6 characters. Check this Use at least 6 characters.",
+    );
+    expect(
+      screen.getByLabelText("Confirm password"),
+    ).toHaveAccessibleDescription("Check this The two passwords don’t match.");
+    expect(signUp).not.toHaveBeenCalled();
+  });
+
+  it("puts a lone mismatch on the confirm field and focuses it", async () => {
+    await renderAuth("mode=register");
     fill("Email", "you@example.com");
     fill("Password", "secret1");
     fill("Confirm password", "secret2");
@@ -169,26 +183,27 @@ describe("/auth errors and loading", () => {
 
     const confirm = screen.getByLabelText("Confirm password");
     expect(confirm).toHaveAttribute("aria-invalid", "true");
-    expect(confirm).toHaveAccessibleDescription("These passwords don’t match.");
     expect(confirm).toHaveFocus();
     expect(screen.getByLabelText("Password")).not.toHaveAttribute(
       "aria-invalid",
     );
-    expect(signUp).not.toHaveBeenCalled();
   });
 
-  it("shows a loading state, then a form-level error described on the form", async () => {
+  it("holds the form while signing in, then explains a wrong password", async () => {
     let resolve!: (value: Awaited<ReturnType<typeof signIn>>) => void;
     signIn.mockReturnValue(new Promise((done) => (resolve = done)));
-    renderAuth();
+    await renderAuth();
     fill("Email", "you@example.com");
     fill("Password", "secret1");
     submit();
 
-    const busy = screen.getByRole("button", { name: /signing in/i });
-    expect(busy).toHaveAttribute("aria-busy", "true");
-    expect(busy).toBeDisabled();
-    expect(screen.getByLabelText("Email")).toBeDisabled();
+    const button = within(form()).getByRole("button", { name: "Sign in" });
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(form()).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByLabelText("Email")).toHaveAttribute("readonly");
+    expect(within(form()).getByRole("status")).toHaveTextContent("Signing in…");
+    submit();
+    expect(signIn).toHaveBeenCalledTimes(1);
     expect(signIn).toHaveBeenCalledWith({
       email: "you@example.com",
       password: "secret1",
@@ -201,54 +216,136 @@ describe("/auth errors and loading", () => {
       } as unknown as Awaited<ReturnType<typeof signIn>>);
     });
 
-    const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Your email or password is incorrect.");
-    const form = screen.getByLabelText("Email").closest("form")!;
-    expect(form).toHaveAccessibleDescription(
-      "Your email or password is incorrect.",
+    expect(summary()).toHaveTextContent(
+      "That email and password don’t match an account.",
     );
-    expect(within(form).getByRole("button", { name: "Sign in" })).toBeEnabled();
+    const email = screen.getByLabelText("Email");
+    expect(email).toHaveAttribute("aria-invalid", "true");
+    expect(email).not.toHaveAttribute("aria-describedby");
+    const password = screen.getByLabelText("Password");
+    expect(password).toHaveAccessibleDescription(
+      "Check this Check it and try again.",
+    );
+    expect(password).toHaveFocus();
+    expect(button).not.toHaveAttribute("aria-disabled");
     expect(nav.push).not.toHaveBeenCalled();
   });
 
-  it("keeps the next redirect after a successful sign in", async () => {
-    signIn.mockResolvedValue({
-      data: { user: {}, session: {} },
-      error: null,
-    } as unknown as Awaited<ReturnType<typeof signIn>>);
-    renderAuth("next=%2Fcollectibles");
-    fill("Email", "you@example.com");
-    fill("Password", "secret1");
-    submit();
-
-    await waitFor(() => expect(nav.push).toHaveBeenCalledWith("/collectibles"));
-    expect(nav.refresh).toHaveBeenCalled();
-  });
-
-  it("shows the confirmation notice inline instead of an alert", async () => {
-    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+  it("moves an existing account to sign in with a summary", async () => {
     signUp.mockResolvedValue({
-      data: { user: { email: "you@example.com" }, session: null },
-      error: null,
+      data: { user: null, session: null },
+      error: new Error("User already registered"),
     } as unknown as Awaited<ReturnType<typeof signUp>>);
-    renderAuth("mode=register");
+    await renderAuth("mode=register");
     fill("Email", "you@example.com");
     fill("Password", "secret1");
     fill("Confirm password", "secret1");
     submit();
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "Check your email for the confirmation link.",
+    await waitFor(() =>
+      expect(summary()).toHaveTextContent("You already have an account"),
     );
-    expect(alertSpy).not.toHaveBeenCalled();
+    expect(heading()).toHaveTextContent("Welcome back.");
+  });
+
+  it("shows the Check your email state after a sign-up that needs confirming", async () => {
+    signUp.mockResolvedValue({
+      data: { user: { email: "you@example.com" }, session: null },
+      error: null,
+    } as unknown as Awaited<ReturnType<typeof signUp>>);
+    await renderAuth("mode=register");
+    fill("Email", "you@example.com");
+    fill("Password", "secret1");
+    fill("Confirm password", "secret1");
+    submit();
+
+    const check = await screen.findByTestId("auth-check");
+    expect(check).toHaveAttribute("role", "status");
+    expect(check).toHaveTextContent("Link sent");
+    expect(heading()).toHaveTextContent("Check your email.");
+    expect(heading()).toHaveFocus();
+    expect(screen.queryByRole("form", { name: "Account" })).toBeNull();
     expect(nav.push).not.toHaveBeenCalled();
-    alertSpy.mockRestore();
+
+    fireEvent.click(screen.getByRole("button", { name: "Back to sign in" }));
+    expect(heading()).toHaveTextContent("Welcome back.");
+    expect(screen.getByLabelText("Email")).toHaveValue("you@example.com");
+  });
+});
+
+describe("/auth next= redirect", () => {
+  async function signInWith(query: string) {
+    signIn.mockResolvedValue(signedIn);
+    await renderAuth(query);
+    fill("Email", "you@example.com");
+    fill("Password", "secret1");
+    submit();
+    await waitFor(() => expect(nav.push).toHaveBeenCalledTimes(1));
+    return nav.push.mock.calls[0][0] as string;
+  }
+
+  it("follows an on-site next and defaults to the profile", async () => {
+    expect(await signInWith("next=%2Fcollectibles")).toBe("/collectibles");
+    expect(nav.refresh).toHaveBeenCalled();
+    nav.push.mockReset();
+    document.body.innerHTML = "";
+    expect(await signInWith("")).toBe("/profile/me");
+  });
+
+  it.each([
+    "//evil.example",
+    "https://evil.example/profile",
+    "/\\evil.example",
+    "javascript:alert(1)",
+  ])("sends an off-site next (%s) to the profile instead", async (next) => {
+    expect(await signInWith(`next=${encodeURIComponent(next)}`)).toBe(
+      "/profile/me",
+    );
+  });
+});
+
+describe("/auth code arrival from /scan", () => {
+  const query = `next=${encodeURIComponent("/scan?mode=code&code=ab12")}`;
+
+  it("holds the code, upper case, on the sign-in side", async () => {
+    const { container } = await renderAuth(query);
+    expect(heading()).toHaveTextContent("Sign in. Keep your code.");
+    expect(container.querySelector(".sa-lines")).toHaveAttribute(
+      "data-fit",
+      "code",
+    );
+    const held = screen.getByTestId("auth-held");
+    expect(screen.getByTestId("auth-code")).toHaveTextContent(/^AB12$/);
+    expect(held).toHaveTextContent("Code held");
+    expect(held).toHaveTextContent("Sign in to keep it.");
+    expect(screen.queryByText(/keeps the books you register/)).toBeNull();
+  });
+
+  it("says create an account on the sign-up side", async () => {
+    await renderAuth(`${query}&mode=register`);
+    expect(heading()).toHaveTextContent("Create an account. Keep your code.");
+    expect(screen.getByTestId("auth-held")).toHaveTextContent(
+      "Create an account to keep it.",
+    );
+  });
+
+  it("goes back to /scan with the code after signing in, so /scan prefills it", async () => {
+    signIn.mockResolvedValue(signedIn);
+    await renderAuth(query);
+    fill("Email", "you@example.com");
+    fill("Password", "secret1");
+    submit();
+    await waitFor(() =>
+      expect(nav.push).toHaveBeenCalledWith("/scan?mode=code&code=ab12"),
+    );
   });
 });
 
 describe("/auth brand guards", () => {
-  it("never fills with signal orange and keeps orange to the one mono label", () => {
-    const { container } = renderAuth("mode=register");
+  it("keeps orange to small mono labels and never fills with it", async () => {
+    const { container } = await renderAuth(
+      "mode=register&next=%2Fscan%3Fmode%3Dcode%26code%3Dab12",
+    );
     submit();
 
     expect(
@@ -256,18 +353,20 @@ describe("/auth brand guards", () => {
         '[class*="bg-primary"], [class*="bg-signal"], [class*="brand-orange"], [class*="bg-[#"]',
       ),
     ).toHaveLength(0);
-    const orange = container.querySelectorAll('[class*="signal"]');
-    expect(orange).toHaveLength(1);
-    expect(orange[0]).toHaveClass("font-label");
-    expect(liveOffPaletteClasses(container)).toEqual([]);
+    for (const node of container.querySelectorAll(".sa-signal")) {
+      expect(node.closest(".sa-mono")).not.toBeNull();
+    }
+    for (const node of container.querySelectorAll("[class]")) {
+      expect(node.className.toString()).not.toMatch(
+        /danger|warning|success|red-|amber/,
+      );
+    }
   });
 
-  it("uses a cream-on-near-black primary button", () => {
-    renderAuth();
-    const button = screen
-      .getByLabelText("Email")
-      .closest("form")!
-      .querySelector('button[type="submit"]');
-    expect(button).toHaveClass("bg-cream", "text-ink");
+  it("uses the square cream submit button", async () => {
+    await renderAuth();
+    expect(within(form()).getByRole("button", { name: "Sign in" })).toHaveClass(
+      "sa-btn",
+    );
   });
 });

@@ -1,23 +1,47 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { AUTH_COPY, authErrorMessage, authModeCopy } from "@/lib/auth-ui";
+import {
+  AUTH_COPY,
+  AUTH_DEFAULT_NEXT,
+  authEntryFromParams,
+  authFailure,
+  authHeadline,
+  authModeCopy,
+  codeFromNext,
+  safeNextPath,
+  validateAuthForm,
+  type AuthView,
+} from "@/lib/auth-ui";
 
 const AUTH_FILES = [
   "src/app/auth/page.tsx",
+  "src/app/auth/auth-page-client.tsx",
   "src/components/auth-modal.tsx",
   "src/components/auth-panel.tsx",
+  "src/components/use-auth-form.ts",
   "src/lib/auth-ui.ts",
 ];
+const CSS_FILE = "src/components/auth-panel.css";
 
 function read(relative: string): string {
   return readFileSync(join(process.cwd(), relative), "utf8");
 }
 
 const SOURCE = AUTH_FILES.map(read).join("\n");
+const CSS = read(CSS_FILE).replace(/\/\*[\s\S]*?\*\//g, "");
 
-describe("Sign in brand guardrails (AUTH-01, AUTH-02, SW-ORANGE-USE-01, SW-LOGO-03)", () => {
-  it("sets Redaction once, on the /auth H1 inside the shared panel", () => {
+/** `selector { body }` rules, media blocks flattened. */
+function cssRules(): { selector: string; body: string }[] {
+  const flat = CSS.replace(/@media[^{]+\{([\s\S]*?\})\s*\}/g, "$1");
+  return [...flat.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+    selector: match[1].trim(),
+    body: match[2],
+  }));
+}
+
+describe("Sign in S3 brand guardrails", () => {
+  it("sets Redaction on the giant per-state line only, the page's one H1 (approved S3 off-guide item)", () => {
     const uses = AUTH_FILES.flatMap((file) =>
       (read(file).match(/font-display|--font-redaction/g) ?? []).map(
         () => file,
@@ -25,42 +49,65 @@ describe("Sign in brand guardrails (AUTH-01, AUTH-02, SW-ORANGE-USE-01, SW-LOGO-
     );
     expect(uses).toEqual(["src/components/auth-panel.tsx"]);
     expect(read("src/components/auth-panel.tsx")).toMatch(
-      /<h1[\s\S]{0,80}font-display/,
+      /const Heading = context === "page" \? "h1" : "h2"/,
     );
+    const display = cssRules().filter(({ body }) =>
+      body.includes("--sa-display)"),
+    );
+    expect(display.map(({ selector }) => selector)).toEqual([".sa-h1"]);
   });
 
-  it("keeps signal orange to one small mono label and never fills with it", () => {
+  it("allows the square cream button and keeps it cream on near-black", () => {
+    const button = cssRules().find(({ selector }) => selector === ".sa-btn");
+    expect(button?.body).toMatch(/border-radius:\s*0;/);
+    expect(button?.body).toMatch(/background:\s*var\(--cream\)/);
+    expect(button?.body).toMatch(/color:\s*var\(--ink\)/);
+    expect(button?.body).toMatch(/height:\s*64px/);
+  });
+
+  it("uses orange only for mono labels, the folio glyph and the 2px focus ring, never as a fill", () => {
+    const orange = cssRules()
+      .filter(({ body }) => body.includes("--signal"))
+      .map(({ selector }) => selector);
+    expect(orange).toEqual([
+      ".sa-signal",
+      ".sa-sum b,\n.sa-msg b",
+      ".sa-input:focus-visible",
+      ".sa :is(.sa-btn, .sa-link, .sa-quiet, .sa-close):focus-visible",
+    ]);
+    for (const { body } of cssRules()) {
+      expect(body).not.toMatch(/background[^;]*--signal/);
+    }
+    expect(CSS).toMatch(/0 0 0 4px var\(--signal\)/);
+    expect(CSS).toMatch(/outline:\s*2px solid var\(--signal\)/);
     expect(SOURCE).not.toMatch(
       /bg-(?:primary|signal|brand-orange)|bg-\[#ff4f00\]|border-primary|text-primary|#ff4f00/i,
     );
-    const signal = SOURCE.match(/[\w:-]*signal\b/g) ?? [];
-    expect(signal).toEqual(["text-signal"]);
-    expect(read("src/components/auth-panel.tsx")).toMatch(
-      /font-label[^"]*text-signal/,
-    );
   });
 
-  it("stays on the four brand colors with no status hues or raw hexes", () => {
+  it("stays on the four brand colors: no red, status hues or raw hexes", () => {
     expect(SOURCE).not.toMatch(
       /\b(?:text|bg|border)-(?:danger|warning|success|yellow|red|amber|gray|white|black)\b/,
     );
-    expect(SOURCE).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    expect(`${SOURCE}\n${CSS}`).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    expect(CSS).not.toMatch(/--(?:danger|warning|success)|\bred\b/);
+    const colors = CSS.match(/var\(--(?:base|cream|ink|paper|signal)\)/g);
+    expect(new Set(colors)).toEqual(
+      new Set(["var(--base)", "var(--cream)", "var(--ink)", "var(--signal)"]),
+    );
   });
 
-  it("uses the official lockup from the brand component in one ink", () => {
-    const panel = read("src/components/auth-panel.tsx");
-    expect(panel).toMatch(
-      /<BrandLockup[\s\S]*?layout="stacked"[\s\S]*?ink="cream"/,
+  it("uses the official lockup in one ink, cream, and no orange mark", () => {
+    const modal = read("src/components/auth-modal.tsx");
+    expect(modal).toMatch(
+      /<BrandLockup[\s\S]*?ink="cream"[\s\S]*?href=\{null\}/,
     );
-    expect(panel).not.toMatch(/ink="ink"|Machine Brain<\//);
+    expect(SOURCE).not.toMatch(/ink="ink"|ink="signal"|Machine Brain<\//);
     expect(read("src/app/auth/page.tsx")).not.toMatch(/<BrandLockup|<Mark\b/);
-    expect(read("src/components/auth-modal.tsx")).not.toMatch(
-      /<BrandLockup|<Mark\b/,
-    );
   });
 
   it("shares one panel between /auth and the modal", () => {
-    expect(read("src/app/auth/page.tsx")).toMatch(
+    expect(read("src/app/auth/auth-page-client.tsx")).toMatch(
       /<AuthPanel[\s\S]*?context="page"/,
     );
     expect(read("src/components/auth-modal.tsx")).toMatch(
@@ -68,23 +115,26 @@ describe("Sign in brand guardrails (AUTH-01, AUTH-02, SW-ORANGE-USE-01, SW-LOGO-
     );
   });
 
-  it("drops mocked providers, dead links, alerts, textures and old faces", () => {
+  it("drops mocked providers, the reset link, alerts, textures and old faces", () => {
     expect(SOURCE).not.toMatch(
       /Chrome|Facebook|Twitter|Command|signInWithOAuth|handleSocial|Forgot/,
     );
     expect(SOURCE).not.toMatch(/\balert\(/);
     expect(SOURCE).not.toMatch(/Rajdhani|Oswald|font-mono\b/);
-    expect(SOURCE).not.toMatch(
-      /noise|grain|grid-bg|glow|backdrop-blur|animate-pulse|shadow-2xl/,
+    expect(`${SOURCE}\n${CSS}`).not.toMatch(
+      /noise|grain|grid-bg|glow|backdrop-blur|animate-pulse|shadow-2xl|text-shadow|filter:/,
     );
-    expect(SOURCE).not.toMatch(/h-2 w-full|header strip/i);
+    expect(CSS).not.toMatch(/border-radius:\s*[^0\s]/);
   });
 
   it("writes copy in the brand voice: you, sentence case, no exclamation marks", () => {
     const strings = [
-      ...Object.values(AUTH_COPY),
+      ...Object.values(AUTH_COPY).flat(),
       ...(["login", "register"] as const).flatMap((mode) =>
         Object.values(authModeCopy(mode)),
+      ),
+      ...(["login", "register", "check"] as const).flatMap((view) =>
+        [false, true].map((code) => authHeadline(view, code).lines.join(" ")),
       ),
     ];
     for (const text of strings) {
@@ -93,28 +143,142 @@ describe("Sign in brand guardrails (AUTH-01, AUTH-02, SW-ORANGE-USE-01, SW-LOGO-
       expect(text[0], text).toBe(text[0].toUpperCase());
       expect(text.slice(1), text).not.toMatch(/\b[A-Z]{2,}\b/);
     }
-    for (const mode of ["login", "register"] as const) {
-      const { title, label } = authModeCopy(mode);
-      expect(title.slice(1)).toBe(title.slice(1).toLowerCase());
-      expect(label.slice(1)).toBe(label.slice(1).toLowerCase());
-    }
   });
 });
 
-describe("authErrorMessage", () => {
+describe("authHeadline", () => {
+  it.each<[AuthView, boolean, string]>([
+    ["login", false, "Welcome back."],
+    ["register", false, "Keep your pages."],
+    ["login", true, "Keep your code."],
+    ["register", true, "Keep your code."],
+    ["check", false, "Check your email."],
+    ["check", true, "Check your email."],
+  ])("%s (code: %s) reads %s", (view, hasCode, line) => {
+    expect(authHeadline(view, hasCode).lines.join(" ")).toBe(line);
+  });
+});
+
+describe("validateAuthForm", () => {
+  const empty = { email: "", password: "", confirmPassword: "" };
+
+  it("marks every empty field at once", () => {
+    expect(validateAuthForm("login", empty)).toEqual({
+      email: AUTH_COPY.emailRequired,
+      password: AUTH_COPY.passwordRequired,
+    });
+  });
+
+  it("checks the email shape, then the sign-up minimum and match", () => {
+    expect(
+      validateAuthForm("register", {
+        email: "you@",
+        password: "12345",
+        confirmPassword: "1234",
+      }),
+    ).toEqual({
+      email: AUTH_COPY.emailInvalid,
+      password: AUTH_COPY.passwordTooShort,
+      confirmPassword: AUTH_COPY.passwordMismatch,
+    });
+    expect(
+      validateAuthForm("login", {
+        email: " you@example.com ",
+        password: "1",
+        confirmPassword: "",
+      }),
+    ).toEqual({});
+  });
+});
+
+describe("authFailure", () => {
   it("maps known Supabase and network errors onto the brand voice", () => {
-    expect(authErrorMessage(new Error("Invalid login credentials"))).toBe(
-      AUTH_COPY.invalidLogin,
-    );
-    expect(authErrorMessage(new Error("Email not confirmed"))).toBe(
+    expect(authFailure(new Error("Invalid login credentials"))).toEqual({
+      summary: AUTH_COPY.invalidLogin,
+      fields: { email: "", password: AUTH_COPY.invalidLoginField },
+    });
+    expect(authFailure(new Error("Email not confirmed")).summary).toBe(
       AUTH_COPY.emailNotConfirmed,
     );
-    expect(authErrorMessage(new TypeError("Failed to fetch"))).toBe(
+    expect(authFailure(new TypeError("Failed to fetch")).summary).toBe(
       AUTH_COPY.networkError,
     );
-    expect(authErrorMessage(new Error("Signups not allowed"))).toBe(
+    expect(authFailure(new Error("Signups not allowed")).summary).toBe(
       "Signups not allowed",
     );
-    expect(authErrorMessage("nope")).toBe(AUTH_COPY.genericError);
+    expect(authFailure("nope").summary).toBe(AUTH_COPY.genericError);
+  });
+});
+
+describe("safeNextPath (open redirect fix)", () => {
+  it.each([
+    ["/profile/me", "/profile/me"],
+    ["/collectibles", "/collectibles"],
+    ["/scan?mode=code&code=AB12", "/scan?mode=code&code=AB12"],
+    ["/store/1#reviews", "/store/1#reviews"],
+    ["/a/../b", "/b"],
+    ["/%0a", "/%0a"],
+  ])("keeps the on-site path %s", (next, expected) => {
+    expect(safeNextPath(next)).toBe(expected);
+  });
+
+  it.each([
+    null,
+    undefined,
+    "",
+    "profile",
+    "//evil.example",
+    "//evil.example/profile",
+    "///evil.example",
+    "/\\evil.example",
+    "\\\\evil.example",
+    "/\\/evil.example",
+    "https://evil.example",
+    "http:/evil.example",
+    "javascript:alert(1)",
+    "data:text/html,hi",
+    " /profile",
+    "/\t/evil.example",
+    "/\n/evil.example",
+  ])("falls back to the profile for %j", (next) => {
+    expect(safeNextPath(next)).toBe(AUTH_DEFAULT_NEXT);
+  });
+});
+
+describe("codeFromNext", () => {
+  it("reads a trimmed, upper-case code from an on-site /scan next", () => {
+    expect(codeFromNext("/scan?mode=code&code=ab12")).toBe("AB12");
+    expect(codeFromNext("/scan?mode=code&code=%20ab12%20")).toBe("AB12");
+  });
+
+  it("ignores other paths, other modes and empty codes", () => {
+    expect(codeFromNext("/scan?code=ab12")).toBeNull();
+    expect(codeFromNext("/scan?mode=code&code=%20")).toBeNull();
+    expect(codeFromNext("/scanner?mode=code&code=ab12")).toBeNull();
+    expect(codeFromNext("/profile/me")).toBeNull();
+  });
+});
+
+describe("authEntryFromParams", () => {
+  const entry = (query: string) =>
+    authEntryFromParams(new URLSearchParams(query));
+
+  it("keeps the live mode and email rules", () => {
+    expect(entry("").mode).toBe("login");
+    expect(entry("mode=register").mode).toBe("register");
+    expect(entry("email=a%40b.co").mode).toBe("register");
+    expect(entry("email=a%40b.co&mode=login").mode).toBe("login");
+    expect(entry("email=a%40b.co&mode=other").mode).toBe("login");
+    expect(entry("email=a%40b.co").email).toBe("a@b.co");
+  });
+
+  it("only takes a code from a safe next", () => {
+    expect(entry("next=%2Fscan%3Fmode%3Dcode%26code%3Dab12")).toMatchObject({
+      next: "/scan?mode=code&code=ab12",
+      code: "AB12",
+    });
+    expect(
+      entry("next=%2F%2Fevil.example%2Fscan%3Fmode%3Dcode%26code%3Dab12"),
+    ).toMatchObject({ next: AUTH_DEFAULT_NEXT, code: null });
   });
 });

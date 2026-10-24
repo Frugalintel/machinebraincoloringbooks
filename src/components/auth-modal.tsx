@@ -1,47 +1,31 @@
 "use client";
 
-import { useState, useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
 import { AuthPanel } from "@/components/auth-panel";
+import { BrandLockup } from "@/components/mark";
+import { useAuthForm, type AuthAttempt } from "@/components/use-auth-form";
 import { useAuth } from "@/context/auth-context";
-import {
-  AUTH_COPY,
-  AUTH_PASSWORD_MIN_LENGTH,
-  authErrorMessage,
-  type AuthFieldErrors,
-  type AuthMode,
-} from "@/lib/auth-ui";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { FOCUS_RING } from "@/lib/ui-brand";
-import { cn } from "@/lib/utils";
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function AuthModal() {
   const { authModal, closeAuthModal, signIn, signUp } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   const router = useRouter();
-  const titleId = useId();
+  const headingId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (authModal.isOpen) {
-      setIsLogin(authModal.view === "login");
-      if (authModal.email) setEmail(authModal.email);
-      setFieldErrors({});
-      setErrorMsg("");
-      setSuccessMsg("");
-    }
-  }, [authModal]);
+  const form = useAuthForm({
+    initialMode: authModal.view,
+    initialEmail: authModal.email,
+    configured: isSupabaseConfigured,
+  });
+  const [openRequest, setOpenRequest] = useState(authModal);
+  if (openRequest !== authModal) {
+    setOpenRequest(authModal);
+    if (authModal.isOpen) form.reset(authModal.view, authModal.email);
+  }
 
   useEffect(() => {
     if (!authModal.isOpen) return;
@@ -61,9 +45,7 @@ export function AuthModal() {
         return;
       }
       if (event.key !== "Tab" || !dialog) return;
-      const focusable = [
-        ...dialog.querySelectorAll<HTMLElement>(FOCUSABLE),
-      ].filter((node) => !node.closest("fieldset:disabled"));
+      const focusable = [...dialog.querySelectorAll<HTMLElement>(FOCUSABLE)];
       if (focusable.length === 0) return;
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
@@ -84,88 +66,23 @@ export function AuthModal() {
     };
   }, [authModal.isOpen, closeAuthModal]);
 
-  const changeMode = (mode: AuthMode) => {
-    setIsLogin(mode === "login");
-    setFieldErrors({});
-    setErrorMsg("");
-    setSuccessMsg("");
-  };
-
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setFieldErrors({});
-    setErrorMsg("");
-    setSuccessMsg("");
-
-    // Validation
-    if (!email || !password) {
-      setFieldErrors({
-        ...(email ? {} : { email: AUTH_COPY.emailRequired }),
-        ...(password ? {} : { password: AUTH_COPY.passwordRequired }),
-      });
-      setLoading(false);
-      return;
+  const attempt: AuthAttempt = async (mode, email, password) => {
+    if (mode === "login") {
+      const { error } = await signIn(email, password);
+      if (error) return { kind: "error", error };
+      // Success - update router and close modal (stay on current page)
+      router.refresh();
+      closeAuthModal();
+      return { kind: "done" };
     }
 
-    if (!isLogin && password !== confirmPassword) {
-      setFieldErrors({ confirmPassword: AUTH_COPY.passwordMismatch });
-      setLoading(false);
-      return;
-    }
-
-    if (!isLogin && password.length < AUTH_PASSWORD_MIN_LENGTH) {
-      setFieldErrors({ password: AUTH_COPY.passwordTooShort });
-      setLoading(false);
-      return;
-    }
-
-    if (!isSupabaseConfigured) {
-      setErrorMsg(AUTH_COPY.notConfigured);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      if (isLogin) {
-        const { error } = await signIn(email, password);
-        if (error) {
-          setErrorMsg(authErrorMessage(error));
-          return;
-        }
-        // Success - update router and close modal (stay on current page)
-        router.refresh();
-        closeAuthModal();
-        return;
-      } else {
-        const { error, needsConfirmation } = await signUp(email, password);
-        if (error) {
-          if (
-            error.message.includes("already registered") ||
-            error.message.includes("already exists")
-          ) {
-            setIsLogin(true);
-            setErrorMsg(AUTH_COPY.accountExists);
-          } else {
-            setErrorMsg(error.message);
-          }
-          return;
-        }
-
-        if (needsConfirmation) {
-          setSuccessMsg(AUTH_COPY.confirmEmail);
-        } else {
-          // Auto-confirmed - update router and close modal
-          router.refresh();
-          closeAuthModal();
-          return;
-        }
-      }
-    } catch (error: unknown) {
-      setErrorMsg(authErrorMessage(error));
-    } finally {
-      setLoading(false);
-    }
+    const { error, needsConfirmation } = await signUp(email, password);
+    if (error) return { kind: "error", error };
+    if (needsConfirmation) return { kind: "check" };
+    // Auto-confirmed - update router and close modal
+    router.refresh();
+    closeAuthModal();
+    return { kind: "done" };
   };
 
   if (!authModal.isOpen) {
@@ -173,53 +90,44 @@ export function AuthModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-[10010] overflow-y-auto overscroll-contain">
-      <div
-        aria-hidden="true"
-        data-testid="auth-modal-backdrop"
-        className="fixed inset-0 bg-background/90"
-        onClick={closeAuthModal}
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={headingId}
+      data-testid="auth-modal"
+      className="fixed inset-0 z-[10010] overflow-y-auto overscroll-contain bg-background"
+    >
+      <AuthPanel
+        context="modal"
+        headingId={headingId}
+        view={form.view}
+        code={authModal.code}
+        onModeChange={form.changeMode}
+        values={form.values}
+        onValueChange={form.setValue}
+        onSubmit={form.submitWith(attempt)}
+        loading={form.loading}
+        configured={isSupabaseConfigured}
+        fieldErrors={form.fieldErrors}
+        formError={form.formError}
+        top={
+          <div className="sa-top">
+            <BrandLockup
+              layout="horizontal"
+              wordmark="mono"
+              markSize={24}
+              ink="cream"
+              href={null}
+              className="[&>span]:!gap-3"
+              wordmarkClassName="text-[11px] tracking-[0.1em]"
+            />
+            <button type="button" className="sa-close" onClick={closeAuthModal}>
+              Close
+            </button>
+          </div>
+        }
       />
-      <div className="pointer-events-none relative flex min-h-full justify-center md:items-center md:p-8">
-        <div
-          ref={dialogRef}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          data-testid="auth-modal"
-          className="pointer-events-auto relative flex w-full justify-center bg-background px-5 pt-16 pb-10 md:max-w-[480px] md:border md:border-line md:px-10 md:pt-14"
-        >
-          <button
-            type="button"
-            onClick={closeAuthModal}
-            aria-label="Close"
-            className={cn(
-              "absolute top-[max(0.5rem,env(safe-area-inset-top))] right-2 flex size-11 items-center justify-center text-fg-secondary transition-colors hover:text-cream",
-              FOCUS_RING,
-            )}
-          >
-            <X aria-hidden="true" className="size-5" strokeWidth={1.75} />
-          </button>
-          <AuthPanel
-            context="modal"
-            titleId={titleId}
-            mode={isLogin ? "login" : "register"}
-            onModeChange={changeMode}
-            email={email}
-            onEmailChange={setEmail}
-            password={password}
-            onPasswordChange={setPassword}
-            confirmPassword={confirmPassword}
-            onConfirmPasswordChange={setConfirmPassword}
-            onSubmit={handleAuth}
-            loading={loading}
-            configured={isSupabaseConfigured}
-            fieldErrors={fieldErrors}
-            formError={errorMsg}
-            notice={successMsg}
-          />
-        </div>
-      </div>
     </div>
   );
 }

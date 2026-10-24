@@ -8,12 +8,15 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthModal } from "@/components/auth-modal";
 
+type ModalState = {
+  isOpen: boolean;
+  view: "login" | "register";
+  email?: string;
+  code?: string;
+};
+
 const auth = vi.hoisted(() => ({
-  authModal: {
-    isOpen: true,
-    view: "login" as "login" | "register",
-    email: undefined as string | undefined,
-  },
+  authModal: { isOpen: true, view: "login" } as ModalState,
   closeAuthModal: vi.fn(),
   signIn: vi.fn(),
   signUp: vi.fn(),
@@ -23,8 +26,7 @@ const auth = vi.hoisted(() => ({
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: auth.push, refresh: auth.refresh }),
-  usePathname: () => "/store",
-  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/scan",
 }));
 
 vi.mock("@/context/auth-context", () => ({
@@ -36,13 +38,13 @@ vi.mock("@/context/auth-context", () => ({
   }),
 }));
 
-function openModal(view: "login" | "register" = "login", email?: string) {
-  auth.authModal = { isOpen: true, view, email };
+function openModal(state: Partial<ModalState> = {}) {
+  auth.authModal = { isOpen: true, view: "login", ...state };
   return render(<AuthModal />);
 }
 
 function submit() {
-  fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
+  fireEvent.submit(screen.getByRole("form", { name: "Account" }));
 }
 
 function fill(label: string, value: string) {
@@ -57,31 +59,32 @@ beforeEach(() => {
   auth.push.mockReset();
 });
 
-describe("AuthModal", () => {
+describe("AuthModal (S3 plate)", () => {
   it("renders nothing when closed", () => {
-    auth.authModal = { isOpen: false, view: "login", email: undefined };
+    auth.authModal = { isOpen: false, view: "login" };
     const { container } = render(<AuthModal />);
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("is a labelled modal dialog with the shared panel and no Redaction", () => {
+  it("is a full-screen labelled dialog with the same giant line as an H2", () => {
     const { container } = openModal();
 
-    const dialog = screen.getByRole("dialog", { name: "Welcome back" });
+    const dialog = screen.getByRole("dialog", {
+      name: "Sign in. Welcome back.",
+    });
     expect(dialog).toHaveAttribute("aria-modal", "true");
-    expect(screen.getByRole("heading", { level: 2 })).toHaveClass(
-      "font-heading",
-    );
+    expect(dialog).toHaveClass("fixed", "inset-0");
+    const line = screen.getByRole("heading", { level: 2 });
+    expect(line).toHaveClass("font-display", "sa-h1");
     expect(container.querySelector("h1")).toBeNull();
-    expect(container.querySelectorAll(".font-display")).toHaveLength(0);
-    expect(screen.getByTestId("auth-label")).toHaveClass(
-      "font-label",
-      "text-signal",
-    );
+    expect(
+      container.querySelector('[data-auth-context="modal"]'),
+    ).not.toBeNull();
     expect(container.querySelector('img[src^="/brand/"]')).toHaveAttribute(
       "src",
-      "/brand/mb-mark-full-cream.svg",
+      "/brand/mb-mark-S3-small-cream.svg",
     );
+    expect(container.querySelector('a[href="/"]')).toBeNull();
     expect(screen.getByLabelText("Email")).toHaveFocus();
     expect(container.textContent).not.toMatch(
       /google|apple|facebook|twitter|forgot|!/i,
@@ -89,9 +92,11 @@ describe("AuthModal", () => {
   });
 
   it("opens on the requested view with the passed email", () => {
-    openModal("register", "you@example.com");
+    openModal({ view: "register", email: "you@example.com" });
     expect(
-      screen.getByRole("dialog", { name: "Create your account" }),
+      screen.getByRole("dialog", {
+        name: "Create an account. Keep your pages.",
+      }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toHaveValue("you@example.com");
     expect(screen.getByLabelText("Confirm password")).toHaveAttribute(
@@ -100,22 +105,63 @@ describe("AuthModal", () => {
     );
   });
 
-  it("closes on Escape, the close button and the backdrop", () => {
+  it("holds a code from /scan in the Keep your code state", () => {
+    openModal({ code: "AB12" });
+    expect(
+      screen.getByRole("dialog", { name: "Sign in. Keep your code." }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("auth-code")).toHaveTextContent("AB12");
+    expect(screen.getByTestId("auth-held")).toHaveTextContent(
+      "Sign in to keep it.",
+    );
+  });
+
+  it("starts fresh on each open request", () => {
+    const { rerender } = openModal();
+    fill("Email", "you@example.com");
+    submit();
+    expect(screen.getByTestId("auth-summary")).toBeInTheDocument();
+
+    auth.authModal = { isOpen: true, view: "register", code: "CD34" };
+    rerender(<AuthModal />);
+    expect(screen.queryByTestId("auth-summary")).toBeNull();
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
+      "Keep your code.",
+    );
+    expect(screen.getByLabelText("Password")).toHaveValue("");
+  });
+
+  it("closes on Escape and the Close button", () => {
     openModal();
     fireEvent.keyDown(document, { key: "Escape" });
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    fireEvent.click(screen.getByTestId("auth-modal-backdrop"));
-    expect(auth.closeAuthModal).toHaveBeenCalledTimes(3);
+    expect(auth.closeAuthModal).toHaveBeenCalledTimes(2);
   });
 
-  it("ties inline errors to fields", () => {
+  it("traps Tab inside the dialog", () => {
+    openModal();
+    const close = screen.getByRole("button", { name: "Close" });
+    const swap = screen.getByRole("button", { name: "Create an account" });
+    swap.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(close).toHaveFocus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(swap).toHaveFocus();
+  });
+
+  it("ties inline errors to fields with a summary", () => {
     openModal();
     fill("Email", "you@example.com");
     submit();
 
+    expect(screen.getByTestId("auth-summary")).toHaveTextContent(
+      "Check the marked fields.",
+    );
     const password = screen.getByLabelText("Password");
     expect(password).toHaveAttribute("aria-invalid", "true");
-    expect(password).toHaveAccessibleDescription("Enter your password.");
+    expect(password).toHaveAccessibleDescription(
+      "Check this Enter your password.",
+    );
     expect(password).toHaveFocus();
     expect(screen.getByLabelText("Email")).not.toHaveAttribute("aria-invalid");
     expect(auth.signIn).not.toHaveBeenCalled();
@@ -129,24 +175,25 @@ describe("AuthModal", () => {
     fill("Password", "secret1");
     submit();
 
-    const busy = screen.getByRole("button", { name: /signing in/i });
-    expect(busy).toHaveAttribute("aria-busy", "true");
-    expect(busy).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Sign in" })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
     expect(auth.signIn).toHaveBeenCalledWith("you@example.com", "secret1");
 
     await act(async () => {
       resolve({ error: new Error("Invalid login credentials") });
     });
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Your email or password is incorrect.",
+    expect(screen.getByTestId("auth-summary")).toHaveTextContent(
+      "That email and password don’t match an account.",
     );
     expect(auth.closeAuthModal).not.toHaveBeenCalled();
   });
 
   it("refreshes and closes in place on success, without redirecting", async () => {
     auth.signIn.mockResolvedValue({ error: null });
-    openModal();
+    openModal({ code: "AB12" });
     fill("Email", "you@example.com");
     fill("Password", "secret1");
     submit();
@@ -156,14 +203,33 @@ describe("AuthModal", () => {
     expect(auth.push).not.toHaveBeenCalled();
   });
 
+  it("shows Check your email when sign-up needs confirming", async () => {
+    auth.signUp.mockResolvedValue({ error: null, needsConfirmation: true });
+    openModal({ view: "register" });
+    fill("Email", "you@example.com");
+    fill("Password", "secret1");
+    fill("Confirm password", "secret1");
+    submit();
+
+    expect(await screen.findByTestId("auth-check")).toHaveTextContent(
+      "Link sent",
+    );
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
+      "Check your email.",
+    );
+    expect(auth.closeAuthModal).not.toHaveBeenCalled();
+  });
+
   it("never fills with signal orange", () => {
-    const { container } = openModal("register");
+    const { container } = openModal({ view: "register" });
     submit();
     expect(
       container.querySelectorAll(
         '[class*="bg-primary"], [class*="bg-signal"], [class*="brand-orange"], [class*="bg-[#"]',
       ),
     ).toHaveLength(0);
-    expect(container.querySelectorAll('[class*="signal"]')).toHaveLength(1);
+    for (const node of container.querySelectorAll(".sa-signal")) {
+      expect(node.closest(".sa-mono")).not.toBeNull();
+    }
   });
 });
