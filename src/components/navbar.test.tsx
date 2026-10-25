@@ -196,7 +196,7 @@ describe("Navbar", () => {
     }
   });
 
-  it("overlays the home hero with Books, Worlds, About and a Menu", () => {
+  it("overlays the home hero with Books, Worlds, Stories, About and a Menu", () => {
     nav.pathname = "/";
     nav.cartCount = 0;
     const { container } = render(<Navbar />);
@@ -212,6 +212,7 @@ describe("Navbar", () => {
       ["Machine Brain", "/"],
       ["Books", "/store"],
       ["Worlds", "/store"],
+      ["Stories", "/stories"],
       ["About", "/about"],
     ]);
     expect(container.querySelector('a[href="#"]')).toBeNull();
@@ -220,6 +221,11 @@ describe("Navbar", () => {
     const menu = screen.getByRole("button", { name: "Menu" });
     fireEvent.click(menu);
     expect(menu).toHaveAttribute("aria-expanded", "true");
+    expect(
+      within(screen.getByRole("dialog", { name: /menu/i })).getByRole("link", {
+        name: "Stories",
+      }),
+    ).toHaveAttribute("href", "/stories");
   });
 
   it("overlays the sign-in plate with Studio S3's Books, Stories, About", () => {
