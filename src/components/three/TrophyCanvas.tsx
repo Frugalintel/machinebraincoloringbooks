@@ -23,6 +23,10 @@ interface TrophyCanvasProps {
   // Optional: override computed values for testing
   entropyOverride?: number;
   seasonOverride?: "Spring" | "Summer" | "Fall" | "Winter";
+  /** Vitrine stages paint the lamp behind the mesh. */
+  transparent?: boolean;
+  /** Large views draw seasonal particles unless this is false. */
+  particles?: boolean;
 }
 
 function LoadingFallback() {
@@ -44,6 +48,8 @@ export function TrophyCanvas({
   lastPolishedAt,
   entropyOverride,
   seasonOverride,
+  transparent = false,
+  particles = true,
 }: TrophyCanvasProps) {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -68,10 +74,16 @@ export function TrophyCanvas({
   // Get seasonal modifier for particles
   const seasonMod = useMemo(() => getSeasonalModifier(season), [season]);
 
-  // Camera position based on size
-  const cameraPosition: [number, number, number] = isSmall
-    ? [0, 0.5, 3]
-    : [0, 0.8, 4];
+  // Vitrine frames the shared mesh. Other pages keep the original camera.
+  const cameraPosition: [number, number, number] = transparent
+    ? isSmall
+      ? [0, 0.28, 4.6]
+      : [0, 0.08, 2.85]
+    : isSmall
+      ? [0, 0.5, 3]
+      : [0, 0.8, 4];
+  const lookAtY = transparent ? (isSmall ? 0.18 : 0.48) : 0;
+  const fov = transparent ? (isSmall ? 34 : 32) : isSmall ? 40 : 50;
 
   if (!mounted) {
     return (
@@ -84,7 +96,7 @@ export function TrophyCanvas({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#1A1A19",
+          background: transparent ? "transparent" : "#1A1A19",
         }}
       >
         <div
@@ -115,7 +127,7 @@ export function TrophyCanvas({
       <Canvas
         camera={{
           position: cameraPosition,
-          fov: isSmall ? 40 : 50,
+          fov,
         }}
         frameloop="always"
         gl={{
@@ -130,6 +142,13 @@ export function TrophyCanvas({
           position: "absolute",
           top: 0,
           left: 0,
+          background: "transparent",
+        }}
+        onCreated={({ gl, scene, camera }) => {
+          camera.lookAt(0, lookAtY, 0);
+          if (!transparent) return;
+          scene.background = null;
+          gl.setClearColor(0x000000, 0);
         }}
       >
         {/* Lighting - adjust based on season */}
@@ -156,11 +175,12 @@ export function TrophyCanvas({
             autoRotate={autoRotate}
             entropy={entropy}
             season={season}
+            softBase={transparent}
           />
         </Suspense>
 
         {/* Seasonal Particles - only for large views (performance) */}
-        {isLarge ? (
+        {isLarge && particles ? (
           <SeasonalParticles
             season={season}
             particleColor={seasonMod.particleColor}

@@ -13,6 +13,8 @@ const REAL_ROUTES = [
   "/",
   "/store",
   "/stories",
+  "/collectibles",
+  "/trophy-room",
   "/scan",
   "/scan?mode=code",
   "/about",

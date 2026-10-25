@@ -84,7 +84,7 @@ export const STORE_NAV_LINKS: readonly SiteLink[] = [
 ];
 
 /**
- * Stories uses the same solid nav as the store, with Stories in the list.
+ * Stories and collectibles share this solid nav.
  * Worlds stays on the store filter: there is no /worlds route yet.
  */
 export const STORIES_NAV_LINKS: readonly SiteLink[] = [
@@ -98,8 +98,14 @@ export function isStoriesPath(pathname: string): boolean {
   return pathname === "/stories" || pathname.startsWith("/stories/");
 }
 
+export function isCollectiblesPath(pathname: string): boolean {
+  return pathname === "/collectibles" || pathname.startsWith("/collectibles/");
+}
+
 export function overlayLinksFor(pathname: string): readonly SiteLink[] {
-  if (isStoriesPath(pathname)) return STORIES_NAV_LINKS;
+  if (isStoriesPath(pathname) || isCollectiblesPath(pathname)) {
+    return STORIES_NAV_LINKS;
+  }
   if (isStorePath(pathname)) return STORE_NAV_LINKS;
   return pathname === "/auth" ? AUTH_OVERLAY_LINKS : HOME_OVERLAY_LINKS;
 }
@@ -132,7 +138,11 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   if (pathname === "/" || pathname === "/auth") {
     return "overlay";
   }
-  if (isStorePath(pathname) || isStoriesPath(pathname)) {
+  if (
+    isStorePath(pathname) ||
+    isStoriesPath(pathname) ||
+    isCollectiblesPath(pathname)
+  ) {
     return "solid";
   }
   return "full";

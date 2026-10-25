@@ -18,6 +18,8 @@ export const HOME_ROUTES = {
   world: "/store",
   about: "/about",
   stories: "/stories",
+  collectibles: "/collectibles",
+  trophyRoom: "/trophy-room",
   scan: "/scan",
   enterCode: "/scan?mode=code",
   help: "/help",
@@ -223,6 +225,7 @@ export const HOME_FOOTER_COPY = {
       links: [
         { name: "All books", href: HOME_ROUTES.books },
         { name: "Worlds", href: HOME_ROUTES.worlds },
+        { name: "Collectibles", href: HOME_ROUTES.collectibles },
       ],
     },
     {
@@ -231,6 +234,7 @@ export const HOME_FOOTER_COPY = {
         { name: "Scan a code", href: HOME_ROUTES.scan },
         { name: "Enter a code", href: HOME_ROUTES.enterCode },
         { name: "Stories", href: HOME_ROUTES.stories },
+        { name: "Trophy Room", href: HOME_ROUTES.trophyRoom },
       ],
     },
     {

@@ -13,6 +13,11 @@ export interface CollectibleItem {
   relatedAchievementId?: string;
   unlocksStoryId?: string; // Completing this collectible unlocks a story
   grantedByStoryId?: string; // Which story grants this collectible as a reward
+  /**
+   * Optional still. Absent on the static catalog, so locked slots draw the
+   * cream line placeholder. A future path drops in without a layout change.
+   */
+  art?: string;
 }
 
 export interface CollectionSet {
