@@ -59,7 +59,7 @@ function menuButton() {
 
 describe("Navbar", () => {
   beforeEach(() => {
-    nav.pathname = "/collectibles";
+    nav.pathname = "/help";
     nav.cartCount = 2;
     nav.user = null;
     nav.isAdmin = false;

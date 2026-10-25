@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Unlock, Loader2, Check, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -10,7 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { logger } from "@/lib/logger";
 
-export function CodeEntry() {
+export function CodeEntry({
+  variant = "default",
+  id = "code-entry",
+}: {
+  variant?: "default" | "plate";
+  id?: string;
+} = {}) {
   const { user, openAuthModal } = useAuth();
   const { success } = useToast();
   const [code, setCode] = useState("");
@@ -20,6 +27,11 @@ export function CodeEntry() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (variant === "plate" && !code.trim()) {
+      setResult("error");
+      setResultMessage("Type the code from the back page first.");
+      return;
+    }
     if (!user) {
       openAuthModal();
       return;
@@ -175,6 +187,41 @@ export function CodeEntry() {
       setLoading(false);
     }
   };
+
+  if (variant === "plate") {
+    return (
+      <form className="cbox" onSubmit={handleSubmit}>
+        <label htmlFor={id}>
+          <span className="ch">Have a code?</span>
+          <span className="chn">Find it on the back page</span>
+        </label>
+        <div className="frow">
+          <input
+            id={id}
+            name="code"
+            value={code}
+            onChange={(event) => setCode(event.target.value.toUpperCase())}
+            autoComplete="off"
+            autoCapitalize="characters"
+            spellCheck={false}
+            placeholder="Code"
+            aria-describedby={resultMessage ? `${id}-status` : undefined}
+          />
+          <button className="btn" type="submit" disabled={loading}>
+            Enter
+          </button>
+        </div>
+        <Link className="quiet" href="/scan">
+          Or scan page
+        </Link>
+        {resultMessage ? (
+          <p id={`${id}-status`} className="status" role="status">
+            {resultMessage}
+          </p>
+        ) : null}
+      </form>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto relative">

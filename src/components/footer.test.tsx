@@ -21,7 +21,7 @@ vi.mock("next/navigation", () => ({
 
 describe("Footer", () => {
   beforeEach(() => {
-    nav.pathname = "/collectibles";
+    nav.pathname = "/help";
   });
 
   it("renders grouped links, legal, and the F3 lockup", () => {
@@ -61,6 +61,7 @@ describe("Footer", () => {
       "/admin",
       "/stories",
       "/store",
+      "/collectibles",
     ]) {
       nav.pathname = path;
       const { container, unmount } = render(<Footer />);

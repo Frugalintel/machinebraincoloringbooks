@@ -23,6 +23,10 @@ interface TrophyCanvasProps {
   // Optional: override computed values for testing
   entropyOverride?: number;
   seasonOverride?: "Spring" | "Summer" | "Fall" | "Winter";
+  /** Vitrine stages paint the lamp behind the mesh. */
+  transparent?: boolean;
+  /** Large views draw seasonal particles unless this is false. */
+  particles?: boolean;
 }
 
 function LoadingFallback() {
@@ -44,6 +48,8 @@ export function TrophyCanvas({
   lastPolishedAt,
   entropyOverride,
   seasonOverride,
+  transparent = false,
+  particles = true,
 }: TrophyCanvasProps) {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -84,7 +90,7 @@ export function TrophyCanvas({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#1A1A19",
+          background: transparent ? "transparent" : "#1A1A19",
         }}
       >
         <div
@@ -130,6 +136,12 @@ export function TrophyCanvas({
           position: "absolute",
           top: 0,
           left: 0,
+          background: "transparent",
+        }}
+        onCreated={({ gl, scene }) => {
+          if (!transparent) return;
+          scene.background = null;
+          gl.setClearColor(0x000000, 0);
         }}
       >
         {/* Lighting - adjust based on season */}
@@ -160,7 +172,7 @@ export function TrophyCanvas({
         </Suspense>
 
         {/* Seasonal Particles - only for large views (performance) */}
-        {isLarge ? (
+        {isLarge && particles ? (
           <SeasonalParticles
             season={season}
             particleColor={seasonMod.particleColor}

@@ -51,10 +51,40 @@ describe("site shell routes", () => {
 });
 
 describe("headerVariantFor", () => {
-  it("uses the full chrome on customer pages outside home, the store, and stories", () => {
-    expect(headerVariantFor("/collectibles")).toBe("full");
+  it("uses the full chrome on customer pages outside home, the store, stories, and collectibles", () => {
     expect(headerVariantFor("/help")).toBe("full");
-    expect(hidesCustomerFooter("/collectibles")).toBe(false);
+    expect(headerVariantFor("/trophy-room")).toBe("full");
+    expect(hidesCustomerFooter("/help")).toBe(false);
+    expect(hidesCustomerFooter("/trophy-room")).toBe(false);
+  });
+
+  it("gives collectibles the stories nav and lets the page own its footer", () => {
+    expect(headerVariantFor("/collectibles")).toBe("solid");
+    expect(headerVariantFor("/collectibles/rover-x")).toBe("solid");
+    expect(headerVariantFor("/collectible")).toBe("full");
+    expect(hidesCustomerFooter("/collectibles")).toBe(true);
+    expect(hidesCustomerFooter("/collectibles/rover-x")).toBe(true);
+    expect(overlayLinksFor("/collectibles").map((link) => link.name)).toEqual([
+      "Books",
+      "Worlds",
+      "Stories",
+      "About",
+    ]);
+    expect(
+      overlayLinksFor("/collectibles/rover-x").map((link) => link.href),
+    ).toEqual(["/store", "/store#worlds", "/stories", "/about"]);
+    expect(
+      isOverlayLinkCurrent("/collectibles", {
+        name: "Stories",
+        href: "/stories",
+      }),
+    ).toBe(false);
+    expect(
+      isOverlayLinkCurrent("/collectibles", {
+        name: "Books",
+        href: "/store",
+      }),
+    ).toBe(false);
   });
 
   it("gives stories the store nav, plus Stories, and lets the page own its footer", () => {
