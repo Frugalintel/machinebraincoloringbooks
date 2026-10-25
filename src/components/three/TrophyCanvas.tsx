@@ -45,9 +45,26 @@ type GlbTrophyComponent = ComponentType<{
   rarity?: string;
   autoRotate?: boolean;
   size?: "small" | "large";
+  compact?: boolean;
   onReady?: () => void;
   onError?: () => void;
 }>;
+
+const COMPACT_VIEWPORT = "(max-width: 760px)";
+
+function subscribeCompactViewport(onStoreChange: () => void) {
+  const media = window.matchMedia(COMPACT_VIEWPORT);
+  media.addEventListener("change", onStoreChange);
+  return () => media.removeEventListener("change", onStoreChange);
+}
+
+function useCompactViewport() {
+  return useSyncExternalStore(
+    subscribeCompactViewport,
+    () => window.matchMedia(COMPACT_VIEWPORT).matches,
+    () => true,
+  );
+}
 
 function LoadingFallback() {
   return (
@@ -77,14 +94,19 @@ export function TrophyCanvas({
     () => true,
     () => false,
   );
+  const compact = useCompactViewport();
   const isSmall = size === "small";
   const isLarge = size === "large";
+  const pixelRatio: [number, number] = isSmall || compact ? [1, 1.5] : [1, 2];
   const [GlbTrophy, setGlbTrophy] = useState<GlbTrophyComponent | null>(null);
   const [glbStatus, setGlbStatus] = useState<"idle" | "ready" | "failed">(
     "idle",
   );
   const handleGlbReady = useCallback(() => setGlbStatus("ready"), []);
   const handleGlbError = useCallback(() => setGlbStatus("failed"), []);
+  const glbFailed = glbStatus === "failed";
+  const showGlb = Boolean(modelUrl && GlbTrophy && !glbFailed);
+  const showPlaceholder = !modelUrl || glbFailed;
 
   useEffect(() => {
     if (!modelUrl) {
@@ -182,7 +204,7 @@ export function TrophyCanvas({
           alpha: true,
           powerPreference: "high-performance",
         }}
-        dpr={[1, 2]}
+        dpr={pixelRatio}
         style={{
           width: "100%",
           height: "100%",
@@ -191,12 +213,12 @@ export function TrophyCanvas({
           left: 0,
           background: "transparent",
         }}
-        shadows={Boolean(modelUrl)}
+        shadows={Boolean(modelUrl) && !isSmall}
         onCreated={({ gl, scene, camera }) => {
           camera.lookAt(0, lookAtY, 0);
           if (modelUrl) {
             gl.toneMapping = ACESFilmicToneMapping;
-            gl.toneMappingExposure = 1;
+            gl.toneMappingExposure = 1.2;
             gl.outputColorSpace = SRGBColorSpace;
           }
           if (!transparent) return;
@@ -204,7 +226,7 @@ export function TrophyCanvas({
           gl.setClearColor(0x000000, 0);
         }}
       >
-        {glbStatus !== "ready" ? (
+        {showPlaceholder ? (
           <>
             <ambientLight intensity={0.5 * seasonMod.intensity} />
             <directionalLight
@@ -225,17 +247,18 @@ export function TrophyCanvas({
         ) : null}
 
         <Suspense fallback={<LoadingFallback />}>
-          {modelUrl && GlbTrophy && glbStatus !== "failed" ? (
+          {showGlb && modelUrl && GlbTrophy ? (
             <GlbTrophy
               url={modelUrl}
               rarity={rarity}
               autoRotate={autoRotate}
               size={size}
+              compact={compact}
               onReady={handleGlbReady}
               onError={handleGlbError}
             />
           ) : null}
-          {glbStatus !== "ready" ? (
+          {showPlaceholder ? (
             <TrophyModel
               rarity={rarity}
               autoRotate={autoRotate}

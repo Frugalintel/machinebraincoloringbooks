@@ -21,9 +21,32 @@ export type GlbTrophyProps = {
   rarity?: string;
   autoRotate?: boolean;
   size?: "small" | "large";
+  /** Viewport ≤760: name sits below the hero canvas. */
+  compact?: boolean;
   onReady?: () => void;
   onError?: () => void;
 };
+
+const FADE_SECONDS = 0.25;
+const ROTATION_SPEED = 0.3;
+
+type FramePlacement = { scale: number; y: number };
+
+function framePlacement(
+  size: "small" | "large",
+  compact: boolean,
+): FramePlacement {
+  switch (size) {
+    case "small":
+      return { scale: 1.75, y: -0.66 };
+    case "large":
+      return compact ? { scale: 1.38, y: -0.22 } : { scale: 1.5, y: -0.3 };
+    default: {
+      const _exhaustive: never = size;
+      return _exhaustive;
+    }
+  }
+}
 
 const RARITY_RIM: Record<string, string> = {
   Common: "#757269",
@@ -76,21 +99,33 @@ function disposeObject(root: Object3D) {
   });
 }
 
+function meshMaterials(object: Mesh): Material[] {
+  return Array.isArray(object.material) ? object.material : [object.material];
+}
+
 function prepareScene(root: Object3D) {
   root.traverse((object) => {
     if (!isMesh(object)) return;
     object.castShadow = true;
     object.receiveShadow = true;
-    const materials = Array.isArray(object.material)
-      ? object.material
-      : [object.material];
-    for (const material of materials) {
+    for (const material of meshMaterials(object)) {
       if (!(material instanceof MeshStandardMaterial)) continue;
       if (material.metalnessMap && !material.aoMap) {
         material.aoMap = material.metalnessMap;
         material.aoMapIntensity = 0.85;
         material.needsUpdate = true;
       }
+    }
+  });
+}
+
+function setObjectOpacity(root: Object3D, opacity: number) {
+  root.traverse((object) => {
+    if (!isMesh(object)) return;
+    for (const material of meshMaterials(object)) {
+      if (!material) continue;
+      material.transparent = opacity < 1;
+      material.opacity = opacity;
     }
   });
 }
@@ -159,13 +194,15 @@ export function GlbTrophy({
   rarity = "Common",
   autoRotate = true,
   size = "small",
+  compact = false,
   onReady,
   onError,
 }: GlbTrophyProps) {
   const groupRef = useRef<Group>(null);
+  const fadeRef = useRef(0);
   const [model, setModel] = useState<Group | null>(null);
   const rimColor = RARITY_RIM[rarity] ?? RARITY_RIM.Common;
-  const frameScale = size === "small" ? 1.45 : 1.38;
+  const frame = framePlacement(size, compact);
 
   useEffect(() => {
     let cancelled = false;
@@ -180,6 +217,7 @@ export function GlbTrophy({
           return;
         }
         prepareScene(gltf.scene);
+        setObjectOpacity(gltf.scene, 0);
         setModel(gltf.scene);
         onReady?.();
       })
@@ -193,14 +231,20 @@ export function GlbTrophy({
   }, [url, onReady, onError]);
 
   useEffect(() => {
+    fadeRef.current = 0;
+    if (model) setObjectOpacity(model, 0);
     return () => {
       if (model) disposeObject(model);
     };
   }, [model]);
 
-  useFrame(() => {
-    if (!groupRef.current || !autoRotate) return;
-    groupRef.current.rotation.y += 0.005;
+  useFrame((_, delta) => {
+    if (groupRef.current && autoRotate) {
+      groupRef.current.rotation.y += delta * ROTATION_SPEED;
+    }
+    if (!model || fadeRef.current >= 1) return;
+    fadeRef.current = Math.min(1, fadeRef.current + delta / FADE_SECONDS);
+    setObjectOpacity(model, fadeRef.current);
   });
 
   if (!model) return null;
@@ -224,7 +268,17 @@ export function GlbTrophy({
         intensity={0.35}
         position={[0.35, 0.9, -1.9]}
       />
-      <group ref={groupRef} scale={frameScale}>
+      {size === "large" ? (
+        <mesh
+          rotation-x={-Math.PI / 2}
+          position={[0, frame.y, 0]}
+          receiveShadow
+        >
+          <planeGeometry args={[3, 3]} />
+          <shadowMaterial opacity={0.35} />
+        </mesh>
+      ) : null}
+      <group ref={groupRef} scale={frame.scale} position={[0, frame.y, 0]}>
         <primitive object={model} />
       </group>
     </>

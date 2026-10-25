@@ -16,9 +16,20 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
+    const modelCache = {
+      source: "/models/:path*",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=31536000, immutable",
+        },
+      ],
+    };
+
     // Skip CSP in development to allow local Supabase connections
     if (isDev) {
       return [
+        modelCache,
         {
           source: "/:path*",
           headers: [
@@ -45,6 +56,7 @@ const nextConfig: NextConfig = {
 
     // Production security headers with strict CSP
     return [
+      modelCache,
       {
         source: "/:path*",
         headers: [

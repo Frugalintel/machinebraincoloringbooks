@@ -3,7 +3,7 @@
  * Only omega-station has a Studio sample model; every other item stays
  * on the procedural TrophyModel placeholder.
  */
-export const FERRIS_WHEEL_MODEL_URL = "/models/ferris-wheel-tripo.glb";
+export const FERRIS_WHEEL_MODEL_URL = "/models/ferris-wheel-tripo.v1.glb";
 
 const COLLECTIBLE_MODEL_URLS: Readonly<Record<string, string>> = {
   "omega-station": FERRIS_WHEEL_MODEL_URL,
