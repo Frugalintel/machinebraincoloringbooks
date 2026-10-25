@@ -911,6 +911,24 @@
     padding-right: var(--m);
   }
 
+  /* Odd last bay: full-width shelf, same-size figure and label centred. */
+  .home-e2.vitrine .bay:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .home-e2.vitrine .bay:last-child:nth-child(odd) > a,
+  .home-e2.vitrine .bay:last-child:nth-child(odd) .cap {
+    width: 50%;
+    margin-inline: auto;
+  }
+
+  .home-e2.vitrine .bay:last-child:nth-child(odd) .cap {
+    align-items: center;
+    text-align: center;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
   .home-e2.vitrine .nm {
     font-size: 18px;
   }
