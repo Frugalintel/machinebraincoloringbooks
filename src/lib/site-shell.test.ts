@@ -153,18 +153,27 @@ describe("headerVariantFor", () => {
     ]);
   });
 
-  it("uses the minimal lockup header on scan and review", () => {
+  it("uses the minimal lockup header on review", () => {
     expect(headerVariantFor("/auth/callback")).toBe("minimal");
-    expect(headerVariantFor("/scan")).toBe("minimal");
     expect(headerVariantFor("/review")).toBe("minimal");
     expect(headerVariantFor("/review/ottoline-garden")).toBe("minimal");
+  });
+
+  it("gives /scan the stories nav and lets the page own its footer", () => {
+    expect(headerVariantFor("/scan")).toBe("solid");
+    expect(hidesCustomerFooter("/scan")).toBe(true);
+    expect(overlayLinksFor("/scan").map((link) => link.name)).toEqual([
+      "Books",
+      "Worlds",
+      "Stories",
+      "About",
+    ]);
   });
 
   it("hides customer chrome on admin", () => {
     expect(headerVariantFor("/admin")).toBe("hidden");
     expect(headerVariantFor("/admin/products")).toBe("hidden");
     expect(hidesCustomerFooter("/admin")).toBe(true);
-    expect(hidesCustomerFooter("/scan")).toBe(true);
   });
 });
 

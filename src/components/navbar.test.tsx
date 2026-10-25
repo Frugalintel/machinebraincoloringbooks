@@ -174,8 +174,8 @@ describe("Navbar", () => {
     );
   });
 
-  it("uses a minimal lockup header on scan and review", () => {
-    for (const path of ["/scan", "/review", "/review/demo"]) {
+  it("uses a minimal lockup header on review", () => {
+    for (const path of ["/review", "/review/demo"]) {
       nav.pathname = path;
       const { unmount } = render(<Navbar />);
 

@@ -16,6 +16,7 @@ import {
   authModeCopy,
   type AuthField,
   type AuthFieldErrors,
+  type AuthHold,
   type AuthMode,
   type AuthValues,
   type AuthView,
@@ -29,6 +30,8 @@ export type AuthPanelProps = {
   view: AuthView;
   /** A page code carried in from /scan: shows the "Keep your / code." state. */
   code?: string | null;
+  /** Book QR or page-code +1 hold from /scan. */
+  hold?: AuthHold | null;
   onModeChange: (mode: AuthMode) => void;
   values: AuthValues;
   onValueChange: (field: AuthField, value: string) => void;
@@ -133,6 +136,7 @@ export function AuthPanel({
   context,
   view,
   code = null,
+  hold = null,
   onModeChange,
   values,
   onValueChange,
@@ -154,7 +158,15 @@ export function AuthPanel({
   };
   const mode: AuthMode = view === "login" ? "login" : "register";
   const copy = authModeCopy(mode);
-  const headline = authHeadline(view, Boolean(code));
+  const resolvedHold =
+    hold ?? (code ? { kind: "code" as const, label: code } : null);
+  const headline = authHeadline(view, resolvedHold ?? false);
+  const heldText =
+    resolvedHold?.kind === "book"
+      ? `Held · ${resolvedHold.label}`
+      : resolvedHold?.kind === "page-plus"
+        ? `Held · ${resolvedHold.label}`
+        : null;
   const isRegister = mode === "register";
   const Heading = context === "page" ? "h1" : "h2";
 
@@ -216,7 +228,11 @@ export function AuthPanel({
 
       <div className="sa-band">
         <div className="sa-side">
-          {view === "check" ? null : code ? (
+          {view === "check" ? null : heldText ? (
+            <div className="sa-held" data-testid="auth-held">
+              <span className="sa-mono sa-signal">{heldText}</span>
+            </div>
+          ) : code ? (
             <div className="sa-held" data-testid="auth-held">
               <span className="sa-mono sa-signal">{AUTH_COPY.heldLabel}</span>
               <span className="sa-code" data-testid="auth-code">

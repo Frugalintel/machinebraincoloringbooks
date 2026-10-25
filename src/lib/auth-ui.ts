@@ -30,19 +30,68 @@ export type AuthHeadline = {
   prefix: string | null;
 };
 
+export type AuthHoldKind = "code" | "book" | "page-plus";
+
+export type AuthHold = {
+  kind: AuthHoldKind;
+  label: string;
+};
+
+function holdKind(
+  hold: boolean | AuthHoldKind | AuthHold | null | undefined,
+): AuthHoldKind | null {
+  if (hold === true || hold === "code") return "code";
+  if (hold === "book" || hold === "page-plus") return hold;
+  if (hold && typeof hold === "object") return hold.kind;
+  return null;
+}
+
 /** The giant Redaction line: the one H1, changing with the state. */
-export function authHeadline(view: AuthView, hasCode: boolean): AuthHeadline {
+export function authHeadline(
+  view: AuthView,
+  hold: boolean | AuthHoldKind | AuthHold | null = false,
+): AuthHeadline {
+  const kind = holdKind(hold);
   switch (view) {
     case "login":
+      if (kind === "page-plus") {
+        return {
+          fit: "code",
+          lines: ["Sign in for", "your +1."],
+          prefix: "Sign in.",
+        };
+      }
+      if (kind === "book") {
+        return {
+          fit: "code",
+          lines: ["Keep your", "book."],
+          prefix: "Sign in.",
+        };
+      }
       return {
-        fit: hasCode ? "code" : "in",
-        lines: hasCode ? ["Keep your", "code."] : ["Welcome", "back."],
+        fit: kind === "code" ? "code" : "in",
+        lines: kind === "code" ? ["Keep your", "code."] : ["Welcome", "back."],
         prefix: "Sign in.",
       };
     case "register":
+      if (kind === "page-plus") {
+        return {
+          fit: "code",
+          lines: ["Sign in for", "your +1."],
+          prefix: "Create an account.",
+        };
+      }
+      if (kind === "book") {
+        return {
+          fit: "code",
+          lines: ["Keep your", "book."],
+          prefix: "Create an account.",
+        };
+      }
       return {
-        fit: hasCode ? "code" : "up",
-        lines: hasCode ? ["Keep your", "code."] : ["Keep your", "pages."],
+        fit: kind === "code" ? "code" : "up",
+        lines:
+          kind === "code" ? ["Keep your", "code."] : ["Keep your", "pages."],
         prefix: "Create an account.",
       };
     case "check":

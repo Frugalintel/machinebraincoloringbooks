@@ -103,6 +103,7 @@ export function AuthModal() {
         headingId={headingId}
         view={form.view}
         code={authModal.code}
+        hold={authModal.hold}
         onModeChange={form.changeMode}
         values={form.values}
         onValueChange={form.setValue}

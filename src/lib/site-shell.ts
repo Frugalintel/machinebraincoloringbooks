@@ -102,8 +102,16 @@ export function isCollectiblesPath(pathname: string): boolean {
   return pathname === "/collectibles" || pathname.startsWith("/collectibles/");
 }
 
+export function isScanPath(pathname: string): boolean {
+  return pathname === "/scan" || pathname.startsWith("/scan/");
+}
+
 export function overlayLinksFor(pathname: string): readonly SiteLink[] {
-  if (isStoriesPath(pathname) || isCollectiblesPath(pathname)) {
+  if (
+    isStoriesPath(pathname) ||
+    isCollectiblesPath(pathname) ||
+    isScanPath(pathname)
+  ) {
     return STORIES_NAV_LINKS;
   }
   if (isStorePath(pathname)) return STORE_NAV_LINKS;
@@ -122,7 +130,6 @@ export function isOverlayLinkCurrent(
 export function isMinimalChromePath(pathname: string): boolean {
   return (
     pathname.startsWith("/auth/") ||
-    pathname === "/scan" ||
     pathname === "/review" ||
     pathname.startsWith("/review/")
   );
@@ -141,7 +148,8 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   if (
     isStorePath(pathname) ||
     isStoriesPath(pathname) ||
-    isCollectiblesPath(pathname)
+    isCollectiblesPath(pathname) ||
+    isScanPath(pathname)
   ) {
     return "solid";
   }

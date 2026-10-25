@@ -13,6 +13,7 @@ import { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { Profile } from "@/lib/types";
 import { logger } from "@/lib/logger";
+import type { AuthHold } from "@/lib/auth-ui";
 
 type User = {
   email: string;
@@ -29,6 +30,8 @@ type AuthModalState = {
   email?: string;
   /** A page code the popup is holding, e.g. from /scan; shows "Keep your / code." */
   code?: string;
+  /** Scan holds: book QR or a page-code +1. Existing `code` stays "Keep your code." */
+  hold?: AuthHold;
 };
 
 type AuthContextType = {
@@ -46,6 +49,7 @@ type AuthContextType = {
     view?: "login" | "register",
     email?: string,
     code?: string,
+    hold?: AuthHold,
   ) => void;
   closeAuthModal: () => void;
   isAdmin: boolean;
@@ -237,8 +241,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   const openAuthModal = useCallback(
-    (view: "login" | "register" = "login", email?: string, code?: string) => {
-      setAuthModal({ isOpen: true, view, email, code });
+    (
+      view: "login" | "register" = "login",
+      email?: string,
+      code?: string,
+      hold?: AuthHold,
+    ) => {
+      setAuthModal({
+        isOpen: true,
+        view,
+        email,
+        code,
+        hold: hold ?? (code ? { kind: "code", label: code } : undefined),
+      });
     },
     [],
   );
