@@ -17,6 +17,10 @@ import {
   getCurrentSeason,
   getSeasonalModifier,
 } from "@/lib/trophy-utils";
+import {
+  FITTED_LOOK_AT,
+  fittedCameraPosition,
+} from "@/lib/scan-ledger/trophy-frame";
 import { TrophyModel } from "./TrophyModel";
 import { SeasonalParticles } from "./SeasonalParticles";
 
@@ -160,15 +164,23 @@ export function TrophyCanvas({
   const seasonMod = useMemo(() => getSeasonalModifier(season), [season]);
 
   // Vitrine frames the shared mesh. Other pages keep the original camera.
-  const cameraPosition: [number, number, number] = transparent
-    ? isSmall
-      ? [0, 0.28, 4.6]
-      : [0, 0.08, 2.85]
-    : isSmall
-      ? [0, 0.5, 3]
-      : [0, 0.8, 4];
-  const lookAtY = transparent ? (isSmall ? 0.18 : 0.48) : 0;
   const fov = transparent ? (isSmall ? 34 : 32) : isSmall ? 40 : 50;
+  const cameraPosition: [number, number, number] = fitBounds
+    ? fittedCameraPosition(fov)
+    : transparent
+      ? isSmall
+        ? [0, 0.28, 4.6]
+        : [0, 0.08, 2.85]
+      : isSmall
+        ? [0, 0.5, 3]
+        : [0, 0.8, 4];
+  const lookAt = fitBounds
+    ? FITTED_LOOK_AT
+    : ([0, transparent ? (isSmall ? 0.18 : 0.48) : 0, 0] as [
+        number,
+        number,
+        number,
+      ]);
 
   const posterImage = posterUrl ? (
     // Still posters are static assets; next/image is not required here.
@@ -250,7 +262,7 @@ export function TrophyCanvas({
         }}
         shadows={Boolean(modelUrl) && !isSmall}
         onCreated={({ gl, scene, camera }) => {
-          camera.lookAt(0, lookAtY, 0);
+          camera.lookAt(lookAt[0], lookAt[1], lookAt[2]);
           if (modelUrl) {
             gl.toneMapping = ACESFilmicToneMapping;
             gl.toneMappingExposure = 1.2;

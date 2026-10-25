@@ -4,6 +4,8 @@ import {
   PHOTO_OPTIONAL,
   SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
+  legendaryPlateCaption,
+  plateCellLabel,
   sampleNote,
   scanChrome,
   trophyPlateCaption,
@@ -50,5 +52,22 @@ describe("scan ledger copy", () => {
     expect(trophyPlateCaption("31", "9TD4")).toBe(
       "PLATE 31 · 9TD4 · CODE + PHOTO",
     );
+    expect(legendaryPlateCaption("31")).toBe("PLATE 31 · HIDDEN PAGE");
+  });
+
+  it("restores the mockup now-cell labels", () => {
+    expect(
+      plateCellLabel("code", { state: "code-only-before", highlight: true }),
+    ).toBe("code counted, photo still open");
+    expect(
+      plateCellLabel("verified", { state: "collected", highlight: true }),
+    ).toBe("collected already, code and page");
+    expect(
+      plateCellLabel("verified", { state: "tier-reached", highlight: true }),
+    ).toBe("photo just verified, 2 pts");
+    expect(plateCellLabel("code")).toBe(CELL_LABEL.code);
+    expect(
+      plateCellLabel("code", { state: "code-only-before", highlight: false }),
+    ).toBe(CELL_LABEL.code);
   });
 });

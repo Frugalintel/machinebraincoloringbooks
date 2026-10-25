@@ -280,13 +280,19 @@
 }
 
 .home-e2.scan-c .pgph .ret {
-  inset: 24px;
+  inset: -4%;
 }
 
-.home-e2.scan-c .pgph .ret .rl {
-  top: auto;
-  bottom: 10px;
-  left: 10px;
+.home-e2.scan-c .feed .page-tag {
+  position: absolute;
+  z-index: 5;
+  left: 12px;
+  bottom: 12px;
+  white-space: nowrap;
+  background: var(--cream);
+  color: var(--ink);
+  padding: 5px 8px;
+  font-size: 11px;
 }
 
 .home-e2.scan-c .pgph,
@@ -572,6 +578,10 @@
   position: relative;
 }
 
+.home-e2.scan-c .trophy {
+  flex-direction: column;
+}
+
 .home-e2.scan-c .artp img {
   width: 92%;
   height: auto;
@@ -602,7 +612,20 @@
 }
 
 .home-e2.scan-c .trophy .stamp {
+  position: relative;
   z-index: 3;
+  top: auto;
+  right: auto;
+  align-self: flex-end;
+  margin: 12px 16px 0;
+}
+
+.home-e2.scan-c .trophy-poster,
+.home-e2.scan-c .trophy canvas,
+.home-e2.scan-c .trophy > div:not(.stamp) {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
 }
 
 .home-e2.scan-c .trophy-poster {

@@ -110,6 +110,13 @@ describe("/scan preview fixtures", () => {
     expect(screen.queryByText(/adding now/i)).toBeNull();
   });
 
+  it("opens the Basic trophy fixture from ?preview=basic", () => {
+    scan.search = "preview=basic";
+    render(<ScanPage />);
+    expect(screen.getByRole("heading", { name: "Basic." })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Pro." })).toBeNull();
+  });
+
   it.each(["photo", "photo-preview"] as const)(
     "shows the +1 counted chip on %s",
     (state) => {

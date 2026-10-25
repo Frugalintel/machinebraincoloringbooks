@@ -364,7 +364,7 @@
 .sa[data-auth-hold] .sa-lines[data-fit="code"],
 .sa[data-auth-hold] .sa-lines[data-fit="up"],
 .sa[data-auth-hold] .sa-lines[data-fit="in"] {
-  font-size: min(15.4vw, 176px);
+  font-size: 15.56vw;
 }
 
 .sa-hold-head {
@@ -404,7 +404,7 @@
 
 @media (max-width: 760px) {
   .sa-hold-card {
-    margin: 20px;
+    margin: 76px 20px 24px;
     max-width: none;
   }
 
@@ -451,7 +451,7 @@
   .sa[data-auth-hold] .sa-lines[data-fit="code"],
   .sa[data-auth-hold] .sa-lines[data-fit="up"],
   .sa[data-auth-hold] .sa-lines[data-fit="in"] {
-    font-size: 14.2vw;
+    font-size: 16.42vw;
   }
 
   .sa-lines[data-fit="in"] {

@@ -17,6 +17,7 @@ export {
   SCAN_PREVIEW_STATES,
   isScanPreviewState,
   scanPreview,
+  scanPreviewTrophyTier,
 } from "@/lib/scan-ledger/preview";
 export {
   allCodesEntered,
@@ -36,6 +37,7 @@ export {
   CAMERA_BLOCKED,
   CAMERA_INSECURE,
   CELL_LABEL,
+  NOW_CELL_LABEL,
   PHOTO_OPTIONAL,
   SCAN_BOOK_TROPHY_LABEL,
   SCAN_OPT_LINE,
@@ -46,6 +48,8 @@ export {
   codeInMessage,
   collectedMessage,
   invalidCodeMessage,
+  legendaryPlateCaption,
+  plateCellLabel,
   sampleNote,
   scanChrome,
   systemErrorMessage,
@@ -75,3 +79,12 @@ export {
   TIER_TROPHY_MODELS,
   TIER_TROPHY_POSTERS,
 } from "@/lib/scan-ledger/trophies";
+export {
+  BASIC_EMISSIVE_MAX,
+  FITTED_LOOK_AT,
+  FITTED_SIZE,
+  FRAME_PADDING,
+  PRO_EMISSIVE_INTENSITY,
+  fittedCameraDistance,
+  fittedCameraPosition,
+} from "@/lib/scan-ledger/trophy-frame";

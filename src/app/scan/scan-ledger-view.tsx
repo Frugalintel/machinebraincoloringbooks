@@ -12,7 +12,6 @@ import { RunningHead } from "@/components/home-plate";
 import {
   CAMERA_BLOCKED,
   CAMERA_INSECURE,
-  CELL_LABEL,
   PHOTO_OPTIONAL,
   SCAN_BOOK_TROPHY_LABEL,
   SCAN_OPT_LINE,
@@ -22,6 +21,8 @@ import {
   collectedMessage,
   folioLine,
   invalidCodeMessage,
+  legendaryPlateCaption,
+  plateCellLabel,
   plateLabel,
   sampleNote,
   scanChrome,
@@ -172,17 +173,23 @@ export function ScanLedgerView({
                 } as CSSProperties
               }
             >
-              {chrome.h1}
+              {state === "tier-reached" &&
+              snapshot.trophyTier &&
+              snapshot.trophyTier !== "Pro"
+                ? `${snapshot.trophyTier}.`
+                : chrome.h1}
             </h1>
             {showPhotoRun ? (
               <>
-                <div className="run vrow">
-                  <span className="vchip mono ok">
-                    <b>+1 counted</b>{" "}
-                    {`${plate?.bookTitle ?? "The Silver Citadel"} · PL. ${plate?.plate ?? "07"}`}
-                  </span>
-                  <span className="mono">{PHOTO_OPTIONAL}</span>
-                </div>
+                {plate ? (
+                  <div className="run vrow">
+                    <span className="vchip mono ok">
+                      <b>+1 counted</b>{" "}
+                      {`${plate.bookTitle} · PL. ${plate.plate}`}
+                    </span>
+                    <span className="mono">{PHOTO_OPTIONAL}</span>
+                  </div>
+                ) : null}
                 {chrome.lede ? <p className="lede">{chrome.lede}</p> : null}
               </>
             ) : hideWallet ? (
@@ -221,7 +228,7 @@ export function ScanLedgerView({
             )}
             <div className="books">
               {snapshot.books.map((book) => (
-                <BookBlock key={book.id} book={book} />
+                <BookBlock key={book.id} book={book} state={state} />
               ))}
               {snapshot.showNextBookSlot ? (
                 <div className="brow slot">
@@ -291,11 +298,12 @@ function LeftPanel({
   const plate = snapshot.activePlate;
   const chrome = scanChrome(state);
   const trophyTier =
-    state === "legendary-found"
+    snapshot.trophyTier ??
+    (state === "legendary-found"
       ? "Legendary"
       : state === "tier-reached"
         ? "Pro"
-        : null;
+        : null);
   const trophyUrl = trophyTier ? tierTrophyUrl(trophyTier) : null;
 
   switch (state) {
@@ -483,6 +491,7 @@ function LeftPanel({
               ) : (
                 <PageInFrame folio={folio} />
               )}
+              <span className="page-tag mono">Whole page in frame</span>
               <p className="camtag mono">
                 <span className="dot" /> Camera · sample view
               </p>
@@ -567,18 +576,26 @@ function LeftPanel({
                 url={trophyUrl}
                 posterUrl={tierTrophyPosterUrl(trophyTier ?? "Pro")}
                 rarity={trophyTier ?? "Rare"}
-                stamp={chrome.stamp}
+                stamp={
+                  state === "tier-reached" && trophyTier
+                    ? `Verified · ${trophyTier} unlocked`
+                    : chrome.stamp
+                }
                 caption={
-                  plate
-                    ? trophyPlateCaption(plate.plate, plate.code)
-                    : (chrome.caption ?? "")
+                  state === "legendary-found" && plate
+                    ? legendaryPlateCaption(plate.plate)
+                    : plate
+                      ? trophyPlateCaption(plate.plate, plate.code)
+                      : (chrome.caption ?? "")
                 }
                 reducedMotion={reducedMotion}
               />
               <p className="pcap mono">
-                {plate
-                  ? trophyPlateCaption(plate.plate, plate.code)
-                  : chrome.caption}
+                {state === "legendary-found" && plate
+                  ? legendaryPlateCaption(plate.plate)
+                  : plate
+                    ? trophyPlateCaption(plate.plate, plate.code)
+                    : chrome.caption}
               </p>
             </div>
           ) : (
@@ -761,7 +778,7 @@ function PlatePanel({
   );
 }
 
-function BookBlock({ book }: { book: BookRow }) {
+function BookBlock({ book, state }: { book: BookRow; state: ScanViewState }) {
   const max = maxBookPoints(book.plateCount);
   const ticks = tiers(book.plateCount);
   return (
@@ -784,6 +801,10 @@ function BookBlock({ book }: { book: BookRow }) {
           const n = index + 1;
           const current = book.currentPlate === n;
           const hit = book.hitPlate === n;
+          const label = plateCellLabel(cell, {
+            state,
+            highlight: current || hit,
+          });
           const cls = [
             "lc",
             CELL_CLASS[cell],
@@ -796,10 +817,10 @@ function BookBlock({ book }: { book: BookRow }) {
             <li
               key={n}
               className={cls}
-              title={`Plate ${plateLabel(n)}: ${CELL_LABEL[cell]}`}
+              title={`Plate ${plateLabel(n)}: ${label}`}
             >
               <span className="mono">{plateLabel(n)}</span>
-              <span className="vh">{CELL_LABEL[cell]}</span>
+              <span className="vh">{label}</span>
             </li>
           );
         })}
@@ -929,7 +950,6 @@ function PageInFrame({ folio }: { folio: string }) {
         <i />
         <i />
         <i />
-        <span className="rl mono">Whole page in frame</span>
       </span>
     </div>
   );

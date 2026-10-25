@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { SCAN_PREVIEW_STATES, scanPreview } from "@/lib/scan-ledger/preview";
+import {
+  SCAN_PREVIEW_STATES,
+  scanPreview,
+  scanPreviewTrophyTier,
+} from "@/lib/scan-ledger/preview";
 import { fixtureSnapshot } from "@/lib/scan-ledger/fixture";
 
 describe("scanPreview", () => {
@@ -15,6 +19,25 @@ describe("scanPreview", () => {
     }
     expect(scanPreview(true, "qr")).toBe("index");
     expect(scanPreview(true, "nope")).toBeNull();
+  });
+
+  it("opens Basic and Rare trophy fixtures without enabling them in production", () => {
+    expect(scanPreview(false, "basic")).toBeNull();
+    expect(scanPreviewTrophyTier(false, "basic")).toBeNull();
+    expect(scanPreview(true, "basic")).toBe("tier-reached");
+    expect(scanPreviewTrophyTier(true, "basic")).toBe("Basic");
+    expect(scanPreview(true, "rare")).toBe("tier-reached");
+    expect(scanPreviewTrophyTier(true, "rare")).toBe("Rare");
+    expect(scanPreviewTrophyTier(true, "tier-reached")).toBeNull();
+    expect(
+      fixtureSnapshot("tier-reached", { trophyTier: "Basic" }).trophyTier,
+    ).toBe("Basic");
+    expect(
+      fixtureSnapshot("tier-reached", { trophyTier: "Basic" }).books[0]?.tier,
+    ).toBe("Basic");
+    expect(
+      fixtureSnapshot("tier-reached", { trophyTier: "Rare" }).books[0]?.tier,
+    ).toBe("Rare");
   });
 });
 

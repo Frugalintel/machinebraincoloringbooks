@@ -87,6 +87,8 @@ export type ScanLedgerSnapshot = {
   showNextBookSlot: boolean;
   activePlate: ActivePlate | null;
   unlock: UnlockPreview | null;
+  /** Preview-only trophy override so Basic/Rare can be reviewed beside Pro. */
+  trophyTier?: TrophyTierName | null;
 };
 
 export type RegisterBookResult =

@@ -23,6 +23,24 @@ export const CELL_LABEL: Record<PlateCell, string> = {
   legendary: "Legendary page: code + verified photo, 2 pts",
 };
 
+/** Highlighted "now" cell on the locked mockup states. */
+export const NOW_CELL_LABEL: Partial<Record<ScanViewState, string>> = {
+  "code-only-before": "code counted, photo still open",
+  collected: "collected already, code and page",
+  "tier-reached": "photo just verified, 2 pts",
+};
+
+export function plateCellLabel(
+  cell: PlateCell,
+  options: { state?: ScanViewState; highlight?: boolean } = {},
+): string {
+  if (options.highlight && options.state) {
+    const now = NOW_CELL_LABEL[options.state];
+    if (now) return now;
+  }
+  return CELL_LABEL[cell];
+}
+
 export function sampleNote(state: ScanViewState): string {
   switch (state) {
     case "registered":
@@ -53,6 +71,10 @@ export function sampleNote(state: ScanViewState): string {
 
 export function trophyPlateCaption(plate: string, code: string): string {
   return `PLATE ${plate} · ${code} · CODE + PHOTO`;
+}
+
+export function legendaryPlateCaption(plate: string): string {
+  return `PLATE ${plate} · HIDDEN PAGE`;
 }
 
 export const CAMERA_BLOCKED =
