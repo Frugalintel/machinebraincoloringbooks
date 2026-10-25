@@ -26,7 +26,7 @@ import {
   cartLabel,
   headerVariantFor,
   isNavLinkActive,
-  isStorePath,
+  isOverlayLinkCurrent,
   overlayLinksFor,
   type HeaderVariant,
 } from "@/lib/site-shell";
@@ -192,8 +192,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
             )}
           >
             {links.map((link) => {
-              const current =
-                solid && link.name === "Books" && isStorePath(pathname);
+              const current = solid && isOverlayLinkCurrent(pathname, link);
               return (
                 <li key={link.name}>
                   <Link
@@ -255,6 +254,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
         triggerRef={menuTriggerRef}
         pathname={pathname}
         accountLinks={accountLinks}
+        links={links}
       />
     </header>
   );

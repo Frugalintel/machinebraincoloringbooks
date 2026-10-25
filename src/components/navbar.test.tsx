@@ -59,7 +59,7 @@ function menuButton() {
 
 describe("Navbar", () => {
   beforeEach(() => {
-    nav.pathname = "/stories";
+    nav.pathname = "/collectibles";
     nav.cartCount = 2;
     nav.user = null;
     nav.isAdmin = false;
@@ -299,6 +299,36 @@ describe("Navbar", () => {
       expect(nav.openAuthModal).toHaveBeenCalledWith("login");
       unmount();
     }
+  });
+
+  it("gives stories the store nav plus Stories, Cart, and Sign in", () => {
+    nav.pathname = "/stories/lantern";
+    nav.cartCount = 0;
+    const { container } = render(<Navbar />);
+
+    expect(container.querySelector("header")).toHaveAttribute(
+      "data-site-chrome",
+      "solid",
+    );
+    const primary = screen.getByRole("navigation", { name: "Primary" });
+    expect(
+      within(primary)
+        .getAllByRole("link")
+        .map((link) => [link.textContent, link.getAttribute("href")]),
+    ).toEqual([
+      ["Machine Brain", "/"],
+      ["Books", "/store"],
+      ["Worlds", "/store#worlds"],
+      ["Stories", "/stories"],
+      ["About", "/about"],
+    ]);
+    expect(
+      within(primary).getByRole("link", { name: "Stories" }),
+    ).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Cart, 0 items" }),
+    ).toBeInTheDocument();
   });
 
   it("shows Account instead of Sign in on the store once you are signed in", () => {

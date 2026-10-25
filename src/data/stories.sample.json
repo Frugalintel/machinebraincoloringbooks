@@ -1,0 +1,375 @@
+{
+  "_note": "SAMPLE data for the stories prototype. Every title, synopsis, passage, point cost, reading time, balance and story map here is a sample. Field names follow the repo's Story type where one exists (title, synopsis, cover_url -> art, estimated_minutes, category -> world, content nodes with choices). cost_pts is NOT in the repo yet (it has base_xp and story_gates.bypass_xp_cost); it stands in for the planned points price.",
+  "reader": { "name": "Sample reader", "points": 34 },
+  "worlds": [
+    {
+      "id": "fantasy",
+      "name": "Fantasy",
+      "line": "Castles, quests, old maps",
+      "roman": "I"
+    },
+    {
+      "id": "surreal",
+      "name": "Surreal",
+      "line": "Dreams, drawn precisely",
+      "roman": "II"
+    },
+    {
+      "id": "scifi",
+      "name": "Sci-Fi",
+      "line": "Stations, ships, far light",
+      "roman": "III"
+    },
+    {
+      "id": "wildlife",
+      "name": "Wildlife",
+      "line": "Forests, feathers and fur",
+      "roman": "IV"
+    },
+    {
+      "id": "cozy",
+      "name": "Cozy",
+      "line": "Slow rooms, warm evenings",
+      "roman": "V"
+    }
+  ],
+  "stories": [
+    {
+      "id": "lantern",
+      "world": "fantasy",
+      "title": "The Lantern Road",
+      "lines": ["The Lantern", "Road"],
+      "art": "lantern",
+      "synopsis": "Two lanterns hang at the fork below the Silver Citadel. One burns warm, one burns cold, and neither has gone out in a hundred years.",
+      "minutes": 12,
+      "cost": 20,
+      "state": "reading",
+      "path": ["fork", "warm", "bridge"],
+      "current": "bridge",
+      "tree": [
+        "fork",
+        "The fork",
+        [
+          [
+            "warm",
+            "The warm lantern",
+            [
+              [
+                "bridge",
+                "The miller's bridge",
+                [
+                  ["gate", "Cross toward the citadel", []],
+                  [
+                    "under",
+                    "Climb down to the wheel",
+                    [
+                      ["river", "", []],
+                      ["mill", "", []]
+                    ]
+                  ]
+                ]
+              ],
+              ["inn", "The hollow inn", [["morning", "", []]]]
+            ]
+          ],
+          [
+            "cold",
+            "The cold lantern",
+            [
+              [
+                "ford",
+                "The frozen ford",
+                [
+                  [
+                    "tower",
+                    "",
+                    [
+                      ["e4", "", []],
+                      ["e5", "", []]
+                    ]
+                  ],
+                  ["e6", "", []]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ],
+      "chapters": [
+        {
+          "id": "fork",
+          "title": "The fork",
+          "text": [
+            "Two lanterns hang at the fork below the Silver Citadel. The left one burns warm, the color of a kitchen window. The right one is cold and blue, and it hums.",
+            "The milestone between them has lost its words. All that is left is a carved hand, pointing up the hill."
+          ],
+          "chose": "Follow the warm lantern"
+        },
+        {
+          "id": "warm",
+          "title": "The warm lantern",
+          "text": [
+            "The warm light walks a step ahead of you through the pines. When you stop, it stops. When you look back, the fork is gone and the road has closed behind you like a page."
+          ],
+          "chose": "Keep to the road"
+        },
+        {
+          "id": "bridge",
+          "title": "The miller's bridge",
+          "text": [
+            "The road runs out at a wooden bridge. Below it a mill wheel is turning, though the river is perfectly still.",
+            "In the mill window a light moves from room to room. It is the same color as your lantern."
+          ],
+          "choices": ["Cross toward the citadel", "Climb down to the wheel"]
+        }
+      ]
+    },
+    {
+      "id": "tide",
+      "world": "surreal",
+      "title": "The Door in the Tide",
+      "lines": ["The Door", "in the Tide"],
+      "art": "tide",
+      "synopsis": "A door stands in the shallows at low tide. Open it and the sea goes on behind it, but the stairs go up.",
+      "minutes": 15,
+      "cost": 30,
+      "state": "open",
+      "tree": [
+        "door",
+        "The door",
+        [
+          [
+            "left",
+            "The left stair",
+            [
+              [
+                "cloud",
+                "",
+                [
+                  ["a", "", []],
+                  ["b", "", []]
+                ]
+              ],
+              ["c", "", []]
+            ]
+          ],
+          [
+            "right",
+            "The right stair",
+            [
+              ["moon", "", [["d", "", []]]],
+              [
+                "sea",
+                "",
+                [
+                  ["e", "", []],
+                  ["f", "", []]
+                ]
+              ]
+            ]
+          ],
+          ["back", "Back to the shore", [["h", "", []]]]
+        ]
+      ]
+    },
+    {
+      "id": "station",
+      "world": "scifi",
+      "title": "Last Light at Far Station",
+      "lines": ["Last Light at", "Far Station"],
+      "art": "station",
+      "synopsis": "The station has gone quiet. There are two airlocks at the end of the ring, and someone left the amber one open for you.",
+      "minutes": 20,
+      "cost": 30,
+      "state": "locked",
+      "tree": [
+        "ring",
+        "",
+        [
+          [
+            "amber",
+            "",
+            [
+              [
+                "dock",
+                "",
+                [
+                  ["a", "", []],
+                  ["b", "", []]
+                ]
+              ],
+              [
+                "core",
+                "",
+                [
+                  [
+                    "c",
+                    "",
+                    [
+                      ["d", "", []],
+                      ["e", "", []]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "dark",
+            "",
+            [
+              ["vac", "", [["f", "", []]]],
+              [
+                "hold",
+                "",
+                [
+                  ["g", "", []],
+                  ["h", "", []]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "fox",
+      "world": "wildlife",
+      "title": "The Long Way Round",
+      "lines": ["The Long", "Way Round"],
+      "art": "fox",
+      "synopsis": "A fox, a fallen log and two trails through the deep forest. The stream is quicker. The pines are older.",
+      "minutes": 10,
+      "cost": 40,
+      "state": "locked",
+      "tree": [
+        "log",
+        "",
+        [
+          [
+            "stream",
+            "",
+            [
+              ["pool", "", [["a", "", []]]],
+              [
+                "falls",
+                "",
+                [
+                  ["b", "", []],
+                  ["c", "", []]
+                ]
+              ]
+            ]
+          ],
+          [
+            "pines",
+            "",
+            [
+              [
+                "den",
+                "",
+                [
+                  ["d", "", []],
+                  ["e", "", []]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "letter",
+      "world": "cozy",
+      "title": "The Letter Under the Teapot",
+      "lines": ["The Letter Under", "the Teapot"],
+      "art": "letter",
+      "synopsis": "Snow at the window, a sealed letter on the table and two doors left ajar. Read it now, or wait for morning.",
+      "minutes": 8,
+      "cost": 20,
+      "state": "locked",
+      "tree": [
+        "table",
+        "",
+        [
+          [
+            "now",
+            "",
+            [
+              ["stair", "", [["a", "", []]]],
+              [
+                "garden",
+                "",
+                [
+                  ["b", "", []],
+                  ["c", "", []]
+                ]
+              ]
+            ]
+          ],
+          ["wait", "", [["morn", "", [["d", "", []]]]]]
+        ]
+      ]
+    },
+    {
+      "id": "orchard",
+      "world": "fantasy",
+      "title": "The Clockwork Orchard",
+      "lines": ["The Clockwork", "Orchard"],
+      "art": "orchard",
+      "synopsis": "The trees keep time. When one of them stops, the paths between the rows change. Walk slowly and listen.",
+      "minutes": 25,
+      "cost": 60,
+      "state": "locked",
+      "tree": [
+        "gate",
+        "",
+        [
+          [
+            "left",
+            "",
+            [
+              [
+                "l1",
+                "",
+                [
+                  ["a", "", []],
+                  ["b", "", []]
+                ]
+              ]
+            ]
+          ],
+          [
+            "mid",
+            "",
+            [
+              ["m1", "", [["c", "", []]]],
+              [
+                "m2",
+                "",
+                [
+                  ["d", "", []],
+                  ["e", "", []]
+                ]
+              ]
+            ]
+          ],
+          [
+            "right",
+            "",
+            [
+              [
+                "r1",
+                "",
+                [
+                  ["f", "", []],
+                  ["g", "", [["h", "", []]]]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    }
+  ]
+}
