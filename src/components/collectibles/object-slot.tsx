@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ComponentType } from "react";
+import { collectibleModelUrl } from "@/lib/collectible-models";
 import type { CollectibleItem } from "@/lib/game-data";
 import { LockedFigure } from "./locked-figure";
 
@@ -14,6 +15,7 @@ type TrophyCanvasProps = {
   particles?: boolean;
   unlockedAt?: string;
   lastPolishedAt?: string;
+  modelUrl?: string;
 };
 
 /**
@@ -69,6 +71,7 @@ export function ObjectSlot({
       particles={false}
       unlockedAt={unlockedAt}
       lastPolishedAt={lastPolishedAt}
+      modelUrl={collectibleModelUrl(item.id)}
     />
   );
 }

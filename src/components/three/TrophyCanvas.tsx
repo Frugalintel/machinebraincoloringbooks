@@ -1,8 +1,17 @@
 "use client";
 
-import { Suspense, useMemo, useSyncExternalStore } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type ComponentType,
+} from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 import {
   getTrophyEntropy,
   getCurrentSeason,
@@ -27,7 +36,18 @@ interface TrophyCanvasProps {
   transparent?: boolean;
   /** Large views draw seasonal particles unless this is false. */
   particles?: boolean;
+  /** Per-item GLB. Absent items keep the procedural placeholder. */
+  modelUrl?: string;
 }
+
+type GlbTrophyComponent = ComponentType<{
+  url: string;
+  rarity?: string;
+  autoRotate?: boolean;
+  size?: "small" | "large";
+  onReady?: () => void;
+  onError?: () => void;
+}>;
 
 function LoadingFallback() {
   return (
@@ -50,6 +70,7 @@ export function TrophyCanvas({
   seasonOverride,
   transparent = false,
   particles = true,
+  modelUrl,
 }: TrophyCanvasProps) {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -58,6 +79,32 @@ export function TrophyCanvas({
   );
   const isSmall = size === "small";
   const isLarge = size === "large";
+  const [GlbTrophy, setGlbTrophy] = useState<GlbTrophyComponent | null>(null);
+  const [glbStatus, setGlbStatus] = useState<"idle" | "ready" | "failed">(
+    "idle",
+  );
+  const handleGlbReady = useCallback(() => setGlbStatus("ready"), []);
+  const handleGlbError = useCallback(() => setGlbStatus("failed"), []);
+
+  useEffect(() => {
+    if (!modelUrl) {
+      setGlbTrophy(null);
+      setGlbStatus("idle");
+      return;
+    }
+    let cancelled = false;
+    setGlbStatus("idle");
+    void import("./GlbTrophy")
+      .then((mod) => {
+        if (!cancelled) setGlbTrophy(() => mod.GlbTrophy);
+      })
+      .catch(() => {
+        if (!cancelled) setGlbStatus("failed");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [modelUrl]);
 
   // Compute entropy based on timestamps
   const entropy = useMemo(() => {
@@ -144,39 +191,59 @@ export function TrophyCanvas({
           left: 0,
           background: "transparent",
         }}
+        shadows={Boolean(modelUrl)}
         onCreated={({ gl, scene, camera }) => {
           camera.lookAt(0, lookAtY, 0);
+          if (modelUrl) {
+            gl.toneMapping = ACESFilmicToneMapping;
+            gl.toneMappingExposure = 1;
+            gl.outputColorSpace = SRGBColorSpace;
+          }
           if (!transparent) return;
           scene.background = null;
           gl.setClearColor(0x000000, 0);
         }}
       >
-        {/* Lighting - adjust based on season */}
-        <ambientLight intensity={0.5 * seasonMod.intensity} />
-        <directionalLight
-          position={[5, 5, 5]}
-          intensity={1 * seasonMod.intensity}
-        />
-        <directionalLight
-          position={[-5, -5, -5]}
-          intensity={0.3}
-          color="#60a5fa"
-        />
-        <pointLight
-          position={[0, 3, 0]}
-          intensity={0.8 * seasonMod.intensity}
-          color="#ffffff"
-        />
+        {glbStatus !== "ready" ? (
+          <>
+            <ambientLight intensity={0.5 * seasonMod.intensity} />
+            <directionalLight
+              position={[5, 5, 5]}
+              intensity={1 * seasonMod.intensity}
+            />
+            <directionalLight
+              position={[-5, -5, -5]}
+              intensity={0.3}
+              color="#60a5fa"
+            />
+            <pointLight
+              position={[0, 3, 0]}
+              intensity={0.8 * seasonMod.intensity}
+              color="#ffffff"
+            />
+          </>
+        ) : null}
 
-        {/* Trophy Model with entropy and season */}
         <Suspense fallback={<LoadingFallback />}>
-          <TrophyModel
-            rarity={rarity}
-            autoRotate={autoRotate}
-            entropy={entropy}
-            season={season}
-            softBase={transparent}
-          />
+          {modelUrl && GlbTrophy && glbStatus !== "failed" ? (
+            <GlbTrophy
+              url={modelUrl}
+              rarity={rarity}
+              autoRotate={autoRotate}
+              size={size}
+              onReady={handleGlbReady}
+              onError={handleGlbError}
+            />
+          ) : null}
+          {glbStatus !== "ready" ? (
+            <TrophyModel
+              rarity={rarity}
+              autoRotate={autoRotate}
+              entropy={entropy}
+              season={season}
+              softBase={transparent}
+            />
+          ) : null}
         </Suspense>
 
         {/* Seasonal Particles - only for large views (performance) */}
