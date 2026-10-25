@@ -65,20 +65,20 @@ export default function CampaignEditorPage({
         .from("campaigns")
         .select("*")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
-
-      if (data) {
-        const settings = (data.settings ?? {}) as Partial<CampaignSettings>;
-        setCampaign({
-          ...DEFAULT_CAMPAIGN,
-          ...settings,
-          name: data.name,
-          isActive: data.is_active,
-          theme: resolveCampaignTheme(settings.theme),
-        });
+      if (error || !data) {
+        throw error ?? new Error("Campaign not found");
       }
+
+      const settings = (data.settings ?? {}) as Partial<CampaignSettings>;
+      setCampaign({
+        ...DEFAULT_CAMPAIGN,
+        ...settings,
+        name: data.name,
+        isActive: data.is_active,
+        theme: resolveCampaignTheme(settings.theme),
+      });
     } catch (error) {
       logger.error("Error fetching campaign:", error);
       toastError("Failed to load campaign");

@@ -61,14 +61,18 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const fetchSettings = useCallback(async () => {
     try {
-      // 1. Try to fetch the active campaign from the new 'campaigns' table
+      // Active campaign is optional. An empty table resolves to null.
       const { data, error } = await supabase
         .from("campaigns")
         .select("*")
         .eq("is_active", true)
         .order("updated_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
+
+      if (error) {
+        logger.error("Error fetching active campaign:", error);
+      }
 
       if (data) {
         setActiveCampaignId(data.id);
@@ -82,15 +86,16 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
           theme: resolveCampaignTheme(settings.theme),
         });
       } else {
-        // Fallback: Check if we still have the old 'system_settings' (migration fallback)
-        // Or just use default.
-        // Let's try to read system_settings just in case the migration hasn't run yet
-        // to avoid breaking the site completely during transition.
-        const { data: legacyData } = await supabase
+        setActiveCampaignId(null);
+        const { data: legacyData, error: legacyError } = await supabase
           .from("system_settings")
           .select("value")
           .eq("key", "global_discount")
-          .single();
+          .maybeSingle();
+
+        if (legacyError) {
+          logger.error("Error fetching system settings:", legacyError);
+        }
 
         if (legacyData && legacyData.value) {
           // Legacy adaptation logic

@@ -118,9 +118,11 @@ export default function DiscountsPage() {
           },
         ])
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error || !data) {
+        throw error ?? new Error("Failed to create campaign");
+      }
 
       success("Campaign created!");
       router.push(`/admin/discounts/${data.id}`);
