@@ -17,6 +17,10 @@ import {
   getCurrentSeason,
   getSeasonalModifier,
 } from "@/lib/trophy-utils";
+import {
+  FITTED_LOOK_AT,
+  fittedCameraPosition,
+} from "@/lib/scan-ledger/trophy-frame";
 import { TrophyModel } from "./TrophyModel";
 import { SeasonalParticles } from "./SeasonalParticles";
 
@@ -160,15 +164,23 @@ export function TrophyCanvas({
   const seasonMod = useMemo(() => getSeasonalModifier(season), [season]);
 
   // Vitrine frames the shared mesh. Other pages keep the original camera.
-  const cameraPosition: [number, number, number] = transparent
-    ? isSmall
-      ? [0, 0.28, 4.6]
-      : [0, 0.08, 2.85]
-    : isSmall
-      ? [0, 0.5, 3]
-      : [0, 0.8, 4];
-  const lookAtY = transparent ? (isSmall ? 0.18 : 0.48) : 0;
   const fov = transparent ? (isSmall ? 34 : 32) : isSmall ? 40 : 50;
+  const cameraPosition: [number, number, number] = fitBounds
+    ? fittedCameraPosition(fov)
+    : transparent
+      ? isSmall
+        ? [0, 0.28, 4.6]
+        : [0, 0.08, 2.85]
+      : isSmall
+        ? [0, 0.5, 3]
+        : [0, 0.8, 4];
+  const lookAt = fitBounds
+    ? FITTED_LOOK_AT
+    : ([0, transparent ? (isSmall ? 0.18 : 0.48) : 0, 0] as [
+        number,
+        number,
+        number,
+      ]);
 
   const posterImage = posterUrl ? (
     // Still posters are static assets; next/image is not required here.
@@ -186,19 +198,25 @@ export function TrophyCanvas({
     />
   ) : null;
 
+  const fillFrame = isSmall || fitBounds;
+  const stageStyle = {
+    width: "100%",
+    height: fitBounds ? "auto" : "100%",
+    ...(fillFrame ? {} : { minHeight: "400px" }),
+    ...(fitBounds ? { flex: "1 1 0", minHeight: 0 } : {}),
+    position: "relative" as const,
+  };
+
   if (!mounted) {
     return (
       <div
         className={className}
         style={{
-          width: "100%",
-          height: "100%",
-          ...(isSmall ? {} : { minHeight: "400px" }),
+          ...stageStyle,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           background: transparent ? "transparent" : "#1A1A19",
-          position: "relative",
         }}
       >
         {posterImage ?? (
@@ -221,11 +239,8 @@ export function TrophyCanvas({
     <div
       className={className}
       style={{
-        width: "100%",
-        height: "100%",
-        ...(isSmall ? {} : { minHeight: "400px" }),
+        ...stageStyle,
         touchAction: isInteractive ? "none" : "auto",
-        position: "relative",
       }}
     >
       <Canvas
@@ -250,7 +265,7 @@ export function TrophyCanvas({
         }}
         shadows={Boolean(modelUrl) && !isSmall}
         onCreated={({ gl, scene, camera }) => {
-          camera.lookAt(0, lookAtY, 0);
+          camera.lookAt(lookAt[0], lookAt[1], lookAt[2]);
           if (modelUrl) {
             gl.toneMapping = ACESFilmicToneMapping;
             gl.toneMappingExposure = 1.2;

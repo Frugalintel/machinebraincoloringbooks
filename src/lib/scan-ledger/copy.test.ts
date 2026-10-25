@@ -4,8 +4,11 @@ import {
   PHOTO_OPTIONAL,
   SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
+  legendaryPlateCaption,
+  plateCellLabel,
   sampleNote,
   scanChrome,
+  scanH1Fit,
   trophyPlateCaption,
 } from "@/lib/scan-ledger/copy";
 
@@ -50,5 +53,50 @@ describe("scan ledger copy", () => {
     expect(trophyPlateCaption("31", "9TD4")).toBe(
       "PLATE 31 · 9TD4 · CODE + PHOTO",
     );
+    expect(legendaryPlateCaption("31")).toBe("PLATE 31 · HIDDEN PAGE");
+  });
+
+  it("derives tier-reached chrome and H1 fit from the trophy tier", () => {
+    expect(scanChrome("tier-reached").h1).toBe("Pro.");
+    expect(scanChrome("tier-reached").running).toBe("Trophy · Pro");
+    expect(scanChrome("tier-reached").lede).toMatch(/moves up to Pro/);
+    expect(scanChrome("tier-reached", { trophyTier: "Basic" }).h1).toBe(
+      "Basic.",
+    );
+    expect(scanChrome("tier-reached", { trophyTier: "Basic" }).running).toBe(
+      "Trophy · Basic",
+    );
+    expect(scanChrome("tier-reached", { trophyTier: "Basic" }).lede).toMatch(
+      /moves up to Basic/,
+    );
+    expect(scanChrome("tier-reached", { trophyTier: "Rare" }).h1).toBe("Rare.");
+    expect(scanChrome("tier-reached", { trophyTier: "Rare" }).running).toBe(
+      "Trophy · Rare",
+    );
+    expect(scanChrome("tier-reached", { trophyTier: "Rare" }).lede).toMatch(
+      /moves up to Rare/,
+    );
+    const pro = Number.parseFloat(scanH1Fit("tier-reached").fd);
+    const basic = Number.parseFloat(scanH1Fit("tier-reached", "Basic").fd);
+    const rare = Number.parseFloat(scanH1Fit("tier-reached", "Rare").fd);
+    expect(basic).toBeLessThan(pro);
+    expect(rare).toBeLessThan(pro);
+    expect(basic).toBeLessThanOrEqual(rare);
+  });
+
+  it("restores the mockup now-cell labels", () => {
+    expect(
+      plateCellLabel("code", { state: "code-only-before", highlight: true }),
+    ).toBe("code counted, photo still open");
+    expect(
+      plateCellLabel("verified", { state: "collected", highlight: true }),
+    ).toBe("collected already, code and page");
+    expect(
+      plateCellLabel("verified", { state: "tier-reached", highlight: true }),
+    ).toBe("photo just verified, 2 pts");
+    expect(plateCellLabel("code")).toBe(CELL_LABEL.code);
+    expect(
+      plateCellLabel("code", { state: "code-only-before", highlight: false }),
+    ).toBe(CELL_LABEL.code);
   });
 });

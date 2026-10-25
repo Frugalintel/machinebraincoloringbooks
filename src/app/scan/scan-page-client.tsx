@@ -19,6 +19,7 @@ import {
   createLiveAdapter,
   fixtureSnapshot,
   scanPreview,
+  scanPreviewTrophyTier,
   type ScanLedgerSnapshot,
   type ScanViewState,
 } from "@/lib/scan-ledger";
@@ -70,6 +71,10 @@ function initialState(
 export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   const params = useSearchParams();
   const preview = scanPreview(allowFixture, params.get("preview"));
+  const previewTrophyTier = scanPreviewTrophyTier(
+    allowFixture,
+    params.get("preview"),
+  );
   const entry = scanEntryFromParams(params);
   const { user, openAuthModal } = useAuth();
   const { success, error: toastError } = useToast();
@@ -91,7 +96,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   );
   const [snapshot, setSnapshot] = useState<ScanLedgerSnapshot>(() =>
     preview
-      ? fixtureSnapshot(preview)
+      ? fixtureSnapshot(preview, { trophyTier: previewTrophyTier ?? undefined })
       : {
           signedIn: Boolean(user),
           sample: false,

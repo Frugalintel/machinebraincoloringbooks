@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type ComponentType } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentType,
+} from "react";
 
 type TrophyCanvasProps = {
   className?: string;
@@ -43,12 +49,17 @@ export function ScanTrophy({
   const [visible, setVisible] = useState(
     () => typeof IntersectionObserver !== "function",
   );
+  const [ready, setReady] = useState(false);
   const [TrophyCanvas, setTrophyCanvas] =
     useState<ComponentType<TrophyCanvasProps> | null>(null);
 
   useEffect(() => {
     const node = rootRef.current;
-    if (!node || typeof IntersectionObserver !== "function") return;
+    if (!node || typeof IntersectionObserver !== "function") {
+      setNear(true);
+      setVisible(true);
+      return;
+    }
     const nearIo = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) setNear(true);
@@ -63,6 +74,12 @@ export function ScanTrophy({
     );
     nearIo.observe(node);
     viewIo.observe(node);
+    const rect = node.getBoundingClientRect();
+    const viewH = window.innerHeight || 0;
+    if (rect.height > 0 && rect.bottom > -viewH && rect.top < viewH * 2) {
+      setNear(true);
+      if (rect.top < viewH && rect.bottom > 0) setVisible(true);
+    }
     return () => {
       nearIo.disconnect();
       viewIo.disconnect();
@@ -81,12 +98,19 @@ export function ScanTrophy({
   }, [near]);
 
   const poster = posterUrl ?? undefined;
+  const handleReady = useCallback(() => setReady(true), []);
 
   return (
-    <div ref={rootRef} className="trophy" aria-label={caption}>
+    <div
+      ref={rootRef}
+      className="trophy"
+      aria-label={caption}
+      data-ready={ready || undefined}
+    >
       {stamp ? <p className="stamp mono">{stamp}</p> : null}
       {TrophyCanvas ? (
         <TrophyCanvas
+          className="trophy-stage"
           size="large"
           rarity={rarity}
           autoRotate={!reducedMotion}
@@ -98,6 +122,7 @@ export function ScanTrophy({
           frameloop={reducedMotion || !visible ? "demand" : "always"}
           powerPreference="default"
           fitBounds
+          onReady={handleReady}
         />
       ) : poster ? (
         // Poster is a static still; next/image is not required for this wait state.

@@ -1,4 +1,5 @@
 import type { ScanViewState } from "@/lib/scan-ledger/types";
+import type { TrophyTierName } from "@/lib/scan-tiers";
 
 export const SCAN_PREVIEW_STATES: readonly ScanViewState[] = [
   "signed-out-book",
@@ -24,6 +25,17 @@ const PREVIEW_ALIASES: Record<string, ScanViewState> = {
   "back-cover": "index",
   "points-code": "code-added",
   "points-photo": "pending",
+  basic: "tier-reached",
+  pro: "tier-reached",
+  rare: "tier-reached",
+  legendary: "legendary-found",
+};
+
+const TROPHY_PREVIEW_TIERS: Record<string, TrophyTierName> = {
+  basic: "Basic",
+  pro: "Pro",
+  rare: "Rare",
+  legendary: "Legendary",
 };
 
 export function scanPreview(
@@ -39,4 +51,12 @@ export function scanPreview(
 
 export function isScanPreviewState(value: string): value is ScanViewState {
   return (SCAN_PREVIEW_STATES as readonly string[]).includes(value);
+}
+
+export function scanPreviewTrophyTier(
+  allowFixture: boolean,
+  value: string | null,
+): TrophyTierName | null {
+  if (!allowFixture || !value) return null;
+  return TROPHY_PREVIEW_TIERS[value] ?? null;
 }

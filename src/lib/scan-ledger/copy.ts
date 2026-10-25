@@ -1,4 +1,5 @@
 import type { PlateCell, ScanViewState } from "@/lib/scan-ledger/types";
+import type { TrophyTierName } from "@/lib/scan-tiers";
 
 export const SCAN_OPT_LINE =
   "Photo of the colored page · optional · +1 more once verified";
@@ -22,6 +23,24 @@ export const CELL_LABEL: Record<PlateCell, string> = {
   now: "adding now",
   legendary: "Legendary page: code + verified photo, 2 pts",
 };
+
+/** Highlighted "now" cell on the locked mockup states. */
+export const NOW_CELL_LABEL: Partial<Record<ScanViewState, string>> = {
+  "code-only-before": "code counted, photo still open",
+  collected: "collected already, code and page",
+  "tier-reached": "photo just verified, 2 pts",
+};
+
+export function plateCellLabel(
+  cell: PlateCell,
+  options: { state?: ScanViewState; highlight?: boolean } = {},
+): string {
+  if (options.highlight && options.state) {
+    const now = NOW_CELL_LABEL[options.state];
+    if (now) return now;
+  }
+  return CELL_LABEL[cell];
+}
 
 export function sampleNote(state: ScanViewState): string {
   switch (state) {
@@ -53,6 +72,10 @@ export function sampleNote(state: ScanViewState): string {
 
 export function trophyPlateCaption(plate: string, code: string): string {
   return `PLATE ${plate} · ${code} · CODE + PHOTO`;
+}
+
+export function legendaryPlateCaption(plate: string): string {
+  return `PLATE ${plate} · HIDDEN PAGE`;
 }
 
 export const CAMERA_BLOCKED =
@@ -251,8 +274,72 @@ const CHROME: Record<ScanViewState, ScanChrome> = {
   },
 };
 
-export function scanChrome(state: ScanViewState): ScanChrome {
-  return CHROME[state];
+/** Fitted sizes from the locked C-ledger mockups (`--fd` / `--fm`). */
+export const SCAN_H1_FIT: Record<ScanViewState, { fd: string; fm: string }> = {
+  "signed-out-book": { fd: "9.65vw", fm: "15vw" },
+  "signed-out-code": { fd: "11.05vw", fm: "15vw" },
+  "camera-off": { fd: "9.93vw", fm: "15vw" },
+  index: { fd: "9.65vw", fm: "15vw" },
+  registered: { fd: "9.31vw", fm: "15vw" },
+  code: { fd: "11.05vw", fm: "15vw" },
+  "code-added": { fd: "12.59vw", fm: "15vw" },
+  photo: { fd: "9.31vw", fm: "15vw" },
+  "photo-preview": { fd: "13.09vw", fm: "15vw" },
+  pending: { fd: "21.88vw", fm: "15vw" },
+  verified: { fd: "13.60vw", fm: "15vw" },
+  "tier-reached": { fd: "23.61vw", fm: "15vw" },
+  "legendary-found": { fd: "10.19vw", fm: "15vw" },
+  "code-only-before": { fd: "12.21vw", fm: "15vw" },
+  collected: { fd: "11.80vw", fm: "15vw" },
+  invalid: { fd: "10.61vw", fm: "15vw" },
+};
+
+/** Longer tier words than "Pro." need a smaller desktop fit. */
+const TIER_H1_FIT: Record<TrophyTierName, { fd: string; fm: string }> = {
+  Basic: { fd: "14.72vw", fm: "13.8vw" },
+  Pro: SCAN_H1_FIT["tier-reached"],
+  Rare: { fd: "17.85vw", fm: "15vw" },
+  Legendary: SCAN_H1_FIT["legendary-found"],
+};
+
+export type ScanChromeOptions = {
+  trophyTier?: TrophyTierName | null;
+};
+
+export function scanH1Fit(
+  state: ScanViewState,
+  trophyTier?: TrophyTierName | null,
+): { fd: string; fm: string } {
+  if (state === "tier-reached" && trophyTier) {
+    return TIER_H1_FIT[trophyTier];
+  }
+  return SCAN_H1_FIT[state];
+}
+
+export function scanChrome(
+  state: ScanViewState,
+  options: ScanChromeOptions = {},
+): ScanChrome {
+  const base = CHROME[state];
+  if (state !== "tier-reached") return base;
+  const tier = options.trophyTier ?? "Pro";
+  switch (tier) {
+    case "Basic":
+    case "Pro":
+    case "Rare":
+    case "Legendary":
+      return {
+        ...base,
+        h1: `${tier}.`,
+        running: `Trophy · ${tier}`,
+        stamp: `Verified · ${tier} unlocked`,
+        lede: `The photo for plate 19 is verified. The Silver Citadel has 45 book pts, so its trophy moves up to ${tier}. Spending wallet points on stories never lowers a tier.`,
+      };
+    default: {
+      const _exhaustive: never = tier;
+      return _exhaustive;
+    }
+  }
 }
 
 export function invalidCodeMessage(code: string): string {

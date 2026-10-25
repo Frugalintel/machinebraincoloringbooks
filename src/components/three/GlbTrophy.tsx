@@ -17,6 +17,12 @@ import {
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import {
+  BASIC_EMISSIVE_MAX,
+  FITTED_SIZE,
+  FRAME_PADDING,
+  PRO_EMISSIVE_INTENSITY,
+} from "@/lib/scan-ledger/trophy-frame";
 
 export type GlbTrophyProps = {
   url: string;
@@ -120,7 +126,7 @@ function applyTierLook(root: Object3D, rarity: string) {
           material.metalness = Math.min(material.metalness, 0.4);
           material.emissiveIntensity = Math.min(
             material.emissiveIntensity,
-            0.04,
+            BASIC_EMISSIVE_MAX,
           );
           break;
         case "Pro":
@@ -128,10 +134,7 @@ function applyTierLook(root: Object3D, rarity: string) {
           material.metalness = Math.max(material.metalness, 0.82);
           material.roughness = Math.min(material.roughness, 0.28);
           material.emissive.set("#e8e2d4");
-          material.emissiveIntensity = Math.max(
-            material.emissiveIntensity,
-            0.22,
-          );
+          material.emissiveIntensity = PRO_EMISSIVE_INTENSITY;
           break;
         default:
           break;
@@ -177,19 +180,19 @@ function setObjectOpacity(root: Object3D, opacity: number) {
   });
 }
 
-function KeySpot() {
+function KeySpot({ targetY = 0.45 }: { targetY?: number }) {
   const ref = useRef<SpotLight>(null);
   const { scene } = useThree();
 
   useLayoutEffect(() => {
     const light = ref.current;
     if (!light) return;
-    light.target.position.set(0, 0.45, 0);
+    light.target.position.set(0, targetY, 0);
     scene.add(light.target);
     return () => {
       scene.remove(light.target);
     };
-  }, [scene]);
+  }, [scene, targetY]);
 
   return (
     <spotLight
@@ -248,9 +251,16 @@ export function GlbTrophy({
 }: GlbTrophyProps) {
   const groupRef = useRef<Group>(null);
   const fadeRef = useRef(0);
+  const onReadyRef = useRef(onReady);
+  const onErrorRef = useRef(onError);
   const [model, setModel] = useState<Group | null>(null);
   const rimColor = RARITY_RIM[rarity] ?? RARITY_RIM.Common;
   const frame = framePlacement(size, compact);
+
+  useLayoutEffect(() => {
+    onReadyRef.current = onReady;
+    onErrorRef.current = onError;
+  }, [onReady, onError]);
 
   useEffect(() => {
     let cancelled = false;
@@ -266,19 +276,19 @@ export function GlbTrophy({
         }
         prepareScene(gltf.scene);
         applyTierLook(gltf.scene, rarity);
-        if (fitBounds) fitRootToBounds(gltf.scene, 0.12);
+        if (fitBounds) fitRootToBounds(gltf.scene, FRAME_PADDING);
         setObjectOpacity(gltf.scene, 0);
         setModel(gltf.scene);
-        onReady?.();
+        onReadyRef.current?.();
       })
       .catch(() => {
-        if (!cancelled) onError?.();
+        if (!cancelled) onErrorRef.current?.();
       });
 
     return () => {
       cancelled = true;
     };
-  }, [url, rarity, fitBounds, onReady, onError]);
+  }, [url, rarity, fitBounds]);
 
   useEffect(() => {
     fadeRef.current = 0;
@@ -302,7 +312,7 @@ export function GlbTrophy({
   return (
     <>
       <RoomEnv />
-      <KeySpot />
+      <KeySpot targetY={fitBounds ? 0 : 0.45} />
       <directionalLight
         color={0xccdfff}
         intensity={1.2}
@@ -313,15 +323,17 @@ export function GlbTrophy({
         intensity={0.6}
         position={[1.4, 1.1, -1.5]}
       />
-      <directionalLight
-        color={rimColor}
-        intensity={0.35}
-        position={[0.35, 0.9, -1.9]}
-      />
+      {rarity === "Legendary" ? null : (
+        <directionalLight
+          color={rimColor}
+          intensity={0.35}
+          position={[0.35, 0.9, -1.9]}
+        />
+      )}
       {size === "large" ? (
         <mesh
           rotation-x={-Math.PI / 2}
-          position={[0, frame.y, 0]}
+          position={[0, fitBounds ? -FITTED_SIZE / 2 : frame.y, 0]}
           receiveShadow
         >
           <planeGeometry args={[3, 3]} />

@@ -347,7 +347,7 @@
   /* Mockup modal is min(1160px); 560px clips the locked S3 line. */
   max-width: min(1160px, calc(100% - 80px));
   margin: 96px auto 40px;
-  border: 1px solid var(--cream);
+  border: 1px solid var(--sa-c4);
   overflow: hidden;
 }
 
@@ -364,7 +364,7 @@
 .sa[data-auth-hold] .sa-lines[data-fit="code"],
 .sa[data-auth-hold] .sa-lines[data-fit="up"],
 .sa[data-auth-hold] .sa-lines[data-fit="in"] {
-  font-size: min(15.4vw, 176px);
+  font-size: 15.56vw;
 }
 
 .sa-hold-head {
@@ -404,12 +404,25 @@
 
 @media (max-width: 760px) {
   .sa-hold-card {
-    margin: 20px;
+    margin: 76px 20px 24px;
     max-width: none;
   }
 
   .sa[data-auth-hold] {
-    padding: 18px 20px 24px;
+    min-height: 0;
+    padding: 12px 16px 16px;
+  }
+
+  .sa[data-auth-hold] .sa-input {
+    height: 52px;
+  }
+
+  .sa[data-auth-hold] .sa-btn {
+    height: 52px;
+  }
+
+  .sa[data-auth-hold] .sa-go {
+    padding-top: 12px;
   }
 
   .sa {
@@ -424,7 +437,12 @@
 
   .sa[data-auth-hold] {
     min-height: 0;
-    padding: 18px 20px 24px;
+    padding: 12px 16px 16px;
+  }
+
+  .sa[data-auth-hold] .sa-band {
+    margin-top: 28px;
+    gap: 20px;
   }
 
   .sa-top {
@@ -445,13 +463,13 @@
   }
 
   .sa[data-auth-hold] .sa-h1 {
-    margin-top: 20px;
+    margin-top: 8px;
   }
 
   .sa[data-auth-hold] .sa-lines[data-fit="code"],
   .sa[data-auth-hold] .sa-lines[data-fit="up"],
   .sa[data-auth-hold] .sa-lines[data-fit="in"] {
-    font-size: 14.2vw;
+    font-size: 16.42vw;
   }
 
   .sa-lines[data-fit="in"] {

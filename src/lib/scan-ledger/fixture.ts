@@ -1,4 +1,4 @@
-import { nextTierCopy } from "@/lib/scan-tiers";
+import { nextTierCopy, type TrophyTierName } from "@/lib/scan-tiers";
 import {
   SCAN_STUB,
   type ActivePlate,
@@ -157,7 +157,37 @@ function withFar(
   };
 }
 
-export function fixtureSnapshot(state: ScanViewState): ScanLedgerSnapshot {
+function silverForTrophyTier(tier: TrophyTierName): PlateCell[] {
+  switch (tier) {
+    case "Basic":
+      return silverAlmost({ plate: 19, cell: "verified", extraVerified: [19] });
+    case "Rare":
+      return silverAlmost({
+        plate: 19,
+        cell: "verified",
+        extraVerified: [
+          1, 4, 7, 12, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+        ],
+      });
+    case "Pro":
+      return silverAlmost({
+        plate: 19,
+        cell: "verified",
+        extraVerified: [1, 4, 7, 12, 19],
+      });
+    case "Legendary":
+      return silverLegendary();
+    default: {
+      const _exhaustive: never = tier;
+      return _exhaustive;
+    }
+  }
+}
+
+export function fixtureSnapshot(
+  state: ScanViewState,
+  options: { trophyTier?: TrophyTierName } = {},
+): ScanLedgerSnapshot {
   switch (state) {
     case "signed-out-book":
     case "signed-out-code":
@@ -205,17 +235,11 @@ export function fixtureSnapshot(state: ScanViewState): ScanLedgerSnapshot {
           hitPlate: state === "collected" ? 7 : null,
         }),
       ]);
-    case "tier-reached":
+    case "tier-reached": {
+      const trophyTier = options.trophyTier ?? "Pro";
       return {
         ...withFar(16, [
-          silverRow(
-            silverAlmost({
-              plate: 19,
-              cell: "verified",
-              extraVerified: [1, 4, 7, 12, 19],
-            }),
-            { currentPlate: 19 },
-          ),
+          silverRow(silverForTrophyTier(trophyTier), { currentPlate: 19 }),
         ]),
         activePlate: {
           plate: "19",
@@ -223,7 +247,9 @@ export function fixtureSnapshot(state: ScanViewState): ScanLedgerSnapshot {
           title: "Plate 19",
           bookTitle: SAMPLE_SILVER.title,
         },
+        trophyTier,
       };
+    }
     case "legendary-found":
       return {
         ...withFar(9, [
@@ -239,6 +265,7 @@ export function fixtureSnapshot(state: ScanViewState): ScanLedgerSnapshot {
           title: "Plate 31",
           bookTitle: SAMPLE_SILVER.title,
         },
+        trophyTier: options.trophyTier ?? "Legendary",
       };
     default: {
       const _exhaustive: never = state;

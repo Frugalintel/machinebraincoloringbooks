@@ -62,4 +62,57 @@ describe("ScanLedgerView wallet and photo register", () => {
     expect(screen.getByText("Wallet · from your points")).toBeInTheDocument();
     expect(screen.queryByText(/XP/i)).toBeNull();
   });
+
+  it("hides the +1 counted chip when the live photo path has no plate", () => {
+    const snapshot: ScanLedgerSnapshot = {
+      ...fixtureSnapshot("photo"),
+      sample: false,
+      activePlate: null,
+    };
+    const { container } = renderView("photo", snapshot);
+    expect(screen.queryByText("+1 counted")).toBeNull();
+    expect(container.querySelector(".vchip")).toBeNull();
+  });
+
+  it("keeps the sample +1 counted chip on the photo preview fixture", () => {
+    renderView("photo");
+    expect(screen.getByText("+1 counted")).toBeInTheDocument();
+    expect(
+      screen.getByText(/The Silver Citadel · PL\. 07/i),
+    ).toBeInTheDocument();
+  });
+
+  it("uses the mockup now-cell labels on the highlighted plate", () => {
+    renderView("code-only-before");
+    expect(
+      screen.getByTitle("Plate 07: code counted, photo still open"),
+    ).toBeInTheDocument();
+    renderView("collected");
+    expect(
+      screen.getByTitle("Plate 07: collected already, code and page"),
+    ).toBeInTheDocument();
+    renderView("tier-reached");
+    expect(
+      screen.getByTitle("Plate 19: photo just verified, 2 pts"),
+    ).toBeInTheDocument();
+  });
+
+  it("uses Basic chrome on the Basic trophy fixture", () => {
+    renderView(
+      "tier-reached",
+      fixtureSnapshot("tier-reached", { trophyTier: "Basic" }),
+    );
+    expect(screen.getByRole("heading", { name: "Basic." })).toBeInTheDocument();
+    expect(screen.getByText(/Trophy · Basic/i)).toBeInTheDocument();
+    expect(screen.getByText(/moves up to Basic/)).toBeInTheDocument();
+    expect(screen.queryByText(/moves up to Pro/)).toBeNull();
+  });
+
+  it("captions the legendary trophy as a hidden page", () => {
+    renderView("legendary-found");
+    expect(
+      screen.getAllByText("PLATE 31 · HIDDEN PAGE").length,
+    ).toBeGreaterThan(0);
+    expect(screen.queryByText("PLATE 31 · 9TD4 · CODE + PHOTO")).toBeNull();
+  });
 });
