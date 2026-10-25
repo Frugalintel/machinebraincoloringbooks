@@ -340,7 +340,7 @@ export interface Review {
   helpful_count: number;
   created_at: string;
   updated_at: string;
-  // Joined from profiles
+  // Optional name from a separate profiles read. reviews has no profiles FK.
   user?: {
     display_name?: string;
     avatar_url?: string;

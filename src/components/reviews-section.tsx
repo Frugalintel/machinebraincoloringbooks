@@ -98,7 +98,7 @@ function ReviewCard({
   onDelete: () => void;
   onHelpful: () => void;
 }) {
-  const displayName = review.user?.display_name || "Anonymous";
+  const displayName = review.user?.display_name?.trim() || "Reader";
   const initials = displayName.substring(0, 2).toUpperCase();
   const date = new Date(review.created_at).toLocaleDateString("en-US", {
     year: "numeric",
