@@ -9,6 +9,7 @@ export const COLLECTIBLES_FIXTURE_OWNED: Record<string, string> = {
   "cyber-spaniel": "2026-10-09T12:00:00.000Z",
   "atomic-poodle": "2026-10-21T12:00:00.000Z",
   "alpha-wing": "2026-10-14T12:00:00.000Z",
+  "omega-station": "2026-10-16T12:00:00.000Z",
 };
 
 export type CollectiblesPreview = "some" | "none" | "out";

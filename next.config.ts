@@ -16,9 +16,20 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
+    const modelCache = {
+      source: "/models/:path*",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=31536000, immutable",
+        },
+      ],
+    };
+
     // Skip CSP in development to allow local Supabase connections
     if (isDev) {
       return [
+        modelCache,
         {
           source: "/:path*",
           headers: [
@@ -45,6 +56,7 @@ const nextConfig: NextConfig = {
 
     // Production security headers with strict CSP
     return [
+      modelCache,
       {
         source: "/:path*",
         headers: [
@@ -80,7 +92,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self'",
               "img-src 'self' data: blob: https://github.com https://*.supabase.co",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+              "connect-src 'self' blob: https://*.supabase.co wss://*.supabase.co",
               "frame-ancestors 'self'",
               "base-uri 'self'",
               "form-action 'self'",
