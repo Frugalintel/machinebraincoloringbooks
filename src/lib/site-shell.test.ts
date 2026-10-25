@@ -115,10 +115,11 @@ describe("headerVariantFor", () => {
       "/stories",
       "/about",
     ]);
-    expect(overlayLinksFor("/").map((link) => link.name)).toEqual([
-      "Books",
-      "Worlds",
-      "About",
+    expect(overlayLinksFor("/").map((link) => [link.name, link.href])).toEqual([
+      ["Books", "/store"],
+      ["Worlds", "/store"],
+      ["Stories", "/stories"],
+      ["About", "/about"],
     ]);
   });
 

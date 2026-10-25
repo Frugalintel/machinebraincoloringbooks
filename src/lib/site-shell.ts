@@ -62,10 +62,11 @@ export function isAdminPath(pathname: string): boolean {
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
-/** Over-plate nav links. Home keeps R-E2's Worlds; /auth (Studio S3) has Stories. */
+/** Over-plate nav on Home. Worlds stays /store; Stories sits between Worlds and About. */
 export const HOME_OVERLAY_LINKS: readonly SiteLink[] = [
   { name: "Books", href: "/store" },
   { name: "Worlds", href: "/store" },
+  { name: "Stories", href: "/stories" },
   { name: "About", href: "/about" },
 ];
 
