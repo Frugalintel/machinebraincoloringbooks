@@ -2,25 +2,33 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties, FormEvent, ReactNode } from "react";
+import {
+  useRef,
+  type CSSProperties,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { RunningHead } from "@/components/home-plate";
 import {
   CAMERA_BLOCKED,
   CAMERA_INSECURE,
+  CELL_LABEL,
+  PHOTO_OPTIONAL,
   SCAN_BOOK_TROPHY_LABEL,
   SCAN_OPT_LINE,
-  SCAN_SAMPLE_NOTE,
+  SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
   codeInMessage,
   collectedMessage,
   folioLine,
   invalidCodeMessage,
-  legendaryCaption,
-  legendaryRarityNote,
   plateLabel,
+  sampleNote,
   scanChrome,
   storyBarWidth,
+  tierTrophyPosterUrl,
   tierTrophyUrl,
+  trophyPlateCaption,
   type BookRow,
   type PlateCell,
   type ScanLedgerSnapshot,
@@ -40,15 +48,6 @@ const CELL_CLASS: Record<PlateCell, string> = {
   verified: "f",
   now: "now",
   legendary: "leg",
-};
-
-const CELL_LABEL: Record<PlateCell, string> = {
-  empty: "not added",
-  code: "code, 1 pt",
-  pending: "photo waiting for a check",
-  verified: "code + verified photo, 2 pts",
-  now: "adding now",
-  legendary: "hidden page, 2 pts",
 };
 
 /** Fitted sizes from the locked C-ledger mockups (`--fd` / `--fm`). */
@@ -115,9 +114,17 @@ export function ScanLedgerView({
   const chrome = scanChrome(state);
   const plate = snapshot.activePlate;
   const folio = plate ? folioLine(plate.plate, plate.code) : "";
-  const wallet = snapshot.wallet.available
-    ? (snapshot.wallet.points ?? 0)
-    : null;
+  const showPhotoRun = state === "photo" || state === "photo-preview";
+  const hideWallet = snapshot.signedIn && !snapshot.wallet.available;
+  const wallet = !snapshot.signedIn
+    ? 0
+    : snapshot.wallet.available
+      ? (snapshot.wallet.points ?? 0)
+      : 0;
+  const walletLabel =
+    snapshot.wallet.source === "xp"
+      ? SCAN_WALLET_FROM_POINTS
+      : SCAN_WALLET_LABEL;
   const story = snapshot.story;
   const balFirst =
     state === "code-added" ||
@@ -167,42 +174,51 @@ export function ScanLedgerView({
             >
               {chrome.h1}
             </h1>
-            <div className="bal">
-              <p className="bn">
-                <b>{wallet == null ? "—" : wallet}</b>
-                <span className="mono">
-                  pts
-                  <span className="wl">{SCAN_WALLET_LABEL}</span>
-                  {chrome.tag ? (
-                    <span className="btag mono">{chrome.tag}</span>
-                  ) : null}
-                </span>
-              </p>
-              <div className="bnote">
-                {story ? (
-                  <p className="next mono">
-                    <span>{story.title}</span>
-                    <span className="bar">
-                      <i
-                        style={{
-                          width: `${storyBarWidth(wallet, story.costPts)}%`,
-                        }}
-                      />
-                    </span>
-                    <span>{story.costPts} pts</span>
-                  </p>
-                ) : null}
-                {snapshot.wallet.source === "xp" ? (
-                  <p className="note-xp mono">
-                    Shown from XP · wallet not on this build
-                  </p>
-                ) : null}
-                {!snapshot.wallet.available ? (
-                  <p className="note-xp mono">Wallet · not on this build</p>
-                ) : null}
+            {showPhotoRun ? (
+              <>
+                <div className="run vrow">
+                  <span className="vchip mono ok">
+                    <b>+1 counted</b>{" "}
+                    {`${plate?.bookTitle ?? "The Silver Citadel"} · PL. ${plate?.plate ?? "07"}`}
+                  </span>
+                  <span className="mono">{PHOTO_OPTIONAL}</span>
+                </div>
                 {chrome.lede ? <p className="lede">{chrome.lede}</p> : null}
+              </>
+            ) : hideWallet ? (
+              chrome.lede ? (
+                <p className="lede">{chrome.lede}</p>
+              ) : null
+            ) : (
+              <div className="bal">
+                <p className="bn">
+                  <b>{wallet}</b>
+                  <span className="mono">
+                    pts
+                    <span className="wl">{walletLabel}</span>
+                    {chrome.tag ? (
+                      <span className="btag mono">{chrome.tag}</span>
+                    ) : null}
+                  </span>
+                </p>
+                <div className="bnote">
+                  {story ? (
+                    <p className="next mono">
+                      <span>{story.title}</span>
+                      <span className="bar">
+                        <i
+                          style={{
+                            width: `${storyBarWidth(wallet, story.costPts)}%`,
+                          }}
+                        />
+                      </span>
+                      <span>{story.costPts} pts</span>
+                    </p>
+                  ) : null}
+                  {chrome.lede ? <p className="lede">{chrome.lede}</p> : null}
+                </div>
               </div>
-            </div>
+            )}
             <div className="books">
               {snapshot.books.map((book) => (
                 <BookBlock key={book.id} book={book} />
@@ -234,7 +250,7 @@ export function ScanLedgerView({
               </span>
             </p>
             {snapshot.sample ? (
-              <p className="sample smpl">{SCAN_SAMPLE_NOTE}</p>
+              <p className="sample smpl">{sampleNote(state)}</p>
             ) : null}
           </div>
         </div>
@@ -549,25 +565,21 @@ function LeftPanel({
             <div className="pn">
               <ScanTrophy
                 url={trophyUrl}
+                posterUrl={tierTrophyPosterUrl(trophyTier ?? "Pro")}
                 rarity={trophyTier ?? "Rare"}
+                stamp={chrome.stamp}
                 caption={
-                  state === "legendary-found"
-                    ? legendaryCaption(
-                        snapshot.books[0]?.legendaryFoundAt ?? 23,
-                        maxBookPoints(snapshot.books[0]?.plateCount ?? 40),
-                      )
-                    : `${trophyTier ?? "Pro"} · example trophy`
-                }
-                note={
-                  state === "legendary-found"
-                    ? legendaryRarityNote(
-                        maxBookPoints(snapshot.books[0]?.plateCount ?? 40),
-                      )
-                    : "Example art · placeholder"
+                  plate
+                    ? trophyPlateCaption(plate.plate, plate.code)
+                    : (chrome.caption ?? "")
                 }
                 reducedMotion={reducedMotion}
               />
-              <p className="pcap mono">{chrome.caption}</p>
+              <p className="pcap mono">
+                {plate
+                  ? trophyPlateCaption(plate.plate, plate.code)
+                  : chrome.caption}
+              </p>
             </div>
           ) : (
             <PlatePanel
@@ -612,6 +624,7 @@ function CodeForm({
   handlers: ScanLedgerHandlers;
 }) {
   const bad = state === "invalid";
+  const inputRef = useRef<HTMLInputElement>(null);
   const prompt =
     notice ??
     (state === "invalid"
@@ -633,16 +646,17 @@ function CodeForm({
 
   return (
     <form className="cf" onSubmit={handlers.onSubmitCode}>
-      <p className="mono flab">
-        {plate
-          ? `${plate.bookTitle} · plate ${plate.plate}`
-          : "Code by the page number"}
-      </p>
+      {plate ? (
+        <p className="mono flab">
+          {`${plate.bookTitle} · plate ${plate.plate}`}
+        </p>
+      ) : null}
       <div className={`cin c ${bad ? "bad" : ""}`}>
         <label className="mono" htmlFor="pc-c">
           Code by the page number
         </label>
         <input
+          ref={inputRef}
           id="pc-c"
           value={typedCode}
           placeholder="Code"
@@ -680,6 +694,26 @@ function CodeForm({
               onClick={handlers.onAnotherCode}
             >
               Enter another code
+            </button>
+          </>
+        ) : state === "invalid" ? (
+          <>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                handlers.onCodeChange("");
+                inputRef.current?.focus();
+              }}
+            >
+              Try again <span aria-hidden="true">→</span>
+            </button>
+            <button
+              type="button"
+              className="quiet"
+              onClick={() => handlers.onMode("qr")}
+            >
+              Scan a back cover
             </button>
           </>
         ) : (

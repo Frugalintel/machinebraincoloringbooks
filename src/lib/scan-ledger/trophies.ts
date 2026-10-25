@@ -17,11 +17,25 @@ export const TIER_TROPHY_MODELS = {
   [TIER_NAME_LEGENDARY]: "/models/ferris-wheel-legendary.v1.glb",
 } as const;
 
+export const TIER_TROPHY_POSTERS = {
+  [TIER_NAME_BASIC]: "/models/ferris-wheel-basic.webp",
+  [TIER_NAME_PRO]: "/models/ferris-wheel-pro.webp",
+  [TIER_NAME_RARE]: "/models/ferris-wheel-rare.webp",
+  [TIER_NAME_LEGENDARY]: "/models/ferris-wheel-legendary.webp",
+} as const;
+
 export function tierTrophyUrl(
   tier: TrophyTierName | "No tier yet",
 ): string | null {
   if (tier === "No tier yet") return null;
   return TIER_TROPHY_MODELS[tier];
+}
+
+export function tierTrophyPosterUrl(
+  tier: TrophyTierName | "No tier yet",
+): string | null {
+  if (tier === "No tier yet") return null;
+  return TIER_TROPHY_POSTERS[tier];
 }
 
 export function legendaryCaption(foundAt: number | null, _max: number): string {

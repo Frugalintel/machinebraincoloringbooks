@@ -36,7 +36,11 @@ export function AuthModal() {
         : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    dialog?.querySelector<HTMLInputElement>("input")?.focus();
+    const holdKind = authModal.hold?.kind;
+    const isHold = holdKind === "book" || holdKind === "page-plus";
+    if (!isHold) {
+      dialog?.querySelector<HTMLInputElement>("input")?.focus();
+    }
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -64,7 +68,7 @@ export function AuthModal() {
       document.body.style.overflow = previousOverflow;
       returnFocus?.focus();
     };
-  }, [authModal.isOpen, closeAuthModal]);
+  }, [authModal.isOpen, authModal.hold, closeAuthModal]);
 
   const attempt: AuthAttempt = async (mode, email, password) => {
     if (mode === "login") {
@@ -89,6 +93,9 @@ export function AuthModal() {
     return null;
   }
 
+  const holdKind = authModal.hold?.kind;
+  const isHold = holdKind === "book" || holdKind === "page-plus";
+
   return (
     <div
       ref={dialogRef}
@@ -96,39 +103,61 @@ export function AuthModal() {
       aria-modal="true"
       aria-labelledby={headingId}
       data-testid="auth-modal"
-      className="fixed inset-0 z-[10010] overflow-y-auto overscroll-contain bg-background"
+      className={
+        isHold
+          ? "fixed inset-0 z-[10010] overflow-y-auto overscroll-contain"
+          : "fixed inset-0 z-[10010] overflow-y-auto overscroll-contain bg-background"
+      }
     >
-      <AuthPanel
-        context="modal"
-        headingId={headingId}
-        view={form.view}
-        code={authModal.code}
-        hold={authModal.hold}
-        onModeChange={form.changeMode}
-        values={form.values}
-        onValueChange={form.setValue}
-        onSubmit={form.submitWith(attempt)}
-        loading={form.loading}
-        configured={isSupabaseConfigured}
-        fieldErrors={form.fieldErrors}
-        formError={form.formError}
-        top={
-          <div className="sa-top">
-            <BrandLockup
-              layout="horizontal"
-              wordmark="mono"
-              markSize={24}
-              ink="cream"
-              href={null}
-              className="[&>span]:!gap-3"
-              wordmarkClassName="text-[11px] tracking-[0.1em]"
-            />
-            <button type="button" className="sa-close" onClick={closeAuthModal}>
-              Close
-            </button>
-          </div>
-        }
-      />
+      {isHold ? <div className="sa-hold-scrim" aria-hidden="true" /> : null}
+      <div className={isHold ? "sa-hold-card" : undefined}>
+        <AuthPanel
+          context="modal"
+          headingId={headingId}
+          view={form.view}
+          code={authModal.code}
+          hold={authModal.hold}
+          registerHref="/auth?mode=register&next=%2Fscan"
+          onModeChange={form.changeMode}
+          values={form.values}
+          onValueChange={form.setValue}
+          onSubmit={form.submitWith(attempt)}
+          loading={form.loading}
+          configured={isSupabaseConfigured}
+          fieldErrors={form.fieldErrors}
+          formError={form.formError}
+          top={
+            isHold ? (
+              <button
+                type="button"
+                className="sa-close sa-mono"
+                onClick={closeAuthModal}
+              >
+                Close
+              </button>
+            ) : (
+              <div className="sa-top">
+                <BrandLockup
+                  layout="horizontal"
+                  wordmark="mono"
+                  markSize={24}
+                  ink="cream"
+                  href={null}
+                  className="[&>span]:!gap-3"
+                  wordmarkClassName="text-[11px] tracking-[0.1em]"
+                />
+                <button
+                  type="button"
+                  className="sa-close"
+                  onClick={closeAuthModal}
+                >
+                  Close
+                </button>
+              </div>
+            )
+          }
+        />
+      </div>
     </div>
   );
 }

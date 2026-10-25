@@ -111,6 +111,21 @@ export type ModeCopy = {
   heldAction: string;
 };
 
+export function authHoldBody(kind: AuthHoldKind): string | null {
+  switch (kind) {
+    case "book":
+      return AUTH_COPY.holdBookBody;
+    case "page-plus":
+      return AUTH_COPY.holdPageBody;
+    case "code":
+      return null;
+    default: {
+      const _exhaustive: never = kind;
+      return _exhaustive;
+    }
+  }
+}
+
 export function authModeCopy(mode: AuthMode): ModeCopy {
   switch (mode) {
     case "login":
@@ -163,6 +178,9 @@ export const AUTH_COPY = {
   invalidLoginField: "Check it and try again.",
   emailNotConfirmed: "Confirm your email first. The link is in your inbox.",
   genericError: "Something went wrong. Please try again.",
+  holdHead: "PL. 00 · Sign in",
+  holdBookBody: "Sign in or create an account to add this book and its unlock.",
+  holdPageBody: "Sign in or create an account and the point is yours.",
   networkError:
     "Sign in couldn’t reach the server. Check your connection and try again.",
 } as const;

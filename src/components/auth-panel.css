@@ -335,7 +335,83 @@
   margin-top: 0;
 }
 
+.sa-hold-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgb(15 15 15 / 0.8);
+}
+
+.sa-hold-card {
+  position: relative;
+  z-index: 1;
+  /* Mockup modal is min(1160px); 560px clips the locked S3 line. */
+  max-width: min(1160px, calc(100% - 80px));
+  margin: 96px auto 40px;
+  border: 1px solid var(--cream);
+  overflow: hidden;
+}
+
+.sa[data-auth-hold] {
+  min-height: 0;
+  overflow: visible;
+  padding: 24px 40px 36px;
+}
+
+.sa[data-auth-hold] .sa-h1 {
+  margin-top: 24px;
+}
+
+.sa[data-auth-hold] .sa-lines[data-fit="code"],
+.sa[data-auth-hold] .sa-lines[data-fit="up"],
+.sa[data-auth-hold] .sa-lines[data-fit="in"] {
+  font-size: min(15.4vw, 176px);
+}
+
+.sa-hold-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgb(242 234 216 / 0.62);
+}
+
+.sa-hold-head .sa-close {
+  font: 500 11px / 16px var(--sa-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sa[data-auth-hold] .sa-held {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.sa[data-auth-hold] .sa-hold-chip {
+  display: inline-flex;
+  border: 1px solid var(--cream);
+  color: var(--cream);
+  padding: 8px 12px;
+}
+
+.sa[data-auth-hold] .sa-input:focus-visible {
+  border-color: var(--cream);
+  background: var(--ink);
+  box-shadow:
+    0 0 0 2px var(--base),
+    0 0 0 4px var(--cream);
+}
+
 @media (max-width: 760px) {
+  .sa-hold-card {
+    margin: 20px;
+    max-width: none;
+  }
+
+  .sa[data-auth-hold] {
+    padding: 18px 20px 24px;
+  }
+
   .sa {
     --sa-m: 20px;
     min-height: 0;
@@ -344,6 +420,11 @@
 
   .sa[data-auth-context="modal"] {
     min-height: 100svh;
+  }
+
+  .sa[data-auth-hold] {
+    min-height: 0;
+    padding: 18px 20px 24px;
   }
 
   .sa-top {
@@ -361,6 +442,16 @@
 
   .sa-h1 {
     margin-top: 124px;
+  }
+
+  .sa[data-auth-hold] .sa-h1 {
+    margin-top: 20px;
+  }
+
+  .sa[data-auth-hold] .sa-lines[data-fit="code"],
+  .sa[data-auth-hold] .sa-lines[data-fit="up"],
+  .sa[data-auth-hold] .sa-lines[data-fit="in"] {
+    font-size: 14.2vw;
   }
 
   .sa-lines[data-fit="in"] {

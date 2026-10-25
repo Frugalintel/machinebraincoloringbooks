@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ScanPage from "@/app/scan/page";
@@ -88,5 +90,50 @@ describe("/scan preview fixtures", () => {
       undefined,
       expect.objectContaining({ kind: "book" }),
     );
+  });
+
+  it("shows a 0 wallet on the live signed-out page", () => {
+    render(<ScanPage />);
+    expect(screen.getByText("Wallet · for stories")).toBeInTheDocument();
+    expect(screen.getByText("0")).toBeInTheDocument();
+    expect(screen.queryByText(/not on this build/i)).toBeNull();
+    expect(screen.queryByText(/XP/i)).toBeNull();
+  });
+
+  it("shows Try again on invalid, without Add +1 or adding now", () => {
+    scan.search = "preview=invalid";
+    render(<ScanPage />);
+    expect(
+      screen.getByRole("button", { name: /try again/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /add \+1/i })).toBeNull();
+    expect(screen.queryByText(/adding now/i)).toBeNull();
+  });
+
+  it.each(["photo", "photo-preview"] as const)(
+    "shows the +1 counted chip on %s",
+    (state) => {
+      scan.search = `preview=${state}`;
+      render(<ScanPage />);
+      expect(screen.getByText("+1 counted")).toBeInTheDocument();
+      expect(
+        screen.getByText(/The Silver Citadel · PL\. 07/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/optional · \+1 more once verified/i),
+      ).toBeInTheDocument();
+    },
+  );
+});
+
+describe("/scan source guardrails", () => {
+  it("does not toast a red camera error; the Camera off state explains it", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/app/scan/scan-page-client.tsx"),
+      "utf8",
+    );
+    expect(source).toMatch(/setState\("camera-off"\)/);
+    expect(source).not.toMatch(/toastError\(msg\)/);
+    expect(source).not.toMatch(/Shown from XP/);
   });
 });
