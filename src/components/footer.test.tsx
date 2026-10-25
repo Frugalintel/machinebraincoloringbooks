@@ -22,7 +22,7 @@ vi.mock("next/navigation", () => ({
 
 describe("Footer", () => {
   beforeEach(() => {
-    nav.pathname = "/help";
+    nav.pathname = "/privacy";
   });
 
   it("renders grouped links, legal, and the F3 lockup", () => {
@@ -53,7 +53,7 @@ describe("Footer", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("hides on home (it has its own footer plate), auth, scan, review, and admin", () => {
+  it("hides on pages that own the HomeFooter plate, plus review and admin", () => {
     for (const path of [
       "/",
       "/auth",
@@ -63,12 +63,40 @@ describe("Footer", () => {
       "/stories",
       "/store",
       "/collectibles",
+      "/about",
+      "/help",
     ]) {
       nav.pathname = path;
       const { container, unmount } = render(<Footer />);
       expect(container).toBeEmptyDOMElement();
       unmount();
     }
+  });
+
+  it("stays visible on privacy and other full-chrome legal pages", () => {
+    for (const path of ["/privacy", "/terms", "/licenses", "/trophy-room"]) {
+      nav.pathname = path;
+      const { getByText, unmount } = render(<Footer />);
+      expect(getByText("Coloring books with secrets.")).toBeInTheDocument();
+      expect(getByText(/Est\. 2025/)).toBeInTheDocument();
+      unmount();
+    }
+  });
+
+  it("does not leak the customer footer after a client-side move to /help, then shows it on /privacy", () => {
+    nav.pathname = "/about";
+    const { container, rerender, unmount } = render(<Footer />);
+    expect(container).toBeEmptyDOMElement();
+
+    nav.pathname = "/help";
+    rerender(<Footer />);
+    expect(container).toBeEmptyDOMElement();
+
+    nav.pathname = "/privacy";
+    rerender(<Footer />);
+    expect(container.querySelector("footer.site-footer")).not.toBeNull();
+    expect(container.textContent).toMatch(/Coloring books with secrets/);
+    unmount();
   });
 
   it("lists Collectibles under Shop and Trophy Room under Unlocks", () => {
@@ -83,6 +111,29 @@ describe("Footer", () => {
     expect(
       within(unlocks).getByRole("link", { name: "Trophy Room" }),
     ).toHaveAttribute("href", "/trophy-room");
+
+    const help = screen.getByRole("navigation", { name: "Help" });
+    expect(within(help).getByRole("link", { name: "About" })).toHaveAttribute(
+      "href",
+      "/about",
+    );
+
+    const account = screen.getByRole("navigation", { name: "Account" });
+    expect(
+      within(account).getByRole("link", { name: "Sign in" }),
+    ).toHaveAttribute("href", "/auth?mode=login");
+    expect(
+      within(account).getByRole("link", { name: "Create account" }),
+    ).toHaveAttribute("href", "/auth?mode=register");
+    expect(
+      within(account).getByRole("link", { name: "Order lookup" }),
+    ).toHaveAttribute("href", "/orders/lookup");
+
+    expect(screen.getByRole("link", { name: "Licenses" })).toHaveAttribute(
+      "href",
+      "/licenses",
+    );
+    expect(screen.queryByText(/Est\. 2025/)).not.toBeInTheDocument();
   });
 
   it("does not paint orange fills or an orange Brain wordmark", () => {

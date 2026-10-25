@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import HelpLayout from "@/app/help/layout";
 import HelpPage from "@/app/help/page";
 import {
   HELP_CHIPS,
@@ -87,6 +88,19 @@ describe("Help (A · Index)", () => {
         .getAllByRole("button")
         .map((button) => button.textContent),
     );
+  });
+
+  it("owns the Take your time plate", () => {
+    const { container } = render(
+      <HelpLayout>
+        <HelpPage />
+      </HelpLayout>,
+    );
+
+    expect(container.querySelector("footer.ft")).not.toBeNull();
+    expect(container.textContent).toMatch(/Take your/);
+    expect(container.querySelector("footer.site-footer")).toBeNull();
+    expect(container.textContent).not.toMatch(/Coloring books with secrets/);
   });
 
   it("sends Sign in back to /help and sizes the step art", () => {

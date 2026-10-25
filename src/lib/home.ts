@@ -25,6 +25,10 @@ export const HOME_ROUTES = {
   help: "/help",
   privacy: "/privacy",
   terms: "/terms",
+  licenses: "/licenses",
+  signIn: "/auth?mode=login",
+  register: "/auth?mode=register",
+  orders: "/orders/lookup",
 } as const;
 
 export const HOME_ART = {
@@ -243,6 +247,15 @@ export const HOME_FOOTER_COPY = {
         { name: "FAQ", href: HOME_ROUTES.help },
         { name: "Contact", href: HOME_ROUTES.help },
         { name: "Shipping", href: HOME_ROUTES.help },
+        { name: "About", href: HOME_ROUTES.about },
+      ],
+    },
+    {
+      heading: "Account",
+      links: [
+        { name: "Sign in", href: HOME_ROUTES.signIn },
+        { name: "Create account", href: HOME_ROUTES.register },
+        { name: "Order lookup", href: HOME_ROUTES.orders },
       ],
     },
   ],
@@ -255,5 +268,6 @@ export const HOME_FOOTER_COPY = {
   legal: [
     { name: "Privacy", href: HOME_ROUTES.privacy },
     { name: "Terms", href: HOME_ROUTES.terms },
+    { name: "Licenses", href: HOME_ROUTES.licenses },
   ],
 } as const;

@@ -4,12 +4,6 @@
  * Orange is label color on near-black only.
  */
 
-/* The shared customer footer stays in the root layout; /about owns HomeFooter
- * and must not edit site-shell.ts (PR #35). Hide the unused chrome footer. */
-body:has(.about-a) footer:not(.ft) {
-  display: none;
-}
-
 .about-a .ft {
   margin-top: 0;
 }
@@ -276,6 +270,11 @@ body:has(.about-a) footer:not(.ft) {
   align-items: flex-end;
 }
 
+.about-a .spread-beyond .bimg-wrap {
+  position: absolute;
+  inset: 0;
+}
+
 .about-a .spread-beyond .bimg {
   object-fit: cover;
   object-position: 60% 50%;
@@ -468,9 +467,12 @@ body:has(.about-a) footer:not(.ft) {
     min-height: 900px;
   }
 
-  .about-a .spread-beyond .bimg {
-    bottom: auto;
+  .about-a .spread-beyond .bimg-wrap {
+    inset: 0 0 auto 0;
     height: 52%;
+  }
+
+  .about-a .spread-beyond .bimg {
     object-position: 68% 50%;
   }
 

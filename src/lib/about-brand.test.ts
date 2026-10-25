@@ -70,6 +70,12 @@ describe("About copy and assets", () => {
     );
   });
 
+  it("does not hide the customer footer with a :has() rule", () => {
+    const css = read("src/app/about/about.css");
+    expect(css).not.toMatch(/:has\(/);
+    expect(css).not.toMatch(/footer:not\(\.ft\)/);
+  });
+
   it("keeps orange to small labels on near-black", () => {
     const css = read("src/app/about/about.css");
     const orange = [

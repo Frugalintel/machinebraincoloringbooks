@@ -310,7 +310,12 @@
   border-color: var(--cream);
 }
 
-.help-grp {
+.help-a .ft {
+  margin-top: 0;
+}
+
+.help-grp,
+.help-topic {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: 48px;
@@ -534,7 +539,8 @@ html:has(.help-a) {
     display: none;
   }
 
-  .help-grp {
+  .help-grp,
+  .help-topic {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
     padding: 36px 0;
@@ -560,10 +566,6 @@ html:has(.help-a) {
 }
 
 @media (max-width: 360px) {
-  .help-h1 {
-    font-size: 32vw;
-  }
-
   .help-fx {
     font-size: 11px;
   }

@@ -12,10 +12,10 @@ export const HELP_SAMPLE_CODE = "SC07-K4M9" as const;
 
 export const HELP_ART = {
   pageLine: {
-    src: "/help/page-line.webp",
+    src: "/help/page-half.webp",
     width: 1200,
     height: 1553,
-    alt: "Sample printed page, in line, cropped to the foot",
+    alt: "Sample printed page, art on the left and paper on the right, cropped to the foot",
   },
   pageColor: {
     src: "/help/page-half.webp",
@@ -56,7 +56,7 @@ export const HELP_CONTACT_EYE = {
 export const HELP_CONTACT_H = "Write in." as const;
 
 export const HELP_CONTACT_LEAD =
-  "If your question isn't here, write to a person. Include the book title and the plate number if it is about a page.";
+  "If your question isn\u2019t here, write to a person. Include the book title and the plate number if it is about a page.";
 
 export type HelpTopicId =
   | "books"
@@ -131,8 +131,6 @@ export const HELP_CHIPS: readonly { id: HelpChipId; label: string }[] = [
   { id: "orders", label: "Orders" },
 ];
 
-const printedAtTheFoot = HOME_ENTER_COPY.lead.split(". ")[0] + ".";
-
 /** Register copy from home, then the collectible that opens with the book. */
 export const HELP_REGISTER_BODY = HOME_ENTER_COPY.register.replace(
   /\.$/,
@@ -151,21 +149,21 @@ export const HELP_STEPS: readonly HelpStep[] = [
     n: "02",
     label: "+1 point",
     title: "Enter the page code",
-    body: `${printedAtTheFoot} The code is +1 point. Capitals don't matter, and each page counts once.`,
+    body: "Every page has a code, printed at the foot beside the plate number, the way a page number would be. Enter it and the page counts one point.",
     art: "code",
   },
   {
     n: "03",
     label: "+1 more, once verified",
     title: "Add a photo",
-    body: "Optional. Photograph the whole colored page, flat. It is +1 more once verified, so a page is worth 2 at most. Pending means the photo is waiting for a check.",
+    body: "Optional. Photograph the colored page, whole and flat. Once the photo is verified the page counts one more. Two points a page at most.",
     art: "photo",
   },
   {
     n: "04",
     label: "Trophy and wallet",
     title: "Points add up",
-    body: "Each point counts toward this book's trophy tiers, Basic, then Pro, then Rare, and goes into a separate wallet for stories. Spending never lowers a tier. Legendary is a hidden page that differs per reader. Its tag keeps the book's points at the time you found it, and lower is rarer.",
+    body: "Each point counts toward this book\u2019s trophy, from Basic to Pro to Rare, and goes into your wallet for stories. Spending never lowers a tier.",
     art: "trophy",
   },
 ];
@@ -226,7 +224,7 @@ export const HELP_FAQ: readonly HelpGroup[] = [
       },
       {
         id: "qr-wont",
-        question: "The back-cover QR won't scan.",
+        question: "The back-cover QR won\u2019t scan.",
         answer: [
           [
             text(
@@ -265,7 +263,7 @@ export const HELP_FAQ: readonly HelpGroup[] = [
             text("Open Scan and choose "),
             link(HOME_ROUTES.enterCode, "Enter a code"),
             text(
-              ", then type it in. Capitals don't matter. A code adds one point to its book.",
+              ", then type it in. Capitals don\u2019t matter. A code adds one point to its book.",
             ),
           ],
         ],
@@ -283,7 +281,7 @@ export const HELP_FAQ: readonly HelpGroup[] = [
       },
       {
         id: "invalid",
-        question: "It says the code isn't valid.",
+        question: "It says the code isn\u2019t valid.",
         answer: [
           [
             text(
@@ -341,7 +339,7 @@ export const HELP_FAQ: readonly HelpGroup[] = [
         answer: [
           [
             text(
-              "Your photo is waiting for a check. The code's point is already counted; the second arrives once the photo is verified. ",
+              "Your photo is waiting for a check. The code\u2019s point is already counted; the second arrives once the photo is verified. ",
             ),
             placeholder(HELP_PLACEHOLDERS[2]),
           ],
@@ -349,7 +347,7 @@ export const HELP_FAQ: readonly HelpGroup[] = [
       },
       {
         id: "camera",
-        question: "The camera won't open.",
+        question: "The camera won\u2019t open.",
         answer: [
           [
             text(
@@ -373,7 +371,7 @@ export const HELP_FAQ: readonly HelpGroup[] = [
         answer: [
           [
             text(
-              "Every point counts twice: toward this book's trophy, and into your wallet for stories. Spending wallet points on a story never lowers a tier.",
+              "Every point counts twice: toward this book\u2019s trophy, and into your wallet for stories. Spending wallet points on a story never lowers a tier.",
             ),
           ],
         ],
@@ -384,7 +382,7 @@ export const HELP_FAQ: readonly HelpGroup[] = [
         answer: [
           [
             text(
-              "Each book has its own trophy. It moves from Basic to Pro to Rare as the book's points add up. ",
+              "Each book has its own trophy. It moves from Basic to Pro to Rare as the book\u2019s points add up. ",
             ),
             placeholder(HELP_PLACEHOLDERS[3]),
           ],
@@ -396,7 +394,7 @@ export const HELP_FAQ: readonly HelpGroup[] = [
         answer: [
           [
             text(
-              "One page in your copy is hidden, and it is a different page for each reader. Find it and the trophy becomes Legendary. Its tag keeps the book's points at the time you found it; lower is rarer.",
+              "One page in your copy is hidden, and it is a different page for each reader. Find it and the trophy becomes Legendary. Its tag keeps the book\u2019s points at the time you found it; lower is rarer.",
             ),
           ],
         ],
