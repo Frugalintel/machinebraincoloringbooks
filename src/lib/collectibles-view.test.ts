@@ -203,15 +203,20 @@ describe("reader states", () => {
     });
   });
 
-  it("leaves a story or achievement as plain text when nothing matches", () => {
-    expect(storyRef("missing-story", [])).toEqual({ label: "missing-story" });
+  it("links a catalog title and omits a story or achievement with no safe match", () => {
+    expect(storyRef("missing-story", [])).toBeNull();
     expect(
-      storyRef("story-1", [{ id: "story-1", title: "Last Light" }]),
+      storyRef("story-1", [{ id: "story-1", title: "story-1" }]),
+    ).toBeNull();
+    expect(
+      storyRef("story-1", [
+        { id: "story-1", title: "Last Light at Far Station" },
+      ]),
     ).toEqual({
-      label: "Last Light",
+      label: "Last Light at Far Station",
       href: "/stories/story-1",
     });
-    expect(achievementRef("ach-missing", [])).toEqual({ label: "ach-missing" });
+    expect(achievementRef("ach-missing", [])).toBeNull();
     expect(
       achievementRef("ach-01", [{ id: "ach-01", title: "First Splash" }]),
     ).toEqual({ label: "First Splash", href: "/achievements#ach-01" });
@@ -223,10 +228,7 @@ describe("reader states", () => {
       }),
     );
     const houndBay = view.sets[0]?.bays[1];
-    expect(houndBay?.lines).toEqual([
-      { kind: "opens", ref: { label: "missing-story" } },
-    ]);
-    expect(houndBay?.lines[0]?.ref.href).toBeUndefined();
+    expect(houndBay?.lines).toEqual([]);
   });
 
   it("filters a set from ?set= and keeps the page when the key is unknown", () => {

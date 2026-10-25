@@ -11,6 +11,8 @@ interface TrophyModelProps {
   autoRotate?: boolean;
   entropy?: number; // 0-1, how aged/dusty the trophy is
   season?: Season; // Current season for visual effects
+  /** Vitrine lamp: a dark-grey base with falloff, not a flat black disc. */
+  softBase?: boolean;
 }
 
 // Rarity color mapping (matches existing rarityColors in collectibles page)
@@ -58,6 +60,7 @@ export function TrophyModel({
   autoRotate = true,
   entropy = 0,
   season = "Summer",
+  softBase = false,
 }: TrophyModelProps) {
   const groupRef = useRef<Group>(null);
   const gemRef = useRef<Mesh>(null);
@@ -121,9 +124,17 @@ export function TrophyModel({
       <mesh position={[0, -0.5, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.4, 0.5, 0.3, 32]} />
         <meshStandardMaterial
-          color={applyEffectsToColor("#1A1A19", entropy * 0.5, seasonMod.tint)}
-          metalness={Math.max(0.8 - metalnessModifier, 0.3)}
-          roughness={Math.min(0.2 + roughnessModifier * 0.5, 0.8)}
+          color={applyEffectsToColor(
+            softBase ? "#C4BFB4" : "#1A1A19",
+            entropy * 0.5,
+            seasonMod.tint,
+          )}
+          metalness={softBase ? 0.04 : Math.max(0.8 - metalnessModifier, 0.3)}
+          roughness={
+            softBase ? 0.92 : Math.min(0.2 + roughnessModifier * 0.5, 0.8)
+          }
+          emissive={softBase ? "#3A3832" : "#000000"}
+          emissiveIntensity={softBase ? 0.4 : 0}
         />
       </mesh>
 
@@ -131,9 +142,17 @@ export function TrophyModel({
       <mesh position={[0, -0.25, 0]} castShadow>
         <cylinderGeometry args={[0.35, 0.4, 0.2, 32]} />
         <meshStandardMaterial
-          color={applyEffectsToColor("#21211F", entropy * 0.5, seasonMod.tint)}
-          metalness={Math.max(0.9 - metalnessModifier, 0.4)}
-          roughness={Math.min(0.1 + roughnessModifier * 0.5, 0.7)}
+          color={applyEffectsToColor(
+            softBase ? "#8A857C" : "#21211F",
+            entropy * 0.5,
+            seasonMod.tint,
+          )}
+          metalness={softBase ? 0.06 : Math.max(0.9 - metalnessModifier, 0.4)}
+          roughness={
+            softBase ? 0.88 : Math.min(0.1 + roughnessModifier * 0.5, 0.7)
+          }
+          emissive={softBase ? "#24221E" : "#000000"}
+          emissiveIntensity={softBase ? 0.3 : 0}
         />
       </mesh>
 

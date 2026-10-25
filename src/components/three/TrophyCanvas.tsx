@@ -74,10 +74,16 @@ export function TrophyCanvas({
   // Get seasonal modifier for particles
   const seasonMod = useMemo(() => getSeasonalModifier(season), [season]);
 
-  // Camera position based on size
-  const cameraPosition: [number, number, number] = isSmall
-    ? [0, 0.5, 3]
-    : [0, 0.8, 4];
+  // Vitrine frames the shared mesh. Other pages keep the original camera.
+  const cameraPosition: [number, number, number] = transparent
+    ? isSmall
+      ? [0, 0.28, 4.6]
+      : [0, 0.08, 2.85]
+    : isSmall
+      ? [0, 0.5, 3]
+      : [0, 0.8, 4];
+  const lookAtY = transparent ? (isSmall ? 0.18 : 0.48) : 0;
+  const fov = transparent ? (isSmall ? 34 : 32) : isSmall ? 40 : 50;
 
   if (!mounted) {
     return (
@@ -121,7 +127,7 @@ export function TrophyCanvas({
       <Canvas
         camera={{
           position: cameraPosition,
-          fov: isSmall ? 40 : 50,
+          fov,
         }}
         frameloop="always"
         gl={{
@@ -138,7 +144,8 @@ export function TrophyCanvas({
           left: 0,
           background: "transparent",
         }}
-        onCreated={({ gl, scene }) => {
+        onCreated={({ gl, scene, camera }) => {
+          camera.lookAt(0, lookAtY, 0);
           if (!transparent) return;
           scene.background = null;
           gl.setClearColor(0x000000, 0);
@@ -168,6 +175,7 @@ export function TrophyCanvas({
             autoRotate={autoRotate}
             entropy={entropy}
             season={season}
+            softBase={transparent}
           />
         </Suspense>
 

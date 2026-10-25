@@ -27,6 +27,7 @@ export function CollectibleDetail({
   return (
     <main className={owned ? "det" : "det is-locked"}>
       <header className="plate dh" aria-labelledby="collectible-title">
+        <span className="lamp" aria-hidden="true" />
         <RunningHead items={detail.runningHead} />
         <p className="back mono">
           <Link href="/collectibles">
@@ -34,7 +35,6 @@ export function CollectibleDetail({
           </Link>
         </p>
         <div className="dstage">
-          <span className="lamp" aria-hidden="true" />
           <ObjectSlot
             item={detail.item}
             owned={owned}

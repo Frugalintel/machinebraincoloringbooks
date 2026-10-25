@@ -55,24 +55,36 @@ export type NamedRef = {
   href?: string;
 };
 
+function namedRef(
+  id: string | undefined,
+  entries: readonly { id: string; title: string }[],
+  hrefFor: (id: string) => string,
+): NamedRef | null {
+  if (!id) return null;
+  const match = entries.find((entry) => entry.id === id);
+  const title = match?.title.trim();
+  if (!match || !title || title === id) return null;
+  return { label: title, href: hrefFor(match.id) };
+}
+
+/** A story line only when the catalog has a real title. An unknown id is omitted. */
 export function storyRef(
   id: string | undefined,
   stories: readonly { id: string; title: string }[],
 ): NamedRef | null {
-  if (!id) return null;
-  const match = stories.find((story) => story.id === id);
-  if (!match) return { label: id };
-  return { label: match.title, href: `/stories/${match.id}` };
+  return namedRef(id, stories, (storyId) => `/stories/${storyId}`);
 }
 
+/** An achievement line only when the catalog has a real title. */
 export function achievementRef(
   id: string | undefined,
   achievements: readonly { id: string; title: string }[],
 ): NamedRef | null {
-  if (!id) return null;
-  const match = achievements.find((achievement) => achievement.id === id);
-  if (!match) return { label: id };
-  return { label: match.title, href: `/achievements#${match.id}` };
+  return namedRef(
+    id,
+    achievements,
+    (achievementId) => `/achievements#${achievementId}`,
+  );
 }
 
 export type LinkLine =

@@ -73,8 +73,7 @@ function HeroStage({ hero }: { hero: HeroModel }) {
   const owned = hero.kind === "newest";
   return (
     <figure className={owned ? "stage" : "stage empty"}>
-      <Link href={hero.href} className="sa" aria-label={hero.item.name}>
-        <span className="lamp" aria-hidden="true" />
+      <Link href={hero.href} className="stage-link" aria-label={hero.item.name}>
         <ObjectSlot
           item={hero.item}
           owned={owned}
@@ -104,6 +103,7 @@ export function CollectiblesBrowser({
   return (
     <main>
       <header className="plate hero" aria-labelledby="collectibles-title">
+        <span className="lamp" aria-hidden="true" />
         <div className="hl">
           <p className="mono eb">Rewards</p>
           <h1
