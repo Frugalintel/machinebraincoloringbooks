@@ -58,6 +58,14 @@ describe("fixtureSnapshot", () => {
       23,
     );
     expect(fixtureSnapshot("tier-reached").books[0]?.bookPoints).toBe(45);
+    expect(
+      fixtureSnapshot("tier-reached", { trophyTier: "Basic" }).books[0]
+        ?.bookPoints,
+    ).toBe(41);
+    expect(
+      fixtureSnapshot("tier-reached", { trophyTier: "Rare" }).books[0]
+        ?.bookPoints,
+    ).toBe(55);
     expect(fixtureSnapshot("code").books[0]?.bookPoints).toBe(41);
     expect(fixtureSnapshot("registered").books[0]?.isNew).toBe(true);
   });

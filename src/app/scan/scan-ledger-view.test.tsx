@@ -105,7 +105,38 @@ describe("ScanLedgerView wallet and photo register", () => {
     expect(screen.getByRole("heading", { name: "Basic." })).toBeInTheDocument();
     expect(screen.getByText(/Trophy · Basic/i)).toBeInTheDocument();
     expect(screen.getByText(/moves up to Basic/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/The Silver Citadel has 41 book pts/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/The Silver Citadel has 45 book pts/)).toBeNull();
     expect(screen.queryByText(/moves up to Pro/)).toBeNull();
+  });
+
+  it("uses Rare chrome on the Rare trophy fixture", () => {
+    renderView(
+      "tier-reached",
+      fixtureSnapshot("tier-reached", { trophyTier: "Rare" }),
+    );
+    expect(screen.getByRole("heading", { name: "Rare." })).toBeInTheDocument();
+    expect(
+      screen.getByText(/The Silver Citadel has 55 book pts/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/The Silver Citadel has 45 book pts/)).toBeNull();
+  });
+
+  it("keeps live tier-reached copy at 45 book pts", () => {
+    const snapshot: ScanLedgerSnapshot = {
+      ...fixtureSnapshot("tier-reached", { trophyTier: "Pro" }),
+      sample: false,
+      books: fixtureSnapshot("tier-reached").books.map((book, index) =>
+        index === 0 ? { ...book, bookPoints: 99 } : book,
+      ),
+    };
+    renderView("tier-reached", snapshot);
+    expect(
+      screen.getByText(/The Silver Citadel has 45 book pts/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/The Silver Citadel has 99 book pts/)).toBeNull();
   });
 
   it("captions the legendary trophy as a hidden page", () => {

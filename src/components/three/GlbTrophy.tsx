@@ -275,6 +275,7 @@ export function GlbTrophy({
           return;
         }
         prepareScene(gltf.scene);
+        gltf.scene.rotation.y = 0;
         applyTierLook(gltf.scene, rarity);
         if (fitBounds) fitRootToBounds(gltf.scene, FRAME_PADDING);
         setObjectOpacity(gltf.scene, 0);
@@ -292,7 +293,11 @@ export function GlbTrophy({
 
   useEffect(() => {
     fadeRef.current = 0;
-    if (model) setObjectOpacity(model, 0);
+    if (model) {
+      model.rotation.y = 0;
+      setObjectOpacity(model, 0);
+    }
+    if (groupRef.current) groupRef.current.rotation.y = 0;
     return () => {
       if (model) disposeObject(model);
     };

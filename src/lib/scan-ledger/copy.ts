@@ -304,6 +304,8 @@ const TIER_H1_FIT: Record<TrophyTierName, { fd: string; fm: string }> = {
 
 export type ScanChromeOptions = {
   trophyTier?: TrophyTierName | null;
+  /** Preview fixtures only. Live omits this so Pro copy stays at 45. */
+  bookPoints?: number | null;
 };
 
 export function scanH1Fit(
@@ -333,7 +335,7 @@ export function scanChrome(
         h1: `${tier}.`,
         running: `Trophy · ${tier}`,
         stamp: `Verified · ${tier} unlocked`,
-        lede: `The photo for plate 19 is verified. The Silver Citadel has 45 book pts, so its trophy moves up to ${tier}. Spending wallet points on stories never lowers a tier.`,
+        lede: `The photo for plate 19 is verified. The Silver Citadel has ${options.bookPoints ?? 45} book pts, so its trophy moves up to ${tier}. Spending wallet points on stories never lowers a tier.`,
       };
     default: {
       const _exhaustive: never = tier;

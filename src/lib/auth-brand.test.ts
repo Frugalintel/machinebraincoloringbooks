@@ -58,6 +58,16 @@ describe("Sign in S3 brand guardrails", () => {
     expect(display.map(({ selector }) => selector)).toEqual([".sa-h1"]);
   });
 
+  it("paints the hold-card edge with a resolved cream so it is not dropped", () => {
+    const hold = cssRules().find(
+      ({ selector }) => selector === ".sa-hold-card",
+    );
+    expect(hold?.body).toMatch(
+      /border:\s*1px solid rgb\(242 234 216 \/ 0\.16\)/,
+    );
+    expect(hold?.body).not.toMatch(/var\(--sa-c4\)/);
+  });
+
   it("allows the square cream button and keeps it cream on near-black", () => {
     const button = cssRules().find(({ selector }) => selector === ".sa-btn");
     expect(button?.body).toMatch(/border-radius:\s*0;/);

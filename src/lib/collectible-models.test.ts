@@ -95,6 +95,7 @@ describe("lazy GLB loaders", () => {
     expect(source).toMatch(/scale: 1\.5, y: -0\.3/);
     expect(source).toMatch(/scale: 1\.38, y: -0\.22/);
     expect(source).toMatch(/rotation\.y \+= delta \* ROTATION_SPEED/);
+    expect(source).toMatch(/rotation\.y = 0/);
     expect(source).toMatch(/FADE_SECONDS = 0\.25/);
     expect(source).toMatch(/shadowMaterial opacity=\{0\.35\}/);
     expect(source).not.toMatch(/rotation\.y \+= 0\.005/);
