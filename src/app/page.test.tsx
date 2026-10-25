@@ -19,6 +19,8 @@ const REAL_ROUTES = [
   "/scan?mode=code",
   "/about",
   "/help",
+  "/help#contact",
+  "/help#orders",
   "/privacy",
   "/terms",
   "/licenses",

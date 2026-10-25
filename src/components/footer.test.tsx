@@ -125,6 +125,13 @@ describe("Footer", () => {
     ).toHaveAttribute("href", "/trophy-room");
 
     const help = screen.getByRole("navigation", { name: "Help" });
+    expect(within(help).getByRole("link", { name: "Contact" })).toHaveAttribute(
+      "href",
+      "/help#contact",
+    );
+    expect(
+      within(help).getByRole("link", { name: "Shipping" }),
+    ).toHaveAttribute("href", "/help#orders");
     expect(within(help).getByRole("link", { name: "About" })).toHaveAttribute(
       "href",
       "/about",

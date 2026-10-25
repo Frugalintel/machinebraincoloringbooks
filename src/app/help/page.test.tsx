@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import HelpLayout from "@/app/help/layout";
 import HelpPage from "@/app/help/page";
 import {
+  HELP_ART,
   HELP_CHIPS,
   HELP_FAQ,
   HELP_H1,
@@ -108,6 +109,15 @@ describe("Help (A · Index)", () => {
     expect(container.textContent).toMatch(/Take your/);
     expect(container.querySelector("footer.site-footer")).toBeNull();
     expect(container.textContent).not.toMatch(/Coloring books with secrets/);
+  });
+
+  it("keeps how-it-works labels on help-n, not the home hero numeral class", () => {
+    const { container } = renderHelp();
+    const labels = container.querySelectorAll(".help-steps .help-n");
+    expect(labels).toHaveLength(4);
+    expect(container.querySelectorAll(".help-steps .n")).toHaveLength(0);
+    expect(HELP_ART.pageLine.src).toBe("/help/page-line.webp");
+    expect(HELP_ART.pageLine.src).not.toBe(HELP_ART.pageColor.src);
   });
 
   it("sends Sign in back to /help and sizes the step art", () => {

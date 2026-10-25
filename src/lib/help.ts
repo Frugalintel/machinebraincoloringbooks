@@ -12,7 +12,7 @@ export const HELP_SAMPLE_CODE = "SC07-K4M9" as const;
 
 export const HELP_ART = {
   pageLine: {
-    src: "/help/page-half.webp",
+    src: "/help/page-line.webp",
     width: 1200,
     height: 1553,
     alt: "Sample printed page, art on the left and paper on the right, cropped to the foot",

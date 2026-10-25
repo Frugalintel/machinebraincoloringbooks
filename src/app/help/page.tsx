@@ -122,7 +122,7 @@ export default function HelpPage() {
                 <div className="help-stx">
                   <StepArt step={step} />
                 </div>
-                <p className="mono n">
+                <p className="mono help-n">
                   <span className="sig">{step.n}</span>
                   {step.label}
                 </p>
