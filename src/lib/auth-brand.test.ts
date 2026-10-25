@@ -7,6 +7,7 @@ import {
   authEntryFromParams,
   authFailure,
   authHeadline,
+  authHoldBody,
   authModeCopy,
   codeFromNext,
   safeNextPath,
@@ -164,6 +165,12 @@ describe("authHeadline", () => {
     );
     expect(authHeadline("login", "page-plus").lines.join(" ")).toBe(
       "Sign in for your +1.",
+    );
+    expect(authHoldBody("book")).toBe(
+      "Sign in or create an account to add this book and its unlock.",
+    );
+    expect(authHoldBody("page-plus")).toBe(
+      "Sign in or create an account and the point is yours.",
     );
   });
 });

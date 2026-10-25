@@ -58,6 +58,9 @@ describe("lazy GLB loaders", () => {
     expect(canvas).not.toMatch(/from ["']\.\/GlbTrophy["']/);
     expect(canvas).toMatch(/import\(["']\.\/GlbTrophy["']\)/);
     expect(canvas).toMatch(/showPlaceholder = !modelUrl \|\| glbFailed/);
+    expect(canvas).toMatch(/posterUrl/);
+    expect(canvas).toMatch(/powerPreference/);
+    expect(canvas).toMatch(/frameloop/);
     expect(canvas).toMatch(/dpr=\{pixelRatio\}/);
     expect(canvas).toMatch(/isSmall \|\| compact \? \[1, 1\.5\] : \[1, 2\]/);
     expect(canvas).toMatch(/shadows=\{Boolean\(modelUrl\) && !isSmall\}/);
@@ -95,5 +98,7 @@ describe("lazy GLB loaders", () => {
     expect(source).toMatch(/FADE_SECONDS = 0\.25/);
     expect(source).toMatch(/shadowMaterial opacity=\{0\.35\}/);
     expect(source).not.toMatch(/rotation\.y \+= 0\.005/);
+    expect(source).toMatch(/fitBounds|framePadding|Box3/);
+    expect(source).toMatch(/roughness/);
   });
 });

@@ -13,6 +13,7 @@ import {
   AUTH_COPY,
   AUTH_FIELD_ORDER,
   authHeadline,
+  authHoldBody,
   authModeCopy,
   type AuthField,
   type AuthFieldErrors,
@@ -45,6 +46,8 @@ export type AuthPanelProps = {
   headingId?: string;
   /** Modal only: the lockup and Close row, drawn where the site nav sits. */
   top?: ReactNode;
+  /** Hold card: "New here?" goes to /auth register with this next path. */
+  registerHref?: string;
 };
 
 function describedBy(
@@ -148,6 +151,7 @@ export function AuthPanel({
   formError = "",
   headingId,
   top,
+  registerHref = "/auth?mode=register&next=%2Fscan",
 }: AuthPanelProps) {
   const uid = useId();
   const ids = {
@@ -160,6 +164,9 @@ export function AuthPanel({
   const copy = authModeCopy(mode);
   const resolvedHold =
     hold ?? (code ? { kind: "code" as const, label: code } : null);
+  const isHold =
+    resolvedHold?.kind === "book" || resolvedHold?.kind === "page-plus";
+  const holdBody = resolvedHold ? authHoldBody(resolvedHold.kind) : null;
   const headline = authHeadline(view, resolvedHold ?? false);
   const heldText =
     resolvedHold?.kind === "book"
@@ -202,14 +209,24 @@ export function AuthPanel({
       className="sa"
       data-auth-context={context}
       data-view={view}
+      data-auth-hold={isHold || undefined}
       aria-labelledby={ids.heading}
     >
-      {top}
-      <div className="sa-rh sa-mono" aria-hidden="true">
-        {AUTH_COPY.runningHead.map((part) => (
-          <span key={part}>{part}</span>
-        ))}
-      </div>
+      {isHold ? (
+        <div className="sa-hold-head sa-mono">
+          <span>{AUTH_COPY.holdHead}</span>
+          {top}
+        </div>
+      ) : (
+        <>
+          {top}
+          <div className="sa-rh sa-mono" aria-hidden="true">
+            {AUTH_COPY.runningHead.map((part) => (
+              <span key={part}>{part}</span>
+            ))}
+          </div>
+        </>
+      )}
 
       <Heading
         ref={headingRef}
@@ -217,7 +234,7 @@ export function AuthPanel({
         tabIndex={-1}
         className="font-display sa-h1"
       >
-        {headline.prefix ? (
+        {headline.prefix && !isHold ? (
           <span className="sa-vh">{`${headline.prefix} `}</span>
         ) : null}
         <span className="sa-lines" data-fit={headline.fit}>
@@ -230,7 +247,14 @@ export function AuthPanel({
         <div className="sa-side">
           {view === "check" ? null : heldText ? (
             <div className="sa-held" data-testid="auth-held">
-              <span className="sa-mono sa-signal">{heldText}</span>
+              <span
+                className={
+                  isHold ? "sa-mono sa-hold-chip" : "sa-mono sa-signal"
+                }
+              >
+                {heldText}
+              </span>
+              {holdBody ? <p className="sa-why">{holdBody}</p> : null}
             </div>
           ) : code ? (
             <div className="sa-held" data-testid="auth-held">
@@ -348,23 +372,31 @@ export function AuthPanel({
               </div>
               <p className="sa-swap">
                 {copy.swapPrompt}{" "}
-                <button
-                  type="button"
-                  className="sa-link"
-                  onClick={swap}
-                  disabled={disabled || loading}
-                >
-                  {copy.swapAction}
-                </button>
+                {isHold && !isRegister ? (
+                  <a className="sa-link" href={registerHref}>
+                    {copy.swapAction}
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    className="sa-link"
+                    onClick={swap}
+                    disabled={disabled || loading}
+                  >
+                    {copy.swapAction}
+                  </button>
+                )}
               </p>
             </form>
           )}
         </div>
       </div>
 
-      <p className="sa-folio sa-mono" aria-hidden="true">
-        <span className="sa-signal">●</span>&nbsp; 00
-      </p>
+      {isHold ? null : (
+        <p className="sa-folio sa-mono" aria-hidden="true">
+          <span className="sa-signal">●</span>&nbsp; 00
+        </p>
+      )}
     </section>
   );
 }

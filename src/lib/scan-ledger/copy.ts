@@ -1,7 +1,9 @@
-import type { ScanViewState } from "@/lib/scan-ledger/types";
+import type { PlateCell, ScanViewState } from "@/lib/scan-ledger/types";
 
 export const SCAN_OPT_LINE =
   "Photo of the colored page · optional · +1 more once verified";
+
+export const PHOTO_OPTIONAL = "Optional · +1 more once verified";
 
 export const SCAN_SPEND_NOTE =
   "Spending wallet points on stories never lowers a tier.";
@@ -9,7 +11,49 @@ export const SCAN_SPEND_NOTE =
 export const SCAN_SAMPLE_NOTE = "Example · sample book, code and points";
 
 export const SCAN_WALLET_LABEL = "Wallet · for stories";
+export const SCAN_WALLET_FROM_POINTS = "Wallet · from your points";
 export const SCAN_BOOK_TROPHY_LABEL = "This book · trophy";
+
+export const CELL_LABEL: Record<PlateCell, string> = {
+  empty: "not added",
+  code: "code, 1 pt",
+  pending: "code 1 pt + photo pending verification",
+  verified: "code + verified photo, 2 pts",
+  now: "adding now",
+  legendary: "Legendary page: code + verified photo, 2 pts",
+};
+
+export function sampleNote(state: ScanViewState): string {
+  switch (state) {
+    case "registered":
+      return "Example · sample books, unlock and points";
+    case "legendary-found":
+      return "Example · a separate, earlier moment in the same book";
+    case "signed-out-book":
+    case "signed-out-code":
+    case "camera-off":
+    case "index":
+    case "code":
+    case "code-added":
+    case "photo":
+    case "photo-preview":
+    case "pending":
+    case "verified":
+    case "tier-reached":
+    case "code-only-before":
+    case "collected":
+    case "invalid":
+      return SCAN_SAMPLE_NOTE;
+    default: {
+      const _exhaustive: never = state;
+      return _exhaustive;
+    }
+  }
+}
+
+export function trophyPlateCaption(plate: string, code: string): string {
+  return `PLATE ${plate} · ${code} · CODE + PHOTO`;
+}
 
 export const CAMERA_BLOCKED =
   "Settings › Safari › Camera › Allow, then reload.";
@@ -109,7 +153,7 @@ const CHROME: Record<ScanViewState, ScanChrome> = {
   photo: {
     h1: "Whole page.",
     running: "Page photo · optional",
-    lede: null,
+    lede: "Fit the whole colored page in the frame.",
     tag: null,
     stamp: null,
     caption: "Camera · sample view",
@@ -120,7 +164,7 @@ const CHROME: Record<ScanViewState, ScanChrome> = {
   "photo-preview": {
     h1: "Check it.",
     running: "Check your photo",
-    lede: null,
+    lede: "Sharp, flat, the whole page in view. Then send it.",
     tag: null,
     stamp: null,
     caption: "Your photo · sample",

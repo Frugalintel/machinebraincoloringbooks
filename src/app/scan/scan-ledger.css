@@ -4,6 +4,7 @@
  * approved off-guide pieces from the locked mockups.
  */
 .home-e2.scan-c {
+  --nav-h: 65px;
   overflow-x: clip;
 }
 
@@ -28,8 +29,8 @@
 
 .home-e2.scan-c .lg {
   position: relative;
-  min-height: calc(100svh - 64px);
-  padding: 92px var(--m) 40px;
+  min-height: calc(100svh - var(--nav-h));
+  padding: calc(92px - var(--nav-h)) var(--m) 40px;
 }
 
 .home-e2.scan-c .lg > .rh {
@@ -278,6 +279,16 @@
   font-size: 11px;
 }
 
+.home-e2.scan-c .pgph .ret {
+  inset: 24px;
+}
+
+.home-e2.scan-c .pgph .ret .rl {
+  top: auto;
+  bottom: 10px;
+  left: 10px;
+}
+
 .home-e2.scan-c .pgph,
 .home-e2.scan-c .pvw {
   position: absolute;
@@ -291,6 +302,9 @@
 }
 
 .home-e2.scan-c .pgph {
+  padding: 13px;
+  background: var(--cream);
+  box-sizing: border-box;
   transform: translate(-50%, -50%) perspective(1600px) rotateX(8deg)
     rotateZ(3deg);
   box-shadow:
@@ -574,14 +588,55 @@
 }
 
 .home-e2.scan-c .legcap {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 16px;
+  position: relative;
+  margin-top: 10px;
+  left: auto;
+  right: auto;
+  bottom: auto;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 8px 10px;
+  background: rgb(13 13 13 / 0.8);
   pointer-events: none;
+}
+
+.home-e2.scan-c .trophy .stamp {
+  z-index: 3;
+}
+
+.home-e2.scan-c .trophy-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.home-e2.scan-c .vrow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.home-e2.scan-c .vrow > .mono {
+  color: var(--c2);
+}
+
+.home-e2.scan-c .vchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 32px;
+  padding: 6px 14px;
+  border: 1px solid var(--c4);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.home-e2.scan-c .vchip b {
+  font-weight: 600;
+  color: var(--signal);
 }
 
 .home-e2.scan-c .bal {
@@ -694,7 +749,9 @@
   font-weight: 600;
 }
 
-.home-e2.scan-c .tag {
+.home-e2.scan-c .tag,
+.home-e2.scan-c .brh > .tag.mono,
+.home-e2.scan-c .lbk .tag {
   background: var(--cream);
   color: var(--ink);
   padding: 2px 7px;
@@ -932,7 +989,7 @@
   color: var(--c2);
 }
 
-.home-e2.scan-c .note-xp {
+.home-e2.scan-c .note-src {
   color: var(--c2);
 }
 
@@ -943,7 +1000,7 @@
 
   .home-e2.scan-c .lg {
     min-height: 844px;
-    padding: 76px var(--m) 32px;
+    padding: calc(76px - var(--nav-h)) var(--m) 32px;
   }
 
   .home-e2.scan-c .lg > .rh span:nth-child(3) {

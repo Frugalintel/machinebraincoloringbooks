@@ -174,9 +174,12 @@ export function fixtureSnapshot(state: ScanViewState): ScanLedgerSnapshot {
         showNextBookSlot: false,
       };
     case "code":
-    case "invalid":
       return withFar(12, [
         silverRow(silverAlmost({ plate: 7, cell: "now" }), { currentPlate: 7 }),
+      ]);
+    case "invalid":
+      return withFar(12, [
+        silverRow(silverAlmost({ plate: 7, cell: "empty" })),
       ]);
     case "code-added":
     case "photo":

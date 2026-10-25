@@ -3,11 +3,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import {
+  Box3,
   Group,
   Mesh,
   MeshStandardMaterial,
   PMREMGenerator,
   SpotLight,
+  Vector3,
   type Material,
   type Object3D,
   type Texture,
@@ -25,6 +27,8 @@ export type GlbTrophyProps = {
   compact?: boolean;
   onReady?: () => void;
   onError?: () => void;
+  /** Fit the mesh to the camera box with about 12% padding. */
+  fitBounds?: boolean;
 };
 
 const FADE_SECONDS = 0.25;
@@ -101,6 +105,49 @@ function disposeObject(root: Object3D) {
 
 function meshMaterials(object: Mesh): Material[] {
   return Array.isArray(object.material) ? object.material : [object.material];
+}
+
+function applyTierLook(root: Object3D, rarity: string) {
+  root.traverse((object) => {
+    if (!isMesh(object)) return;
+    for (const material of meshMaterials(object)) {
+      if (!(material instanceof MeshStandardMaterial)) continue;
+      switch (rarity) {
+        case "Basic":
+        case "Common":
+          material.color.offsetHSL(-0.04, -0.12, -0.2);
+          material.roughness = Math.max(material.roughness, 0.7);
+          material.metalness = Math.min(material.metalness, 0.4);
+          material.emissiveIntensity = Math.min(
+            material.emissiveIntensity,
+            0.04,
+          );
+          break;
+        case "Pro":
+        case "Uncommon":
+          material.metalness = Math.max(material.metalness, 0.82);
+          material.roughness = Math.min(material.roughness, 0.28);
+          material.emissive.set("#e8e2d4");
+          material.emissiveIntensity = Math.max(
+            material.emissiveIntensity,
+            0.22,
+          );
+          break;
+        default:
+          break;
+      }
+    }
+  });
+}
+
+function fitRootToBounds(root: Object3D, padding = 0.12) {
+  const box = new Box3().setFromObject(root);
+  const size = box.getSize(new Vector3());
+  const center = box.getCenter(new Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z, 0.001);
+  const scale = (1 - padding) / maxDim;
+  root.position.sub(center);
+  root.scale.multiplyScalar(scale);
 }
 
 function prepareScene(root: Object3D) {
@@ -197,6 +244,7 @@ export function GlbTrophy({
   compact = false,
   onReady,
   onError,
+  fitBounds = false,
 }: GlbTrophyProps) {
   const groupRef = useRef<Group>(null);
   const fadeRef = useRef(0);
@@ -217,6 +265,8 @@ export function GlbTrophy({
           return;
         }
         prepareScene(gltf.scene);
+        applyTierLook(gltf.scene, rarity);
+        if (fitBounds) fitRootToBounds(gltf.scene, 0.12);
         setObjectOpacity(gltf.scene, 0);
         setModel(gltf.scene);
         onReady?.();
@@ -228,7 +278,7 @@ export function GlbTrophy({
     return () => {
       cancelled = true;
     };
-  }, [url, onReady, onError]);
+  }, [url, rarity, fitBounds, onReady, onError]);
 
   useEffect(() => {
     fadeRef.current = 0;
@@ -278,7 +328,11 @@ export function GlbTrophy({
           <shadowMaterial opacity={0.35} />
         </mesh>
       ) : null}
-      <group ref={groupRef} scale={frame.scale} position={[0, frame.y, 0]}>
+      <group
+        ref={groupRef}
+        scale={fitBounds ? 1 : frame.scale}
+        position={fitBounds ? [0, 0, 0] : [0, frame.y, 0]}
+      >
         <primitive object={model} />
       </group>
     </>

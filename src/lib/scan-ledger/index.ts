@@ -35,16 +35,21 @@ export {
 export {
   CAMERA_BLOCKED,
   CAMERA_INSECURE,
+  CELL_LABEL,
+  PHOTO_OPTIONAL,
   SCAN_BOOK_TROPHY_LABEL,
   SCAN_OPT_LINE,
   SCAN_SAMPLE_NOTE,
   SCAN_SPEND_NOTE,
+  SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
   codeInMessage,
   collectedMessage,
   invalidCodeMessage,
+  sampleNote,
   scanChrome,
   systemErrorMessage,
+  trophyPlateCaption,
 } from "@/lib/scan-ledger/copy";
 export {
   SAMPLE_BAD_CODE,
@@ -65,6 +70,8 @@ export {
 export {
   legendaryCaption,
   legendaryRarityNote,
+  tierTrophyPosterUrl,
   tierTrophyUrl,
   TIER_TROPHY_MODELS,
+  TIER_TROPHY_POSTERS,
 } from "@/lib/scan-ledger/trophies";

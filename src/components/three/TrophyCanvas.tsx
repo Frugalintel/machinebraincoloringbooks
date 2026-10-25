@@ -38,6 +38,13 @@ interface TrophyCanvasProps {
   particles?: boolean;
   /** Per-item GLB. Absent items keep the procedural placeholder. */
   modelUrl?: string;
+  /** Still shown until the GLB is ready, and used if the GLB fails. */
+  posterUrl?: string;
+  frameloop?: "always" | "demand";
+  powerPreference?: "default" | "high-performance" | "low-power";
+  /** Fit the loaded mesh to the camera box with padding. */
+  fitBounds?: boolean;
+  onReady?: () => void;
 }
 
 type GlbTrophyComponent = ComponentType<{
@@ -48,6 +55,7 @@ type GlbTrophyComponent = ComponentType<{
   compact?: boolean;
   onReady?: () => void;
   onError?: () => void;
+  fitBounds?: boolean;
 }>;
 
 const COMPACT_VIEWPORT = "(max-width: 760px)";
@@ -88,6 +96,11 @@ export function TrophyCanvas({
   transparent = false,
   particles = true,
   modelUrl,
+  posterUrl,
+  frameloop = "always",
+  powerPreference = "high-performance",
+  fitBounds = false,
+  onReady,
 }: TrophyCanvasProps) {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -102,7 +115,10 @@ export function TrophyCanvas({
   const [glbStatus, setGlbStatus] = useState<"idle" | "ready" | "failed">(
     "idle",
   );
-  const handleGlbReady = useCallback(() => setGlbStatus("ready"), []);
+  const handleGlbReady = useCallback(() => {
+    setGlbStatus("ready");
+    onReady?.();
+  }, [onReady]);
   const handleGlbError = useCallback(() => setGlbStatus("failed"), []);
   const glbFailed = glbStatus === "failed";
   const showGlb = Boolean(modelUrl && GlbTrophy && !glbFailed);
@@ -154,6 +170,22 @@ export function TrophyCanvas({
   const lookAtY = transparent ? (isSmall ? 0.18 : 0.48) : 0;
   const fov = transparent ? (isSmall ? 34 : 32) : isSmall ? 40 : 50;
 
+  const posterImage = posterUrl ? (
+    // Still posters are static assets; next/image is not required here.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={posterUrl}
+      alt=""
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+      }}
+    />
+  ) : null;
+
   if (!mounted) {
     return (
       <div
@@ -166,18 +198,21 @@ export function TrophyCanvas({
           alignItems: "center",
           justifyContent: "center",
           background: transparent ? "transparent" : "#1A1A19",
+          position: "relative",
         }}
       >
-        <div
-          style={{
-            width: 32,
-            height: 32,
-            border: "2px solid rgba(255,79,0,0.3)",
-            borderRadius: "50%",
-            borderTopColor: "#ff4f00",
-            animation: "spin 1s linear infinite",
-          }}
-        />
+        {posterImage ?? (
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              border: "2px solid rgba(255,79,0,0.3)",
+              borderRadius: "50%",
+              borderTopColor: "#ff4f00",
+              animation: "spin 1s linear infinite",
+            }}
+          />
+        )}
       </div>
     );
   }
@@ -198,11 +233,11 @@ export function TrophyCanvas({
           position: cameraPosition,
           fov,
         }}
-        frameloop="always"
+        frameloop={frameloop}
         gl={{
           antialias: true,
           alpha: true,
-          powerPreference: "high-performance",
+          powerPreference,
         }}
         dpr={pixelRatio}
         style={{
@@ -226,7 +261,7 @@ export function TrophyCanvas({
           gl.setClearColor(0x000000, 0);
         }}
       >
-        {showPlaceholder ? (
+        {showPlaceholder && !posterUrl ? (
           <>
             <ambientLight intensity={0.5 * seasonMod.intensity} />
             <directionalLight
@@ -254,11 +289,12 @@ export function TrophyCanvas({
               autoRotate={autoRotate}
               size={size}
               compact={compact}
+              fitBounds={fitBounds}
               onReady={handleGlbReady}
               onError={handleGlbError}
             />
           ) : null}
-          {showPlaceholder ? (
+          {showPlaceholder && !posterUrl ? (
             <TrophyModel
               rarity={rarity}
               autoRotate={autoRotate}
@@ -293,6 +329,7 @@ export function TrophyCanvas({
           />
         ) : null}
       </Canvas>
+      {posterUrl && glbStatus !== "ready" ? posterImage : null}
     </div>
   );
 }

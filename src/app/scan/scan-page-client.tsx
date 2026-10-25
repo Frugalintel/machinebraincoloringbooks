@@ -336,14 +336,9 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
         }}
         onError={(error: unknown) => {
           logger.error("Scanner error:", error);
-          const msg =
-            (error as Error)?.message ||
-            (error as Error)?.name ||
-            "Could not access camera";
           setCameraBlocked(true);
           setCameraOn(false);
           setState("camera-off");
-          toastError(msg);
         }}
         scanDelay={500}
         constraints={{

@@ -3,8 +3,10 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   TIER_TROPHY_MODELS,
+  TIER_TROPHY_POSTERS,
   legendaryCaption,
   legendaryRarityNote,
+  tierTrophyPosterUrl,
   tierTrophyUrl,
 } from "@/lib/scan-ledger/trophies";
 import { TIER_NAME_RARE } from "@/lib/scan-tiers";
@@ -29,6 +31,19 @@ describe("example trophy models", () => {
     expect(legendaryRarityNote(80)).toBe("LOWER IS RARER · 2 TO 80");
   });
 
+  it("ships a still poster per tier for the GLB wait and fallback", () => {
+    for (const [tier, url] of Object.entries(TIER_TROPHY_POSTERS)) {
+      expect(
+        tierTrophyPosterUrl(tier as keyof typeof TIER_TROPHY_POSTERS),
+      ).toBe(url);
+      const path = join(process.cwd(), "public", url.replace(/^\//, ""));
+      expect(existsSync(path)).toBe(true);
+      const bytes = statSync(path).size;
+      expect(bytes).toBeGreaterThan(8_000);
+      expect(bytes).toBeLessThan(80_000);
+    }
+  });
+
   it("loads TrophyCanvas only when a GLB is shown", () => {
     const source = readFileSync(
       join(process.cwd(), "src/app/scan/scan-trophy.tsx"),
@@ -39,5 +54,12 @@ describe("example trophy models", () => {
     expect(
       readFileSync(join(process.cwd(), "src/app/scan/page.tsx"), "utf8"),
     ).not.toMatch(/GlbTrophy|TrophyCanvas|GLTFLoader/);
+    const trophy = readFileSync(
+      join(process.cwd(), "src/app/scan/scan-trophy.tsx"),
+      "utf8",
+    );
+    expect(trophy).toMatch(/IntersectionObserver/);
+    expect(trophy).toMatch(/rootMargin/);
+    expect(trophy).toMatch(/poster/);
   });
 });

@@ -13,6 +13,7 @@ type ModalState = {
   view: "login" | "register";
   email?: string;
   code?: string;
+  hold?: { kind: "book" | "page-plus" | "code"; label: string };
 };
 
 const auth = vi.hoisted(() => ({
@@ -218,6 +219,30 @@ describe("AuthModal (S3 plate)", () => {
       "Check your email.",
     );
     expect(auth.closeAuthModal).not.toHaveBeenCalled();
+  });
+
+  it("renders the /scan hold as a one-line card over a scrim", () => {
+    const { container } = openModal({
+      hold: { kind: "book", label: "The Silver Citadel" },
+    });
+    expect(
+      screen.getByRole("dialog", { name: "Keep your book." }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("PL. 00 · Sign in")).toBeInTheDocument();
+    expect(screen.getByTestId("auth-held")).toHaveTextContent(
+      "Held · The Silver Citadel",
+    );
+    expect(
+      screen.getByText(
+        "Sign in or create an account to add this book and its unlock.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Create an account" }),
+    ).toHaveAttribute("href", "/auth?mode=register&next=%2Fscan");
+    expect(container.querySelector(".sa-folio")).toBeNull();
+    expect(screen.getByLabelText("Email")).not.toHaveFocus();
+    expect(container.textContent).not.toMatch(/●/);
   });
 
   it("never fills with signal orange", () => {
