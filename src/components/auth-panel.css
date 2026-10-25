@@ -347,7 +347,7 @@
   /* Mockup modal is min(1160px); 560px clips the locked S3 line. */
   max-width: min(1160px, calc(100% - 80px));
   margin: 96px auto 40px;
-  border: 1px solid var(--sa-c4);
+  border: 1px solid rgb(242 234 216 / 0.16);
   overflow: hidden;
 }
 

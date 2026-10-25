@@ -52,6 +52,13 @@ const CELL_CLASS: Record<PlateCell, string> = {
   legendary: "leg",
 };
 
+function ledgerChrome(state: ScanViewState, snapshot: ScanLedgerSnapshot) {
+  return scanChrome(state, {
+    trophyTier: snapshot.trophyTier,
+    bookPoints: snapshot.sample ? snapshot.books[0]?.bookPoints : undefined,
+  });
+}
+
 export type ScanLedgerHandlers = {
   onEnableCamera: () => void;
   onMode: (mode: "qr" | "code") => void;
@@ -93,7 +100,7 @@ export function ScanLedgerView({
   cameraSlot?: ReactNode;
   handlers: ScanLedgerHandlers;
 }) {
-  const chrome = scanChrome(state, { trophyTier: snapshot.trophyTier });
+  const chrome = ledgerChrome(state, snapshot);
   const plate = snapshot.activePlate;
   const folio = plate ? folioLine(plate.plate, plate.code) : "";
   const showPhotoRun = state === "photo" || state === "photo-preview";
@@ -273,7 +280,7 @@ function LeftPanel({
   handlers: ScanLedgerHandlers;
 }) {
   const plate = snapshot.activePlate;
-  const chrome = scanChrome(state, { trophyTier: snapshot.trophyTier });
+  const chrome = ledgerChrome(state, snapshot);
   const trophyTier =
     snapshot.trophyTier ??
     (state === "legendary-found"

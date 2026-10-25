@@ -69,12 +69,28 @@ describe("scan ledger copy", () => {
     expect(scanChrome("tier-reached", { trophyTier: "Basic" }).lede).toMatch(
       /moves up to Basic/,
     );
+    expect(scanChrome("tier-reached", { trophyTier: "Basic" }).lede).toMatch(
+      /45 book pts/,
+    );
+    expect(
+      scanChrome("tier-reached", { trophyTier: "Basic", bookPoints: 41 }).lede,
+    ).toMatch(/41 book pts/);
+    expect(
+      scanChrome("tier-reached", { trophyTier: "Basic", bookPoints: 41 }).lede,
+    ).not.toMatch(/45 book pts/);
     expect(scanChrome("tier-reached", { trophyTier: "Rare" }).h1).toBe("Rare.");
     expect(scanChrome("tier-reached", { trophyTier: "Rare" }).running).toBe(
       "Trophy · Rare",
     );
     expect(scanChrome("tier-reached", { trophyTier: "Rare" }).lede).toMatch(
       /moves up to Rare/,
+    );
+    expect(
+      scanChrome("tier-reached", { trophyTier: "Rare", bookPoints: 55 }).lede,
+    ).toMatch(/55 book pts/);
+    expect(scanChrome("tier-reached").lede).toMatch(/45 book pts/);
+    expect(scanChrome("tier-reached", { trophyTier: "Pro" }).lede).toMatch(
+      /45 book pts/,
     );
     const pro = Number.parseFloat(scanH1Fit("tier-reached").fd);
     const basic = Number.parseFloat(scanH1Fit("tier-reached", "Basic").fd);
