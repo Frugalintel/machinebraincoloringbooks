@@ -157,6 +157,15 @@ describe("authHeadline", () => {
   ])("%s (code: %s) reads %s", (view, hasCode, line) => {
     expect(authHeadline(view, hasCode).lines.join(" ")).toBe(line);
   });
+
+  it("uses the locked /scan hold lines", () => {
+    expect(authHeadline("login", "book").lines.join(" ")).toBe(
+      "Keep your book.",
+    );
+    expect(authHeadline("login", "page-plus").lines.join(" ")).toBe(
+      "Sign in for your +1.",
+    );
+  });
 });
 
 describe("validateAuthForm", () => {
