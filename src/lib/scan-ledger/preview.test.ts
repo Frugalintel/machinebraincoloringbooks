@@ -28,6 +28,11 @@ describe("scanPreview", () => {
     expect(scanPreviewTrophyTier(true, "basic")).toBe("Basic");
     expect(scanPreview(true, "rare")).toBe("tier-reached");
     expect(scanPreviewTrophyTier(true, "rare")).toBe("Rare");
+    expect(scanPreview(false, "pro")).toBeNull();
+    expect(scanPreview(true, "pro")).toBe("tier-reached");
+    expect(scanPreviewTrophyTier(true, "pro")).toBe("Pro");
+    expect(scanPreview(true, "legendary")).toBe("legendary-found");
+    expect(scanPreviewTrophyTier(true, "legendary")).toBe("Legendary");
     expect(scanPreviewTrophyTier(true, "tier-reached")).toBeNull();
     expect(
       fixtureSnapshot("tier-reached", { trophyTier: "Basic" }).trophyTier,

@@ -8,6 +8,7 @@ import {
   plateCellLabel,
   sampleNote,
   scanChrome,
+  scanH1Fit,
   trophyPlateCaption,
 } from "@/lib/scan-ledger/copy";
 
@@ -53,6 +54,34 @@ describe("scan ledger copy", () => {
       "PLATE 31 · 9TD4 · CODE + PHOTO",
     );
     expect(legendaryPlateCaption("31")).toBe("PLATE 31 · HIDDEN PAGE");
+  });
+
+  it("derives tier-reached chrome and H1 fit from the trophy tier", () => {
+    expect(scanChrome("tier-reached").h1).toBe("Pro.");
+    expect(scanChrome("tier-reached").running).toBe("Trophy · Pro");
+    expect(scanChrome("tier-reached").lede).toMatch(/moves up to Pro/);
+    expect(scanChrome("tier-reached", { trophyTier: "Basic" }).h1).toBe(
+      "Basic.",
+    );
+    expect(scanChrome("tier-reached", { trophyTier: "Basic" }).running).toBe(
+      "Trophy · Basic",
+    );
+    expect(scanChrome("tier-reached", { trophyTier: "Basic" }).lede).toMatch(
+      /moves up to Basic/,
+    );
+    expect(scanChrome("tier-reached", { trophyTier: "Rare" }).h1).toBe("Rare.");
+    expect(scanChrome("tier-reached", { trophyTier: "Rare" }).running).toBe(
+      "Trophy · Rare",
+    );
+    expect(scanChrome("tier-reached", { trophyTier: "Rare" }).lede).toMatch(
+      /moves up to Rare/,
+    );
+    const pro = Number.parseFloat(scanH1Fit("tier-reached").fd);
+    const basic = Number.parseFloat(scanH1Fit("tier-reached", "Basic").fd);
+    const rare = Number.parseFloat(scanH1Fit("tier-reached", "Rare").fd);
+    expect(basic).toBeLessThan(pro);
+    expect(rare).toBeLessThan(pro);
+    expect(basic).toBeLessThanOrEqual(rare);
   });
 
   it("restores the mockup now-cell labels", () => {

@@ -61,5 +61,24 @@ describe("example trophy models", () => {
     expect(trophy).toMatch(/IntersectionObserver/);
     expect(trophy).toMatch(/rootMargin/);
     expect(trophy).toMatch(/poster/);
+    expect(trophy).toMatch(/useCallback\(\(\) => setReady\(true\), \[\]\)/);
+    expect(trophy).not.toMatch(/onReady=\{\(\) => setReady\(true\)\}/);
+    const glb = readFileSync(
+      join(process.cwd(), "src/components/three/GlbTrophy.tsx"),
+      "utf8",
+    );
+    expect(glb).toMatch(/onReadyRef/);
+    expect(glb).not.toMatch(/\[url, rarity, fitBounds, onReady, onError\]/);
+    const canvas = readFileSync(
+      join(process.cwd(), "src/components/three/TrophyCanvas.tsx"),
+      "utf8",
+    );
+    expect(canvas).toMatch(/isSmall \|\| fitBounds/);
+    const css = readFileSync(
+      join(process.cwd(), "src/app/scan/scan-ledger.css"),
+      "utf8",
+    );
+    expect(css).toMatch(/\.trophy \{[\s\S]*overflow:\s*hidden/);
+    expect(css).toMatch(/flex:\s*1 1 0/);
   });
 });

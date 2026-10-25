@@ -251,9 +251,16 @@ export function GlbTrophy({
 }: GlbTrophyProps) {
   const groupRef = useRef<Group>(null);
   const fadeRef = useRef(0);
+  const onReadyRef = useRef(onReady);
+  const onErrorRef = useRef(onError);
   const [model, setModel] = useState<Group | null>(null);
   const rimColor = RARITY_RIM[rarity] ?? RARITY_RIM.Common;
   const frame = framePlacement(size, compact);
+
+  useLayoutEffect(() => {
+    onReadyRef.current = onReady;
+    onErrorRef.current = onError;
+  }, [onReady, onError]);
 
   useEffect(() => {
     let cancelled = false;
@@ -272,16 +279,16 @@ export function GlbTrophy({
         if (fitBounds) fitRootToBounds(gltf.scene, FRAME_PADDING);
         setObjectOpacity(gltf.scene, 0);
         setModel(gltf.scene);
-        onReady?.();
+        onReadyRef.current?.();
       })
       .catch(() => {
-        if (!cancelled) onError?.();
+        if (!cancelled) onErrorRef.current?.();
       });
 
     return () => {
       cancelled = true;
     };
-  }, [url, rarity, fitBounds, onReady, onError]);
+  }, [url, rarity, fitBounds]);
 
   useEffect(() => {
     fadeRef.current = 0;
@@ -316,11 +323,13 @@ export function GlbTrophy({
         intensity={0.6}
         position={[1.4, 1.1, -1.5]}
       />
-      <directionalLight
-        color={rimColor}
-        intensity={0.35}
-        position={[0.35, 0.9, -1.9]}
-      />
+      {rarity === "Legendary" ? null : (
+        <directionalLight
+          color={rimColor}
+          intensity={0.35}
+          position={[0.35, 0.9, -1.9]}
+        />
+      )}
       {size === "large" ? (
         <mesh
           rotation-x={-Math.PI / 2}

@@ -198,19 +198,25 @@ export function TrophyCanvas({
     />
   ) : null;
 
+  const fillFrame = isSmall || fitBounds;
+  const stageStyle = {
+    width: "100%",
+    height: fitBounds ? "auto" : "100%",
+    ...(fillFrame ? {} : { minHeight: "400px" }),
+    ...(fitBounds ? { flex: "1 1 0", minHeight: 0 } : {}),
+    position: "relative" as const,
+  };
+
   if (!mounted) {
     return (
       <div
         className={className}
         style={{
-          width: "100%",
-          height: "100%",
-          ...(isSmall ? {} : { minHeight: "400px" }),
+          ...stageStyle,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           background: transparent ? "transparent" : "#1A1A19",
-          position: "relative",
         }}
       >
         {posterImage ?? (
@@ -233,11 +239,8 @@ export function TrophyCanvas({
     <div
       className={className}
       style={{
-        width: "100%",
-        height: "100%",
-        ...(isSmall ? {} : { minHeight: "400px" }),
+        ...stageStyle,
         touchAction: isInteractive ? "none" : "auto",
-        position: "relative",
       }}
     >
       <Canvas

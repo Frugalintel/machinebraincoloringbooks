@@ -115,6 +115,30 @@ describe("/scan preview fixtures", () => {
     render(<ScanPage />);
     expect(screen.getByRole("heading", { name: "Basic." })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Pro." })).toBeNull();
+    expect(screen.getByText(/Trophy · Basic/i)).toBeInTheDocument();
+    expect(screen.getByText(/moves up to Basic/)).toBeInTheDocument();
+  });
+
+  it("opens Rare, Pro and Legendary trophy aliases from preview", () => {
+    scan.search = "preview=rare";
+    const rare = render(<ScanPage />);
+    expect(screen.getByRole("heading", { name: "Rare." })).toBeInTheDocument();
+    expect(screen.getByText(/Trophy · Rare/i)).toBeInTheDocument();
+    expect(screen.getByText(/moves up to Rare/)).toBeInTheDocument();
+    rare.unmount();
+
+    scan.search = "preview=pro";
+    const pro = render(<ScanPage />);
+    expect(screen.getByRole("heading", { name: "Pro." })).toBeInTheDocument();
+    expect(screen.getByText(/Trophy · Pro/i)).toBeInTheDocument();
+    pro.unmount();
+
+    scan.search = "preview=legendary";
+    render(<ScanPage />);
+    expect(
+      screen.getByRole("heading", { name: "Legendary." }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Legendary found/i)).toBeInTheDocument();
   });
 
   it.each(["photo", "photo-preview"] as const)(

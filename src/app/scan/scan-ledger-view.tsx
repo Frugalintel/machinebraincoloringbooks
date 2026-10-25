@@ -26,6 +26,7 @@ import {
   plateLabel,
   sampleNote,
   scanChrome,
+  scanH1Fit,
   storyBarWidth,
   tierTrophyPosterUrl,
   tierTrophyUrl,
@@ -49,26 +50,6 @@ const CELL_CLASS: Record<PlateCell, string> = {
   verified: "f",
   now: "now",
   legendary: "leg",
-};
-
-/** Fitted sizes from the locked C-ledger mockups (`--fd` / `--fm`). */
-const H1_FIT: Record<ScanViewState, { fd: string; fm: string }> = {
-  "signed-out-book": { fd: "9.65vw", fm: "15vw" },
-  "signed-out-code": { fd: "11.05vw", fm: "15vw" },
-  "camera-off": { fd: "9.93vw", fm: "15vw" },
-  index: { fd: "9.65vw", fm: "15vw" },
-  registered: { fd: "9.31vw", fm: "15vw" },
-  code: { fd: "11.05vw", fm: "15vw" },
-  "code-added": { fd: "12.59vw", fm: "15vw" },
-  photo: { fd: "9.31vw", fm: "15vw" },
-  "photo-preview": { fd: "13.09vw", fm: "15vw" },
-  pending: { fd: "21.88vw", fm: "15vw" },
-  verified: { fd: "13.60vw", fm: "15vw" },
-  "tier-reached": { fd: "23.61vw", fm: "15vw" },
-  "legendary-found": { fd: "10.19vw", fm: "15vw" },
-  "code-only-before": { fd: "12.21vw", fm: "15vw" },
-  collected: { fd: "11.80vw", fm: "15vw" },
-  invalid: { fd: "10.61vw", fm: "15vw" },
 };
 
 export type ScanLedgerHandlers = {
@@ -112,7 +93,7 @@ export function ScanLedgerView({
   cameraSlot?: ReactNode;
   handlers: ScanLedgerHandlers;
 }) {
-  const chrome = scanChrome(state);
+  const chrome = scanChrome(state, { trophyTier: snapshot.trophyTier });
   const plate = snapshot.activePlate;
   const folio = plate ? folioLine(plate.plate, plate.code) : "";
   const showPhotoRun = state === "photo" || state === "photo-preview";
@@ -168,16 +149,12 @@ export function ScanLedgerView({
               className="h1"
               style={
                 {
-                  "--fd": H1_FIT[state].fd,
-                  "--fm": H1_FIT[state].fm,
+                  "--fd": scanH1Fit(state, snapshot.trophyTier).fd,
+                  "--fm": scanH1Fit(state, snapshot.trophyTier).fm,
                 } as CSSProperties
               }
             >
-              {state === "tier-reached" &&
-              snapshot.trophyTier &&
-              snapshot.trophyTier !== "Pro"
-                ? `${snapshot.trophyTier}.`
-                : chrome.h1}
+              {chrome.h1}
             </h1>
             {showPhotoRun ? (
               <>
@@ -296,7 +273,7 @@ function LeftPanel({
   handlers: ScanLedgerHandlers;
 }) {
   const plate = snapshot.activePlate;
-  const chrome = scanChrome(state);
+  const chrome = scanChrome(state, { trophyTier: snapshot.trophyTier });
   const trophyTier =
     snapshot.trophyTier ??
     (state === "legendary-found"

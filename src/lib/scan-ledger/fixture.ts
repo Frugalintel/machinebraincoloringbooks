@@ -265,6 +265,7 @@ export function fixtureSnapshot(
           title: "Plate 31",
           bookTitle: SAMPLE_SILVER.title,
         },
+        trophyTier: options.trophyTier ?? "Legendary",
       };
     default: {
       const _exhaustive: never = state;

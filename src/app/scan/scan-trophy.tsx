@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type ComponentType } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentType,
+} from "react";
 
 type TrophyCanvasProps = {
   className?: string;
@@ -92,6 +98,7 @@ export function ScanTrophy({
   }, [near]);
 
   const poster = posterUrl ?? undefined;
+  const handleReady = useCallback(() => setReady(true), []);
 
   return (
     <div
@@ -103,6 +110,7 @@ export function ScanTrophy({
       {stamp ? <p className="stamp mono">{stamp}</p> : null}
       {TrophyCanvas ? (
         <TrophyCanvas
+          className="trophy-stage"
           size="large"
           rarity={rarity}
           autoRotate={!reducedMotion}
@@ -114,7 +122,7 @@ export function ScanTrophy({
           frameloop={reducedMotion || !visible ? "demand" : "always"}
           powerPreference="default"
           fitBounds
-          onReady={() => setReady(true)}
+          onReady={handleReady}
         />
       ) : poster ? (
         // Poster is a static still; next/image is not required for this wait state.

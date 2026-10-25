@@ -52,6 +52,7 @@ export {
   plateCellLabel,
   sampleNote,
   scanChrome,
+  scanH1Fit,
   systemErrorMessage,
   trophyPlateCaption,
 } from "@/lib/scan-ledger/copy";

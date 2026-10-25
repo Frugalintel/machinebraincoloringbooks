@@ -26,12 +26,16 @@ const PREVIEW_ALIASES: Record<string, ScanViewState> = {
   "points-code": "code-added",
   "points-photo": "pending",
   basic: "tier-reached",
+  pro: "tier-reached",
   rare: "tier-reached",
+  legendary: "legendary-found",
 };
 
 const TROPHY_PREVIEW_TIERS: Record<string, TrophyTierName> = {
   basic: "Basic",
+  pro: "Pro",
   rare: "Rare",
+  legendary: "Legendary",
 };
 
 export function scanPreview(

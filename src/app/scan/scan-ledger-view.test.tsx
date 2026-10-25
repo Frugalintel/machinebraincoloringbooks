@@ -97,6 +97,17 @@ describe("ScanLedgerView wallet and photo register", () => {
     ).toBeInTheDocument();
   });
 
+  it("uses Basic chrome on the Basic trophy fixture", () => {
+    renderView(
+      "tier-reached",
+      fixtureSnapshot("tier-reached", { trophyTier: "Basic" }),
+    );
+    expect(screen.getByRole("heading", { name: "Basic." })).toBeInTheDocument();
+    expect(screen.getByText(/Trophy · Basic/i)).toBeInTheDocument();
+    expect(screen.getByText(/moves up to Basic/)).toBeInTheDocument();
+    expect(screen.queryByText(/moves up to Pro/)).toBeNull();
+  });
+
   it("captions the legendary trophy as a hidden page", () => {
     renderView("legendary-found");
     expect(
