@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  HELP_ART,
+  HELP_CONTACT_LEAD,
   HELP_FAQ,
   HELP_HOW_LINES,
   HELP_PLACEHOLDERS,
@@ -26,8 +28,30 @@ describe("Help copy lock", () => {
     expect(HELP_REGISTER_BODY).toContain(HOME_ENTER_COPY.register.slice(0, -1));
     expect(HELP_STEPS[0]?.body).toBe(HELP_REGISTER_BODY);
     expect(HELP_STEPS[1]?.body).toContain(
-      HOME_ENTER_COPY.lead.split(". ")[0] + ".",
+      "Every page has a code, printed at the foot beside the plate number",
     );
+    expect(HELP_STEPS[2]?.body).toContain("Two points a page at most");
+    expect(HELP_STEPS[3]?.body).not.toMatch(/Legendary/);
+    expect(HELP_ART.pageLine.src).toBe("/help/page-half.webp");
+  });
+
+  it("uses curly apostrophes in spoken copy", () => {
+    const spokenCopy = [
+      HELP_CONTACT_LEAD,
+      ...HELP_STEPS.map((step) => step.body),
+      ...HELP_FAQ.flatMap((group) =>
+        group.questions.flatMap((question) => [
+          question.question,
+          ...question.answer.flatMap((paragraph) =>
+            paragraph
+              .filter((part) => part.type === "text")
+              .map((part) => part.text),
+          ),
+        ]),
+      ),
+    ].join("\n");
+    expect(spokenCopy).not.toMatch(/[A-Za-z]'[A-Za-z]/);
+    expect(spokenCopy).toMatch(/\u2019/);
   });
 
   it("keeps every open item marked Placeholder ·", () => {
@@ -47,7 +71,12 @@ describe("Help copy lock", () => {
   });
 
   it("does not speak as we in help source", () => {
-    const files = ["lib/help.ts", "app/help/page.tsx", "app/help/help-faq.tsx"];
+    const files = [
+      "lib/help.ts",
+      "app/help/page.tsx",
+      "app/help/layout.tsx",
+      "app/help/help-faq.tsx",
+    ];
     for (const file of files) {
       const text = spoken(readFileSync(join(SRC, file), "utf8"));
       expect(text, file).not.toMatch(/\b[Ww]e\b/);

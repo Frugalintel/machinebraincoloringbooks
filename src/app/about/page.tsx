@@ -163,13 +163,15 @@ export default function AboutPage() {
       </section>
 
       <section className="spread-beyond" aria-labelledby="about-beyond-h">
-        <Image
-          className="bimg"
-          src={ABOUT_ART.glasshouse.src}
-          alt={ABOUT_BEYOND_COPY.artAlt}
-          fill
-          sizes="100vw"
-        />
+        <div className="bimg-wrap">
+          <Image
+            className="bimg"
+            src={ABOUT_ART.glasshouse.src}
+            alt={ABOUT_BEYOND_COPY.artAlt}
+            fill
+            sizes="100vw"
+          />
+        </div>
         <div className="spread-bx">
           <h2 id="about-beyond-h" className="spread-big">
             {ABOUT_BEYOND_COPY.lines.map((line) => (

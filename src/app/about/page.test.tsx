@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import AboutLayout from "@/app/about/layout";
 import AboutPage from "@/app/about/page";
 import { SAMPLE_BOOKS } from "@/lib/home";
 
@@ -21,7 +22,8 @@ describe("About (A · Spread)", () => {
     });
     expect(codes).toHaveAttribute("href", "/help#codes");
     expect(container.textContent).toMatch(/code is \+1 point/i);
-    expect(container.textContent).toMatch(/optional verified photo/i);
+    expect(container.textContent).toMatch(/verified photo is \+1 more/i);
+    expect(container.textContent).toMatch(/collectible drawn for your copy/i);
 
     expect(container.textContent).not.toMatch(/\bwe\b/i);
     expect(container.textContent).not.toMatch(/!/);
@@ -35,6 +37,21 @@ describe("About (A · Spread)", () => {
     }
     expect(screen.getByText(/titles, covers and art · sample/i)).toBeVisible();
     expect(container.textContent).not.toMatch(/@sample|Instagram|Pinterest/);
+  });
+
+  it("owns the Take your time plate and wraps the glasshouse", () => {
+    const { container } = render(
+      <AboutLayout>
+        <AboutPage />
+      </AboutLayout>,
+    );
+
+    expect(container.querySelector("footer.ft")).not.toBeNull();
+    expect(container.textContent).toMatch(/Take your/);
+    expect(container.querySelector("footer.site-footer")).toBeNull();
+    expect(container.textContent).not.toMatch(/Coloring books with secrets/);
+    expect(container.querySelector(".bimg-wrap")).not.toBeNull();
+    expect(container.querySelector(".bimg-wrap .bimg")).not.toBeNull();
   });
 
   it("serves rasters through next/image with sizes", () => {

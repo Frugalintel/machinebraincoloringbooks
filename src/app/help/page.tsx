@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { HOME_CODES_COPY } from "@/lib/home";
@@ -22,12 +21,6 @@ import {
 } from "@/lib/help";
 import { HelpFaq } from "./help-faq";
 import { SampleQr } from "./sample-qr";
-import "./help.css";
-
-export const metadata: Metadata = {
-  title: "Help · Machine Brain",
-  description: HELP_LEDE,
-};
 
 function StepArt({ step }: { step: HelpStep }) {
   switch (step.art) {
@@ -86,7 +79,7 @@ function StepArt({ step }: { step: HelpStep }) {
 
 export default function HelpPage() {
   return (
-    <div className="help-a">
+    <>
       <main>
         <section className="help-hero" aria-labelledby="help-title">
           <p className="help-eye mono">
@@ -172,6 +165,6 @@ export default function HelpPage() {
           </div>
         </section>
       </main>
-    </div>
+    </>
   );
 }

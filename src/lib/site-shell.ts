@@ -106,6 +106,35 @@ export function isScanPath(pathname: string): boolean {
   return pathname === "/scan" || pathname.startsWith("/scan/");
 }
 
+export function isAboutPath(pathname: string): boolean {
+  return pathname === "/about" || pathname.startsWith("/about/");
+}
+
+export function isHelpPath(pathname: string): boolean {
+  return pathname === "/help" || pathname.startsWith("/help/");
+}
+
+export function isStorePath(pathname: string): boolean {
+  return pathname === "/store" || pathname.startsWith("/store/");
+}
+
+/**
+ * Pages that own the "Take your time." HomeFooter plate.
+ * Keep this in lockstep with the layouts that render <HomeFooter />.
+ */
+export function usesHomeFooterPlate(pathname: string): boolean {
+  return (
+    pathname === "/" ||
+    pathname === "/auth" ||
+    isAboutPath(pathname) ||
+    isHelpPath(pathname) ||
+    isStorePath(pathname) ||
+    isStoriesPath(pathname) ||
+    isCollectiblesPath(pathname) ||
+    isScanPath(pathname)
+  );
+}
+
 export function overlayLinksFor(pathname: string): readonly SiteLink[] {
   if (
     isStoriesPath(pathname) ||
@@ -156,12 +185,8 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   return "full";
 }
 
-export function isStorePath(pathname: string): boolean {
-  return pathname === "/store" || pathname.startsWith("/store/");
-}
-
 export function hidesCustomerFooter(pathname: string): boolean {
-  return headerVariantFor(pathname) !== "full";
+  return usesHomeFooterPlate(pathname) || headerVariantFor(pathname) !== "full";
 }
 
 export function cartLabel(count: number): string {

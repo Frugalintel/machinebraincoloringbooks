@@ -9,6 +9,7 @@ import {
   isOverlayLinkCurrent,
   isStorePath,
   overlayLinksFor,
+  usesHomeFooterPlate,
 } from "@/lib/site-shell";
 
 describe("site shell routes", () => {
@@ -53,9 +54,23 @@ describe("site shell routes", () => {
 describe("headerVariantFor", () => {
   it("uses the full chrome on customer pages outside home, the store, stories, and collectibles", () => {
     expect(headerVariantFor("/help")).toBe("full");
+    expect(headerVariantFor("/about")).toBe("full");
     expect(headerVariantFor("/trophy-room")).toBe("full");
-    expect(hidesCustomerFooter("/help")).toBe(false);
+    expect(headerVariantFor("/privacy")).toBe("full");
     expect(hidesCustomerFooter("/trophy-room")).toBe(false);
+    expect(hidesCustomerFooter("/privacy")).toBe(false);
+    expect(hidesCustomerFooter("/licenses")).toBe(false);
+  });
+
+  it("gives /about and /help the HomeFooter plate and hides the customer footer", () => {
+    expect(usesHomeFooterPlate("/about")).toBe(true);
+    expect(usesHomeFooterPlate("/help")).toBe(true);
+    expect(usesHomeFooterPlate("/")).toBe(true);
+    expect(usesHomeFooterPlate("/privacy")).toBe(false);
+    expect(usesHomeFooterPlate("/collectibles")).toBe(true);
+    expect(hidesCustomerFooter("/about")).toBe(true);
+    expect(hidesCustomerFooter("/help")).toBe(true);
+    expect(hidesCustomerFooter("/help/")).toBe(true);
   });
 
   it("gives collectibles the stories nav and lets the page own its footer", () => {

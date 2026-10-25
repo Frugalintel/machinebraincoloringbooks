@@ -29,7 +29,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="border-t border-line bg-background text-fg-muted font-sans">
+    <footer className="site-footer border-t border-line bg-background text-fg-muted font-sans">
       <div className="container mx-auto grid grid-cols-1 gap-12 px-4 py-14 md:grid-cols-4 md:px-6">
         <div className="flex flex-col justify-between">
           <div>

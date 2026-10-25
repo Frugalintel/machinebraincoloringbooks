@@ -21,6 +21,10 @@ const REAL_ROUTES = [
   "/help",
   "/privacy",
   "/terms",
+  "/licenses",
+  "/auth?mode=login",
+  "/auth?mode=register",
+  "/orders/lookup",
 ];
 
 function renderHome(vercelEnv: string) {

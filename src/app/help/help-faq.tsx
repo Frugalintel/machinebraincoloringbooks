@@ -71,7 +71,7 @@ export function HelpFaq() {
           return (
             <section
               key={group.id}
-              className="help-grp"
+              className="help-grp help-topic"
               id={group.id}
               hidden={!shown}
               data-topic={group.id}

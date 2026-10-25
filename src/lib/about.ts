@@ -79,10 +79,10 @@ export const ABOUT_WORLDS_COPY = {
 
 export const ABOUT_BEYOND_COPY = {
   lines: ["The book", "opens onto", "more."] as const,
-  body: "The code on the back cover and the codes at the foot of each page lead further in. A code is +1 point; an optional verified photo is +1 more.",
+  body: "The code on the back cover and the codes at the foot of each page lead further in: a collectible drawn for your copy, a trophy that grows as you color, and stories. A code is +1 point; a verified photo is +1 more.",
   primary: { label: "See the books", href: ABOUT_ROUTES.books },
   codes: { label: "How codes and points work", href: ABOUT_ROUTES.codes },
-  artAlt: "A glasshouse at dusk, a fox at the door (sample world art)",
+  artAlt: "A glasshouse at dusk (sample world art)",
 } as const;
 
 export const ABOUT_STUDIO_COPY = {
