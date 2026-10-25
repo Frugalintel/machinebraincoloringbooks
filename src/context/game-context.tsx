@@ -16,6 +16,7 @@ import {
   type CollectibleItem,
 } from "@/lib/game-data";
 import { supabase } from "@/lib/supabase";
+import { catalogSlugFromStoredId } from "@/lib/collectible-unlock";
 import { useAuth } from "@/context/auth-context";
 import { logger } from "@/lib/logger";
 import type {
@@ -418,7 +419,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         logger.error("Error fetching collectibles:", collectiblesResult.error);
       }
       const unlockedItemIds = new Set(
-        collectiblesResult.data?.map((c) => c.collectible_id) || [],
+        collectiblesResult.data?.map((c) =>
+          catalogSlugFromStoredId(c.collectible_id),
+        ) || [],
       );
       const mergedSets = initialSets.map((set) => {
         const localCollected = new Set(set.collected);
@@ -434,7 +437,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       // Build timestamps
       const timestamps: Record<string, CollectibleTimestamps> = {};
       collectiblesResult.data?.forEach((c) => {
-        timestamps[c.collectible_id] = {
+        timestamps[catalogSlugFromStoredId(c.collectible_id)] = {
           unlockedAt: c.collected_at,
           lastPolishedAt: c.last_polished_at,
         };

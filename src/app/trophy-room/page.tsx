@@ -19,6 +19,7 @@ import { useGame } from "@/context/game-context";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/context/toast-context";
 import { supabase } from "@/lib/supabase";
+import { resolveCollectibleUnlockFromDb } from "@/lib/collectible-unlock";
 import { logger } from "@/lib/logger";
 
 // Dynamic import for Three.js to avoid SSR issues
@@ -101,30 +102,16 @@ export default function TrophyRoomPage() {
 
       // 4. Handle Reward
       if (codeData.unlocks_type === "collectible" && codeData.unlocks_id) {
-        // Find which set this collectible belongs to
-        let targetSetId: string | null = null;
-        for (const set of collectionSets) {
-          if (set.items.find((i) => i.id === codeData.unlocks_id)) {
-            targetSetId = set.id;
-            break;
-          }
-        }
+        const unlocked = await resolveCollectibleUnlockFromDb(
+          supabase,
+          codeData.unlocks_id,
+        );
 
-        if (targetSetId) {
-          unlockItem(targetSetId, codeData.unlocks_id);
+        if (unlocked) {
+          unlockItem(unlocked.setId, unlocked.slug);
           success("Artifact Unlocked!");
-          // Check if set is now complete?
-          // The unlockItem updates local state, but we might not have the updated state immediately here.
-          // We'll show the set reward if they just completed it, but determining that here is complex.
-          // Let's just show a success message or the reward if it was the last one.
-          // Simplified: Show the collectible name or generic success.
           setUnlockedReward("Artifact Acquired");
         } else {
-          // Fallback if local set data doesn't match DB ID
-          // Just insert into DB (unlockItem does this too but we need setId)
-          // If we can't find the set locally, we can't update local UI correctly without a refresh.
-          // But we already inserted into user_codes.
-          // We should ensure unlockItem works even if set not found? No, it relies on sets.
           logger.warn("Unlocked item not found in local sets:", {
             unlocks_id: codeData.unlocks_id,
           });

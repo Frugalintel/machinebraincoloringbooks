@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Unlock, Loader2, Check, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { resolveCollectibleUnlockFromDb } from "@/lib/collectible-unlock";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/context/toast-context";
 import { Button } from "@/components/ui/button";
@@ -146,13 +147,19 @@ export function CodeEntry() {
           window.dispatchEvent(new Event("story-unlocked"));
         }
       } else if (codeData.unlocks_type === "collectible") {
-        await supabase.from("user_collectibles").insert([
-          {
-            user_id: user.id,
-            collectible_id: codeData.unlocks_id,
-          },
-        ]);
-        unlockMsg = "New Collectible Unlocked!";
+        const unlocked = await resolveCollectibleUnlockFromDb(
+          supabase,
+          codeData.unlocks_id,
+        );
+        if (unlocked) {
+          await supabase.from("user_collectibles").insert([
+            {
+              user_id: user.id,
+              collectible_id: unlocked.slug,
+            },
+          ]);
+          unlockMsg = "New Collectible Unlocked!";
+        }
       } else if (codeData.unlocks_type === "achievement") {
         await supabase.from("user_achievements").insert([
           {
