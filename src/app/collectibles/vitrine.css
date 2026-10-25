@@ -691,6 +691,7 @@
 
 .home-e2.vitrine .dh .nm1 {
   order: 0;
+  z-index: 3;
 }
 
 .home-e2.vitrine .nm1 {
@@ -966,7 +967,7 @@
 
   .home-e2.vitrine .dstage .canvas {
     width: min(760px, 92vw) !important;
-    bottom: 0 !important;
+    bottom: 14% !important;
   }
 
   .home-e2.vitrine .nm1 {
