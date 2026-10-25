@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Footer } from "@/components/footer";
+import { HomeFooter } from "@/components/home-footer";
 import { FOOTER_LINK_GROUPS, SITE_SOCIAL_LINKS } from "@/lib/site-shell";
 
 const nav = vi.hoisted(() => ({ pathname: "/" }));
@@ -68,6 +69,20 @@ describe("Footer", () => {
       expect(container).toBeEmptyDOMElement();
       unmount();
     }
+  });
+
+  it("lists Collectibles under Shop and Trophy Room under Unlocks", () => {
+    render(<HomeFooter samples={false} />);
+
+    const shop = screen.getByRole("navigation", { name: "Shop" });
+    expect(
+      within(shop).getByRole("link", { name: "Collectibles" }),
+    ).toHaveAttribute("href", "/collectibles");
+
+    const unlocks = screen.getByRole("navigation", { name: "Unlocks" });
+    expect(
+      within(unlocks).getByRole("link", { name: "Trophy Room" }),
+    ).toHaveAttribute("href", "/trophy-room");
   });
 
   it("does not paint orange fills or an orange Brain wordmark", () => {
