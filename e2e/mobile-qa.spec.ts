@@ -183,15 +183,6 @@ for (const width of [390, 360] as const) {
           expect(pill?.height).toBeLessThanOrEqual(34);
           expect(hit?.height).toBeGreaterThanOrEqual(44);
         }
-
-        if (entry.path === "/about") {
-          const cart = page.locator("header").getByRole("button", {
-            name: /Cart/,
-          });
-          const box = await cart.boundingBox();
-          expect(box?.height).toBeGreaterThanOrEqual(38);
-          expect(box?.height).toBeLessThanOrEqual(42);
-        }
       }
     });
   });

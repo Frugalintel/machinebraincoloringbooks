@@ -58,7 +58,7 @@ describe("site shell routes", () => {
 });
 
 describe("headerVariantFor", () => {
-  it("keeps the approved full header on customer routes outside the home nav", () => {
+  it("uses the compact solid header on customer routes other than home and sign-in", () => {
     for (const path of [
       "/help",
       "/about",
@@ -73,7 +73,7 @@ describe("headerVariantFor", () => {
       "/storyteller",
       "/stores",
     ]) {
-      expect(headerVariantFor(path)).toBe("full");
+      expect(headerVariantFor(path)).toBe("solid");
     }
     expect(headerVariantFor("/")).toBe("overlay");
     expect(headerVariantFor("/auth")).toBe("overlay");
@@ -114,7 +114,7 @@ describe("headerVariantFor", () => {
   it("gives collectibles the stories nav and lets the page own its footer", () => {
     expect(headerVariantFor("/collectibles")).toBe("solid");
     expect(headerVariantFor("/collectibles/rover-x")).toBe("solid");
-    expect(headerVariantFor("/collectible")).toBe("full");
+    expect(headerVariantFor("/collectible")).toBe("solid");
     expect(hidesCustomerFooter("/collectibles")).toBe(true);
     expect(hidesCustomerFooter("/collectibles/rover-x")).toBe(true);
     expect(overlayLinksFor("/collectibles").map((link) => link.name)).toEqual([
@@ -143,7 +143,7 @@ describe("headerVariantFor", () => {
   it("gives stories the store nav, plus Stories, and lets the page own its footer", () => {
     expect(headerVariantFor("/stories")).toBe("solid");
     expect(headerVariantFor("/stories/lantern")).toBe("solid");
-    expect(headerVariantFor("/storyteller")).toBe("full");
+    expect(headerVariantFor("/storyteller")).toBe("solid");
     expect(hidesCustomerFooter("/stories")).toBe(true);
     expect(hidesCustomerFooter("/stories/lantern")).toBe(true);
     expect(overlayLinksFor("/stories").map((link) => link.name)).toEqual([
@@ -172,7 +172,7 @@ describe("headerVariantFor", () => {
   it("gives the store Home's nav on a solid bar and lets it own its footer", () => {
     expect(headerVariantFor("/store")).toBe("solid");
     expect(headerVariantFor("/store/1")).toBe("solid");
-    expect(headerVariantFor("/stores")).toBe("full");
+    expect(headerVariantFor("/stores")).toBe("solid");
     expect(isStorePath("/store")).toBe(true);
     expect(isStorePath("/store/abc")).toBe(true);
     expect(isStorePath("/storefront")).toBe(false);

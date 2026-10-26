@@ -326,7 +326,6 @@ function FullHeader() {
               aria-label={cartLabel(cartCount)}
               className={cn(
                 "relative inline-flex h-10 items-center gap-2 border border-line-strong px-3 text-[14px] font-semibold text-cream hover:bg-cream hover:text-ink",
-                "before:absolute before:-inset-y-[3px] before:inset-x-0 before:content-['']",
                 SHELL_FOCUS,
               )}
             >
