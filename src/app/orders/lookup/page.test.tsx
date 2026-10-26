@@ -29,7 +29,9 @@ describe("Order lookup", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Look up" }));
 
-    expect(screen.getByText(/Tracking isn't live yet/)).toBeInTheDocument();
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent(/Tracking isn't live yet/);
+    expect(status).toHaveFocus();
     expect(
       screen.getByRole("link", { name: "Orders and shipping" }),
     ).toHaveAttribute("href", "/help#orders");

@@ -1,10 +1,16 @@
+import { readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   FOOTER_LINK_GROUPS,
+  HOME_FOOTER_ROUTES,
+  LEGACY_FOOTER_ROUTES,
   SITE_NAV_LINKS,
   SITE_SOCIAL_LINKS,
   headerVariantFor,
   hidesCustomerFooter,
+  isAdminPath,
+  isMinimalChromePath,
   isNavLinkActive,
   isOverlayLinkCurrent,
   isStorePath,
@@ -94,11 +100,12 @@ describe("headerVariantFor", () => {
       expect(usesHomeFooterPlate(path)).toBe(true);
       expect(hidesCustomerFooter(path)).toBe(true);
     }
-    expect(usesHomeFooterPlate("/game")).toBe(false);
-    expect(hidesCustomerFooter("/game")).toBe(false);
-    expect(usesHomeFooterPlate("/profile/me")).toBe(false);
-    expect(usesHomeFooterPlate("/achievements")).toBe(false);
+    expect(usesHomeFooterPlate("/game")).toBe(true);
+    expect(hidesCustomerFooter("/game")).toBe(true);
+    expect(usesHomeFooterPlate("/profile/me")).toBe(true);
+    expect(usesHomeFooterPlate("/achievements")).toBe(true);
     expect(usesHomeFooterPlate("/dev/components")).toBe(false);
+    expect(hidesCustomerFooter("/dev/components")).toBe(false);
     expect(hidesCustomerFooter("/admin")).toBe(true);
     expect(usesHomeFooterPlate("/admin")).toBe(false);
     expect(hidesCustomerFooter("/review")).toBe(true);
@@ -228,5 +235,62 @@ describe("isNavLinkActive", () => {
     expect(isNavLinkActive("/store", "/store")).toBe(true);
     expect(isNavLinkActive("/store/1", "/store")).toBe(true);
     expect(isNavLinkActive("/stories", "/store")).toBe(false);
+  });
+});
+
+function pageRoutes(dir: string, parts: string[] = []): string[] {
+  const routes: string[] = [];
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name);
+    if (statSync(full).isDirectory()) {
+      if (name.startsWith("(") && name.endsWith(")")) {
+        routes.push(...pageRoutes(full, parts));
+      } else {
+        const segment = name.startsWith("[") ? "example" : name;
+        routes.push(...pageRoutes(full, [...parts, segment]));
+      }
+      continue;
+    }
+    if (name === "page.tsx") {
+      routes.push(parts.length === 0 ? "/" : `/${parts.join("/")}`);
+    }
+  }
+  return routes;
+}
+
+function listed(pathname: string, routes: readonly string[]): boolean {
+  return routes.some((route) =>
+    route === "/"
+      ? pathname === "/"
+      : pathname === route || pathname.startsWith(`${route}/`),
+  );
+}
+
+describe("footer registration", () => {
+  it("names every page as a plate, the legacy footer, or hidden chrome", () => {
+    const pages = pageRoutes(join(process.cwd(), "src/app"));
+    const missed = pages.filter((route) => {
+      if (isAdminPath(route) || isMinimalChromePath(route)) return false;
+      if (listed(route, LEGACY_FOOTER_ROUTES)) return false;
+      if (listed(route, HOME_FOOTER_ROUTES)) return false;
+      return true;
+    });
+    expect(missed).toEqual([]);
+
+    for (const route of pages) {
+      if (isAdminPath(route) || isMinimalChromePath(route)) {
+        expect(hidesCustomerFooter(route)).toBe(true);
+        expect(usesHomeFooterPlate(route)).toBe(false);
+      } else if (listed(route, LEGACY_FOOTER_ROUTES)) {
+        expect(usesHomeFooterPlate(route)).toBe(false);
+        expect(hidesCustomerFooter(route)).toBe(false);
+      } else {
+        expect(usesHomeFooterPlate(route)).toBe(true);
+        expect(hidesCustomerFooter(route)).toBe(true);
+      }
+    }
+
+    expect(usesHomeFooterPlate("/zz-not-a-page")).toBe(true);
+    expect(hidesCustomerFooter("/dev")).toBe(false);
   });
 });

@@ -121,30 +121,50 @@ export function isStorePath(pathname: string): boolean {
 }
 
 /**
- * Real pages that still render the legacy footer.
- * Trophy room, legal, order lookup, and unknown URLs (the 404) own HomeFooter.
+ * Routes whose layout (or page) renders <HomeFooter />.
+ * A new page must be added here or to LEGACY_FOOTER_ROUTES.
+ * site-shell.test.ts fails until that happens.
  */
-function keepsLegacyFooter(pathname: string): boolean {
-  return (
-    pathname === "/game" ||
-    pathname.startsWith("/game/") ||
-    pathname === "/achievements" ||
-    pathname.startsWith("/achievements/") ||
-    pathname === "/profile" ||
-    pathname.startsWith("/profile/") ||
-    pathname === "/dev" ||
-    pathname.startsWith("/dev/")
-  );
+export const HOME_FOOTER_ROUTES = [
+  "/",
+  "/auth",
+  "/about",
+  "/help",
+  "/store",
+  "/stories",
+  "/collectibles",
+  "/scan",
+  "/trophy-room",
+  "/privacy",
+  "/terms",
+  "/licenses",
+  "/orders/lookup",
+  "/game",
+  "/achievements",
+  "/profile",
+] as const;
+
+/** Real pages that still render the legacy footer. /dev is internal. */
+export const LEGACY_FOOTER_ROUTES = ["/dev"] as const;
+
+function matchesRoute(pathname: string, route: string): boolean {
+  if (route === "/") return pathname === "/";
+  return pathname === route || pathname.startsWith(`${route}/`);
 }
 
 /**
- * Pages that own the "Take your time." HomeFooter plate.
- * Keep this in lockstep with the layouts that render <HomeFooter />.
- * Unknown customer URLs render root not-found, which owns the plate too.
+ * Pages that own the "Take your time." plate.
+ * Listed routes opt in. /dev keeps the legacy footer.
+ * Any other URL is the root 404, which also renders the plate.
  */
 export function usesHomeFooterPlate(pathname: string): boolean {
   if (isAdminPath(pathname) || isMinimalChromePath(pathname)) return false;
-  if (keepsLegacyFooter(pathname)) return false;
+  if (LEGACY_FOOTER_ROUTES.some((route) => matchesRoute(pathname, route))) {
+    return false;
+  }
+  if (HOME_FOOTER_ROUTES.some((route) => matchesRoute(pathname, route))) {
+    return true;
+  }
   return true;
 }
 

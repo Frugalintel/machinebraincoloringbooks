@@ -22,7 +22,7 @@ vi.mock("next/navigation", () => ({
 
 describe("Footer", () => {
   beforeEach(() => {
-    nav.pathname = "/game";
+    nav.pathname = "/dev";
   });
 
   it("renders grouped links, legal, and the F3 lockup", () => {
@@ -83,6 +83,9 @@ describe("Footer", () => {
       "/zz-not-a-page",
       "/about",
       "/help",
+      "/game",
+      "/achievements",
+      "/profile/me",
     ]) {
       nav.pathname = path;
       const { container, unmount } = render(<Footer />);
@@ -91,7 +94,7 @@ describe("Footer", () => {
     }
   });
 
-  it("keeps the legacy footer on /game without the retired lines", () => {
+  it("keeps the legacy footer on /dev without the retired lines", () => {
     nav.pathname = "/about";
     const { container, rerender, unmount } = render(<Footer />);
     expect(container).toBeEmptyDOMElement();
@@ -100,7 +103,7 @@ describe("Footer", () => {
     rerender(<Footer />);
     expect(container).toBeEmptyDOMElement();
 
-    nav.pathname = "/game";
+    nav.pathname = "/dev";
     rerender(<Footer />);
     expect(container.querySelector("footer.site-footer")).not.toBeNull();
     expect(container.textContent).not.toMatch(/Coloring books with secrets/);

@@ -1,7 +1,10 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MOCK_CATALOG } from "@/__tests__/store-catalog";
-import { ProductClient } from "@/app/store/[id]/product-client";
+import {
+  ProductClient,
+  inlineBuyIsAboveViewport,
+} from "@/app/store/[id]/product-client";
 
 const shop = vi.hoisted(() => ({
   addItem: vi.fn(),
@@ -137,66 +140,57 @@ describe("Product page", () => {
     expect(shop.setIsCartOpen).toHaveBeenCalledTimes(2);
   });
 
-  it("shows the fixed buy bar only once the buy panel has left the screen", () => {
-    let onIntersect: IntersectionObserverCallback | undefined;
-    const disconnect = vi.fn();
-    class Observer {
-      constructor(callback: IntersectionObserverCallback) {
-        onIntersect = callback;
-      }
-      observe = vi.fn();
-      unobserve = vi.fn();
-      disconnect = disconnect;
-      takeRecords = () => [];
-      root = null;
-      rootMargin = "";
-      thresholds = [];
-    }
-    vi.stubGlobal("IntersectionObserver", Observer);
+  it("shows the fixed buy bar whenever the inline box is above the viewport", () => {
+    expect(inlineBuyIsAboveViewport({ bottom: 900, height: 80 })).toBe(false);
+    expect(inlineBuyIsAboveViewport({ bottom: 0, height: 0 })).toBe(false);
+    expect(inlineBuyIsAboveViewport({ bottom: -1, height: 80 })).toBe(true);
 
     const { container } = renderBook(classics);
+    const panel = container.querySelector(".buyb") as HTMLElement;
     const bar = container.querySelector(".mbar") as HTMLElement;
     expect(bar.classList.contains("is-on")).toBe(false);
 
+    const rect = {
+      bottom: 900,
+      height: 80,
+      top: 820,
+      left: 0,
+      right: 100,
+      width: 100,
+      x: 0,
+      y: 820,
+      toJSON() {
+        return this;
+      },
+    };
+    vi.spyOn(panel, "getBoundingClientRect").mockReturnValue(rect as DOMRect);
+
     act(() => {
-      onIntersect?.(
-        [
-          {
-            isIntersecting: false,
-            boundingClientRect: { bottom: 900 },
-          } as IntersectionObserverEntry,
-        ],
-        {} as IntersectionObserver,
-      );
+      window.dispatchEvent(new Event("scroll"));
     });
     expect(bar.classList.contains("is-on")).toBe(false);
 
+    rect.bottom = -1;
+    rect.top = -81;
     act(() => {
-      onIntersect?.(
-        [
-          {
-            isIntersecting: false,
-            boundingClientRect: { bottom: -1 },
-          } as IntersectionObserverEntry,
-        ],
-        {} as IntersectionObserver,
-      );
+      window.dispatchEvent(new Event("scroll"));
     });
     expect(bar.classList.contains("is-on")).toBe(true);
     expect(bar).not.toHaveAttribute("aria-hidden");
 
+    rect.bottom = 2400;
+    rect.top = 2320;
     act(() => {
-      onIntersect?.(
-        [
-          {
-            isIntersecting: true,
-            boundingClientRect: { bottom: 400 },
-          } as IntersectionObserverEntry,
-        ],
-        {} as IntersectionObserver,
-      );
+      window.dispatchEvent(new Event("scroll"));
     });
     expect(bar.classList.contains("is-on")).toBe(false);
+
+    rect.bottom = -40;
+    rect.top = -120;
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
+    expect(bar.classList.contains("is-on")).toBe(true);
   });
 
   it("falls back to a labelled typographic cover in production", () => {

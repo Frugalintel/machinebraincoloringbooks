@@ -20,8 +20,6 @@ export function HomeFooter({ samples }: { samples: boolean }) {
           width={HOME_ART.lineCream.width}
           height={HOME_ART.lineCream.height}
           alt=""
-          sizes="(max-width: 760px) 100vw, 50vw"
-          // The optimizer re-encodes this line plate larger than the source.
           unoptimized
         />
         <p className="say">

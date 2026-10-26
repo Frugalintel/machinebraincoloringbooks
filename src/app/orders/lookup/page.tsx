@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 
 export default function OrderLookupPage() {
   const [orderNumber, setOrderNumber] = useState("");
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const noteRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (submitted) noteRef.current?.focus();
+  }, [submitted]);
 
   const handleLookup = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -18,7 +23,7 @@ export default function OrderLookupPage() {
       <p className="mono shell-kicker text-signal">Orders</p>
       <h1 className="shell-h font-display">Order tracking.</h1>
       {submitted ? (
-        <div className="shell-note">
+        <div ref={noteRef} className="shell-note" role="status" tabIndex={-1}>
           <p>
             Tracking isn&apos;t live yet. Your confirmation email has your order
             details.

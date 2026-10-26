@@ -46,6 +46,15 @@ const UNLOCKS = [
   { figure: "2", unit: "pts", hidden: "2 pts", copy: PRODUCT_COPY.scan },
 ] as const;
 
+/** True once the inline buy box sits fully above the viewport, including a jump. */
+export function inlineBuyIsAboveViewport(rect: {
+  bottom: number;
+  height: number;
+}): boolean {
+  if (rect.height <= 0) return false;
+  return rect.bottom <= 0;
+}
+
 interface ProductClientProps {
   product: Product;
   samples?: boolean;
@@ -160,18 +169,17 @@ export function ProductClient({
 
   useEffect(() => {
     const panel = buyPanel.current;
-    if (!panel || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // Show the bar only once the inline buy box has scrolled above
-        // the viewport. A box still below the fold is not "away" yet.
-        const above = entry.boundingClientRect.bottom <= 0;
-        setBuyAway(above && !entry.isIntersecting);
-      },
-      { threshold: 0 },
-    );
-    observer.observe(panel);
-    return () => observer.disconnect();
+    if (!panel) return;
+    const update = () => {
+      setBuyAway(inlineBuyIsAboveViewport(panel.getBoundingClientRect()));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, []);
 
   useEffect(() => {
