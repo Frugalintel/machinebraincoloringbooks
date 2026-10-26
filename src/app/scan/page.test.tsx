@@ -40,10 +40,14 @@ describe("/scan entry from the home code form", () => {
     scan.search = "mode=code&code=+ab12+";
     render(<ScanPage />);
     expect(screen.getByPlaceholderText("Code")).toHaveValue("AB12");
+    expect(screen.getByPlaceholderText("Code").tagName).toBe("INPUT");
     expect(screen.queryByRole("button", { name: /add \+1/i })).toBeNull();
     expect(
-      screen.getAllByRole("link", { name: /sign in/i })[0],
+      screen.getByRole("link", { name: /sign in to count/i }),
     ).toHaveAttribute("href", "/auth?mode=login&next=/scan");
+    expect(
+      screen.getAllByText("Sign in and this code counts toward your book."),
+    ).toHaveLength(1);
   });
 
   it("looks the code up in its normalized form", async () => {
@@ -64,6 +68,26 @@ describe("/scan entry from the home code form", () => {
     fireEvent.submit(field.closest("form")!);
 
     await waitFor(() => expect(eq).toHaveBeenCalledWith("code", "XY9"));
+  });
+
+  it("submits the page code when Enter is pressed in the field", async () => {
+    scan.search = "mode=code";
+    const maybeSingle = vi.fn(async () => ({
+      data: null,
+      error: { message: "x" },
+    }));
+    const eq = vi.fn(() => ({ maybeSingle, single: maybeSingle }));
+    vi.mocked(supabase.from).mockReturnValueOnce({
+      select: vi.fn(() => ({ eq })),
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    render(<ScanPage />);
+    const field = screen.getByPlaceholderText("Code");
+    fireEvent.change(field, { target: { value: "7kq2\n" } });
+    expect(field).toHaveValue("7KQ2");
+    fireEvent.keyDown(field, { key: "Enter" });
+
+    await waitFor(() => expect(eq).toHaveBeenCalledWith("code", "7KQ2"));
   });
 
   it("tells a signed-out reader the code looks valid without leaking the plate", async () => {
@@ -149,8 +173,9 @@ describe("/scan preview fixtures", () => {
     expect(screen.queryByText("Wallet · for stories")).toBeNull();
     expect(screen.queryByText(/WALLET/i)).toBeNull();
     expect(
-      screen.getAllByRole("link", { name: /sign in/i })[0],
-    ).toHaveAttribute("href", "/auth?mode=login&next=/scan");
+      screen.getByText("Sign in to keep this book and its unlock."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/this code counts/i)).toBeNull();
     expect(screen.queryByText(/not on this build/i)).toBeNull();
     expect(screen.queryByText(/XP/i)).toBeNull();
   });
@@ -236,6 +261,22 @@ describe("/scan camera start", () => {
 
     await waitFor(() => expect(getUserMedia).toHaveBeenCalled());
   });
+
+  it("opens insecure and no-camera fixtures from preview aliases", () => {
+    scan.search = "preview=camera-insecure";
+    const insecure = render(<ScanPage />);
+    expect(screen.getByText("Not secure")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /turn on camera/i }),
+    ).toBeNull();
+    insecure.unmount();
+
+    scan.search = "preview=camera-none";
+    render(<ScanPage />);
+    expect(screen.getByText("No camera")).toBeInTheDocument();
+    expect(screen.queryByText("Not secure")).toBeNull();
+    expect(screen.queryByText("Blocked")).toBeNull();
+  });
 });
 
 describe("/scan source guardrails", () => {
@@ -254,13 +295,15 @@ describe("/scan source guardrails", () => {
     expect(source).not.toMatch(/readAsDataURL/);
   });
 
-  it("lets long page codes wrap instead of clipping", () => {
+  it("sizes long page codes to one line instead of clipping", () => {
     const css = readFileSync(
       join(process.cwd(), "src/app/scan/scan-ledger.css"),
       "utf8",
     );
-    expect(css).toMatch(/word-break:\s*break-all/);
+    expect(css).toMatch(/--len/);
+    expect(css).toMatch(/min\(clamp\(48px, 8vw, 150px\)/);
     expect(css).toMatch(/overflow-wrap:\s*anywhere/);
+    expect(css).not.toMatch(/word-break:\s*break-all/);
     const headline = css.match(/\.home-e2\.scan-c \.h1 \{[\s\S]*?\n\}/);
     expect(headline?.[0]).toMatch(/overflow:\s*visible/);
     expect(headline?.[0]).not.toMatch(/overflow:\s*hidden/);

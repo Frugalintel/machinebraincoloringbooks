@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   SCAN_PREVIEW_STATES,
   scanPreview,
+  scanPreviewCameraIssue,
   scanPreviewTrophyTier,
 } from "@/lib/scan-ledger/preview";
 import { fixtureSnapshot } from "@/lib/scan-ledger/fixture";
@@ -19,6 +20,18 @@ describe("scanPreview", () => {
     }
     expect(scanPreview(true, "qr")).toBe("index");
     expect(scanPreview(true, "nope")).toBeNull();
+    expect(scanPreview(true, "camera-insecure")).toBe("camera-off");
+    expect(scanPreview(true, "camera-none")).toBe("camera-off");
+    expect(scanPreviewCameraIssue(true, "camera-insecure")).toEqual({
+      kind: "insecure",
+    });
+    expect(scanPreviewCameraIssue(true, "camera-none")).toEqual({
+      kind: "not-found",
+    });
+    expect(scanPreviewCameraIssue(true, "camera-off")).toEqual({
+      kind: "denied",
+    });
+    expect(scanPreviewCameraIssue(false, "camera-insecure")).toBeNull();
   });
 
   it("opens Basic and Rare trophy fixtures without enabling them in production", () => {

@@ -61,11 +61,11 @@ describe("cameraIssueCopy", () => {
     ).toMatch(/Safari/);
   });
 
-  it("explains a missing camera and surfaces other error text", () => {
+  it("explains a missing camera and uses fixed copy for other errors", () => {
     expect(cameraIssueCopy({ kind: "not-found" }).title).toBe("No camera");
     expect(
       cameraIssueCopy({ kind: "error", message: "Track failed" }).body,
-    ).toBe("Track failed");
+    ).toBe("The camera didn't start. Type a page code instead.");
   });
 });
 

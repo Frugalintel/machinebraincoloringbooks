@@ -182,9 +182,45 @@ describe("ScanLedgerView signed-out code, camera, plate, and preview", () => {
     expect(container.querySelector(".bal")).toBeNull();
     expect(screen.queryByText("Wallet · for stories")).toBeNull();
     expect(screen.queryByRole("button", { name: /add \+1/i })).toBeNull();
+    expect(
+      screen.getAllByText("Sign in and this code counts toward your book."),
+    ).toHaveLength(1);
+    expect(
+      screen.queryByText(/it is not added while you are signed out/i),
+    ).toBeNull();
     const signIn = screen.getAllByRole("link", { name: /sign in/i });
-    expect(signIn.length).toBeGreaterThan(0);
+    expect(signIn).toHaveLength(1);
     expect(signIn[0]).toHaveAttribute("href", "/auth?mode=login&next=/scan");
+  });
+
+  it("uses book copy on a signed-out camera page, not code copy", () => {
+    renderView("camera-off", {
+      ...fixtureSnapshot("camera-off"),
+      signedIn: false,
+    });
+    expect(
+      screen.getByText("Sign in to keep this book and its unlock."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/this code counts/i)).toBeNull();
+  });
+
+  it("shows · sample on fixture photos only", () => {
+    const fixture = renderView(
+      "photo-preview",
+      fixtureSnapshot("photo-preview"),
+      { capturedUrl: "blob:http://localhost/user-photo" },
+    );
+    expect(screen.getAllByText("Your photo · sample").length).toBeGreaterThan(
+      0,
+    );
+    fixture.unmount();
+    renderView(
+      "photo-preview",
+      { ...fixtureSnapshot("photo-preview"), sample: false },
+      { capturedUrl: "blob:http://localhost/user-photo" },
+    );
+    expect(screen.getAllByText("Your photo").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Your photo · sample")).toBeNull();
   });
 
   it("shows only the camera issue that applies and hides start when it cannot work", () => {

@@ -1,4 +1,5 @@
 import { CAMERA_INSECURE } from "@/lib/scan-ledger/copy";
+import { logger } from "@/lib/logger";
 
 export type CameraIssue =
   | { kind: "insecure" }
@@ -12,6 +13,8 @@ export const CAMERA_BLOCKED_SAFARI =
   "Settings › Safari › Camera › Allow, then reload.";
 export const CAMERA_NO_CAMERA =
   "No camera was found. Type a page code instead.";
+export const CAMERA_FAILED =
+  "The camera didn't start. Type a page code instead.";
 
 function errorName(error: unknown): string {
   if (error && typeof error === "object" && "name" in error) {
@@ -44,8 +47,11 @@ export function classifyCameraError(error: unknown): CameraIssue {
     case "OverconstrainedError":
     case "ConstraintNotSatisfiedError":
       return { kind: "not-found" };
-    default:
-      return { kind: "error", message: errorMessage(error) };
+    default: {
+      const message = errorMessage(error);
+      logger.error("scan camera error", error, { message });
+      return { kind: "error", message };
+    }
   }
 }
 
@@ -80,7 +86,7 @@ export function cameraIssueCopy(
     case "error":
       return {
         title: "Camera",
-        body: issue.message,
+        body: CAMERA_FAILED,
       };
     default: {
       const _exhaustive: never = issue;
@@ -106,12 +112,11 @@ export async function requestCameraAccess(input: {
     return { ok: false, issue: { kind: "insecure" } };
   }
   if (!input.getUserMedia) {
+    const message = "Camera is not available in this browser.";
+    logger.error("scan camera error", message);
     return {
       ok: false,
-      issue: {
-        kind: "error",
-        message: "Camera is not available in this browser.",
-      },
+      issue: { kind: "error", message },
     };
   }
   try {

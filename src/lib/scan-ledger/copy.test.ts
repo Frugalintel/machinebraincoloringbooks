@@ -3,8 +3,12 @@ import {
   CELL_LABEL,
   PHOTO_OPTIONAL,
   SCAN_SIGN_IN_ACTION,
-  SCAN_SIGN_IN_HINT,
+  SCAN_SIGN_IN_BOOK_HINT,
+  SCAN_SIGN_IN_CODE_HINT,
   SCAN_SIGN_IN_HREF,
+  invalidCodeMessage,
+  photoPreviewTag,
+  signedOutScanHint,
   SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
   codeInMessage,
@@ -74,10 +78,32 @@ describe("scan ledger copy", () => {
 
   it("points a signed-out reader at /auth without promising a count", () => {
     expect(SCAN_SIGN_IN_HREF).toBe("/auth?mode=login&next=/scan");
-    expect(SCAN_SIGN_IN_HINT).toMatch(/sign in/i);
-    expect(SCAN_SIGN_IN_HINT).not.toMatch(/wallet · for stories/i);
     expect(SCAN_SIGN_IN_ACTION).toMatch(/sign in/i);
     expect(SCAN_SIGN_IN_ACTION).not.toMatch(/add \+1/i);
+    expect(SCAN_SIGN_IN_CODE_HINT).toBe(
+      "Sign in and this code counts toward your book.",
+    );
+    expect(SCAN_SIGN_IN_BOOK_HINT).toBe(
+      "Sign in to keep this book and its unlock.",
+    );
+    expect(signedOutScanHint("code")).toBe(SCAN_SIGN_IN_CODE_HINT);
+    expect(signedOutScanHint("camera-off")).toBe(SCAN_SIGN_IN_BOOK_HINT);
+    expect(signedOutScanHint("index")).toBe(SCAN_SIGN_IN_BOOK_HINT);
+    expect(SCAN_SIGN_IN_CODE_HINT).not.toMatch(/\bwe\b|!|XP/i);
+    expect(SCAN_SIGN_IN_BOOK_HINT).not.toMatch(/\bwe\b|!|XP/i);
+    expect(SCAN_SIGN_IN_BOOK_HINT).not.toMatch(/\bcode\b/i);
+  });
+
+  it("uses Machine Brain book wording for an invalid code", () => {
+    expect(invalidCodeMessage("7KQ3")).toBe(
+      "7KQ3 isn't in any Machine Brain book. Check the letters by the page number.",
+    );
+    expect(invalidCodeMessage("7KQ3")).not.toMatch(/our books/i);
+  });
+
+  it("marks sample only on fixture photo tags", () => {
+    expect(photoPreviewTag(true)).toBe("Your photo · sample");
+    expect(photoPreviewTag(false)).toBe("Your photo");
   });
 
   it("derives tier-reached chrome and H1 fit from the trophy tier", () => {

@@ -16,8 +16,10 @@ export const SCAN_WALLET_FROM_POINTS = "Wallet · from your points";
 export const SCAN_BOOK_TROPHY_LABEL = "This book · trophy";
 export const SCAN_SIGN_IN_HREF = "/auth?mode=login&next=/scan";
 export const SCAN_SIGN_IN_ACTION = "Sign in to count";
-export const SCAN_SIGN_IN_HINT =
-  "Sign in to count this code. It is not added while you are signed out.";
+export const SCAN_SIGN_IN_CODE_HINT =
+  "Sign in and this code counts toward your book.";
+export const SCAN_SIGN_IN_BOOK_HINT =
+  "Sign in to keep this book and its unlock.";
 
 export const CELL_LABEL: Record<PlateCell, string> = {
   empty: "not added",
@@ -383,7 +385,39 @@ export function scanChrome(
 }
 
 export function invalidCodeMessage(code: string): string {
-  return `${code} isn't in any of our books. Check the letters by the page number.`;
+  return `${code} isn't in any Machine Brain book. Check the letters by the page number.`;
+}
+
+export function signedOutScanHint(state: ScanViewState): string | null {
+  switch (state) {
+    case "code":
+    case "signed-out-code":
+    case "invalid":
+      return SCAN_SIGN_IN_CODE_HINT;
+    case "signed-out-book":
+    case "index":
+    case "camera-off":
+      return SCAN_SIGN_IN_BOOK_HINT;
+    case "registered":
+    case "code-added":
+    case "photo":
+    case "photo-preview":
+    case "pending":
+    case "verified":
+    case "tier-reached":
+    case "legendary-found":
+    case "code-only-before":
+    case "collected":
+      return null;
+    default: {
+      const _exhaustive: never = state;
+      return _exhaustive;
+    }
+  }
+}
+
+export function photoPreviewTag(sample: boolean): string {
+  return sample ? "Your photo · sample" : "Your photo";
 }
 
 export function collectedMessage(plate: string): string {

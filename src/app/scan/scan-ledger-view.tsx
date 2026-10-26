@@ -14,8 +14,9 @@ import {
   SCAN_BOOK_TROPHY_LABEL,
   SCAN_OPT_LINE,
   SCAN_SIGN_IN_ACTION,
-  SCAN_SIGN_IN_HINT,
   SCAN_SIGN_IN_HREF,
+  photoPreviewTag,
+  signedOutScanHint,
   SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
   cameraIssueCopy,
@@ -180,14 +181,8 @@ export function ScanLedgerView({
                 ) : null}
                 {chrome.lede ? <p className="lede">{chrome.lede}</p> : null}
               </>
-            ) : !snapshot.signedIn ? (
-              <div className="bnote">
-                <p className="lede">
-                  <Link href={SCAN_SIGN_IN_HREF}>{SCAN_SIGN_IN_ACTION}</Link>
-                  {" — "}
-                  {SCAN_SIGN_IN_HINT}
-                </p>
-              </div>
+            ) : !snapshot.signedIn && signedOutScanHint(state) ? (
+              <p className="lede">{signedOutScanHint(state)}</p>
             ) : hideWallet ? (
               chrome.lede ? (
                 <p className="lede">{chrome.lede}</p>
@@ -293,7 +288,10 @@ function LeftPanel({
 }) {
   const plate = snapshot.activePlate;
   const chrome = ledgerChrome(state, snapshot);
-  const caption = plateScanCaption(state, plate?.plate);
+  const caption =
+    state === "photo-preview"
+      ? photoPreviewTag(snapshot.sample)
+      : plateScanCaption(state, plate?.plate);
   const cameraCopy = cameraIssue
     ? cameraIssueCopy(
         cameraIssue,
@@ -554,7 +552,7 @@ function LeftPanel({
                 <span className="grid9" aria-hidden="true" />
                 <span className="folio-code mono">{folio}</span>
               </div>
-              <p className="camtag mono">Your photo · sample</p>
+              <p className="camtag mono">{photoPreviewTag(snapshot.sample)}</p>
             </div>
             <p className="pcap mono">{caption}</p>
           </div>
@@ -657,7 +655,7 @@ function CodeForm({
   handlers: ScanLedgerHandlers;
 }) {
   const bad = state === "invalid";
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const prompt =
     notice ??
     (state === "invalid"
@@ -684,22 +682,37 @@ function CodeForm({
           {`${plate.bookTitle} · plate ${plate.plate}`}
         </p>
       ) : null}
-      <div className={`cin c ${bad ? "bad" : ""}`}>
+      <div
+        className={`cin c ${bad ? "bad" : ""}`}
+        style={{ "--len": Math.max(typedCode.length, 1) } as CSSProperties}
+      >
         <label className="mono" htmlFor="pc-c">
           Code by the page number
         </label>
-        <textarea
+        <input
           ref={inputRef}
           id="pc-c"
           value={typedCode}
           placeholder="Code"
           maxLength={20}
-          rows={1}
           autoComplete="off"
           autoCapitalize="characters"
           spellCheck={false}
           aria-invalid={bad || undefined}
           onChange={(event) => handlers.onCodeChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter") return;
+            event.preventDefault();
+            const form = event.currentTarget.form;
+            if (!form) return;
+            if (typeof form.requestSubmit === "function") {
+              form.requestSubmit();
+              return;
+            }
+            form.dispatchEvent(
+              new Event("submit", { bubbles: true, cancelable: true }),
+            );
+          }}
         />
       </div>
       {prompt ? (
@@ -778,9 +791,7 @@ function CodeForm({
           </>
         )}
       </div>
-      {!signedIn ? (
-        <p className="opt mono">{SCAN_SIGN_IN_HINT}</p>
-      ) : state === "code" || state === "signed-out-code" ? (
+      {signedIn && (state === "code" || state === "signed-out-code") ? (
         <p className="opt mono">{SCAN_OPT_LINE}</p>
       ) : null}
     </form>

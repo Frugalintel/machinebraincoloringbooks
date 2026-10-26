@@ -24,6 +24,7 @@ import {
   requestCameraAccess,
   revokeCapturedImageUrl,
   scanPreview,
+  scanPreviewCameraIssue,
   scanPreviewTrophyTier,
   signedOutCodeMessage,
   stopCameraStream,
@@ -73,11 +74,9 @@ function initialState(
 
 export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   const params = useSearchParams();
-  const preview = scanPreview(allowFixture, params.get("preview"));
-  const previewTrophyTier = scanPreviewTrophyTier(
-    allowFixture,
-    params.get("preview"),
-  );
+  const previewParam = params.get("preview");
+  const preview = scanPreview(allowFixture, previewParam);
+  const previewTrophyTier = scanPreviewTrophyTier(allowFixture, previewParam);
   const entry = scanEntryFromParams(params);
   const { user, openAuthModal } = useAuth();
   const { success, error: toastError } = useToast();
@@ -115,10 +114,9 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   );
   const [capturedImage, setCapturedImage] = useState<Blob | null>(null);
   const [cameraOn, setCameraOn] = useState(preview === "index");
-  const [cameraIssue, setCameraIssue] = useState<CameraIssue | null>(() => {
-    if (preview === "camera-off") return { kind: "denied" };
-    return null;
-  });
+  const [cameraIssue, setCameraIssue] = useState<CameraIssue | null>(() =>
+    scanPreviewCameraIssue(allowFixture, previewParam),
+  );
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ title: string; body: string } | null>(
@@ -418,7 +416,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
           void startCamera();
         },
         onCodeChange: (value) => {
-          setTypedCode(value.toUpperCase());
+          setTypedCode(value.replace(/[\r\n]/g, "").toUpperCase());
           if (state === "invalid") {
             setState("code");
             setNotice(null);

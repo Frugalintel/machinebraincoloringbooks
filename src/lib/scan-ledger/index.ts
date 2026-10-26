@@ -17,6 +17,7 @@ export {
   SCAN_PREVIEW_STATES,
   isScanPreviewState,
   scanPreview,
+  scanPreviewCameraIssue,
   scanPreviewTrophyTier,
 } from "@/lib/scan-ledger/preview";
 export {
@@ -43,7 +44,8 @@ export {
   SCAN_OPT_LINE,
   SCAN_SAMPLE_NOTE,
   SCAN_SIGN_IN_ACTION,
-  SCAN_SIGN_IN_HINT,
+  SCAN_SIGN_IN_BOOK_HINT,
+  SCAN_SIGN_IN_CODE_HINT,
   SCAN_SIGN_IN_HREF,
   SCAN_SPEND_NOTE,
   SCAN_WALLET_FROM_POINTS,
@@ -52,7 +54,9 @@ export {
   collectedMessage,
   invalidCodeMessage,
   signedOutCodeMessage,
+  signedOutScanHint,
   legendaryPlateCaption,
+  photoPreviewTag,
   plateCellLabel,
   plateScanCaption,
   sampleNote,
@@ -80,6 +84,7 @@ export {
 export {
   CAMERA_BLOCKED_GENERIC,
   CAMERA_BLOCKED_SAFARI,
+  CAMERA_FAILED,
   CAMERA_NO_CAMERA,
   cameraCanStart,
   cameraIssueCopy,
