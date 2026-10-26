@@ -32,6 +32,7 @@ export {
   normalizeBookCode,
   plateIndex,
   plateLabel,
+  profileProgressFromLedger,
   storyBarWidth,
 } from "@/lib/scan-ledger/state";
 export {
@@ -47,6 +48,7 @@ export {
   SCAN_SIGN_IN_BOOK_HINT,
   SCAN_SIGN_IN_CODE_HINT,
   SCAN_SIGN_IN_HREF,
+  scanSignInHref,
   SCAN_SPEND_NOTE,
   SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
@@ -97,6 +99,7 @@ export {
 export {
   booksFromExistingRows,
   createLiveAdapter,
+  loadLedger,
   registerBookStubMessage,
   walletFromProfile,
 } from "@/lib/scan-ledger/live";

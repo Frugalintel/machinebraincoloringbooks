@@ -18,6 +18,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { catalogSlugFromStoredId } from "@/lib/collectible-unlock";
 import { useAuth } from "@/context/auth-context";
+import { gameFetchPlan } from "@/lib/game-user-queries";
 import { logger } from "@/lib/logger";
 import type {
   Story,
@@ -161,7 +162,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 // ============================================================================
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
 
   // === COLLECTIBLES STATE ===
   const [collectionSets, setCollectionSets] =
@@ -339,7 +340,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   // ============================================================================
 
   const fetchUserData = useCallback(async () => {
-    if (!user?.id) {
+    if (authLoading) return;
+    const userId = user?.id;
+    if (gameFetchPlan(userId).userTables.length === 0) {
       // Reset to defaults when logged out
       setCollectionSets(initialSets);
       setAchievements(initialAchievements);
@@ -369,15 +372,15 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         supabase
           .from("user_achievements")
           .select("achievement_id")
-          .eq("user_id", user.id),
+          .eq("user_id", userId),
         supabase
           .from("user_collectibles")
           .select("collectible_id, collected_at, last_polished_at")
-          .eq("user_id", user.id),
+          .eq("user_id", userId),
         supabase
           .from("user_active_achievements")
           .select("achievement_ids")
-          .eq("user_id", user.id)
+          .eq("user_id", userId)
           .maybeSingle(),
         supabase.from("stories").select("*").eq("is_published", true),
         supabase
@@ -385,20 +388,20 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           .select(
             "story_id, current_node_id, completed_nodes, is_completed, started_at, completed_at, xp_earned, strikes, gates_skipped",
           )
-          .eq("user_id", user.id),
+          .eq("user_id", userId),
         supabase
           .from("profiles")
           .select("total_xp, collector_score, achievement_score")
-          .eq("id", user.id)
+          .eq("id", userId)
           .maybeSingle(),
         supabase
           .from("user_books")
           .select("*, product:products(*)")
-          .eq("user_id", user.id),
+          .eq("user_id", userId),
         supabase
           .from("user_trophy_customizations")
           .select("*")
-          .eq("user_id", user.id),
+          .eq("user_id", userId),
       ]);
 
       // Process achievements
@@ -537,7 +540,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id]);
+  }, [authLoading, user?.id]);
 
   useEffect(() => {
     fetchUserData();

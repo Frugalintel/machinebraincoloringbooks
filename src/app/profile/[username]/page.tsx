@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Settings,
   Box,
@@ -24,6 +24,12 @@ import { useAuth } from "@/context/auth-context";
 import { useGame } from "@/context/game-context";
 import { AchievementCard } from "@/components/achievements/achievement-card";
 import type { CollectibleItem } from "@/lib/game-data";
+import {
+  loadLedger,
+  profileProgressFromLedger,
+  type ScanLedgerSnapshot,
+} from "@/lib/scan-ledger";
+import { supabase } from "@/lib/supabase";
 
 // Dynamic import for 3D trophy canvas
 const TrophyCanvas = dynamic(
@@ -41,11 +47,26 @@ export default function ProfilePage() {
     activeAchievementIds,
     collectibleTimestamps,
   } = useGame();
+  const [ledger, setLedger] = useState<ScanLedgerSnapshot | null>(null);
 
   const leavingForHome = useRef(false);
   useEffect(() => {
     if (signingOut) leavingForHome.current = true;
   }, [signingOut]);
+
+  useEffect(() => {
+    if (!user?.id) {
+      setLedger(null);
+      return;
+    }
+    let cancelled = false;
+    void loadLedger(supabase, user.id).then((next) => {
+      if (!cancelled) setLedger(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
   useEffect(() => {
     // signingOut flips back to false while replace("/") is still in flight.
@@ -84,6 +105,7 @@ export default function ProfilePage() {
   const displayedAchievements = achievements.filter((ach) =>
     activeAchievementIds.includes(ach.id),
   );
+  const ledgerProgress = profileProgressFromLedger(ledger);
 
   return (
     <main className="min-h-screen bg-background text-cream font-sans">
@@ -156,7 +178,7 @@ export default function ProfilePage() {
           <div className="flex gap-8 mb-6 text-center border-l border-line pl-8 hidden md:flex">
             <div>
               <p className="font-heading text-3xl font-bold text-cream">
-                {achievements.filter((a) => a.unlocked).length}
+                {ledgerProgress.plateCount}
               </p>
               <p className=" text-fg-muted tracking-widest uppercase font-label">
                 Badges
@@ -164,13 +186,18 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="font-heading text-3xl font-bold text-cream">
-                {collectionSets.reduce(
-                  (acc, set) => acc + set.collected.length,
-                  0,
-                )}
+                {ledgerProgress.bookCount}
               </p>
               <p className=" text-fg-muted tracking-widest uppercase font-label">
                 Artifacts
+              </p>
+            </div>
+            <div>
+              <p className="font-heading text-3xl font-bold text-cream">
+                {ledgerProgress.pendingCount}
+              </p>
+              <p className=" text-fg-muted tracking-widest uppercase font-label">
+                Pending
               </p>
             </div>
           </div>
@@ -341,6 +368,45 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </div>
+
+              {ledger?.books.length ? (
+                <div className="grid gap-6">
+                  {ledger.books.map((book) => {
+                    const filled = book.plates.filter(
+                      (cell) => cell !== "empty" && cell !== "now",
+                    ).length;
+                    const progress = book.plateCount
+                      ? (filled / book.plateCount) * 100
+                      : 0;
+                    return (
+                      <div
+                        key={book.id}
+                        className="border border-line bg-background p-4 relative group hover:border-line-strong transition-colors"
+                      >
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="font-heading text-lg text-cream ">
+                            {book.title}
+                          </h3>
+                          <span className="font-mono text-xs text-primary">
+                            {filled}/{book.plateCount}
+                          </span>
+                        </div>
+                        <div className="h-1 bg-surface-2 w-full mb-2">
+                          <div
+                            style={{ width: `${progress}%` }}
+                            className="h-full bg-cream/80"
+                          ></div>
+                        </div>
+                        {book.pendingCount > 0 ? (
+                          <p className="font-label uppercase tracking-widest text-fg-muted">
+                            {book.pendingCount} pending
+                          </p>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null}
 
               <div className="grid gap-6">
                 {collectionSets.map((set) => {

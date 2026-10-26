@@ -190,7 +190,10 @@ describe("ScanLedgerView signed-out code, camera, plate, and preview", () => {
     ).toBeNull();
     const signIn = screen.getAllByRole("link", { name: /sign in/i });
     expect(signIn).toHaveLength(1);
-    expect(signIn[0]).toHaveAttribute("href", "/auth?mode=login&next=/scan");
+    expect(signIn[0]).toHaveAttribute(
+      "href",
+      "/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3D7KQ2",
+    );
   });
 
   it("uses book copy on a signed-out camera page, not code copy", () => {

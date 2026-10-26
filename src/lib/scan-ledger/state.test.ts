@@ -5,6 +5,7 @@ import {
   folioLine,
   isPlausiblePageCode,
   normalizeBookCode,
+  profileProgressFromLedger,
   storyBarWidth,
 } from "@/lib/scan-ledger/state";
 import { TIER_NAME_RARE } from "@/lib/scan-tiers";
@@ -69,6 +70,44 @@ describe("deriveBookRow", () => {
     expect(row.tier).toBe("Legendary");
     expect(row.next).toBe(`Includes Basic, Pro and ${TIER_NAME_RARE}`);
     expect(folioLine(7, "7KQ2")).toBe("PL. 07 · 7KQ2");
+  });
+});
+
+describe("profileProgressFromLedger", () => {
+  it("counts filled plates and pending photos the same way /scan does", () => {
+    const book = deriveBookRow({
+      id: "s",
+      title: "The Silver Citadel",
+      plates: [
+        ...Array.from({ length: 7 }, () => "code" as const),
+        ...Array.from({ length: 3 }, () => "pending" as const),
+        ...Array.from({ length: 30 }, () => "empty" as const),
+      ],
+    });
+    expect(
+      profileProgressFromLedger({
+        signedIn: true,
+        sample: false,
+        wallet: { available: false, points: null, source: "unavailable" },
+        story: null,
+        books: [book],
+        showNextBookSlot: false,
+        activePlate: null,
+        unlock: null,
+      }),
+    ).toEqual({
+      plateCount: 10,
+      pendingCount: 3,
+      bookCount: 1,
+    });
+  });
+
+  it("is empty when the ledger has not loaded", () => {
+    expect(profileProgressFromLedger(null)).toEqual({
+      plateCount: 0,
+      pendingCount: 0,
+      bookCount: 0,
+    });
   });
 });
 

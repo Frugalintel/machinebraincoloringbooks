@@ -1,3 +1,4 @@
+import { normalizeBookCode } from "@/lib/scan-params";
 import type { PlateCell, ScanViewState } from "@/lib/scan-ledger/types";
 import type { TrophyTierName } from "@/lib/scan-tiers";
 
@@ -16,6 +17,14 @@ export const SCAN_WALLET_FROM_POINTS = "Wallet · from your points";
 export const SCAN_BOOK_TROPHY_LABEL = "This book · trophy";
 export const SCAN_SIGN_IN_HREF = "/auth?mode=login&next=/scan";
 export const SCAN_SIGN_IN_ACTION = "Sign in to count";
+
+/** Carry a typed page code through /auth so /scan can prefill it after login. */
+export function scanSignInHref(code?: string): string {
+  const normalized = code ? normalizeBookCode(code) : "";
+  if (!normalized) return SCAN_SIGN_IN_HREF;
+  return `/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3D${encodeURIComponent(normalized)}`;
+}
+
 export const SCAN_SIGN_IN_CODE_HINT =
   "Sign in and this code counts toward your book.";
 export const SCAN_SIGN_IN_BOOK_HINT =

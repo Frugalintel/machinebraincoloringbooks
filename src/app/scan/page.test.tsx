@@ -6,16 +6,24 @@ import ScanPage from "@/app/scan/page";
 import { supabase } from "@/lib/supabase";
 
 const scan = vi.hoisted(() => ({ search: "" }));
-const auth = vi.hoisted(() => ({ openAuthModal: vi.fn() }));
+const auth = vi.hoisted(() => ({
+  openAuthModal: vi.fn(),
+  user: null as null | { id: string; email: string },
+}));
+const nav = vi.hoisted(() => ({ push: vi.fn(), back: vi.fn() }));
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn(), back: vi.fn() }),
+  useRouter: () => nav,
   usePathname: () => "/scan",
   useSearchParams: () => new URLSearchParams(scan.search),
 }));
 
 vi.mock("@/context/auth-context", () => ({
-  useAuth: () => ({ user: null, openAuthModal: auth.openAuthModal }),
+  useAuth: () => ({
+    user: auth.user,
+    openAuthModal: auth.openAuthModal,
+    isLoading: false,
+  }),
 }));
 
 vi.mock("@/context/toast-context", () => ({
@@ -25,7 +33,9 @@ vi.mock("@/context/toast-context", () => ({
 describe("/scan entry from the home code form", () => {
   beforeEach(() => {
     scan.search = "";
+    auth.user = null;
     auth.openAuthModal.mockReset();
+    nav.push.mockReset();
   });
 
   it("starts on the camera primer without mode=code", () => {
@@ -44,22 +54,34 @@ describe("/scan entry from the home code form", () => {
     expect(screen.queryByRole("button", { name: /add \+1/i })).toBeNull();
     expect(
       screen.getByRole("link", { name: /sign in to count/i }),
-    ).toHaveAttribute("href", "/auth?mode=login&next=/scan");
+    ).toHaveAttribute(
+      "href",
+      "/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3DAB12",
+    );
     expect(
       screen.getAllByText("Sign in and this code counts toward your book."),
     ).toHaveLength(1);
   });
 
-  it("looks the code up in its normalized form", async () => {
+  it("looks the code up in its normalized form when signed in", async () => {
+    auth.user = { id: "user-1", email: "ada@example.com" };
     scan.search = "mode=code";
     const maybeSingle = vi.fn(async () => ({
       data: null,
       error: { message: "x" },
     }));
-    const eq = vi.fn(() => ({ maybeSingle, single: maybeSingle }));
-    vi.mocked(supabase.from).mockReturnValueOnce({
-      select: vi.fn(() => ({ eq })),
-    } as unknown as ReturnType<typeof supabase.from>);
+    const eq = vi.fn(() => ({
+      maybeSingle,
+      single: maybeSingle,
+      then: (resolve: (value: unknown) => unknown) =>
+        Promise.resolve({ data: [], error: null }).then(resolve),
+    }));
+    vi.mocked(supabase.from).mockImplementation(
+      () =>
+        ({
+          select: vi.fn(() => ({ eq })),
+        }) as unknown as ReturnType<typeof supabase.from>,
+    );
 
     render(<ScanPage />);
     const field = screen.getByPlaceholderText("Code");
@@ -68,15 +90,12 @@ describe("/scan entry from the home code form", () => {
     fireEvent.submit(field.closest("form")!);
 
     await waitFor(() => expect(eq).toHaveBeenCalledWith("code", "XY9"));
+    expect(nav.push).not.toHaveBeenCalled();
   });
 
-  it("submits the page code when Enter is pressed in the field", async () => {
+  it("sends a signed-out Enter to /auth with the typed code instead of looking it up", async () => {
     scan.search = "mode=code";
-    const maybeSingle = vi.fn(async () => ({
-      data: null,
-      error: { message: "x" },
-    }));
-    const eq = vi.fn(() => ({ maybeSingle, single: maybeSingle }));
+    const eq = vi.fn();
     vi.mocked(supabase.from).mockReturnValueOnce({
       select: vi.fn(() => ({ eq })),
     } as unknown as ReturnType<typeof supabase.from>);
@@ -84,9 +103,15 @@ describe("/scan entry from the home code form", () => {
     render(<ScanPage />);
     const field = screen.getByPlaceholderText("Code");
     fireEvent.change(field, { target: { value: "7KQ2" } });
-    fireEvent.keyDown(field, { key: "Enter" });
+    fireEvent.submit(field.closest("form")!);
 
-    await waitFor(() => expect(eq).toHaveBeenCalledWith("code", "7KQ2"));
+    await waitFor(() =>
+      expect(nav.push).toHaveBeenCalledWith(
+        "/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3D7KQ2",
+      ),
+    );
+    expect(eq).not.toHaveBeenCalled();
+    expect(auth.openAuthModal).not.toHaveBeenCalled();
   });
 
   it("strips spaces and newlines from a pasted page code", () => {
@@ -99,51 +124,26 @@ describe("/scan entry from the home code form", () => {
     expect(field).toHaveValue("QA-TESTP01");
   });
 
-  it("tells a signed-out reader the code looks valid without leaking the plate", async () => {
+  it("carries a later typed code on Sign in to count", () => {
     scan.search = "mode=code";
-    const maybeSingle = vi.fn(async () => ({
-      data: {
-        id: "code-1",
-        code: "7KQ2",
-        page_number: 7,
-        is_active: true,
-        products: { id: "p1", title: "The Silver Citadel" },
-      },
-      error: null,
-    }));
-    const eq = vi.fn(() => ({ maybeSingle, single: maybeSingle }));
-    vi.mocked(supabase.from).mockReturnValueOnce({
-      select: vi.fn(() => ({ eq })),
-    } as unknown as ReturnType<typeof supabase.from>);
-
     render(<ScanPage />);
     const field = screen.getByPlaceholderText("Code");
-    fireEvent.change(field, { target: { value: "7KQ2" } });
-    fireEvent.submit(field.closest("form")!);
-
-    await waitFor(() =>
-      expect(auth.openAuthModal).toHaveBeenCalledWith(
-        "login",
-        undefined,
-        "7KQ2",
-        expect.objectContaining({ kind: "page-plus", label: "7KQ2" }),
-      ),
-    );
-    expect(screen.queryByRole("heading", { name: "Counted." })).toBeNull();
-    expect(screen.queryByText(/plate 07/i)).toBeNull();
-    expect(screen.getByText("Code looks valid")).toBeInTheDocument();
+    fireEvent.change(field, { target: { value: " 7kq2 " } });
     expect(
-      screen.getByText(
-        "That code looks valid. Sign in or register the book to count it.",
-      ),
-    ).toBeInTheDocument();
+      screen.getByRole("link", { name: /sign in to count/i }),
+    ).toHaveAttribute(
+      "href",
+      "/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3D7KQ2",
+    );
   });
 });
 
 describe("/scan preview fixtures", () => {
   beforeEach(() => {
     scan.search = "";
+    auth.user = null;
     auth.openAuthModal.mockReset();
+    nav.push.mockReset();
   });
 
   it("keeps signed-in already-counted copy on the code-only-before preview", () => {
@@ -249,7 +249,9 @@ describe("/scan preview fixtures", () => {
 describe("/scan camera start", () => {
   beforeEach(() => {
     scan.search = "";
+    auth.user = null;
     auth.openAuthModal.mockReset();
+    nav.push.mockReset();
   });
 
   it("calls getUserMedia from Turn on camera on a secure page", async () => {

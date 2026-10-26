@@ -1,6 +1,10 @@
 import { normalizeBookCode } from "@/lib/scan-params";
 import { nextTierCopy, tierOf, type TrophyTierName } from "@/lib/scan-tiers";
-import type { BookRow, PlateCell } from "@/lib/scan-ledger/types";
+import type {
+  BookRow,
+  PlateCell,
+  ScanLedgerSnapshot,
+} from "@/lib/scan-ledger/types";
 
 export { normalizeBookCode };
 
@@ -116,6 +120,34 @@ export function deriveCodeOutcome(
   if (existing.scanStatus === "approved") return "collected";
   if (existing.scanStatus === "pending") return "pending";
   return "code-only-before";
+}
+
+export type ProfileLedgerProgress = {
+  plateCount: number;
+  pendingCount: number;
+  bookCount: number;
+};
+
+/** Same plate / pending counts the /scan ledger already derives. */
+export function profileProgressFromLedger(
+  snapshot: ScanLedgerSnapshot | null | undefined,
+): ProfileLedgerProgress {
+  if (!snapshot) {
+    return { plateCount: 0, pendingCount: 0, bookCount: 0 };
+  }
+  let plateCount = 0;
+  let pendingCount = 0;
+  for (const book of snapshot.books) {
+    pendingCount += book.pendingCount;
+    for (const cell of book.plates) {
+      if (cell !== "empty" && cell !== "now") plateCount += 1;
+    }
+  }
+  return {
+    plateCount,
+    pendingCount,
+    bookCount: snapshot.books.length,
+  };
 }
 
 export function storyBarWidth(wallet: number | null, cost: number): number {

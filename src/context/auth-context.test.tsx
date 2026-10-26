@@ -133,6 +133,18 @@ beforeEach(() => {
     return { data: { session: null }, error: null };
   });
 
+  vi.mocked(supabase.auth.getUser).mockImplementation(async () => {
+    if (lockHeld) return neverResolves();
+    return {
+      data: { user: null },
+      error: {
+        name: "AuthSessionMissingError",
+        message: "Auth session missing!",
+        status: 400,
+      },
+    } as Awaited<ReturnType<typeof supabase.auth.getUser>>;
+  });
+
   vi.mocked(supabase.auth.signInWithPassword).mockImplementation(async () => {
     const session = sessionFor(TEST_EMAIL);
     await notify("SIGNED_IN", session);
@@ -261,6 +273,63 @@ describe("AuthProvider password sign-in", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
     expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
     expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
-    releaseSignOut();
+    await act(async () => {
+      releaseSignOut();
+    });
+  });
+
+  it("treats a cached session as signed out when getUser returns no user", async () => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: sessionFor(TEST_EMAIL) },
+      error: null,
+    });
+    vi.mocked(supabase.auth.getUser).mockResolvedValue({
+      data: { user: null },
+      error: {
+        message: "Auth session missing!",
+        name: "AuthError",
+        status: 400,
+      },
+    } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+    vi.mocked(supabase.auth.signOut).mockResolvedValue({ error: null });
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent("guest"),
+    );
+    expect(supabase.auth.getUser).toHaveBeenCalled();
+    expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
+  });
+
+  it("clears chrome on SIGNED_OUT even when a stale session is attached", async () => {
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
+    );
+
+    await act(async () => {
+      listener?.("SIGNED_OUT", sessionFor(TEST_EMAIL));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+
+    await act(async () => {
+      listener?.("TOKEN_REFRESHED", sessionFor(TEST_EMAIL));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
   });
 });
