@@ -265,7 +265,7 @@ export function StoryAccount({
             Sign in <span aria-hidden="true">→</span>
           </button>
           <button type="button" className="quiet" onClick={onRegister}>
-            Create an account
+            Create account
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Footer } from "@/components/footer";
 import { HomeFooter } from "@/components/home-footer";
+import { registerHref, signInHref } from "@/lib/account-chrome";
 import { FOOTER_LINK_GROUPS, SITE_SOCIAL_LINKS } from "@/lib/site-shell";
 
 const nav = vi.hoisted(() => ({
@@ -54,9 +55,15 @@ describe("Footer", () => {
         screen.getByRole("heading", { name: group.heading }),
       ).toBeInTheDocument();
       for (const link of group.links) {
+        const href =
+          link.name === "Sign in"
+            ? signInHref(nav.pathname)
+            : link.name === "Create account"
+              ? registerHref(nav.pathname)
+              : link.href;
         expect(
           screen.getAllByRole("link", { name: link.name })[0],
-        ).toHaveAttribute("href", link.href);
+        ).toHaveAttribute("href", href);
       }
     }
 
@@ -147,10 +154,10 @@ describe("Footer", () => {
     const account = screen.getByRole("navigation", { name: "Account" });
     expect(
       within(account).getByRole("link", { name: "Sign in" }),
-    ).toHaveAttribute("href", "/auth?mode=login");
+    ).toHaveAttribute("href", signInHref(nav.pathname));
     expect(
       within(account).getByRole("link", { name: "Create account" }),
-    ).toHaveAttribute("href", "/auth?mode=register");
+    ).toHaveAttribute("href", registerHref(nav.pathname));
     expect(
       within(account).getByRole("link", { name: "Order lookup" }),
     ).toHaveAttribute("href", "/orders/lookup");

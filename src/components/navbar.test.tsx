@@ -434,6 +434,22 @@ describe("Navbar", () => {
     expect(document.activeElement).toBe(trigger);
   });
 
+  it("caps a long account name on the narrow header", () => {
+    nav.pathname = "/about";
+    nav.user = {
+      email: "ada@example.com",
+      id: "u1",
+      initials: "AL",
+      displayName: "Ada Lovelace the Collector",
+    };
+    render(<Navbar />);
+    const trigger = screen.getByRole("button", {
+      name: "Account, Ada Lovelace the Collector",
+    });
+    expect(trigger).toHaveClass("max-[400px]:max-w-[3rem]");
+    expect(trigger.querySelector("span")).toHaveClass("truncate");
+  });
+
   it("shows the signed-in name and account menu on the home header", () => {
     nav.pathname = "/";
     nav.user = {

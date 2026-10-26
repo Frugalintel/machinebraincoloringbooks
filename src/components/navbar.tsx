@@ -151,7 +151,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
           "flex items-center justify-between",
           solid
             ? "h-16 px-10 max-[760px]:px-5"
-            : "absolute inset-x-0 top-full px-10 py-[26px] max-[760px]:px-5 max-[760px]:py-[18px]",
+            : "absolute inset-x-0 top-full px-10 py-[18px] max-[760px]:px-5 max-[760px]:py-[10px]",
         )}
       >
         <BrandLockup
@@ -159,10 +159,10 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
           wordmark="mono"
           markSize={24}
           ink="cream"
-          className={cn("[&>span]:!gap-3", SHELL_FOCUS)}
+          className={cn("!shrink-0 [&>span]:!gap-3", SHELL_FOCUS)}
           wordmarkClassName="text-[11px] tracking-[0.1em]"
         />
-        <div className="flex min-w-0 items-center gap-9 max-[760px]:gap-4">
+        <div className="flex shrink-0 items-center gap-9 max-[760px]:gap-4 max-[400px]:!gap-[4.5px]">
           <ul
             className={cn(
               HOME_NAV_TEXT,

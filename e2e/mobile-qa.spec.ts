@@ -131,58 +131,106 @@ async function visibleBox(
   return null;
 }
 
+const FILLED_CART = JSON.stringify([
+  {
+    id: "1",
+    title: "Vacuum Pups",
+    price: 12,
+    quantity: 1,
+  },
+]);
+
 for (const width of [390, 360] as const) {
-  test.describe(`header clearance at ${width}`, () => {
+  test.describe(`filled-cart header at ${width}`, () => {
     test.use({ viewport: { width, height: 844 } });
 
-    test("Sign in stays clear of the wordmark", async ({ page }, testInfo) => {
+    test("stays clear signed out and with a long account name", async ({
+      page,
+      context,
+    }, testInfo) => {
       const pages = [
         { path: "/", slug: "home", next: "%2F" },
-        { path: "/store", slug: "store", next: "%2Fstore" },
         { path: "/about", slug: "about", next: "%2Fabout" },
-        { path: "/help", slug: "help", next: "%2Fhelp" },
+        { path: "/store", slug: "store", next: "%2Fstore" },
+        {
+          path: "/this-page-is-not-in-the-catalog",
+          slug: "404",
+          next: "%2Fthis-page-is-not-in-the-catalog",
+        },
       ] as const;
+
+      await context.addInitScript((cart) => {
+        window.localStorage.setItem("machine-brain-cart", cart);
+      }, FILLED_CART);
+
+      const assertClear = async (
+        slug: string,
+        next: string,
+        state: "out" | "name",
+      ) => {
+        const header = page.locator("header");
+        const account = header.locator("a, button").filter({
+          hasText: /Sign in|Ada Lovelace/,
+        });
+        await expect(account.first()).toBeVisible();
+        if (state === "out") {
+          await expect(account.first()).toHaveAttribute(
+            "href",
+            `/auth?mode=login&next=${next}`,
+          );
+        }
+        const cart = header.getByRole("button", { name: /Cart, 1 item/ });
+        const pill = await cart.locator("span").first().boundingBox();
+        const hit = await cart.boundingBox();
+        expect(pill?.height).toBeGreaterThanOrEqual(30);
+        expect(pill?.height).toBeLessThanOrEqual(34);
+        expect(hit?.height).toBeGreaterThanOrEqual(44);
+        const word = await visibleBox(
+          header.getByRole("link", { name: "Machine Brain" }),
+        );
+        const accountBox = await account.first().boundingBox();
+        const menu = await header
+          .getByRole("button", { name: "Menu" })
+          .boundingBox();
+        expect(word).toBeTruthy();
+        expect(accountBox).toBeTruthy();
+        expect(menu).toBeTruthy();
+        const gap =
+          (accountBox?.x ?? 0) - ((word?.x ?? 0) + (word?.width ?? 0));
+        expect(gap).toBeGreaterThanOrEqual(6);
+        expect((menu?.x ?? 0) + (menu?.width ?? 0)).toBeLessThanOrEqual(
+          width - 20 + 1,
+        );
+        expect(
+          await page.evaluate(
+            () =>
+              document.documentElement.scrollWidth <=
+              document.documentElement.clientWidth + 1,
+          ),
+        ).toBe(true);
+        await shot(page, testInfo, `header-${slug}-${width}-${state}`);
+      };
 
       for (const entry of pages) {
         await page.goto(entry.path);
-        const signIn = page
-          .locator("header")
-          .getByRole("link", { name: "Sign in" });
-        await expect(signIn).toBeVisible();
-        await expect(signIn).toHaveAttribute(
-          "href",
-          `/auth?mode=login&next=${entry.next}`,
-        );
-        const word = await visibleBox(
-          page.locator("header").getByRole("link", { name: "Machine Brain" }),
-        );
-        const sign = await signIn.boundingBox();
-        expect(word).toBeTruthy();
-        expect(sign).toBeTruthy();
-        const gap = (sign?.x ?? 0) - ((word?.x ?? 0) + (word?.width ?? 0));
-        expect(gap).toBeGreaterThan(0);
-        expect((sign?.x ?? 0) + (sign?.width ?? 0)).toBeLessThanOrEqual(
-          width + 1,
-        );
-        await shot(page, testInfo, `header-${entry.slug}-${width}`);
-
-        if (entry.path === "/store") {
-          const add = page.getByRole("button", { name: /Add to cart/ }).first();
-          await expect(add).toBeVisible({ timeout: 15_000 });
-          await add.click();
-          await page.getByRole("button", { name: "Close cart" }).click();
-          await expect(page.getByRole("heading", { name: "CART" })).toHaveCount(
-            0,
-          );
-          const cart = page.locator("header").getByRole("button", {
-            name: /Cart/,
-          });
-          const pill = await cart.locator("span").first().boundingBox();
-          const hit = await cart.boundingBox();
-          expect(pill?.height).toBeGreaterThanOrEqual(30);
-          expect(pill?.height).toBeLessThanOrEqual(34);
-          expect(hit?.height).toBeGreaterThanOrEqual(44);
-        }
+        await expect(
+          page.locator("header").getByRole("button", { name: /Cart, 1 item/ }),
+        ).toBeVisible();
+        await assertClear(entry.slug, entry.next, "out");
+        await page.evaluate(() => {
+          const link = document.querySelector(
+            'header a[href*="mode=login"]',
+          ) as HTMLAnchorElement | null;
+          if (!link) return;
+          link.textContent = "Ada Lovelace the Collector";
+          const narrow = window.matchMedia("(max-width: 400px)").matches;
+          const mid = window.matchMedia("(max-width: 760px)").matches;
+          link.style.maxWidth = narrow ? "3rem" : mid ? "4.5rem" : "9rem";
+          link.style.overflow = "hidden";
+          link.style.textOverflow = "ellipsis";
+          link.style.whiteSpace = "nowrap";
+        });
+        await assertClear(entry.slug, entry.next, "name");
       }
     });
   });

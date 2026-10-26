@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useOptionalAuth } from "@/context/auth-context";
 import {
   accountColumnLinks,
@@ -10,8 +11,9 @@ import { SHELL_FOCUS } from "@/lib/site-shell";
 import { cn } from "@/lib/utils";
 
 export function AccountFooterLinks({ variant }: { variant: "home" | "site" }) {
+  const pathname = usePathname();
   const { user, signOut } = useOptionalAuth();
-  const links = accountColumnLinks(Boolean(user), variant);
+  const links = accountColumnLinks(Boolean(user), variant, pathname);
 
   return (
     <nav aria-label="Account">

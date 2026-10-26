@@ -63,7 +63,13 @@ export function headerAccountLinks(
 export function accountColumnLinks(
   signedIn: boolean,
   variant: "home" | "site",
+  pathname = "",
 ): AccountColumnLink[] {
+  const signIn = pathname ? signInHref(pathname) : "/auth?mode=login";
+  const createAccount = pathname
+    ? registerHref(pathname)
+    : "/auth?mode=register";
+
   if (signedIn) {
     const links: AccountColumnLink[] = [
       { name: "Profile", href: PROFILE_HREF },
@@ -79,15 +85,15 @@ export function accountColumnLinks(
 
   if (variant === "home") {
     return [
-      { name: "Sign in", href: "/auth?mode=login" },
-      { name: "Create account", href: "/auth?mode=register" },
+      { name: "Sign in", href: signIn },
+      { name: "Create account", href: createAccount },
       { name: "Order lookup", href: "/orders/lookup" },
     ];
   }
 
   return [
-    { name: "Sign in", href: "/auth?mode=login" },
-    { name: "Create account", href: "/auth?mode=register" },
+    { name: "Sign in", href: signIn },
+    { name: "Create account", href: createAccount },
     { name: "Order lookup", href: "/orders/lookup" },
     { name: "Help", href: "/help" },
   ];

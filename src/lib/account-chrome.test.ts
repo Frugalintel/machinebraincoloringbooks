@@ -78,4 +78,12 @@ describe("signInHref", () => {
       ["Sign in", "Create account", "Order lookup"],
     );
   });
+
+  it("sends footer Sign in and Create account back to the current page", () => {
+    expect(accountColumnLinks(false, "home", "/store")).toEqual([
+      { name: "Sign in", href: "/auth?mode=login&next=%2Fstore" },
+      { name: "Create account", href: "/auth?mode=register&next=%2Fstore" },
+      { name: "Order lookup", href: "/orders/lookup" },
+    ]);
+  });
 });

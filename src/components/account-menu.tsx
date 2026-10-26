@@ -128,7 +128,7 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
           "inline-flex items-center text-cream",
           SHELL_FOCUS,
           tone === "overlay"
-            ? "h-11 max-w-[9rem] text-[15px] leading-6 font-medium text-cream/66 hover:text-cream max-[760px]:max-w-[4.5rem]"
+            ? "h-11 max-w-[9rem] text-[15px] leading-6 font-medium text-cream/66 hover:text-cream max-[760px]:max-w-[4.5rem] max-[400px]:max-w-[3rem]"
             : "h-11 gap-2",
         )}
       >
@@ -139,7 +139,7 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
         ) : null}
         <span
           className={cn(
-            "truncate",
+            "min-w-0 truncate",
             tone === "full" &&
               "hidden max-w-[8rem] text-[13px] font-medium lg:inline",
           )}
