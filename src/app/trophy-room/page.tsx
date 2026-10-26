@@ -133,7 +133,7 @@ export default function TrophyRoomPage() {
   if (!user) {
     return (
       <main className="min-h-screen bg-background text-cream font-sans flex flex-col">
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex w-full flex-col items-start px-5 py-16 md:px-10">
           <div className="text-center space-y-4">
             <Lock className="w-12 h-12 text-fg-muted mx-auto" />
             <h1 className="font-display text-title text-cream">

@@ -636,8 +636,8 @@
 .store-e2 .fbar button:focus-visible,
 .store-e2 .mbar a:focus-visible,
 .store-e2 .mbar button:focus-visible {
-  outline: 2px solid var(--signal);
-  outline-offset: 4px;
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
 }
 
 .store-e2 .bk {
@@ -1113,10 +1113,14 @@
 
 .store-e2 .top .s-h1 {
   margin: 0 0 0 -0.04em;
-  font-size: min(150px, calc(100cqi / var(--book-em, 5)));
+  font-size: max(32px, min(150px, calc(100cqi / var(--book-em, 5))));
   line-height: 0.86;
   letter-spacing: -0.01em;
   color: var(--cream);
+}
+
+.store-e2 .top .s-h1 .two {
+  display: none;
 }
 
 .store-e2 .top .sub {
@@ -1439,6 +1443,29 @@
     margin-top: 48px;
   }
 
+  .store-e2 .top .s-h1 {
+    font-size: max(
+      32px,
+      min(150px, calc(100cqi / var(--book-em-m, var(--book-em, 5))))
+    );
+  }
+
+  .store-e2 .top .s-h1 span {
+    white-space: normal;
+  }
+
+  .store-e2 .top .s-h1:has(.two) .one {
+    display: none;
+  }
+
+  .store-e2 .top .s-h1 .two {
+    display: block;
+  }
+
+  .store-e2 .top .s-h1 .two > span {
+    display: block;
+  }
+
   .store-e2 .buyb {
     padding: 20px;
   }
@@ -1519,7 +1546,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 12px var(--m) calc(12px + env(safe-area-inset-bottom));
+    padding: 12px var(--m) calc(16px + env(safe-area-inset-bottom));
     background: rgb(15 15 15 / 0.97);
     color: var(--cream);
     border-top: 1px solid var(--c3);
@@ -1536,6 +1563,10 @@
   }
 
   .store-e2:has(.mbar.is-on) {
-    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+
+  html:has(.store-e2 .mbar.is-on) {
+    scroll-padding-bottom: calc(80px + env(safe-area-inset-bottom));
   }
 }

@@ -9,6 +9,7 @@ import {
   SAMPLE_BOOKS,
   homeShowsSamples,
 } from "@/lib/home";
+import { displayFaceEm } from "@/lib/story-title-fit";
 import type { Product } from "@/lib/types";
 
 /** Same switch as Home: SAMPLE art on previews and local builds only. */
@@ -137,15 +138,47 @@ export function storeHref(slug: string | null): string {
     : "/store";
 }
 
-/** The display face is a half-em monospace. Fitted titles track −0.06em. */
-const DISPLAY_ADVANCE = 0.5;
+/** Plate titles on the index track −0.06em. Book H1s pass −0.01em. */
 const DISPLAY_TRACKING = -0.06;
+const DISPLAY_FALLBACK = 0.65;
 
-/** Width of a fitted display line, in em, for the shared plate size. */
+/**
+ * Width of a fitted display line, in em.
+ * Per-glyph advances of the display face. A flat half-em under-sizes wide
+ * glyphs (V, m, u) and the line overflows the column.
+ */
 export function displayEm(text: string, tracking = DISPLAY_TRACKING): number {
-  const n = Array.from(text).length;
-  if (n === 0) return 0;
-  return n * DISPLAY_ADVANCE + (n - 1) * tracking;
+  return displayFaceEm(text, tracking);
+}
+
+/**
+ * Two lines at the word break nearest the middle.
+ * Used when a book has no stored mobile `lines`.
+ */
+export function splitTitleAtMiddle(
+  title: string,
+): [string, string] | undefined {
+  const trimmed = title.trim();
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  if (words.length < 2) return undefined;
+
+  const target = trimmed.length / 2;
+  let bestIndex = 1;
+  let bestDistance = Number.POSITIVE_INFINITY;
+  let cursor = 0;
+  for (let index = 1; index < words.length; index += 1) {
+    cursor += words[index - 1].length + 1;
+    const distance = Math.abs(cursor - target);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestIndex = index;
+    }
+  }
+
+  return [
+    words.slice(0, bestIndex).join(" "),
+    words.slice(bestIndex).join(" "),
+  ];
 }
 
 export function fittedEms(
@@ -160,8 +193,8 @@ export function fittedEms(
     for (const line of lines) mobile = Math.max(mobile, displayEm(line));
   }
   return {
-    desktop: desktop || DISPLAY_ADVANCE,
-    mobile: mobile || DISPLAY_ADVANCE,
+    desktop: desktop || DISPLAY_FALLBACK,
+    mobile: mobile || DISPLAY_FALLBACK,
   };
 }
 

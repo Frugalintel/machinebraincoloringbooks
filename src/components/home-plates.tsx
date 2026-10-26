@@ -78,6 +78,7 @@ export function HomeSplit() {
             alt="A plate in line, as printed"
             fill
             sizes="(max-width: 760px) 100vw, 50vw"
+            unoptimized
           />
         </div>
         <div className="c">

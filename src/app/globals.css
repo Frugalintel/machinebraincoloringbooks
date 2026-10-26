@@ -149,6 +149,7 @@
   --border: var(--line);
   --input: var(--line);
   --ring: var(--signal);
+  --shell-focus: var(--cream);
 
   --chart-1: #f2ead8;
   --chart-2: #6fb3a8;
@@ -187,6 +188,7 @@
   --border: var(--line);
   --input: var(--line);
   --ring: var(--signal);
+  --shell-focus: var(--cream);
   --chart-1: #f2ead8;
   --chart-2: #6fb3a8;
   --chart-3: #b58db6;
@@ -233,6 +235,20 @@
       0 0 0 2px var(--cream),
       0 0 0 4px var(--ink);
   }
+
+  /*
+   * Cream ring on near-black. Light plates set --shell-focus to ink.
+   * The code field keeps its own orange ring and clears this outline.
+   */
+  :focus-visible {
+    outline: 2px solid var(--shell-focus, var(--cream));
+    outline-offset: 3px;
+  }
+}
+
+.shell-focus:focus-visible {
+  outline: 2px solid var(--shell-focus, var(--cream));
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {

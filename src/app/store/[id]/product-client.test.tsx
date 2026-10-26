@@ -115,7 +115,12 @@ describe("Product page", () => {
     const buttons = screen.getAllByRole("button", {
       name: "Add to cart: The Origin",
     });
-    expect(buttons).toHaveLength(2);
+    expect(buttons).toHaveLength(1);
+    const bar = document.querySelector(".mbar") as HTMLElement;
+    expect(bar).toHaveAttribute("aria-hidden", "true");
+    expect(bar).toHaveAttribute("inert");
+    const barButton = bar.querySelector("button");
+    expect(barButton).not.toBeNull();
     fireEvent.click(buttons[0]);
     expect(shop.addItem).toHaveBeenCalledWith({
       id: classics.id,
@@ -127,7 +132,7 @@ describe("Product page", () => {
     expect(shop.setIsCartOpen).toHaveBeenCalledWith(true);
     expect(screen.getByRole("status")).toHaveTextContent("In your cart.");
 
-    fireEvent.click(buttons[1]);
+    fireEvent.click(barButton as HTMLButtonElement);
     expect(shop.addItem).toHaveBeenCalledTimes(2);
     expect(shop.setIsCartOpen).toHaveBeenCalledTimes(2);
   });
@@ -155,15 +160,39 @@ describe("Product page", () => {
 
     act(() => {
       onIntersect?.(
-        [{ isIntersecting: false } as IntersectionObserverEntry],
+        [
+          {
+            isIntersecting: false,
+            boundingClientRect: { bottom: 900 },
+          } as IntersectionObserverEntry,
+        ],
+        {} as IntersectionObserver,
+      );
+    });
+    expect(bar.classList.contains("is-on")).toBe(false);
+
+    act(() => {
+      onIntersect?.(
+        [
+          {
+            isIntersecting: false,
+            boundingClientRect: { bottom: -1 },
+          } as IntersectionObserverEntry,
+        ],
         {} as IntersectionObserver,
       );
     });
     expect(bar.classList.contains("is-on")).toBe(true);
+    expect(bar).not.toHaveAttribute("aria-hidden");
 
     act(() => {
       onIntersect?.(
-        [{ isIntersecting: true } as IntersectionObserverEntry],
+        [
+          {
+            isIntersecting: true,
+            boundingClientRect: { bottom: 400 },
+          } as IntersectionObserverEntry,
+        ],
         {} as IntersectionObserver,
       );
     });
@@ -247,6 +276,24 @@ describe("Product page", () => {
     );
     const frame = container.querySelector(".top .cover") as HTMLElement;
     expect(Number(frame.style.aspectRatio)).toBeCloseTo(8 / 10);
+  });
+
+  it("splits a title with no stored lines at the middle word break", () => {
+    const pups = MOCK_CATALOG.find(
+      (product) => product.subtitle === "Vacuum Pups",
+    )!;
+    const { container } = renderBook(pups);
+    const title = container.querySelector(".top .s-h1") as HTMLElement;
+    expect(title.querySelector(".one")).toHaveTextContent("Vacuum Pups");
+    expect(
+      [...title.querySelectorAll(".two span")].map((span) => span.textContent),
+    ).toEqual(["Vacuum", "Pups"]);
+    const main = container.querySelector("main") as HTMLElement;
+    expect(main.style.getPropertyValue("--book-em")).not.toBe("");
+    expect(main.style.getPropertyValue("--book-em-m")).not.toBe("");
+    expect(Number(main.style.getPropertyValue("--book-em-m"))).toBeLessThan(
+      Number(main.style.getPropertyValue("--book-em")),
+    );
   });
 
   it("shows the first sentence, then only the rest of the description", () => {

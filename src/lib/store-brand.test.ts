@@ -60,8 +60,9 @@ describe("Store brand guardrails (STORE-01, STORE-02, SW-ORANGE-USE-01, SW-PALET
       /(?:background|border|box-shadow):[^;]*var\(--signal\)/,
     );
     expect(CSS).toMatch(/\.fstat \{[^}]*color:\s*var\(--signal\)/);
-    expect(CSS).toMatch(/outline:\s*2px solid var\(--signal\)/);
-    expect(CSS.match(/var\(--signal\)/g)).toHaveLength(2);
+    expect(CSS).toMatch(/outline:\s*2px solid var\(--cream\)/);
+    expect(CSS).not.toMatch(/outline:\s*2px solid var\(--signal\)/);
+    expect(CSS.match(/var\(--signal\)/g)).toHaveLength(1);
     const signal = SOURCE.match(/[\w:-]*signal\b/g) ?? [];
     expect(new Set(signal)).toEqual(new Set(["text-signal", "--signal"]));
     for (const line of SOURCE.split("\n").filter((l) =>
