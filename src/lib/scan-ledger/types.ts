@@ -98,6 +98,8 @@ export type RegisterBookResult =
       kind: "stub";
       message: string;
     }
+  | { ok: false; kind: "invalid"; code: string; message: string }
+  | { ok: false; kind: "error"; message: string }
   | { ok: true; kind: "registered"; snapshot: ScanLedgerSnapshot };
 
 export type SubmitCodeResult =
