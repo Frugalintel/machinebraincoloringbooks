@@ -9,6 +9,7 @@ const scan = vi.hoisted(() => ({ search: "" }));
 const auth = vi.hoisted(() => ({
   openAuthModal: vi.fn(),
   user: null as null | { id: string; email: string },
+  isLoading: false,
 }));
 const nav = vi.hoisted(() => ({ push: vi.fn(), back: vi.fn() }));
 
@@ -22,7 +23,7 @@ vi.mock("@/context/auth-context", () => ({
   useAuth: () => ({
     user: auth.user,
     openAuthModal: auth.openAuthModal,
-    isLoading: false,
+    isLoading: auth.isLoading,
   }),
 }));
 
@@ -34,6 +35,7 @@ describe("/scan entry from the home code form", () => {
   beforeEach(() => {
     scan.search = "";
     auth.user = null;
+    auth.isLoading = false;
     auth.openAuthModal.mockReset();
     nav.push.mockReset();
   });
@@ -56,7 +58,7 @@ describe("/scan entry from the home code form", () => {
       screen.getByRole("link", { name: /sign in to count/i }),
     ).toHaveAttribute(
       "href",
-      "/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3DAB12",
+      `/auth?mode=login&next=${encodeURIComponent("/scan?mode=code&code=AB12")}`,
     );
     expect(
       screen.getAllByText("Sign in and this code counts toward your book."),
@@ -93,6 +95,23 @@ describe("/scan entry from the home code form", () => {
     expect(nav.push).not.toHaveBeenCalled();
   });
 
+  it("does not send Enter to /auth while auth is still loading", async () => {
+    auth.isLoading = true;
+    scan.search = "mode=code";
+    const eq = vi.fn();
+    vi.mocked(supabase.from).mockReturnValueOnce({
+      select: vi.fn(() => ({ eq })),
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    render(<ScanPage />);
+    const field = screen.getByPlaceholderText("Code");
+    fireEvent.change(field, { target: { value: "7KQ2" } });
+    fireEvent.submit(field.closest("form")!);
+
+    expect(nav.push).not.toHaveBeenCalled();
+    expect(eq).not.toHaveBeenCalled();
+  });
+
   it("sends a signed-out Enter to /auth with the typed code instead of looking it up", async () => {
     scan.search = "mode=code";
     const eq = vi.fn();
@@ -107,7 +126,7 @@ describe("/scan entry from the home code form", () => {
 
     await waitFor(() =>
       expect(nav.push).toHaveBeenCalledWith(
-        "/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3D7KQ2",
+        `/auth?mode=login&next=${encodeURIComponent("/scan?mode=code&code=7KQ2")}`,
       ),
     );
     expect(eq).not.toHaveBeenCalled();
@@ -133,7 +152,7 @@ describe("/scan entry from the home code form", () => {
       screen.getByRole("link", { name: /sign in to count/i }),
     ).toHaveAttribute(
       "href",
-      "/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3D7KQ2",
+      `/auth?mode=login&next=${encodeURIComponent("/scan?mode=code&code=7KQ2")}`,
     );
   });
 });
@@ -142,6 +161,7 @@ describe("/scan preview fixtures", () => {
   beforeEach(() => {
     scan.search = "";
     auth.user = null;
+    auth.isLoading = false;
     auth.openAuthModal.mockReset();
     nav.push.mockReset();
   });
@@ -250,6 +270,7 @@ describe("/scan camera start", () => {
   beforeEach(() => {
     scan.search = "";
     auth.user = null;
+    auth.isLoading = false;
     auth.openAuthModal.mockReset();
     nav.push.mockReset();
   });

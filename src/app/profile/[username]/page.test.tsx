@@ -119,9 +119,9 @@ describe("ProfilePage auth resolution", () => {
     auth.user = { email: "ada@example.com", id: "user-1", initials: "AD" };
     render(<ProfilePage />);
     await waitFor(() => expect(screen.getByText("10")).toBeInTheDocument());
-    expect(screen.getByText("Badges")).toBeInTheDocument();
+    expect(screen.getByText("Plates")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
-    expect(screen.getByText("Artifacts")).toBeInTheDocument();
+    expect(screen.getByText("Books")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
     expect(screen.getByText("Pending")).toBeInTheDocument();
     expect(screen.getByText("The Silver Citadel")).toBeInTheDocument();

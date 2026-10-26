@@ -90,7 +90,10 @@ describe("scan ledger copy", () => {
     expect(scanSignInHref()).toBe(SCAN_SIGN_IN_HREF);
     expect(scanSignInHref("")).toBe(SCAN_SIGN_IN_HREF);
     expect(scanSignInHref("  ab12 ")).toBe(
-      "/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3DAB12",
+      `/auth?mode=login&next=${encodeURIComponent("/scan?mode=code&code=AB12")}`,
+    );
+    expect(scanSignInHref("ab&12#x+y")).toBe(
+      `/auth?mode=login&next=${encodeURIComponent("/scan?mode=code&code=AB&12#X+Y")}`,
     );
     expect(signedOutScanHint("code")).toBe(SCAN_SIGN_IN_CODE_HINT);
     expect(signedOutScanHint("camera-off")).toBe(SCAN_SIGN_IN_BOOK_HINT);

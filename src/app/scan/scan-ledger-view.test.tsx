@@ -192,7 +192,7 @@ describe("ScanLedgerView signed-out code, camera, plate, and preview", () => {
     expect(signIn).toHaveLength(1);
     expect(signIn[0]).toHaveAttribute(
       "href",
-      "/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3D7KQ2",
+      `/auth?mode=login&next=${encodeURIComponent("/scan?mode=code&code=7KQ2")}`,
     );
   });
 

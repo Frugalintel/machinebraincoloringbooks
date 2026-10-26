@@ -22,7 +22,7 @@ export const SCAN_SIGN_IN_ACTION = "Sign in to count";
 export function scanSignInHref(code?: string): string {
   const normalized = code ? normalizeBookCode(code) : "";
   if (!normalized) return SCAN_SIGN_IN_HREF;
-  return `/auth?mode=login&next=/scan%3Fmode%3Dcode%26code%3D${encodeURIComponent(normalized)}`;
+  return `/auth?mode=login&next=${encodeURIComponent(`/scan?mode=code&code=${normalized}`)}`;
 }
 
 export const SCAN_SIGN_IN_CODE_HINT =

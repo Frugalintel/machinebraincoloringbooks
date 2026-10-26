@@ -8,8 +8,11 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Session } from "@supabase/supabase-js";
 import { AuthProvider, useAuth } from "@/context/auth-context";
-import { authTokenCookieNames } from "@/lib/auth-session";
-import { supabase } from "@/lib/supabase";
+import {
+  authTokenCookieNames,
+  supabaseLocalLogoutUrl,
+} from "@/lib/auth-session";
+import { SUPABASE_ANON_KEY, SUPABASE_URL, supabase } from "@/lib/supabase";
 
 /**
  * Mirrors supabase-js 2.84: `_notifyAllSubscribers` runs inside the auth
@@ -26,9 +29,9 @@ function neverResolves<T>(): Promise<T> {
   return new Promise(() => undefined);
 }
 
-function sessionFor(email: string): Session {
+function sessionFor(email: string, accessToken = "test-access"): Session {
   return {
-    access_token: "test-access",
+    access_token: accessToken,
     refresh_token: "test-refresh",
     expires_in: 3600,
     token_type: "bearer",
@@ -126,6 +129,10 @@ function SignInHarness({
 beforeEach(() => {
   lockHeld = false;
   listener = undefined;
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(new Response(null, { status: 204 })),
+  );
 
   vi.mocked(supabase.auth.onAuthStateChange).mockImplementation((callback) => {
     listener = callback as typeof listener;
@@ -139,6 +146,7 @@ beforeEach(() => {
     return { data: { session: null }, error: null };
   });
 
+  vi.mocked(supabase.auth.signOut).mockReset();
   vi.mocked(supabase.auth.getUser).mockImplementation(async () => {
     if (lockHeld) return neverResolves();
     return {
@@ -182,6 +190,7 @@ beforeEach(() => {
 afterEach(() => {
   lockHeld = false;
   listener = undefined;
+  vi.unstubAllGlobals();
   for (const name of authTokenCookieNames(document.cookie)) {
     document.cookie = `${name}=; Max-Age=0; path=/`;
   }
@@ -289,7 +298,7 @@ describe("AuthProvider password sign-in", () => {
     });
   });
 
-  it("treats a cached session as signed out when getUser returns no user", async () => {
+  it("treats a cached session as signed out when getUser returns AuthApiError 401", async () => {
     vi.mocked(supabase.auth.getSession).mockResolvedValue({
       data: { session: sessionFor(TEST_EMAIL) },
       error: null,
@@ -297,9 +306,10 @@ describe("AuthProvider password sign-in", () => {
     vi.mocked(supabase.auth.getUser).mockResolvedValue({
       data: { user: null },
       error: {
-        message: "Auth session missing!",
-        name: "AuthError",
-        status: 400,
+        message: "invalid JWT",
+        name: "AuthApiError",
+        status: 401,
+        code: "bad_jwt",
       },
     } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
     vi.mocked(supabase.auth.signOut).mockResolvedValue({ error: null });
@@ -315,6 +325,109 @@ describe("AuthProvider password sign-in", () => {
     );
     expect(supabase.auth.getUser).toHaveBeenCalled();
     expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
+  });
+
+  it("treats AuthApiError 403 as an invalid session", async () => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: sessionFor(TEST_EMAIL) },
+      error: null,
+    });
+    vi.mocked(supabase.auth.getUser).mockResolvedValue({
+      data: { user: null },
+      error: {
+        message: "User from sub claim in JWT does not exist",
+        name: "AuthApiError",
+        status: 403,
+        code: "user_not_found",
+      },
+    } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+    vi.mocked(supabase.auth.signOut).mockResolvedValue({ error: null });
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent("guest"),
+    );
+    expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
+  });
+
+  it("keeps the cached session when getUser is offline or returns 5xx", async () => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: sessionFor(TEST_EMAIL) },
+      error: null,
+    });
+    vi.mocked(supabase.auth.getUser).mockResolvedValue({
+      data: { user: null },
+      error: {
+        message: "Service unavailable",
+        name: "AuthRetryableFetchError",
+        status: 503,
+      },
+    } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
+    );
+    expect(supabase.auth.signOut).not.toHaveBeenCalled();
+  });
+
+  it("keeps chrome loading until getUser finishes so INITIAL_SESSION cannot flash", async () => {
+    let releaseGetUser!: (
+      value: Awaited<ReturnType<typeof supabase.auth.getUser>>,
+    ) => void;
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: sessionFor(TEST_EMAIL) },
+      error: null,
+    });
+    vi.mocked(supabase.auth.getUser).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          releaseGetUser = resolve;
+        }),
+    );
+    vi.mocked(supabase.auth.signOut).mockResolvedValue({ error: null });
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+
+    await waitFor(() => expect(listener).toEqual(expect.any(Function)));
+    await act(async () => {
+      listener?.("INITIAL_SESSION", sessionFor(TEST_EMAIL));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByTestId("auth-loading")).toHaveTextContent("loading");
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(screen.queryByText(TEST_EMAIL)).toBeNull();
+
+    await act(async () => {
+      releaseGetUser({
+        data: { user: null },
+        error: {
+          message: "invalid JWT",
+          name: "AuthApiError",
+          status: 401,
+          code: "bad_jwt",
+        },
+      } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+    });
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(screen.queryByText(TEST_EMAIL)).toBeNull();
   });
 
   it("clears chrome on SIGNED_OUT even when a stale session is attached", async () => {
@@ -370,6 +483,8 @@ describe("AuthProvider password sign-in", () => {
       }
       return { data: { session: sessionFor(TEST_EMAIL) }, error: null };
     });
+    const logoutFetch = vi.fn(() => neverResolves<Response>());
+    vi.stubGlobal("fetch", logoutFetch);
 
     fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
     expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
@@ -377,6 +492,17 @@ describe("AuthProvider password sign-in", () => {
     expect(authTokenCookieNames(document.cookie)).toEqual([]);
     expect(window.localStorage.getItem("sb-xyz-auth-token")).toBeNull();
     expect(window.sessionStorage.getItem("sb-xyz-auth-token.1")).toBeNull();
+    expect(logoutFetch).toHaveBeenCalledWith(
+      supabaseLocalLogoutUrl(SUPABASE_URL),
+      expect.objectContaining({
+        method: "POST",
+        keepalive: true,
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: "Bearer test-access",
+        },
+      }),
+    );
 
     first.unmount();
     render(

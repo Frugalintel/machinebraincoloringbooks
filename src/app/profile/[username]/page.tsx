@@ -181,7 +181,7 @@ export default function ProfilePage() {
                 {ledgerProgress.plateCount}
               </p>
               <p className=" text-fg-muted tracking-widest uppercase font-label">
-                Badges
+                Plates
               </p>
             </div>
             <div>
@@ -189,7 +189,7 @@ export default function ProfilePage() {
                 {ledgerProgress.bookCount}
               </p>
               <p className=" text-fg-muted tracking-widest uppercase font-label">
-                Artifacts
+                Books
               </p>
             </div>
             <div>

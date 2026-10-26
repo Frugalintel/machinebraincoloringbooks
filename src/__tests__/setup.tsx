@@ -153,4 +153,6 @@ vi.mock("@/lib/supabase", () => ({
     },
   },
   isSupabaseConfigured: true,
+  SUPABASE_URL: "https://placeholder.supabase.co",
+  SUPABASE_ANON_KEY: "placeholder",
 }));

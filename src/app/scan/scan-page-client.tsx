@@ -290,6 +290,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
     event.preventDefault();
     const code = normalizeBookCode(typedCode);
     if (!code) return;
+    if (isLoading) return;
     if (!user) {
       router.push(scanSignInHref(code));
       return;

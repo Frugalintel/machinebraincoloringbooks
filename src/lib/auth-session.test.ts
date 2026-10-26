@@ -6,9 +6,12 @@ import {
   clearAuthTokenCookies,
   clearLocalAuthCopies,
   expireAuthCookie,
+  fireLocalLogoutRequest,
   isAuthStorageKey,
   isAuthTokenCookieName,
+  isInvalidSessionError,
   shouldApplyHydratedProfile,
+  supabaseLocalLogoutUrl,
   validateStoredSession,
 } from "@/lib/auth-session";
 
@@ -33,6 +36,43 @@ function memoryStorage(initial: Record<string, string> = {}) {
   };
 }
 
+describe("isInvalidSessionError", () => {
+  it("treats AuthApiError 401/403 as invalid", () => {
+    expect(
+      isInvalidSessionError({
+        name: "AuthApiError",
+        status: 401,
+        code: "bad_jwt",
+      }),
+    ).toBe(true);
+    expect(
+      isInvalidSessionError({
+        name: "AuthApiError",
+        status: 403,
+        code: "session_not_found",
+      }),
+    ).toBe(true);
+  });
+
+  it("keeps the session on retryable, offline, and 5xx errors", () => {
+    expect(
+      isInvalidSessionError({
+        name: "AuthRetryableFetchError",
+        status: 0,
+        message: "Failed to fetch",
+      }),
+    ).toBe(false);
+    expect(
+      isInvalidSessionError({
+        name: "AuthApiError",
+        status: 503,
+        message: "unavailable",
+      }),
+    ).toBe(false);
+    expect(isInvalidSessionError(new TypeError("Failed to fetch"))).toBe(false);
+  });
+});
+
 describe("validateStoredSession", () => {
   it("treats a cached session as signed out when getUser returns no user", async () => {
     const session = { user: { id: "stale-1" } };
@@ -42,21 +82,51 @@ describe("validateStoredSession", () => {
     }));
 
     await expect(validateStoredSession(session, getUser)).resolves.toEqual({
-      ok: false,
+      status: "invalid",
     });
     expect(getUser).toHaveBeenCalledTimes(1);
   });
 
-  it("treats a cached session as signed out when getUser errors", async () => {
+  it("treats AuthApiError 401/403 as an invalid session", async () => {
     const session = { user: { id: "stale-1" } };
     const getUser = vi.fn(async () => ({
       data: { user: null },
-      error: { message: "Auth session missing!" },
+      error: {
+        name: "AuthApiError",
+        status: 403,
+        code: "user_not_found",
+        message: "User from sub claim in JWT does not exist",
+      },
     }));
 
     await expect(validateStoredSession(session, getUser)).resolves.toEqual({
-      ok: false,
+      status: "invalid",
     });
+  });
+
+  it("keeps a session when getUser is offline or returns 5xx", async () => {
+    const session = { user: { id: "user-1" } };
+    await expect(
+      validateStoredSession(session, async () => ({
+        data: { user: null },
+        error: {
+          name: "AuthRetryableFetchError",
+          status: 0,
+          message: "Failed to fetch",
+        },
+      })),
+    ).resolves.toEqual({ status: "unknown" });
+    await expect(
+      validateStoredSession(session, async () => ({
+        data: { user: null },
+        error: { name: "AuthApiError", status: 503, message: "unavailable" },
+      })),
+    ).resolves.toEqual({ status: "unknown" });
+    await expect(
+      validateStoredSession(session, async () => {
+        throw new TypeError("Failed to fetch");
+      }),
+    ).resolves.toEqual({ status: "unknown" });
   });
 
   it("keeps a session when getUser confirms the user", async () => {
@@ -68,7 +138,7 @@ describe("validateStoredSession", () => {
     }));
 
     await expect(validateStoredSession(session, getUser)).resolves.toEqual({
-      ok: true,
+      status: "valid",
       session,
       user,
     });
@@ -77,9 +147,46 @@ describe("validateStoredSession", () => {
   it("does not call getUser when there is no stored session", async () => {
     const getUser = vi.fn();
     await expect(validateStoredSession(null, getUser)).resolves.toEqual({
-      ok: false,
+      status: "invalid",
     });
     expect(getUser).not.toHaveBeenCalled();
+  });
+});
+
+describe("fireLocalLogoutRequest", () => {
+  it("POSTs logout with the supplied token and does not wait on the response", () => {
+    const fetchFn = vi.fn(() => new Promise(() => undefined));
+    fireLocalLogoutRequest("old-access", {
+      supabaseUrl: "https://proj.supabase.co",
+      anonKey: "anon-key",
+      fetchFn: fetchFn as typeof fetch,
+    });
+    expect(fetchFn).toHaveBeenCalledWith(
+      supabaseLocalLogoutUrl("https://proj.supabase.co"),
+      {
+        method: "POST",
+        keepalive: true,
+        headers: {
+          apikey: "anon-key",
+          Authorization: "Bearer old-access",
+        },
+      },
+    );
+  });
+
+  it("swallows a rejected logout request", async () => {
+    const fetchFn = vi.fn(async () => {
+      throw new TypeError("Failed to fetch");
+    });
+    expect(() =>
+      fireLocalLogoutRequest("old-access", {
+        supabaseUrl: "https://proj.supabase.co",
+        anonKey: "anon-key",
+        fetchFn: fetchFn as typeof fetch,
+      }),
+    ).not.toThrow();
+    await Promise.resolve();
+    expect(fetchFn).toHaveBeenCalled();
   });
 });
 
@@ -192,6 +299,20 @@ describe("applyAuthStateChange", () => {
     const session = { user: { id: "user-2" } };
     expect(
       applyAuthStateChange("SIGNED_IN", session, { signedOutLocally: true }),
+    ).toEqual({ kind: "signed-in", session });
+  });
+
+  it("ignores INITIAL_SESSION while init is still validating", () => {
+    expect(
+      applyAuthStateChange(
+        "INITIAL_SESSION",
+        { user: { id: "stale" } },
+        { initPending: true },
+      ),
+    ).toEqual({ kind: "ignore" });
+    const session = { user: { id: "user-1" } };
+    expect(
+      applyAuthStateChange("SIGNED_IN", session, { initPending: true }),
     ).toEqual({ kind: "signed-in", session });
   });
 });

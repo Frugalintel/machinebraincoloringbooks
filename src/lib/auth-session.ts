@@ -6,21 +6,71 @@ export type GetUserResult<U> = {
 };
 
 export type ValidatedSession<S, U> =
-  | { ok: true; session: S; user: U }
-  | { ok: false };
+  | { status: "valid"; session: S; user: U }
+  | { status: "invalid" }
+  | { status: "unknown" };
+
+const INVALID_SESSION_CODES = new Set([
+  "bad_jwt",
+  "session_not_found",
+  "user_not_found",
+]);
+
+export function isInvalidSessionError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const name = "name" in error ? String(error.name) : "";
+  if (name === "AuthRetryableFetchError") return false;
+  const status = "status" in error ? Number(error.status) : NaN;
+  if (Number.isFinite(status) && status >= 500) return false;
+  const code = "code" in error ? String(error.code) : "";
+  if (name === "AuthApiError" && (status === 401 || status === 403)) {
+    return true;
+  }
+  return (status === 401 || status === 403) && INVALID_SESSION_CODES.has(code);
+}
 
 export async function validateStoredSession<S extends { user?: unknown }, U>(
   session: S | null,
   getUser: () => Promise<GetUserResult<U>>,
 ): Promise<ValidatedSession<S, U>> {
-  if (!session?.user) return { ok: false };
+  if (!session?.user) return { status: "invalid" };
   try {
     const { data, error } = await getUser();
-    if (error || !data?.user) return { ok: false };
-    return { ok: true, session, user: data.user };
-  } catch {
-    return { ok: false };
+    if (data?.user && !error) {
+      return { status: "valid", session, user: data.user };
+    }
+    if (isInvalidSessionError(error)) return { status: "invalid" };
+    if (!error && !data?.user) return { status: "invalid" };
+    return { status: "unknown" };
+  } catch (error) {
+    if (isInvalidSessionError(error)) return { status: "invalid" };
+    return { status: "unknown" };
   }
+}
+
+export function supabaseLocalLogoutUrl(supabaseUrl: string): string {
+  return `${supabaseUrl.replace(/\/$/, "")}/auth/v1/logout?scope=local`;
+}
+
+/** Fire-and-forget revoke. Never log the token. */
+export function fireLocalLogoutRequest(
+  accessToken: string | null | undefined,
+  options: {
+    supabaseUrl: string;
+    anonKey: string;
+    fetchFn?: typeof fetch;
+  },
+): void {
+  if (!accessToken || !options.supabaseUrl || !options.anonKey) return;
+  const fetchFn = options.fetchFn ?? fetch;
+  void fetchFn(supabaseLocalLogoutUrl(options.supabaseUrl), {
+    method: "POST",
+    keepalive: true,
+    headers: {
+      apikey: options.anonKey,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).catch(() => undefined);
 }
 
 /** Cookie chunks written by supabase-js / @supabase/ssr. */
@@ -68,7 +118,7 @@ export function clearAuthStorage(
   return names;
 }
 
-/** Cookies plus any local/session copy. Call this before a logout request. */
+/** Cookies plus any local/session copy. */
 export function clearLocalAuthCopies(targets: {
   document?: { cookie: string };
   localStorage?: Pick<Storage, "length" | "key" | "removeItem"> | null;
@@ -97,13 +147,17 @@ export type AuthStateDecision =
  * SIGNED_OUT always wins, including when a stale session is still attached.
  * After a local sign-out, TOKEN_REFRESHED / INITIAL_SESSION from another tab
  * must not put the previous account back in chrome.
+ * During init, INITIAL_SESSION must not paint before getUser() finishes.
  */
 export function applyAuthStateChange(
   event: string,
   session: { user?: unknown } | null,
-  options: { signedOutLocally?: boolean } = {},
+  options: { signedOutLocally?: boolean; initPending?: boolean } = {},
 ): AuthStateDecision {
   if (event === "SIGNED_OUT") return { kind: "signed-out" };
+  if (options.initPending && event !== "SIGNED_IN") {
+    return { kind: "ignore" };
+  }
   if (options.signedOutLocally && event !== "SIGNED_IN") {
     return { kind: "ignore" };
   }
