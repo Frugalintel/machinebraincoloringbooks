@@ -7,10 +7,23 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import { useRouter } from "next/navigation";
 import { User as SupabaseUser, Session } from "@supabase/supabase-js";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import {
+  applyAuthStateChange,
+  clearLocalAuthCopies,
+  fireLocalLogoutRequest,
+  shouldApplyHydratedProfile,
+  validateStoredSession,
+} from "@/lib/auth-session";
+import {
+  supabase,
+  isSupabaseConfigured,
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+} from "@/lib/supabase";
 import { Profile } from "@/lib/types";
 import { logger } from "@/lib/logger";
 import { withAuthTimeout, type AuthHold } from "@/lib/auth-ui";
@@ -59,6 +72,16 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function dropLocalAuthCopies() {
+  if (typeof document === "undefined") return;
+  clearLocalAuthCopies({
+    document,
+    localStorage: typeof window === "undefined" ? null : window.localStorage,
+    sessionStorage:
+      typeof window === "undefined" ? null : window.sessionStorage,
+  });
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -69,6 +92,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     view: "login",
   });
   const router = useRouter();
+  const signedOutLocallyRef = useRef(false);
+  const sessionUserIdRef = useRef<string | null>(null);
+  const sessionRef = useRef<Session | null>(null);
+  const initCompleteRef = useRef(false);
 
   const getInitials = (email: string) => {
     return email.substring(0, 2).toUpperCase();
@@ -125,11 +152,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         // Setup listener first to catch any events during initialization
         const hydrateProfile = (sessionUser: SupabaseUser) => {
+          const requestedUserId = sessionUser.id;
           window.setTimeout(() => {
-            void fetchProfile(sessionUser.id).then((profile) => {
-              if (mounted) {
-                setUser(formatUser(sessionUser, profile ?? undefined));
+            void fetchProfile(requestedUserId).then((profile) => {
+              if (!mounted) return;
+              if (
+                !shouldApplyHydratedProfile({
+                  requestedUserId,
+                  currentUserId: sessionUserIdRef.current,
+                  signedOutLocally: signedOutLocallyRef.current,
+                })
+              ) {
+                return;
               }
+              setUser(formatUser(sessionUser, profile ?? undefined));
             });
           }, 0);
         };
@@ -137,22 +173,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const applySession = (event: string, newSession: Session | null) => {
           if (!mounted) return;
 
-          // Paint the session immediately. Awaiting profiles here used to keep
-          // isLoading true (and /store gated on it) for tens of seconds.
-          if (newSession?.user) {
-            setSession(newSession);
-            setUser(formatUser(newSession.user));
-            hydrateProfile(newSession.user);
-          } else {
-            setSession(null);
-            setUser(null);
-          }
+          const decision = applyAuthStateChange(event, newSession, {
+            signedOutLocally: signedOutLocallyRef.current,
+            initPending: !initCompleteRef.current,
+          });
 
-          if (event === "SIGNED_IN") {
-            setAuthModal((prev) => ({ ...prev, isOpen: false }));
+          switch (decision.kind) {
+            case "ignore":
+              if (initCompleteRef.current) {
+                setIsLoading(false);
+              }
+              return;
+            case "signed-out":
+              signedOutLocallyRef.current = true;
+              sessionUserIdRef.current = null;
+              sessionRef.current = null;
+              initCompleteRef.current = true;
+              setSession(null);
+              setUser(null);
+              dropLocalAuthCopies();
+              setIsLoading(false);
+              return;
+            case "signed-in": {
+              signedOutLocallyRef.current = false;
+              const nextSession = (decision.session as Session) ?? newSession;
+              if (nextSession?.user) {
+                sessionUserIdRef.current = nextSession.user.id;
+                sessionRef.current = nextSession;
+                setSession(nextSession);
+                setUser(formatUser(nextSession.user));
+                hydrateProfile(nextSession.user);
+              }
+              if (event === "SIGNED_IN") {
+                initCompleteRef.current = true;
+                setAuthModal((prev) => ({ ...prev, isOpen: false }));
+              }
+              if (initCompleteRef.current) {
+                setIsLoading(false);
+              }
+              return;
+            }
+            default: {
+              const _exhaustive: never = decision;
+              return _exhaustive;
+            }
           }
-
-          setIsLoading(false);
         };
 
         // supabase-js 2.84 holds navigator.locks and awaits this callback.
@@ -170,13 +235,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           data: { session: initialSession },
         } = await supabase.auth.getSession();
 
+        const validated = await validateStoredSession(initialSession, () =>
+          supabase.auth.getUser(),
+        );
+
         if (mounted) {
-          if (initialSession?.user) {
-            setSession(initialSession);
-            setUser(formatUser(initialSession.user));
-            hydrateProfile(initialSession.user);
+          if (initCompleteRef.current) {
+            setIsLoading(false);
+          } else {
+            switch (validated.status) {
+              case "valid": {
+                signedOutLocallyRef.current = false;
+                sessionUserIdRef.current = validated.user.id;
+                sessionRef.current = validated.session;
+                setSession(validated.session);
+                setUser(formatUser(validated.user));
+                if (validated.session.user) {
+                  hydrateProfile(validated.session.user);
+                }
+                break;
+              }
+              case "unknown": {
+                if (initialSession?.user) {
+                  signedOutLocallyRef.current = false;
+                  sessionUserIdRef.current = initialSession.user.id;
+                  sessionRef.current = initialSession;
+                  setSession(initialSession);
+                  setUser(formatUser(initialSession.user));
+                  hydrateProfile(initialSession.user);
+                }
+                break;
+              }
+              case "invalid": {
+                if (initialSession?.user) {
+                  signedOutLocallyRef.current = true;
+                  sessionUserIdRef.current = null;
+                  sessionRef.current = null;
+                  dropLocalAuthCopies();
+                  try {
+                    await supabase.auth.signOut({ scope: "local" });
+                  } catch (error) {
+                    logger.error("Error clearing invalid session:", error);
+                  }
+                }
+                setSession(null);
+                setUser(null);
+                break;
+              }
+              default: {
+                const _exhaustive: never = validated;
+                return _exhaustive;
+              }
+            }
+            initCompleteRef.current = true;
+            setIsLoading(false);
           }
-          setIsLoading(false);
         }
 
         return () => {
@@ -250,19 +363,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    // Drop chrome immediately so mobile menus cannot keep a stale Sign out.
-    // local: this browser only. There is no product need to sign out other devices.
+    // Revoke the server session with the token we still have, then drop
+    // local copies. Clearing first makes auth-js skip POST /auth/v1/logout.
+    const accessToken = sessionRef.current?.access_token;
+    signedOutLocallyRef.current = true;
+    sessionUserIdRef.current = null;
+    sessionRef.current = null;
     setSigningOut(true);
     setUser(null);
     setSession(null);
     setAuthModal({ isOpen: false, view: "login" });
     setIsLoading(false);
+    fireLocalLogoutRequest(accessToken, {
+      supabaseUrl: SUPABASE_URL,
+      anonKey: SUPABASE_ANON_KEY,
+    });
+    dropLocalAuthCopies();
     router.replace("/");
     try {
       await supabase.auth.signOut({ scope: "local" });
     } catch (error) {
       logger.error("Error signing out:", error);
     } finally {
+      dropLocalAuthCopies();
       router.refresh();
       setSigningOut(false);
     }

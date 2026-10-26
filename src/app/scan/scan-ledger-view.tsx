@@ -14,7 +14,7 @@ import {
   SCAN_BOOK_TROPHY_LABEL,
   SCAN_OPT_LINE,
   SCAN_SIGN_IN_ACTION,
-  SCAN_SIGN_IN_HREF,
+  scanSignInHref,
   photoPreviewTag,
   signedOutScanHint,
   SCAN_WALLET_FROM_POINTS,
@@ -772,7 +772,7 @@ function CodeForm({
           </>
         ) : !signedIn ? (
           <>
-            <Link className="btn" href={SCAN_SIGN_IN_HREF}>
+            <Link className="btn" href={scanSignInHref(typedCode)}>
               {SCAN_SIGN_IN_ACTION} <span aria-hidden="true">→</span>
             </Link>
             <button

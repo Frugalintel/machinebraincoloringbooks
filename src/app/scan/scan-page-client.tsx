@@ -26,6 +26,7 @@ import {
   scanPreview,
   scanPreviewCameraIssue,
   scanPreviewTrophyTier,
+  scanSignInHref,
   signedOutCodeMessage,
   stopCameraStream,
   systemErrorMessage,
@@ -289,8 +290,13 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
     event.preventDefault();
     const code = normalizeBookCode(typedCode);
     if (!code) return;
+    if (isLoading) return;
+    if (!user) {
+      router.push(scanSignInHref(code));
+      return;
+    }
     const result = await adapter.submitPageCode({
-      userId: user?.id ?? null,
+      userId: user.id,
       code,
     });
     applyCodeResult(result);

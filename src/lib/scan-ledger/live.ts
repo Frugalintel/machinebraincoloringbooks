@@ -171,7 +171,7 @@ export function booksFromExistingRows(
   );
 }
 
-async function loadLedger(
+export async function loadLedger(
   client: ScanQueryClient,
   userId: string | null,
 ): Promise<ScanLedgerSnapshot> {

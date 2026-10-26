@@ -8,7 +8,11 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Session } from "@supabase/supabase-js";
 import { AuthProvider, useAuth } from "@/context/auth-context";
-import { supabase } from "@/lib/supabase";
+import {
+  authTokenCookieNames,
+  supabaseLocalLogoutUrl,
+} from "@/lib/auth-session";
+import { SUPABASE_ANON_KEY, SUPABASE_URL, supabase } from "@/lib/supabase";
 
 /**
  * Mirrors supabase-js 2.84: `_notifyAllSubscribers` runs inside the auth
@@ -25,9 +29,9 @@ function neverResolves<T>(): Promise<T> {
   return new Promise(() => undefined);
 }
 
-function sessionFor(email: string): Session {
+function sessionFor(email: string, accessToken = "test-access"): Session {
   return {
-    access_token: "test-access",
+    access_token: accessToken,
     refresh_token: "test-refresh",
     expires_in: 3600,
     token_type: "bearer",
@@ -74,17 +78,22 @@ async function expectResolves<T>(
 function AuthProbe() {
   const { user, isLoading, signIn, signOut } = useAuth();
   return (
-    <div>
+    <header>
       <span data-testid="auth-loading">{isLoading ? "loading" : "ready"}</span>
       <span data-testid="auth-user">{user?.email ?? "guest"}</span>
       <span data-testid="auth-name">{user?.displayName ?? ""}</span>
+      {user ? (
+        <span data-testid="auth-account">{user.email}</span>
+      ) : (
+        <a href="/auth?mode=login">Sign in</a>
+      )}
       <button
         type="button"
         onClick={() => {
           void signIn(TEST_EMAIL, TEST_PASSWORD);
         }}
       >
-        Sign in
+        Sign in form
       </button>
       <button
         type="button"
@@ -94,7 +103,7 @@ function AuthProbe() {
       >
         Sign out
       </button>
-    </div>
+    </header>
   );
 }
 
@@ -120,6 +129,10 @@ function SignInHarness({
 beforeEach(() => {
   lockHeld = false;
   listener = undefined;
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(new Response(null, { status: 204 })),
+  );
 
   vi.mocked(supabase.auth.onAuthStateChange).mockImplementation((callback) => {
     listener = callback as typeof listener;
@@ -131,6 +144,19 @@ beforeEach(() => {
   vi.mocked(supabase.auth.getSession).mockImplementation(async () => {
     if (lockHeld) return neverResolves();
     return { data: { session: null }, error: null };
+  });
+
+  vi.mocked(supabase.auth.signOut).mockReset();
+  vi.mocked(supabase.auth.getUser).mockImplementation(async () => {
+    if (lockHeld) return neverResolves();
+    return {
+      data: { user: null },
+      error: {
+        name: "AuthSessionMissingError",
+        message: "Auth session missing!",
+        status: 400,
+      },
+    } as Awaited<ReturnType<typeof supabase.auth.getUser>>;
   });
 
   vi.mocked(supabase.auth.signInWithPassword).mockImplementation(async () => {
@@ -164,6 +190,12 @@ beforeEach(() => {
 afterEach(() => {
   lockHeld = false;
   listener = undefined;
+  vi.unstubAllGlobals();
+  for (const name of authTokenCookieNames(document.cookie)) {
+    document.cookie = `${name}=; Max-Age=0; path=/`;
+  }
+  window.localStorage.clear();
+  window.sessionStorage.clear();
 });
 
 describe("AuthProvider password sign-in", () => {
@@ -220,7 +252,7 @@ describe("AuthProvider password sign-in", () => {
       expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
 
     await expectResolves(
       waitFor(() =>
@@ -253,7 +285,7 @@ describe("AuthProvider password sign-in", () => {
     await waitFor(() =>
       expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
     await waitFor(() =>
       expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
     );
@@ -261,6 +293,278 @@ describe("AuthProvider password sign-in", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
     expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
     expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
-    releaseSignOut();
+    await act(async () => {
+      releaseSignOut();
+    });
+  });
+
+  it("treats a cached session as signed out when getUser returns AuthApiError 401", async () => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: sessionFor(TEST_EMAIL) },
+      error: null,
+    });
+    vi.mocked(supabase.auth.getUser).mockResolvedValue({
+      data: { user: null },
+      error: {
+        message: "invalid JWT",
+        name: "AuthApiError",
+        status: 401,
+        code: "bad_jwt",
+      },
+    } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+    vi.mocked(supabase.auth.signOut).mockResolvedValue({ error: null });
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent("guest"),
+    );
+    expect(supabase.auth.getUser).toHaveBeenCalled();
+    expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
+  });
+
+  it("treats AuthApiError 403 as an invalid session", async () => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: sessionFor(TEST_EMAIL) },
+      error: null,
+    });
+    vi.mocked(supabase.auth.getUser).mockResolvedValue({
+      data: { user: null },
+      error: {
+        message: "User from sub claim in JWT does not exist",
+        name: "AuthApiError",
+        status: 403,
+        code: "user_not_found",
+      },
+    } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+    vi.mocked(supabase.auth.signOut).mockResolvedValue({ error: null });
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent("guest"),
+    );
+    expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
+  });
+
+  it("keeps the cached session when getUser is offline or returns 5xx", async () => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: sessionFor(TEST_EMAIL) },
+      error: null,
+    });
+    vi.mocked(supabase.auth.getUser).mockResolvedValue({
+      data: { user: null },
+      error: {
+        message: "Service unavailable",
+        name: "AuthRetryableFetchError",
+        status: 503,
+      },
+    } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
+    );
+    expect(supabase.auth.signOut).not.toHaveBeenCalled();
+  });
+
+  it("keeps chrome loading until getUser finishes so INITIAL_SESSION cannot flash", async () => {
+    let releaseGetUser!: (
+      value: Awaited<ReturnType<typeof supabase.auth.getUser>>,
+    ) => void;
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: sessionFor(TEST_EMAIL) },
+      error: null,
+    });
+    vi.mocked(supabase.auth.getUser).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          releaseGetUser = resolve;
+        }),
+    );
+    vi.mocked(supabase.auth.signOut).mockResolvedValue({ error: null });
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+
+    await waitFor(() => expect(listener).toEqual(expect.any(Function)));
+    await act(async () => {
+      listener?.("INITIAL_SESSION", sessionFor(TEST_EMAIL));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByTestId("auth-loading")).toHaveTextContent("loading");
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(screen.queryByText(TEST_EMAIL)).toBeNull();
+
+    await act(async () => {
+      releaseGetUser({
+        data: { user: null },
+        error: {
+          message: "invalid JWT",
+          name: "AuthApiError",
+          status: 401,
+          code: "bad_jwt",
+        },
+      } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+    });
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(screen.queryByText(TEST_EMAIL)).toBeNull();
+  });
+
+  it("clears chrome on SIGNED_OUT even when a stale session is attached", async () => {
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
+    );
+
+    await act(async () => {
+      listener?.("SIGNED_OUT", sessionFor(TEST_EMAIL));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+
+    await act(async () => {
+      listener?.("TOKEN_REFRESHED", sessionFor(TEST_EMAIL));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+  });
+
+  it("drops auth cookies before a hung logout so reload cannot restore the account", async () => {
+    const first = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-account")).toHaveTextContent(TEST_EMAIL),
+    );
+
+    document.cookie = "sb-xyz-auth-token=chunk";
+    document.cookie = "sb-xyz-auth-token.0=aaa";
+    window.localStorage.setItem("sb-xyz-auth-token", '{"access_token":"x"}');
+    window.sessionStorage.setItem("sb-xyz-auth-token.1", "bbb");
+
+    vi.mocked(supabase.auth.signOut).mockImplementation(() => neverResolves());
+    vi.mocked(supabase.auth.getSession).mockImplementation(async () => {
+      if (authTokenCookieNames(document.cookie).length === 0) {
+        return { data: { session: null }, error: null };
+      }
+      return { data: { session: sessionFor(TEST_EMAIL) }, error: null };
+    });
+    const logoutFetch = vi.fn(() => neverResolves<Response>());
+    vi.stubGlobal("fetch", logoutFetch);
+
+    fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+    expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.queryByTestId("auth-account")).toBeNull();
+    expect(authTokenCookieNames(document.cookie)).toEqual([]);
+    expect(window.localStorage.getItem("sb-xyz-auth-token")).toBeNull();
+    expect(window.sessionStorage.getItem("sb-xyz-auth-token.1")).toBeNull();
+    expect(logoutFetch).toHaveBeenCalledWith(
+      supabaseLocalLogoutUrl(SUPABASE_URL),
+      expect.objectContaining({
+        method: "POST",
+        keepalive: true,
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: "Bearer test-access",
+        },
+      }),
+    );
+
+    first.unmount();
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(screen.queryByText(TEST_EMAIL)).toBeNull();
+  });
+
+  it("does not let a late profile response resurrect the previous user", async () => {
+    let releaseProfile!: () => void;
+    vi.mocked(supabase.from).mockImplementation(
+      () =>
+        ({
+          select: () => ({
+            eq: () => ({
+              maybeSingle: () =>
+                new Promise((resolve) => {
+                  releaseProfile = () =>
+                    resolve({
+                      data: {
+                        id: "user-1",
+                        display_name: "Ada",
+                        is_admin: false,
+                      },
+                      error: null,
+                    });
+                }),
+            }),
+          }),
+        }) as unknown as ReturnType<typeof supabase.from>,
+    );
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
+    );
+    expect(screen.getByTestId("auth-name")).toHaveTextContent("");
+
+    fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+    expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
+
+    await act(async () => {
+      releaseProfile();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(screen.getByTestId("auth-name")).toHaveTextContent("");
+    expect(screen.queryByText("Ada")).toBeNull();
   });
 });

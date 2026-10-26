@@ -6,6 +6,7 @@ import {
   SCAN_SIGN_IN_BOOK_HINT,
   SCAN_SIGN_IN_CODE_HINT,
   SCAN_SIGN_IN_HREF,
+  scanSignInHref,
   invalidCodeMessage,
   photoPreviewTag,
   signedOutScanHint,
@@ -85,6 +86,14 @@ describe("scan ledger copy", () => {
     );
     expect(SCAN_SIGN_IN_BOOK_HINT).toBe(
       "Sign in to keep this book and its unlock.",
+    );
+    expect(scanSignInHref()).toBe(SCAN_SIGN_IN_HREF);
+    expect(scanSignInHref("")).toBe(SCAN_SIGN_IN_HREF);
+    expect(scanSignInHref("  ab12 ")).toBe(
+      `/auth?mode=login&next=${encodeURIComponent("/scan?mode=code&code=AB12")}`,
+    );
+    expect(scanSignInHref("ab&12#x+y")).toBe(
+      `/auth?mode=login&next=${encodeURIComponent("/scan?mode=code&code=AB&12#X+Y")}`,
     );
     expect(signedOutScanHint("code")).toBe(SCAN_SIGN_IN_CODE_HINT);
     expect(signedOutScanHint("camera-off")).toBe(SCAN_SIGN_IN_BOOK_HINT);

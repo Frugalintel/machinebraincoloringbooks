@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ProfilePage from "@/app/profile/[username]/page";
+import type { ScanLedgerSnapshot } from "@/lib/scan-ledger";
 
 const auth = vi.hoisted(() => ({
   isLoading: true,
@@ -33,6 +34,48 @@ vi.mock("@/context/game-context", () => ({
   }),
 }));
 
+const ledger = vi.hoisted(() => {
+  const snapshot: ScanLedgerSnapshot = {
+    signedIn: true,
+    sample: false,
+    wallet: { available: false, points: null, source: "unavailable" },
+    story: null,
+    books: [
+      {
+        id: "s",
+        title: "The Silver Citadel",
+        plateCount: 40,
+        bookPoints: 13,
+        plates: [
+          ...Array.from({ length: 7 }, () => "code" as const),
+          ...Array.from({ length: 3 }, () => "pending" as const),
+          ...Array.from({ length: 30 }, () => "empty" as const),
+        ],
+        currentPlate: null,
+        hitPlate: null,
+        legendaryPlate: null,
+        legendaryFoundAt: null,
+        allCodesIn: false,
+        pendingCount: 3,
+        tier: "Basic",
+        next: "",
+      },
+    ],
+    showNextBookSlot: false,
+    activePlate: null,
+    unlock: null,
+  };
+  return { snapshot };
+});
+
+vi.mock("@/lib/scan-ledger", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/scan-ledger")>();
+  return {
+    ...actual,
+    loadLedger: vi.fn(async () => ledger.snapshot),
+  };
+});
+
 describe("ProfilePage auth resolution", () => {
   beforeEach(() => {
     auth.isLoading = true;
@@ -57,7 +100,7 @@ describe("ProfilePage auth resolution", () => {
     expect(screen.queryByText("Access Restricted")).toBeNull();
   });
 
-  it("shows the signed-in profile once the session exists", () => {
+  it("shows the signed-in profile once the session exists", async () => {
     auth.isLoading = false;
     auth.user = { email: "ada@example.com", id: "user-1", initials: "AD" };
     render(<ProfilePage />);
@@ -68,5 +111,21 @@ describe("ProfilePage auth resolution", () => {
     expect(
       screen.getAllByRole("button", { name: "Sign out" }).length,
     ).toBeGreaterThan(0);
+    await waitFor(() => expect(screen.getByText("10")).toBeInTheDocument());
+  });
+
+  it("reads plates and pending from the scan ledger", async () => {
+    auth.isLoading = false;
+    auth.user = { email: "ada@example.com", id: "user-1", initials: "AD" };
+    render(<ProfilePage />);
+    await waitFor(() => expect(screen.getByText("10")).toBeInTheDocument());
+    expect(screen.getByText("Plates")).toBeInTheDocument();
+    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getByText("Books")).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(screen.getByText("Pending")).toBeInTheDocument();
+    expect(screen.getByText("The Silver Citadel")).toBeInTheDocument();
+    expect(screen.getByText("10/40")).toBeInTheDocument();
+    expect(screen.getByText("3 pending")).toBeInTheDocument();
   });
 });
