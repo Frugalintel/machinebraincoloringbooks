@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { invalidCodeMessage, systemErrorMessage } from "@/lib/scan-ledger/copy";
 import { SCAN_STUB } from "@/lib/scan-ledger/types";
 import {
   booksFromExistingRows,
@@ -11,12 +12,21 @@ function memoryClient(options?: {
   userCode?: Record<string, unknown> | null;
   scan?: Record<string, unknown> | null;
   inserts?: { table: string; row: unknown }[];
+  selects?: { table: string; columns: string }[];
+  rpc?: (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => PromiseLike<{ data: unknown; error: unknown }>;
+  rpcCalls?: { fn: string; args: Record<string, unknown> }[];
 }) {
   const inserts = options?.inserts ?? [];
+  const selects = options?.selects ?? [];
+  const rpcCalls = options?.rpcCalls ?? [];
   return {
     from(table: string) {
       return {
-        select() {
+        select(columns: string) {
+          selects.push({ table, columns });
           return this;
         },
         eq() {
@@ -49,6 +59,14 @@ function memoryClient(options?: {
         },
       };
     },
+    ...(options?.rpc
+      ? {
+          async rpc(fn: string, args: Record<string, unknown>) {
+            rpcCalls.push({ fn, args });
+            return options.rpc!(fn, args);
+          },
+        }
+      : {}),
   };
 }
 
@@ -150,6 +168,177 @@ describe("createLiveAdapter fail-safe stubs", () => {
     });
     expect(result).toMatchObject({ ok: false, kind: "invalid", code: "7KQ3" });
     expect(inserts).toEqual([]);
+  });
+
+  it("rejects a kind book code on the page path without writing", async () => {
+    const inserts: { table: string; row: unknown }[] = [];
+    const adapter = createLiveAdapter(
+      memoryClient({
+        inserts,
+        bookCode: {
+          id: "code-book",
+          code: "QA-TEST-BOOK",
+          kind: "book",
+          is_active: true,
+          products: { id: "p1", title: "The Silver Citadel" },
+        },
+      }),
+    );
+    const result = await adapter.submitPageCode({
+      userId: "user-1",
+      code: "qa-test-book",
+    });
+    expect(result).toEqual({
+      ok: false,
+      kind: "invalid",
+      code: "QA-TEST-BOOK",
+      message: invalidCodeMessage("QA-TEST-BOOK"),
+    });
+    expect(inserts).toEqual([]);
+  });
+
+  it("selects only total_xp from profiles", async () => {
+    const selects: { table: string; columns: string }[] = [];
+    const adapter = createLiveAdapter(memoryClient({ selects }));
+    await adapter.getLedger("user-1");
+    const profileSelects = selects.filter((row) => row.table === "profiles");
+    expect(profileSelects.length).toBeGreaterThan(0);
+    for (const select of profileSelects) {
+      expect(select.columns).toBe("total_xp");
+      expect(select.columns).not.toMatch(/\bpoints\b|\bpoint_balance\b/);
+    }
+  });
+});
+
+describe("createLiveAdapter registerBook", () => {
+  it("returns registered when the rpc reports registered", async () => {
+    const inserts: { table: string; row: unknown }[] = [];
+    const rpcCalls: { fn: string; args: Record<string, unknown> }[] = [];
+    const adapter = createLiveAdapter(
+      memoryClient({
+        inserts,
+        rpcCalls,
+        rpc: async () => ({
+          data: { status: "registered", product_id: "prod-1" },
+          error: null,
+        }),
+      }),
+    );
+    const result = await adapter.registerBook({
+      userId: "user-1",
+      code: " qa-test-book ",
+    });
+    expect(rpcCalls).toEqual([
+      { fn: "register_book", args: { p_code: "QA-TEST-BOOK" } },
+    ]);
+    expect(inserts).toEqual([]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.kind).toBe("registered");
+    expect(result.snapshot.signedIn).toBe(true);
+  });
+
+  it("reuses registered when the rpc reports already_registered", async () => {
+    const adapter = createLiveAdapter(
+      memoryClient({
+        rpc: async () => ({
+          data: { status: "already_registered", product_id: "prod-1" },
+          error: null,
+        }),
+      }),
+    );
+    const result = await adapter.registerBook({
+      userId: "user-1",
+      code: "QA-TEST-BOOK",
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.kind).toBe("registered");
+    expect(result.snapshot.signedIn).toBe(true);
+  });
+
+  it("returns invalid when the rpc reports invalid", async () => {
+    const adapter = createLiveAdapter(
+      memoryClient({
+        rpc: async () => ({
+          data: { status: "invalid", product_id: null },
+          error: null,
+        }),
+      }),
+    );
+    const result = await adapter.registerBook({
+      userId: "user-1",
+      code: "NOPE",
+    });
+    expect(result).toEqual({
+      ok: false,
+      kind: "invalid",
+      code: "NOPE",
+      message: invalidCodeMessage("NOPE"),
+    });
+  });
+
+  it("returns signed-out when the rpc reports unauthenticated", async () => {
+    const adapter = createLiveAdapter(
+      memoryClient({
+        rpc: async () => ({
+          data: { status: "unauthenticated", product_id: null },
+          error: null,
+        }),
+      }),
+    );
+    const result = await adapter.registerBook({
+      userId: "user-1",
+      code: "QA-TEST-BOOK",
+    });
+    expect(result).toEqual({
+      ok: false,
+      kind: "signed-out",
+      hold: { kind: "book", label: "QA-TEST-BOOK" },
+    });
+  });
+
+  it("returns a generic error when the rpc errors", async () => {
+    const adapter = createLiveAdapter(
+      memoryClient({
+        rpc: async () => ({
+          data: null,
+          error: { message: "boom" },
+        }),
+      }),
+    );
+    const result = await adapter.registerBook({
+      userId: "user-1",
+      code: "QA-TEST-BOOK",
+    });
+    expect(result).toEqual({
+      ok: false,
+      kind: "error",
+      message: systemErrorMessage(),
+    });
+  });
+
+  it("holds a signed-out book scan without calling the rpc", async () => {
+    const rpcCalls: { fn: string; args: Record<string, unknown> }[] = [];
+    const adapter = createLiveAdapter(
+      memoryClient({
+        rpcCalls,
+        rpc: async () => ({
+          data: { status: "registered", product_id: "prod-1" },
+          error: null,
+        }),
+      }),
+    );
+    const result = await adapter.registerBook({
+      userId: null,
+      code: "QA-TEST-BOOK",
+    });
+    expect(result).toEqual({
+      ok: false,
+      kind: "signed-out",
+      hold: { kind: "book", label: "QA-TEST-BOOK" },
+    });
+    expect(rpcCalls).toEqual([]);
   });
 });
 

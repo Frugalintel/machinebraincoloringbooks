@@ -6,6 +6,7 @@ import {
   SCAN_STUB,
   type BookRow,
   type PlateCell,
+  type RegisterBookResult,
   type ScanLedgerAdapter,
   type ScanLedgerSnapshot,
   type SubmitPhotoResult,
@@ -30,6 +31,8 @@ type BookCodeRow = {
   is_active?: boolean | null;
   unlocks_type?: string | null;
   unlocks_id?: string | null;
+  /** Absent or null counts as a page for older rows. */
+  kind?: "page" | "book" | string | null;
   products?: {
     id?: string;
     title?: string | null;
@@ -55,6 +58,10 @@ type ProfileRow = {
 
 export type ScanQueryClient = {
   from: (table: string) => unknown;
+  rpc?: (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => PromiseLike<{ data: unknown; error: unknown }>;
 };
 
 type FilterBuilder = {
@@ -183,7 +190,7 @@ async function loadLedger(
   }
 
   const profileQuery = asFilter(client.from("profiles"))
-    .select("total_xp, points, point_balance")
+    .select("total_xp")
     .eq("id", userId);
   const codesQuery = asFilter(client.from("user_codes"))
     .select(
@@ -229,7 +236,7 @@ async function lookupBookCode(
 ): Promise<BookCodeRow | null> {
   const { data, error } = await asFilter(client.from("book_codes"))
     .select(
-      "id, code, page_number, product_id, is_active, unlocks_type, unlocks_id, products(id, title)",
+      "id, code, page_number, product_id, is_active, unlocks_type, unlocks_id, kind, products(id, title)",
     )
     .eq("code", code)
     .maybeSingle();
@@ -315,6 +322,38 @@ async function redeemUnlocks(
   }
 }
 
+type RegisterBookStatus =
+  | "registered"
+  | "already_registered"
+  | "invalid"
+  | "unauthenticated";
+
+function registerBookStatus(data: unknown): RegisterBookStatus | null {
+  const status =
+    typeof data === "string"
+      ? data
+      : data && typeof data === "object" && "status" in data
+        ? (data as { status?: unknown }).status
+        : null;
+  switch (status) {
+    case "registered":
+    case "already_registered":
+    case "invalid":
+    case "unauthenticated":
+      return status;
+    default:
+      return null;
+  }
+}
+
+function signedOutBookResult(code: string): RegisterBookResult {
+  return {
+    ok: false,
+    kind: "signed-out",
+    hold: { kind: "book", label: code || "This book" },
+  };
+}
+
 function activeFromCode(codeData: BookCodeRow, code: string) {
   const page = plateIndex(codeData.page_number) ?? 0;
   return {
@@ -348,15 +387,49 @@ export function createLiveAdapter(client: ScanQueryClient): ScanLedgerAdapter {
     async registerBook({ userId, code }) {
       const normalized = normalizeBookCode(code);
       if (!userId) {
-        return {
-          ok: false,
-          kind: "signed-out",
-          hold: { kind: "book", label: normalized || "This book" },
-        };
+        return signedOutBookResult(normalized);
       }
-      // TODO(store/wire): no book-register table or hidden-page assignment yet.
-      // Fail safe — never pretend the book was registered for a real user.
-      return { ok: false, kind: "stub", message: SCAN_STUB.register };
+      if (typeof client.rpc !== "function") {
+        return { ok: false, kind: "stub", message: SCAN_STUB.register };
+      }
+
+      try {
+        const { data, error } = await client.rpc("register_book", {
+          p_code: normalized,
+        });
+        if (error) {
+          logger.error("scan book register failed", error);
+          return { ok: false, kind: "error", message: systemErrorMessage() };
+        }
+
+        const status = registerBookStatus(data);
+        switch (status) {
+          case "registered":
+          case "already_registered": {
+            const snapshot = await loadLedger(client, userId);
+            return { ok: true, kind: "registered", snapshot };
+          }
+          case "invalid":
+            return {
+              ok: false,
+              kind: "invalid",
+              code: normalized,
+              message: invalidCodeMessage(normalized || "That code"),
+            };
+          case "unauthenticated":
+            return signedOutBookResult(normalized);
+          case null:
+            logger.error("scan book register failed", data);
+            return { ok: false, kind: "error", message: systemErrorMessage() };
+          default: {
+            const _exhaustive: never = status;
+            return _exhaustive;
+          }
+        }
+      } catch (error) {
+        logger.error("scan book register failed", error);
+        return { ok: false, kind: "error", message: systemErrorMessage() };
+      }
     },
 
     async submitPageCode({ userId, code }) {
@@ -378,7 +451,7 @@ export function createLiveAdapter(client: ScanQueryClient): ScanLedgerAdapter {
         return { ok: false, kind: "error", message: systemErrorMessage() };
       }
 
-      if (!codeData) {
+      if (!codeData || codeData.kind === "book") {
         return {
           ok: false,
           kind: "invalid",
@@ -465,7 +538,7 @@ export function createLiveAdapter(client: ScanQueryClient): ScanLedgerAdapter {
 
       try {
         const codeData = await lookupBookCode(client, normalized);
-        if (!codeData) {
+        if (!codeData || codeData.kind === "book") {
           return { ok: false, kind: "error", message: systemErrorMessage() };
         }
 
