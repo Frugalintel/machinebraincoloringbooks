@@ -13,7 +13,7 @@ import { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { Profile } from "@/lib/types";
 import { logger } from "@/lib/logger";
-import type { AuthHold } from "@/lib/auth-ui";
+import { withAuthTimeout, type AuthHold } from "@/lib/auth-ui";
 
 type User = {
   email: string;
@@ -44,6 +44,8 @@ type AuthContextType = {
   ) => Promise<{ error: Error | null; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
   isLoading: boolean;
+  /** True while this browser is signing out, so /profile/me does not bounce to /auth. */
+  signingOut: boolean;
   authModal: AuthModalState;
   openAuthModal: (
     view?: "login" | "register",
@@ -61,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [signingOut, setSigningOut] = useState(false);
   const [authModal, setAuthModal] = useState<AuthModalState>({
     isOpen: false,
     view: "login",
@@ -121,28 +124,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initAuth = async () => {
       try {
         // Setup listener first to catch any events during initialization
-        const applySession = async (
-          event: string,
-          newSession: Session | null,
-        ) => {
+        const hydrateProfile = (sessionUser: SupabaseUser) => {
+          window.setTimeout(() => {
+            void fetchProfile(sessionUser.id).then((profile) => {
+              if (mounted) {
+                setUser(formatUser(sessionUser, profile ?? undefined));
+              }
+            });
+          }, 0);
+        };
+
+        const applySession = (event: string, newSession: Session | null) => {
           if (!mounted) return;
 
+          // Paint the session immediately. Awaiting profiles here used to keep
+          // isLoading true (and /store gated on it) for tens of seconds.
           if (newSession?.user) {
             setSession(newSession);
-            const profile = await fetchProfile(newSession.user.id);
-            if (mounted) {
-              setUser(formatUser(newSession.user, profile));
-            }
-          } else if (mounted) {
+            setUser(formatUser(newSession.user));
+            hydrateProfile(newSession.user);
+          } else {
             setSession(null);
             setUser(null);
           }
 
-          if (event === "SIGNED_IN" && mounted) {
+          if (event === "SIGNED_IN") {
             setAuthModal((prev) => ({ ...prev, isOpen: false }));
           }
 
-          if (mounted) setIsLoading(false);
+          setIsLoading(false);
         };
 
         // supabase-js 2.84 holds navigator.locks and awaits this callback.
@@ -152,11 +162,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           data: { subscription },
         } = supabase.auth.onAuthStateChange((event, newSession) => {
           setTimeout(() => {
-            void applySession(event, newSession);
+            applySession(event, newSession);
           }, 0);
         });
 
-        // Get initial session to ensure we have state before first render if possible
         const {
           data: { session: initialSession },
         } = await supabase.auth.getSession();
@@ -164,18 +173,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (mounted) {
           if (initialSession?.user) {
             setSession(initialSession);
-            const profile = await fetchProfile(initialSession.user.id);
-            if (mounted) {
-              setUser(formatUser(initialSession.user, profile));
-            }
+            setUser(formatUser(initialSession.user));
+            hydrateProfile(initialSession.user);
           }
-          // Even if no initial session, we're done loading the initial check
-          // However, onAuthStateChange might fire INITIAL_SESSION right after.
-          // We'll let onAuthStateChange handle the final isLoading=false usually,
-          // but if there's no session, we need to ensure loading stops.
-          if (!initialSession) {
-            setIsLoading(false);
-          }
+          setIsLoading(false);
         }
 
         return () => {
@@ -190,18 +191,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const cleanupPromise = initAuth();
 
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (!event.persisted || !isSupabaseConfigured) return;
+      void supabase.auth.getSession().then(({ data }) => {
+        if (!data.session) {
+          setUser(null);
+          setSession(null);
+          setIsLoading(false);
+        }
+      });
+    };
+    window.addEventListener("pageshow", onPageShow);
+
     return () => {
       mounted = false;
+      window.removeEventListener("pageshow", onPageShow);
       cleanupPromise.then((cleanup) => cleanup && cleanup());
     };
   }, [formatUser, fetchProfile]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await withAuthTimeout(
+        supabase.auth.signInWithPassword({
+          email,
+          password,
+        }),
+      );
 
       if (error) {
         return { error };
@@ -234,16 +250,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    // Drop chrome immediately so mobile menus cannot keep a stale Sign out.
+    // local: this browser only. There is no product need to sign out other devices.
+    setSigningOut(true);
+    setUser(null);
+    setSession(null);
+    setAuthModal({ isOpen: false, view: "login" });
+    setIsLoading(false);
+    router.replace("/");
     try {
-      await supabase.auth.signOut({ scope: "global" });
+      await supabase.auth.signOut({ scope: "local" });
     } catch (error) {
       logger.error("Error signing out:", error);
     } finally {
-      // Always clear local state and redirect, even if server request fails
-      setUser(null);
-      setSession(null);
-      router.push("/");
       router.refresh();
+      setSigningOut(false);
     }
   }, [router]);
 
@@ -277,6 +298,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signOut,
       isLoading,
+      signingOut,
       authModal,
       openAuthModal,
       closeAuthModal,
@@ -289,6 +311,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signOut,
       isLoading,
+      signingOut,
       authModal,
       openAuthModal,
       closeAuthModal,
@@ -302,6 +325,15 @@ export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+}
+
+/** Footers still render in page tests that do not wrap AuthProvider. */
+export function useOptionalAuth(): Pick<AuthContextType, "user" | "signOut"> {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    return { user: null, signOut: async () => undefined };
   }
   return context;
 }

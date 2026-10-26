@@ -116,8 +116,13 @@ vi.mock("@/lib/supabase", () => ({
           maybeSingle: vi.fn(),
         })),
         order: vi.fn(() => ({
-          limit: vi.fn(),
+          limit: vi.fn(() => ({
+            maybeSingle: vi.fn(),
+            single: vi.fn(),
+          })),
         })),
+        maybeSingle: vi.fn(),
+        single: vi.fn(),
       })),
       insert: vi.fn(),
       update: vi.fn(),
@@ -133,6 +138,11 @@ vi.mock("@/lib/supabase", () => ({
         data: { subscription: { unsubscribe: vi.fn() } },
       })),
     },
+    channel: vi.fn(() => ({
+      on: vi.fn().mockReturnThis(),
+      subscribe: vi.fn(),
+    })),
+    removeChannel: vi.fn(),
     storage: {
       from: vi.fn(() => ({
         upload: vi.fn(),

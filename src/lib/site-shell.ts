@@ -37,7 +37,7 @@ export const FOOTER_LINK_GROUPS: readonly FooterLinkGroup[] = [
     heading: "Account",
     links: [
       { name: "Sign in", href: "/auth?mode=login" },
-      { name: "Register", href: "/auth?mode=register" },
+      { name: "Create account", href: "/auth?mode=register" },
       { name: "Order lookup", href: "/orders/lookup" },
       { name: "Help", href: "/help" },
     ],

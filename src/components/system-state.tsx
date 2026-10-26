@@ -49,13 +49,15 @@ export function SystemState({
       )}
     >
       <div className="container mx-auto flex flex-1 flex-col items-start justify-center px-4 py-16 md:px-6 md:py-24">
-        <div className="flex max-w-xl flex-col items-start gap-6">
+        <div className="flex w-full min-w-0 max-w-xl flex-col items-start gap-6">
           <SystemMark standalone={standalone} />
           <p className="font-label tracking-[0.12em] text-signal">
             {copy.code}
           </p>
-          <h1 className="font-display text-title text-cream">{copy.title}</h1>
-          <p className="max-w-md text-base leading-relaxed text-fg-secondary">
+          <h1 className="font-display text-title min-w-0 max-w-full break-words text-cream">
+            {copy.title}
+          </h1>
+          <p className="max-w-md min-w-0 break-words text-base leading-relaxed text-fg-secondary">
             {copy.body}
           </p>
           <div className="flex flex-wrap gap-3 pt-2">

@@ -301,6 +301,7 @@ export function useStoryCards(
     cards,
     loading: loading || (!fixture && isAuthLoading),
     signedIn,
+    authPending: !fixture && isAuthLoading,
     balance,
     sampleBalance: fixture || cards.some((card) => card.sample),
   };

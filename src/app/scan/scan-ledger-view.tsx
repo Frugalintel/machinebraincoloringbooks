@@ -81,6 +81,7 @@ export type ScanLedgerHandlers = {
 export function ScanLedgerView({
   state,
   snapshot,
+  authPending = false,
   typedCode,
   capturedUrl,
   cameraLive,
@@ -94,6 +95,8 @@ export function ScanLedgerView({
 }: {
   state: ScanViewState;
   snapshot: ScanLedgerSnapshot;
+  /** Hold the signed-out wallet until the session has actually resolved. */
+  authPending?: boolean;
   typedCode: string;
   capturedUrl: string | null;
   cameraLive: boolean;
@@ -181,6 +184,10 @@ export function ScanLedgerView({
                 ) : null}
                 {chrome.lede ? <p className="lede">{chrome.lede}</p> : null}
               </>
+            ) : authPending ? (
+              <div className="bal" aria-busy="true">
+                <p className="mono">Loading</p>
+              </div>
             ) : !snapshot.signedIn && signedOutScanHint(state) ? (
               <p className="lede">{signedOutScanHint(state)}</p>
             ) : hideWallet ? (

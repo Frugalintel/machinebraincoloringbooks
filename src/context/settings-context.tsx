@@ -86,6 +86,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         // Or just use default.
         // Let's try to read system_settings just in case the migration hasn't run yet
         // to avoid breaking the site completely during transition.
+        // maybeSingle: an empty table is 200 + null, not a 406.
         const { data: legacyData } = await supabase
           .from("system_settings")
           .select("value")
@@ -119,22 +120,27 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    fetchSettings();
+    void fetchSettings();
 
-    // Subscribe to changes in 'campaigns' table
-    const channel = supabase
-      .channel("campaigns_changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "campaigns" },
-        () => {
-          fetchSettings(); // Refresh if any campaign changes (especially active status)
-        },
-      )
-      .subscribe();
+    // Defer the realtime socket so first paint does not wait on websocket
+    // handshake (QA saw /store sit on Loading while only that socket was pending).
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    const timer = window.setTimeout(() => {
+      channel = supabase
+        .channel("campaigns_changes")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "campaigns" },
+          () => {
+            void fetchSettings();
+          },
+        )
+        .subscribe();
+    }, 0);
 
     return () => {
-      supabase.removeChannel(channel);
+      window.clearTimeout(timer);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [fetchSettings]);
 

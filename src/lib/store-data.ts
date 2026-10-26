@@ -133,7 +133,7 @@ export const products: Product[] = [
     age: "All Ages",
     category: "HOLIDAY",
     description:
-      "Celebrate the season with our exclusive holiday coloring collection. The perfect digital detox gift for you and your loved ones featuring festive sci-fi landscapes.",
+      "Celebrate the season with an exclusive holiday coloring collection. The perfect digital detox gift for you and your loved ones featuring festive sci-fi landscapes.",
     discount_percent: 0,
     is_published: true,
   },

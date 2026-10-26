@@ -586,6 +586,8 @@
   background: var(--base);
   border-top: 1px solid var(--c3);
   border-bottom: 1px solid var(--c3);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .store-e2 .fbar .lab {
@@ -604,10 +606,19 @@
 
 .store-e2 .fbar .chips {
   display: flex;
+  flex: 1 1 auto;
   gap: 8px;
   min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(
+    to right,
+    var(--base) 0,
+    var(--base) calc(100% - 28px),
+    transparent
+  );
 }
 
 .store-e2 .fbar .chips::-webkit-scrollbar {
@@ -896,7 +907,14 @@
 
 @media (max-width: 760px) {
   .store-e2 .s-h1 {
-    font-size: 29.52vw;
+    font-size: min(29.52vw, calc((100vw - 2 * var(--m)) / 5.2));
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .store-e2 .s-h1 span {
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 
   .store-e2 .s-hero .smp {

@@ -483,6 +483,8 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 16px 28px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .home-e2.scan-c .modes {
@@ -538,6 +540,12 @@
 .home-e2.scan-c .fb p {
   display: flex;
   gap: 12px;
+  min-width: 0;
+}
+
+.home-e2.scan-c .fb span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .home-e2.scan-c .fb b {
@@ -1091,11 +1099,14 @@
   .home-e2.scan-c .rcol > .h1 {
     order: 1;
     margin-bottom: 0;
-    font-size: var(--fm, 15vw);
+    font-size: min(var(--fm, 15vw), calc((100vw - 2 * var(--m)) / 6.4));
     position: relative;
     left: auto;
     top: auto;
     padding: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .home-e2.scan-c .lg[data-bal-first="true"] .rcol > .bal {

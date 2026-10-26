@@ -8,7 +8,7 @@ describe("SystemState", () => {
 
     expect(
       screen.getByRole("heading", { level: 1, name: "Page not found" }),
-    ).toHaveClass("font-display");
+    ).toHaveClass("font-display", "min-w-0", "break-words");
     expect(screen.getByText("Error 404")).toHaveClass("font-label");
     expect(screen.getByText("Error 404")).toHaveClass("text-signal");
     expect(screen.getByRole("presentation")).toHaveAttribute(

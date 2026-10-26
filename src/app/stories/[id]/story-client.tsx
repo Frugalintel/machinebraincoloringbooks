@@ -234,7 +234,7 @@ function LiveStory({
   productHref?: string;
   plateOf: (storyId: string) => number;
 }) {
-  const { user, openAuthModal } = useAuth();
+  const { user, openAuthModal, isLoading: authLoading } = useAuth();
   const { success, error: toastError } = useToast();
   const router = useRouter();
   const params = useSearchParams();
@@ -314,11 +314,12 @@ function LiveStory({
   }, [id, logAnalytics, user]);
 
   useEffect(() => {
+    if (authLoading) return;
     void fetchStoryData();
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [fetchStoryData]);
+  }, [authLoading, fetchStoryData]);
 
   useEffect(() => {
     if (story?.title) document.title = `${story.title} · Machine Brain`;
@@ -462,7 +463,7 @@ function LiveStory({
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <main className="hero plate" aria-busy="true">
         <p className="mono">Loading</p>

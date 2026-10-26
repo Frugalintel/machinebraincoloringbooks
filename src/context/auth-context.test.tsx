@@ -72,7 +72,7 @@ async function expectResolves<T>(
 }
 
 function AuthProbe() {
-  const { user, isLoading, signIn } = useAuth();
+  const { user, isLoading, signIn, signOut } = useAuth();
   return (
     <div>
       <span data-testid="auth-loading">{isLoading ? "loading" : "ready"}</span>
@@ -85,6 +85,14 @@ function AuthProbe() {
         }}
       >
         Sign in
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          void signOut();
+        }}
+      >
+        Sign out
       </button>
     </div>
   );
@@ -223,5 +231,36 @@ describe("AuthProvider password sign-in", () => {
     await waitFor(() =>
       expect(screen.getByTestId("auth-name")).toHaveTextContent("Ada"),
     );
+  });
+
+  it("clears the session before the sign-out request finishes", async () => {
+    let releaseSignOut!: () => void;
+    vi.mocked(supabase.auth.signOut).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          releaseSignOut = () =>
+            resolve({ error: null } as Awaited<
+              ReturnType<typeof supabase.auth.signOut>
+            >);
+        }),
+    );
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
+    releaseSignOut();
   });
 });

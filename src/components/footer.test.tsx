@@ -1,10 +1,23 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Footer } from "@/components/footer";
 import { HomeFooter } from "@/components/home-footer";
+import { registerHref, signInHref } from "@/lib/account-chrome";
 import { FOOTER_LINK_GROUPS, SITE_SOCIAL_LINKS } from "@/lib/site-shell";
 
-const nav = vi.hoisted(() => ({ pathname: "/" }));
+const nav = vi.hoisted(() => ({
+  pathname: "/",
+  user: null as null | { email: string; id: string; initials: string },
+  signOut: vi.fn(),
+}));
+
+vi.mock("@/context/auth-context", () => {
+  const useAuth = () => ({
+    user: nav.user,
+    signOut: nav.signOut,
+  });
+  return { useAuth, useOptionalAuth: useAuth };
+});
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -23,6 +36,8 @@ vi.mock("next/navigation", () => ({
 describe("Footer", () => {
   beforeEach(() => {
     nav.pathname = "/dev";
+    nav.user = null;
+    nav.signOut.mockReset();
   });
 
   it("renders grouped links, legal, and the F3 lockup", () => {
@@ -40,9 +55,15 @@ describe("Footer", () => {
         screen.getByRole("heading", { name: group.heading }),
       ).toBeInTheDocument();
       for (const link of group.links) {
+        const href =
+          link.name === "Sign in"
+            ? signInHref(nav.pathname)
+            : link.name === "Create account"
+              ? registerHref(nav.pathname)
+              : link.href;
         expect(
           screen.getAllByRole("link", { name: link.name })[0],
-        ).toHaveAttribute("href", link.href);
+        ).toHaveAttribute("href", href);
       }
     }
 
@@ -140,10 +161,10 @@ describe("Footer", () => {
     const account = screen.getByRole("navigation", { name: "Account" });
     expect(
       within(account).getByRole("link", { name: "Sign in" }),
-    ).toHaveAttribute("href", "/auth?mode=login");
+    ).toHaveAttribute("href", signInHref(nav.pathname));
     expect(
       within(account).getByRole("link", { name: "Create account" }),
-    ).toHaveAttribute("href", "/auth?mode=register");
+    ).toHaveAttribute("href", registerHref(nav.pathname));
     expect(
       within(account).getByRole("link", { name: "Order lookup" }),
     ).toHaveAttribute("href", "/orders/lookup");
@@ -153,6 +174,43 @@ describe("Footer", () => {
       "/licenses",
     );
     expect(screen.queryByText(/Est\. 2025/)).not.toBeInTheDocument();
+  });
+
+  it("swaps the Account column once you are signed in", () => {
+    nav.user = { email: "qa@example.com", id: "u1", initials: "QA" };
+    render(<Footer />);
+
+    const account = screen.getByRole("navigation", { name: "Account" });
+    expect(
+      within(account).getByRole("link", { name: "Profile" }),
+    ).toHaveAttribute("href", "/profile/me");
+    expect(
+      within(account).getByRole("link", { name: "Orders" }),
+    ).toHaveAttribute("href", "/profile/me#orders");
+    expect(within(account).queryByRole("link", { name: "Sign in" })).toBeNull();
+    expect(
+      within(account).queryByRole("link", { name: "Register" }),
+    ).toBeNull();
+    fireEvent.click(within(account).getByRole("button", { name: "Sign out" }));
+    expect(nav.signOut).toHaveBeenCalled();
+  });
+
+  it("swaps the home footer Account column once you are signed in", () => {
+    nav.user = { email: "qa@example.com", id: "u1", initials: "QA" };
+    render(<HomeFooter samples={false} />);
+
+    const account = screen.getByRole("navigation", { name: "Account" });
+    expect(
+      within(account).getByRole("link", { name: "Profile" }),
+    ).toHaveAttribute("href", "/profile/me");
+    expect(
+      within(account).getByRole("link", { name: "Orders" }),
+    ).toHaveAttribute("href", "/profile/me#orders");
+    expect(
+      within(account).queryByRole("link", { name: "Create account" }),
+    ).toBeNull();
+    fireEvent.click(within(account).getByRole("button", { name: "Sign out" }));
+    expect(nav.signOut).toHaveBeenCalled();
   });
 
   it("does not paint orange fills or an orange Brain wordmark", () => {

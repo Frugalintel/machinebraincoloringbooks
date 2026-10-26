@@ -96,8 +96,9 @@ export function CollectiblesBrowser({
 }: {
   allowFixture: boolean;
 }) {
-  const { openAuthModal } = useAuth();
+  const { openAuthModal, isLoading } = useAuth();
   const view = useVitrine(allowFixture);
+  const authPending = isLoading;
   const titleStyle = { "--em": view.titleEm } as CSSProperties;
 
   return (
@@ -118,7 +119,11 @@ export function CollectiblesBrowser({
             books.
           </p>
           <div className="act">
-            {view.mode === "signed-out" ? (
+            {authPending ? (
+              <p className="mono" aria-busy="true">
+                Loading
+              </p>
+            ) : view.mode === "signed-out" ? (
               <button
                 type="button"
                 className="btn"
@@ -146,7 +151,11 @@ export function CollectiblesBrowser({
             </a>
           ))}
         </div>
-        {view.mode === "signed-out" ? (
+        {authPending ? (
+          <div className="cbox gate" aria-busy="true">
+            <p className="mono">Loading</p>
+          </div>
+        ) : view.mode === "signed-out" ? (
           <div className="cbox gate">
             <p className="ch">Have a code?</p>
             <p className="chn">Sign in to save what it unlocks.</p>
@@ -178,7 +187,7 @@ export function CollectiblesBrowser({
         ))}
       </div>
 
-      {view.mode === "signed-out" ? (
+      {!authPending && view.mode === "signed-out" ? (
         <section className="start" aria-labelledby="start-collecting">
           <p className="mono">Start collecting</p>
           <h2 id="start-collecting" className="h2">

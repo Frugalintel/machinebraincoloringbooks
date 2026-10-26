@@ -26,6 +26,8 @@ const REAL_ROUTES = [
   "/licenses",
   "/auth?mode=login",
   "/auth?mode=register",
+  "/auth?mode=login&next=%2F",
+  "/auth?mode=register&next=%2F",
   "/orders/lookup",
 ];
 

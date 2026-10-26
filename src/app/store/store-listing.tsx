@@ -8,7 +8,6 @@ import { Folio, RunningHead } from "@/components/home-plate";
 import { Mark } from "@/components/mark";
 import { StoreCoverView } from "@/components/store-cover";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/auth-context";
 import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
 import { coverAspect } from "@/lib/book-specs";
@@ -409,7 +408,6 @@ export function StoreListing({ samples }: { samples: boolean }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
-  const { isLoading: isAuthLoading } = useAuth();
 
   const fetchProducts = async () => {
     try {
@@ -428,12 +426,10 @@ export function StoreListing({ samples }: { samples: boolean }) {
     }
   };
 
-  // Initial fetch - wait for auth to stabilize
+  // Public catalog. Do not wait on auth / profile hydration.
   useEffect(() => {
-    if (!isAuthLoading) {
-      fetchProducts();
-    }
-  }, [isAuthLoading]);
+    void fetchProducts();
+  }, []);
 
   // Refetch when tab becomes visible (handles mobile tab switching)
   useEffect(() => {

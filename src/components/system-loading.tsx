@@ -13,9 +13,11 @@ function Bone({ className }: { className?: string }) {
 function LoadingChrome({
   children,
   className,
+  label = "Loading",
 }: {
   children: ReactNode;
   className?: string;
+  label?: string;
 }) {
   return (
     // At least a full viewport: prerendered pages swap this fallback out a
@@ -29,7 +31,7 @@ function LoadingChrome({
         role="status"
         aria-live="polite"
       >
-        <p className="font-label mb-8 tracking-[0.12em] text-signal">Loading</p>
+        <p className="font-label mb-8 tracking-[0.12em] text-signal">{label}</p>
         {children}
       </div>
     </main>
@@ -98,29 +100,35 @@ function AccountSkeleton() {
   );
 }
 
-export function SystemLoading({ variant }: { variant: SystemLoadingVariant }) {
+export function SystemLoading({
+  variant,
+  label,
+}: {
+  variant: SystemLoadingVariant;
+  label?: string;
+}) {
   switch (variant) {
     case "page":
       return (
-        <LoadingChrome>
+        <LoadingChrome label={label}>
           <PageSkeleton />
         </LoadingChrome>
       );
     case "catalog":
       return (
-        <LoadingChrome>
+        <LoadingChrome label={label}>
           <CatalogSkeleton />
         </LoadingChrome>
       );
     case "detail":
       return (
-        <LoadingChrome>
+        <LoadingChrome label={label}>
           <DetailSkeleton />
         </LoadingChrome>
       );
     case "account":
       return (
-        <LoadingChrome>
+        <LoadingChrome label={label}>
           <AccountSkeleton />
         </LoadingChrome>
       );

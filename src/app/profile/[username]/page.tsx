@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import {
   Settings,
   Box,
@@ -18,6 +19,7 @@ import dynamic from "next/dynamic";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SystemLoading } from "@/components/system-loading";
 import { useAuth } from "@/context/auth-context";
 import { useGame } from "@/context/game-context";
 import { AchievementCard } from "@/components/achievements/achievement-card";
@@ -31,13 +33,43 @@ const TrophyCanvas = dynamic(
 
 export default function ProfilePage() {
   const { username } = useParams();
-  const { user, signOut, openAuthModal } = useAuth();
+  const router = useRouter();
+  const { user, signOut, openAuthModal, isLoading, signingOut } = useAuth();
   const {
     collectionSets,
     achievements,
     activeAchievementIds,
     collectibleTimestamps,
   } = useGame();
+
+  const leavingForHome = useRef(false);
+  useEffect(() => {
+    if (signingOut) leavingForHome.current = true;
+  }, [signingOut]);
+
+  useEffect(() => {
+    // signingOut flips back to false while replace("/") is still in flight.
+    if (isLoading || signingOut || leavingForHome.current) return;
+    if (username === "me" && !user) {
+      router.replace("/auth?next=/profile/me");
+    }
+  }, [isLoading, router, signingOut, username, user]);
+
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+      router.refresh();
+      if (!user && username === "me" && !leavingForHome.current) {
+        router.replace("/auth?next=/profile/me");
+      }
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, [router, username, user]);
+
+  if (isLoading || (username === "me" && !user)) {
+    return <SystemLoading variant="account" label="Loading profile" />;
+  }
 
   const isCurrentUser = username === "me" || (user && username === user.id);
   const displayName =
@@ -95,13 +127,25 @@ export default function ProfilePage() {
 
           <div className="flex-1 mb-4">
             <div className="flex flex-col md:flex-row md:items-center gap-4 mb-2">
-              <h1 className="font-display text-title leading-none">
+              <h1 className="font-display text-title leading-none min-w-0 break-words">
                 {displayName}
               </h1>
               <span className="self-start md:self-auto font-label bg-cream/10 text-primary border border-primary/30 px-2 py-1 uppercase tracking-widest">
                 Auth Level:{" "}
                 {isCurrentUser && user ? "1 (Verified)" : "0 (Guest)"}
               </span>
+              {isCurrentUser && user ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    void signOut();
+                  }}
+                  className="self-start rounded-none border-line font-label uppercase tracking-widest hover:border-cream hover:text-cream"
+                >
+                  Sign out
+                </Button>
+              ) : null}
             </div>
             <p className="text-fg-muted font-sans max-w-xl text-sm md:text-base uppercase tracking-wide flex items-center gap-2">
               <Terminal size={12} /> Unit {user ? user.id.slice(-4) : "0000"} //
@@ -385,7 +429,7 @@ export default function ProfilePage() {
         )}
 
         {/* --- MAINTENANCE SECTION: ORDERS & SETTINGS --- */}
-        <div className="border-t border-line pt-12">
+        <div id="orders" className="border-t border-line pt-12">
           <h2 className="font-heading text-xl text-fg-muted tracking-widest mb-8 flex items-center gap-2">
             <Shield size={16} /> Account Maintenance
           </h2>
@@ -460,7 +504,7 @@ export default function ProfilePage() {
                           onClick={signOut}
                           className="w-full border border-danger/50 text-danger hover:bg-danger-strong hover:text-cream font-heading tracking-widest h-12 rounded-none"
                         >
-                          Disconnect System (Logout)
+                          Sign out
                         </Button>
                       </div>
                     </div>
