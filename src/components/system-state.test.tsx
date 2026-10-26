@@ -1,8 +1,23 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SystemState } from "@/components/system-state";
 
+const auth = vi.hoisted(() => ({
+  user: null as null | { id: string; email: string; initials: string },
+  isLoading: false,
+  signOut: async () => undefined,
+}));
+
+vi.mock("@/context/auth-context", () => ({
+  useOptionalAuth: () => auth,
+}));
+
 describe("SystemState", () => {
+  beforeEach(() => {
+    auth.user = null;
+    auth.isLoading = false;
+  });
+
   it("renders the branded 404 with mark, title, and next actions", () => {
     render(<SystemState kind="notFound" />);
 
@@ -49,5 +64,29 @@ describe("SystemState", () => {
       "href",
       "/",
     );
+  });
+
+  it("sends a signed-in visitor to Account instead of Sign in", () => {
+    auth.user = { id: "user-1", email: "ada@example.com", initials: "A" };
+    render(<SystemState kind="notFound" />);
+
+    expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Account" })).toHaveAttribute(
+      "href",
+      "/profile/me",
+    );
+    expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
+      "href",
+      "/",
+    );
+  });
+
+  it("holds the Sign in slot without a link while auth is loading", () => {
+    auth.isLoading = true;
+    render(<SystemState kind="notFound" />);
+
+    expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
+    expect(screen.getByText("Sign in")).toHaveClass("invisible");
+    expect(screen.getByRole("link", { name: "Store" })).toBeInTheDocument();
   });
 });

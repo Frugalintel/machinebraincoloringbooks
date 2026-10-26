@@ -148,7 +148,9 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
       <nav
         aria-label="Primary"
         className={cn(
-          "flex items-center justify-between",
+          // The 11px wordmark with gap-3 clears the 20px gutter from 366px up.
+          // Through 365px the row gap drops to 6px so Menu stays inside it.
+          "flex items-center justify-between gap-3 max-[365px]:gap-1.5",
           solid
             ? "h-16 px-10 max-[760px]:px-5"
             : "absolute inset-x-0 top-full px-10 py-[18px] max-[760px]:px-5 max-[760px]:py-[10px]",
@@ -159,8 +161,11 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
           wordmark="mono"
           markSize={24}
           ink="cream"
-          className={cn("hit-44 !shrink-0 [&>span]:!gap-3", SHELL_FOCUS)}
-          wordmarkClassName="text-[11px] tracking-[0.1em]"
+          className={cn(
+            "hit-44 !shrink-0 [&>span]:!gap-3 max-[359px]:[&>span]:!gap-1.5",
+            SHELL_FOCUS,
+          )}
+          wordmarkClassName="text-[11px] tracking-[0.1em] max-[359px]:text-[10px] max-[359px]:tracking-[0.06em] max-[339px]:hidden"
         />
         <div
           data-header-cluster={cartCount > 0 ? "filled" : "empty"}
@@ -247,6 +252,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
         accountCue={account.cue}
         accountPending={account.pending}
         links={links}
+        cartCount={cartCount}
         onCart={() => setIsCartOpen(true)}
       />
     </header>
@@ -385,6 +391,7 @@ function FullHeader() {
         accountLinks={account.links}
         accountCue={account.cue}
         accountPending={account.pending}
+        cartCount={cartCount}
         onCart={() => setIsCartOpen(true)}
       />
     </header>

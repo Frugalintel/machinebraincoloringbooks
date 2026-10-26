@@ -868,10 +868,11 @@
   .home-e2.vitrine .h1.nm1,
   .home-e2.vitrine .st,
   .home-e2.vitrine .nm1 {
-    --h1-vw: calc((100vw - 40px) / var(--em));
+    --h1-gutter: calc(var(--m, 20px) + 6px);
+    --h1-vw: calc((100vw - 2 * var(--h1-gutter)) / var(--h1-em, var(--em, 8)));
     font-size: min(
       max(32px, var(--h1-vw)),
-      calc((100vw - 2 * var(--m, 20px)) / var(--em, var(--h1-em, 8)))
+      calc((100vw - 2 * var(--h1-gutter)) / var(--h1-em, var(--em, 8)))
     );
   }
 

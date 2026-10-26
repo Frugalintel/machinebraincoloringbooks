@@ -1,6 +1,8 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Folio, RunningHead } from "@/components/home-plate";
+import { interTitleEm } from "@/lib/story-title-fit";
 import {
   HOME_ART,
   HOME_CODES_COPY,
@@ -36,6 +38,9 @@ export function HomeRest() {
 
 /** Pl. 03: the same page at 6×, down to the code box in its foot. */
 export function HomeCodes({ samples }: { samples: boolean }) {
+  const codesEm = Math.max(
+    ...HOME_CODES_COPY.lines.map((line) => interTitleEm(line)),
+  );
   return (
     <section className="plate page codes" aria-labelledby="home-codes-h">
       <RunningHead items={["Pl. 03", "Unlocks", "Detail · page foot at 6×"]} />
@@ -47,7 +52,11 @@ export function HomeCodes({ samples }: { samples: boolean }) {
           sizes="(max-width: 760px) 210vw, 170vw"
         />
       </div>
-      <h2 id="home-codes-h" className="line">
+      <h2
+        id="home-codes-h"
+        className="line"
+        style={{ "--codes-em": codesEm } as CSSProperties}
+      >
         {HOME_CODES_COPY.lines.map((line) => (
           <span key={line}>{line}</span>
         ))}

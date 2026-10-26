@@ -26,6 +26,7 @@ import {
   scanPreview,
   scanPreviewCameraIssue,
   scanPreviewTrophyTier,
+  SCAN_EMPTY_CODE,
   scanSignInHref,
   signedOutCodeMessage,
   stopCameraStream,
@@ -289,7 +290,10 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   const onSubmitCode = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const code = normalizeBookCode(typedCode);
-    if (!code) return;
+    if (!code) {
+      setNotice({ title: SCAN_EMPTY_CODE, body: "" });
+      return;
+    }
     if (isLoading) return;
     if (!user) {
       router.push(scanSignInHref(code));
@@ -335,7 +339,10 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
         setState("photo-preview");
         return;
       }
-      setSnapshot(result.snapshot);
+      setSnapshot({
+        ...result.snapshot,
+        activePlate: result.snapshot.activePlate ?? snapshot.activePlate,
+      });
       setState("pending");
     } catch (error) {
       logger.error("Photo send failed", error);
@@ -425,6 +432,9 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
         },
         onCodeChange: (value) => {
           setTypedCode(value.replace(/\s+/g, "").toUpperCase());
+          setNotice((current) =>
+            current?.title === SCAN_EMPTY_CODE ? null : current,
+          );
           if (state === "invalid") {
             setState("code");
             setNotice(null);

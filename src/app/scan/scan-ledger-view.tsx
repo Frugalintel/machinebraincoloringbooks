@@ -162,7 +162,11 @@ export function ScanLedgerView({
         data-bal-first={balFirst ? "true" : "false"}
       >
         <RunningHead
-          items={["PL. 00 · Scan", chrome.running, "Example · sample book"]}
+          items={[
+            "PL. 00 · Scan",
+            state === "camera-off" ? null : chrome.running,
+            samples ? "Example · sample book" : null,
+          ]}
         />
         <div className="cols">
           <div className="lcol">
@@ -317,7 +321,11 @@ function LeftPanel({
   const caption =
     state === "photo-preview"
       ? photoPreviewTag(snapshot.sample)
-      : plateScanCaption(state, plate?.plate);
+      : state === "photo"
+        ? null
+        : state === "camera-off"
+          ? null
+          : plateScanCaption(state, plate?.plate);
   const cameraCopy = cameraIssue
     ? cameraIssueCopy(
         cameraIssue,
@@ -345,13 +353,13 @@ function LeftPanel({
                   <div className="live" data-testid="live-camera" />
                 ))
               ) : (
-                <BackCover />
+                <BackCover samples={samples} />
               )}
               <p className="camtag mono">
                 <span className="dot" /> {cameraTag(samples)}
               </p>
             </div>
-            <p className="pcap mono">{caption}</p>
+            {caption ? <p className="pcap mono">{caption}</p> : null}
           </div>
           <div className="lacts">
             <ModeChips mode="qr" onMode={handlers.onMode} />
@@ -360,6 +368,7 @@ function LeftPanel({
               typedCode={typedCode}
               handlers={handlers}
             />
+            <ScanNotice notice={notice} />
           </div>
         </>
       );
@@ -370,7 +379,6 @@ function LeftPanel({
             <div className="feed f-off">
               <div className="offv" aria-hidden="true" />
             </div>
-            <p className="pcap mono">{caption}</p>
           </div>
           <div className="lacts">
             {cameraIssue?.kind === "insecure" ? null : (
@@ -387,6 +395,7 @@ function LeftPanel({
               typedCode={typedCode}
               handlers={handlers}
             />
+            <ScanNotice notice={notice} />
           </div>
           {cameraCopy ? (
             <div className="fb">
@@ -520,7 +529,7 @@ function LeftPanel({
                 <span className="dot" /> {cameraTag(samples)}
               </p>
             </div>
-            <p className="pcap mono">{caption}</p>
+            {caption ? <p className="pcap mono">{caption}</p> : null}
           </div>
           <div className="lacts">
             <button
@@ -737,12 +746,7 @@ function CodeForm({
           }}
         />
       </div>
-      {prompt ? (
-        <p className="errl">
-          <b>{prompt.title}</b>
-          <span>{prompt.body}</span>
-        </p>
-      ) : null}
+      <ScanNotice notice={prompt} />
       <div className="lacts">
         {state === "collected" ? (
           <button
@@ -993,11 +997,27 @@ function ModeChips({
   );
 }
 
-function BackCover() {
+function ScanNotice({
+  notice,
+}: {
+  notice: { title: string; body: string } | null;
+}) {
+  if (!notice) return null;
+  return (
+    <p className="errl" role="status">
+      <b>{notice.title}</b>
+      {notice.body ? <span>{notice.body}</span> : null}
+    </p>
+  );
+}
+
+function BackCover({ samples }: { samples: boolean }) {
   return (
     <div className="bk" aria-hidden="true">
       <div className="bkf">
-        <p className="bkt mono">Sample tagline · one quiet line</p>
+        {samples ? (
+          <p className="bkt mono">Sample tagline · one quiet line</p>
+        ) : null}
         <div className="bkh">
           <Image src={COVER} alt="" width={720} height={932} />
         </div>

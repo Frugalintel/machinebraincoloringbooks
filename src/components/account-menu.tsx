@@ -90,14 +90,16 @@ export function HeaderAccount({
     return (
       <span
         className={cn(
-          "inline-flex h-11 min-w-11 items-center text-[13px] tracking-[0.12em] text-cream/40",
+          "inline-flex h-11 items-center text-[13px]",
           tone === "overlay" && "text-[15px] leading-6",
         )}
         aria-busy="true"
         aria-live="polite"
       >
         <span className="sr-only">Loading account</span>
-        <span aria-hidden="true">···</span>
+        <span className="invisible" aria-hidden="true">
+          Sign in
+        </span>
       </span>
     );
   }

@@ -584,8 +584,13 @@ export function createLiveAdapter(client: ScanQueryClient): ScanLedgerAdapter {
           return { ok: false, kind: "error", message: systemErrorMessage() };
         }
 
+        const plate = activeFromCode(codeData, normalized);
         const snapshot = await loadLedger(client, userId);
-        return { ok: true, kind: "pending", snapshot };
+        return {
+          ok: true,
+          kind: "pending",
+          snapshot: { ...snapshot, activePlate: plate },
+        };
       } catch (error) {
         logger.error("scan photo submit failed", error);
         return { ok: false, kind: "error", message: systemErrorMessage() };

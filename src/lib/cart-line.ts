@@ -20,7 +20,15 @@ export function cartLineTitle(item: {
   return toSentenceCase(title || subtitle);
 }
 
-/** Header badge and drawer both count lines, not units. */
+/** Header badge counts lines. The drawer sentence counts units. */
 export function cartLineCount(items: readonly unknown[]): number {
   return items.length;
+}
+
+export function cartUnitCount(items: readonly { quantity?: number }[]): number {
+  return items.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
+}
+
+export function cartUnitLabel(count: number): string {
+  return count === 1 ? "1 item" : `${count} items`;
 }

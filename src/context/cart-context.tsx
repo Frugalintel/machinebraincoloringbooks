@@ -57,12 +57,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     // Wait for auth to finish loading before initializing cart
     if (authLoading) return;
 
-    // Reload cart when user changes or first load
-    if (user?.id !== currentUserId || !isInitialized) {
-      setCurrentUserId(user?.id || null);
+    const accountId = user?.id ?? null;
+    // Reload cart when the account changes or on the first load.
+    // Compare null with null: a signed-out user.id is undefined, and a
+    // second pass (undefined !== null) used to read the guest key after
+    // the save effect had written the previous account's items into it.
+    if (accountId !== currentUserId || !isInitialized) {
+      const signingOut =
+        isInitialized && currentUserId !== null && accountId === null;
+      if (signingOut) {
+        localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify([]));
+        setCurrentUserId(null);
+        setItems([]);
+        setIsInitialized(true);
+        return;
+      }
 
-      const cartKey = user?.id
-        ? getUserStorageKey(STORAGE_KEYS.CART, user.id)
+      setCurrentUserId(accountId);
+
+      const cartKey = accountId
+        ? getUserStorageKey(STORAGE_KEYS.CART, accountId)
         : STORAGE_KEYS.CART;
 
       const savedCart = localStorage.getItem(cartKey);
@@ -74,21 +88,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           setItems([]);
         }
       } else {
-        // If switching users, we might want to clear or merge?
-        // For now, simple switch: empty if nothing saved.
+        // Switching accounts loads that account's cart, or an empty one.
+        // Guest items are not merged into an account (held policy).
         setItems([]);
       }
       setIsInitialized(true);
     }
   }, [user?.id, currentUserId, authLoading, isInitialized]);
 
-  // Save cart when items change
+  // Save only after the load for this account has landed. During sign-out
+  // the key already points at the guest cart while items are still the
+  // previous account's, so a save here would leak them.
   useEffect(() => {
-    if (isInitialized) {
-      const cartKey = getCartKey();
-      localStorage.setItem(cartKey, JSON.stringify(items));
-    }
-  }, [items, isInitialized, getCartKey]);
+    if (!isInitialized) return;
+    if (currentUserId !== (user?.id ?? null)) return;
+    const cartKey = getCartKey();
+    localStorage.setItem(cartKey, JSON.stringify(items));
+  }, [items, isInitialized, getCartKey, currentUserId, user?.id]);
 
   const addItem = useCallback((newItem: Omit<CartItem, "quantity">) => {
     setItems((prev) => {

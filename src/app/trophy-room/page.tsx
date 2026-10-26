@@ -149,7 +149,7 @@ export default function TrophyRoomPage() {
             <p className="shell-sub">Sign in to see what you have unlocked.</p>
             <Button
               onClick={() => openAuthModal("login")}
-              className="hit-44 bg-cream text-ink hover:bg-cream"
+              className="mt-6 hit-44 bg-cream text-ink hover:bg-cream"
             >
               Sign in
             </Button>

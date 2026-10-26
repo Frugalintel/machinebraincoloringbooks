@@ -18,6 +18,11 @@ function memoryClient(options?: {
     args: Record<string, unknown>,
   ) => PromiseLike<{ data: unknown; error: unknown }>;
   rpcCalls?: { fn: string; args: Record<string, unknown> }[];
+  storage?: {
+    from: (bucket: string) => {
+      upload: (path: string, file: Blob) => PromiseLike<{ error: unknown }>;
+    };
+  };
 }) {
   const inserts = options?.inserts ?? [];
   const selects = options?.selects ?? [];
@@ -67,6 +72,7 @@ function memoryClient(options?: {
           },
         }
       : {}),
+    ...(options?.storage ? { storage: options.storage } : {}),
   };
 }
 
@@ -427,5 +433,35 @@ describe("live photo stub without storage", () => {
       kind: "stub",
       message: SCAN_STUB.photoWithoutBackend,
     });
+  });
+
+  it("keeps the scanned plate on a P01 photo instead of the Plate 07 fixture", async () => {
+    const adapter = createLiveAdapter(
+      memoryClient({
+        bookCode: {
+          id: "code-1",
+          code: "P01",
+          page_number: 1,
+          is_active: true,
+          kind: "page",
+          products: { title: "The Silver Citadel" },
+        },
+        storage: {
+          from: () => ({
+            upload: async () => ({ error: null }),
+          }),
+        },
+      }),
+    );
+    const result = await adapter.submitPagePhoto({
+      userId: "user-1",
+      code: "P01",
+      image: new Blob(["x"], { type: "image/jpeg" }),
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.kind).toBe("pending");
+    expect(result.snapshot.activePlate?.plate).toBe("01");
+    expect(result.snapshot.activePlate?.plate).not.toBe("07");
   });
 });

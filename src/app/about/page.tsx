@@ -205,15 +205,17 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="spread-studio" aria-labelledby="about-studio-h">
-        <h2 id="about-studio-h" className="mono spread-eye">
-          {ABOUT_STUDIO_COPY.heading}
-        </h2>
-        <div className="spread-ph" role="note">
-          <p className="mono">{ABOUT_STUDIO_COPY.label}</p>
-          <p className="pt">{ABOUT_STUDIO_COPY.body}</p>
-        </div>
-      </section>
+      {samples ? (
+        <section className="spread-studio" aria-labelledby="about-studio-h">
+          <h2 id="about-studio-h" className="mono spread-eye">
+            {ABOUT_STUDIO_COPY.heading}
+          </h2>
+          <div className="spread-ph" role="note">
+            <p className="mono">{ABOUT_STUDIO_COPY.label}</p>
+            <p className="pt">{ABOUT_STUDIO_COPY.body}</p>
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }

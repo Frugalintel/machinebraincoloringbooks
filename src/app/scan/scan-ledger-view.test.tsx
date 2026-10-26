@@ -47,12 +47,65 @@ describe("ScanLedgerView wallet and photo register", () => {
     expect(screen.queryByText("Camera · sample view")).toBeNull();
     expect(screen.getByRole("heading", { name: "Scan." })).toBeInTheDocument();
     expect(screen.getByText("Camera off.")).toBeInTheDocument();
+    expect(screen.getAllByText(/Camera off/)).toHaveLength(1);
   });
 
   it("keeps the sample camera caption when samples are on", () => {
     renderView("index", fixtureSnapshot("index"), { samples: true });
     expect(screen.getByText("Camera · sample view")).toBeInTheDocument();
+    expect(screen.getByText("Example · sample book")).toBeInTheDocument();
+    expect(
+      screen.getByText("Sample tagline · one quiet line"),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Page code")).toBeInTheDocument();
+  });
+
+  it("shows the photo camera tag once and only samples it when samples are on", () => {
+    const on = renderView("photo", fixtureSnapshot("photo"), {
+      samples: true,
+    });
+    expect(screen.getAllByText("Camera · sample view")).toHaveLength(1);
+    on.unmount();
+
+    renderView("photo", fixtureSnapshot("photo"), { samples: false });
+    expect(screen.queryByText("Camera · sample view")).toBeNull();
+    expect(screen.getAllByText("Camera")).toHaveLength(1);
+  });
+
+  it("drops sample strings when samples are off", () => {
+    renderView("index", fixtureSnapshot("index"), { samples: false });
+    expect(screen.queryByText("Example · sample book")).toBeNull();
+    expect(screen.queryByText("Sample tagline · one quiet line")).toBeNull();
+    expect(screen.queryByText("Camera · sample view")).toBeNull();
+    expect(screen.getByText("Camera")).toBeInTheDocument();
+    expect(screen.queryAllByText(/Camera off/)).toHaveLength(0);
+  });
+
+  it("does not label a live photo result with the Plate 07 fixture", () => {
+    const snapshot = {
+      ...fixtureSnapshot("pending"),
+      sample: false,
+      activePlate: {
+        plate: "01",
+        code: "P01X",
+        title: "Page",
+        bookTitle: "The Silver Citadel",
+      },
+    };
+    renderView("pending", snapshot, { samples: false });
+    expect(screen.getByText("Plate 01 · code + photo")).toBeInTheDocument();
+    expect(screen.queryByText("Plate 07 · code + photo")).toBeNull();
+  });
+
+  it("omits the fixture plate when a photo result has no plate yet", () => {
+    const snapshot = {
+      ...fixtureSnapshot("pending"),
+      sample: false,
+      activePlate: null,
+    };
+    renderView("pending", snapshot, { samples: false });
+    expect(screen.getByText("Code + photo")).toBeInTheDocument();
+    expect(screen.queryByText("Plate 07 · code + photo")).toBeNull();
   });
 
   it("hides .bal when the wallet is unavailable for a signed-in reader", () => {

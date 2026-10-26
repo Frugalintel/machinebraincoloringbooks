@@ -519,6 +519,8 @@ describe("Navbar", () => {
     render(<Navbar />);
     expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
     expect(screen.getByText("Loading account")).toBeInTheDocument();
+    expect(screen.queryByText("···")).toBeNull();
+    expect(screen.getByText("Sign in")).toHaveClass("invisible");
   });
 
   it("spaces the narrow header by cart state and lists Scan, Help, and Cart in the menu", () => {
@@ -542,8 +544,9 @@ describe("Navbar", () => {
       within(dialog).getByRole("link", { name: "Stories" }),
     ).toHaveAttribute("href", "/stories");
     expect(
-      within(dialog).getByRole("button", { name: "Cart" }),
+      within(dialog).getByRole("button", { name: "Cart, 0 items" }),
     ).toBeInTheDocument();
+    expect(within(dialog).getByText("0")).toBeInTheDocument();
     empty.unmount();
 
     nav.cartCount = 2;

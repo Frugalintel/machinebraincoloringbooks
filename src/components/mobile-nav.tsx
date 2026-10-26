@@ -9,6 +9,7 @@ import {
   MOBILE_MENU_LINKS,
   SHELL_FOCUS,
   SITE_NAV_LINKS,
+  cartLabel,
   isNavLinkActive,
   isOverlayLinkCurrent,
   type SiteLink,
@@ -36,6 +37,7 @@ export function MobileNav({
   accountCue,
   accountPending = false,
   links = SITE_NAV_LINKS,
+  cartCount = 0,
   onCart,
 }: {
   open: boolean;
@@ -48,6 +50,7 @@ export function MobileNav({
   accountCue?: string;
   accountPending?: boolean;
   links?: readonly SiteLink[];
+  cartCount?: number;
   onCart?: () => void;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -181,6 +184,7 @@ export function MobileNav({
                     onCart?.();
                     onClose();
                   }}
+                  aria-label={cartLabel(cartCount)}
                   className={cn(
                     "flex min-h-11 w-full items-center gap-3 text-left text-[17px] font-medium text-fg-secondary hover:text-cream",
                     SHELL_FOCUS,
@@ -194,7 +198,8 @@ export function MobileNav({
                       links.length + MOBILE_MENU_LINKS.length + 1,
                     ).padStart(2, "0")}
                   </span>
-                  Cart
+                  <span className="flex-1">Cart</span>
+                  <span className="tabular-nums text-cream">{cartCount}</span>
                 </button>
               </li>
             </ul>
