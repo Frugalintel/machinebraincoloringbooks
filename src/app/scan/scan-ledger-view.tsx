@@ -10,13 +10,16 @@ import {
 } from "react";
 import { RunningHead } from "@/components/home-plate";
 import {
-  CAMERA_BLOCKED,
-  CAMERA_INSECURE,
   PHOTO_OPTIONAL,
   SCAN_BOOK_TROPHY_LABEL,
   SCAN_OPT_LINE,
+  SCAN_SIGN_IN_ACTION,
+  SCAN_SIGN_IN_HREF,
+  photoPreviewTag,
+  signedOutScanHint,
   SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
+  cameraIssueCopy,
   codeInMessage,
   collectedMessage,
   folioLine,
@@ -24,6 +27,7 @@ import {
   legendaryPlateCaption,
   plateCellLabel,
   plateLabel,
+  plateScanCaption,
   sampleNote,
   scanChrome,
   scanH1Fit,
@@ -32,6 +36,7 @@ import {
   tierTrophyUrl,
   trophyPlateCaption,
   type BookRow,
+  type CameraIssue,
   type PlateCell,
   type ScanLedgerSnapshot,
   type ScanViewState,
@@ -79,8 +84,7 @@ export function ScanLedgerView({
   typedCode,
   capturedUrl,
   cameraLive,
-  cameraBlocked,
-  insecure,
+  cameraIssue,
   sending,
   reducedMotion,
   notice,
@@ -93,8 +97,7 @@ export function ScanLedgerView({
   typedCode: string;
   capturedUrl: string | null;
   cameraLive: boolean;
-  cameraBlocked: boolean;
-  insecure: boolean;
+  cameraIssue: CameraIssue | null;
   sending: boolean;
   reducedMotion: boolean;
   notice: { title: string; body: string } | null;
@@ -143,8 +146,7 @@ export function ScanLedgerView({
               typedCode={typedCode}
               capturedUrl={capturedUrl}
               cameraLive={cameraLive}
-              cameraBlocked={cameraBlocked}
-              insecure={insecure}
+              cameraIssue={cameraIssue}
               sending={sending}
               reducedMotion={reducedMotion}
               notice={notice}
@@ -179,6 +181,8 @@ export function ScanLedgerView({
                 ) : null}
                 {chrome.lede ? <p className="lede">{chrome.lede}</p> : null}
               </>
+            ) : !snapshot.signedIn && signedOutScanHint(state) ? (
+              <p className="lede">{signedOutScanHint(state)}</p>
             ) : hideWallet ? (
               chrome.lede ? (
                 <p className="lede">{chrome.lede}</p>
@@ -259,8 +263,7 @@ function LeftPanel({
   typedCode,
   capturedUrl,
   cameraLive,
-  cameraBlocked,
-  insecure,
+  cameraIssue,
   sending,
   reducedMotion,
   notice,
@@ -274,8 +277,7 @@ function LeftPanel({
   typedCode: string;
   capturedUrl: string | null;
   cameraLive: boolean;
-  cameraBlocked: boolean;
-  insecure: boolean;
+  cameraIssue: CameraIssue | null;
   sending: boolean;
   reducedMotion: boolean;
   notice: { title: string; body: string } | null;
@@ -286,6 +288,16 @@ function LeftPanel({
 }) {
   const plate = snapshot.activePlate;
   const chrome = ledgerChrome(state, snapshot);
+  const caption =
+    state === "photo-preview"
+      ? photoPreviewTag(snapshot.sample)
+      : plateScanCaption(state, plate?.plate);
+  const cameraCopy = cameraIssue
+    ? cameraIssueCopy(
+        cameraIssue,
+        typeof navigator === "undefined" ? "" : navigator.userAgent,
+      )
+    : null;
   const trophyTier =
     snapshot.trophyTier ??
     (state === "legendary-found"
@@ -313,7 +325,7 @@ function LeftPanel({
                 <span className="dot" /> Camera · sample view
               </p>
             </div>
-            <p className="pcap mono">{chrome.caption}</p>
+            <p className="pcap mono">{caption}</p>
           </div>
           <div className="lacts">
             <ModeChips mode="qr" onMode={handlers.onMode} />
@@ -334,16 +346,18 @@ function LeftPanel({
             <div className="feed f-off">
               <div className="offv" aria-hidden="true" />
             </div>
-            <p className="pcap mono">{chrome.caption}</p>
+            <p className="pcap mono">{caption}</p>
           </div>
           <div className="lacts">
-            <button
-              type="button"
-              className="btn"
-              onClick={handlers.onEnableCamera}
-            >
-              Turn on camera <span aria-hidden="true">→</span>
-            </button>
+            {cameraIssue?.kind === "insecure" ? null : (
+              <button
+                type="button"
+                className="btn"
+                onClick={handlers.onEnableCamera}
+              >
+                Turn on camera <span aria-hidden="true">→</span>
+              </button>
+            )}
             <button
               type="button"
               className="quiet"
@@ -352,16 +366,14 @@ function LeftPanel({
               Type a page code
             </button>
           </div>
-          <div className="fb">
-            <p data-active={cameraBlocked || undefined}>
-              <b>Blocked</b>
-              <span>{CAMERA_BLOCKED}</span>
-            </p>
-            <p data-active={insecure || undefined}>
-              <b>Not secure</b>
-              <span>{CAMERA_INSECURE}</span>
-            </p>
-          </div>
+          {cameraCopy ? (
+            <div className="fb">
+              <p data-active="">
+                <b>{cameraCopy.title}</b>
+                <span>{cameraCopy.body}</span>
+              </p>
+            </div>
+          ) : null}
         </>
       );
     case "signed-out-code":
@@ -374,6 +386,7 @@ function LeftPanel({
           state={state}
           typedCode={typedCode}
           plate={plate}
+          signedIn={snapshot.signedIn}
           notice={notice}
           handlers={handlers}
         />
@@ -392,7 +405,7 @@ function LeftPanel({
                 />
               ) : null}
             </div>
-            <p className="pcap mono">{chrome.caption}</p>
+            <p className="pcap mono">{caption}</p>
           </div>
           {snapshot.unlock ? (
             <div className="unl">
@@ -425,7 +438,7 @@ function LeftPanel({
             src={state === "code-added" ? PAGE_LINE : PAGE_COLOR}
             folio={folio}
             stamp={chrome.stamp}
-            caption={chrome.caption}
+            caption={caption}
           />
           <div className="lacts">
             {state === "code-added" ? (
@@ -485,7 +498,7 @@ function LeftPanel({
                 <span className="dot" /> Camera · sample view
               </p>
             </div>
-            <p className="pcap mono">{chrome.caption}</p>
+            <p className="pcap mono">{caption}</p>
           </div>
           <div className="lacts">
             <button
@@ -524,20 +537,24 @@ function LeftPanel({
           <div className="pn">
             <div className="feed f-preview">
               <div className="pvw">
-                {/* Captured photos are data URLs; next/image cannot optimize them. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={capturedUrl ?? PAGE_COLOR}
-                  alt={
-                    plate ? `Your photo of plate ${plate.plate}` : "Your photo"
-                  }
-                />
+                {capturedUrl ? (
+                  // Object URLs and static preview srcs cannot go through next/image.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={capturedUrl}
+                    alt={
+                      plate
+                        ? `Your photo of plate ${plate.plate}`
+                        : "Your photo"
+                    }
+                  />
+                ) : null}
                 <span className="grid9" aria-hidden="true" />
                 <span className="folio-code mono">{folio}</span>
               </div>
-              <p className="camtag mono">Your photo · sample</p>
+              <p className="camtag mono">{photoPreviewTag(snapshot.sample)}</p>
             </div>
-            <p className="pcap mono">{chrome.caption}</p>
+            <p className="pcap mono">{caption}</p>
           </div>
           <div className="lacts">
             <button
@@ -598,7 +615,7 @@ function LeftPanel({
               src={PAGE_COLOR}
               folio={folio}
               stamp={chrome.stamp}
-              caption={chrome.caption}
+              caption={caption}
             />
           )}
           <div className="lacts">
@@ -626,12 +643,14 @@ function CodeForm({
   state,
   typedCode,
   plate,
+  signedIn,
   notice,
   handlers,
 }: {
   state: ScanViewState;
   typedCode: string;
   plate: ScanLedgerSnapshot["activePlate"];
+  signedIn: boolean;
   notice: { title: string; body: string } | null;
   handlers: ScanLedgerHandlers;
 }) {
@@ -663,7 +682,10 @@ function CodeForm({
           {`${plate.bookTitle} · plate ${plate.plate}`}
         </p>
       ) : null}
-      <div className={`cin c ${bad ? "bad" : ""}`}>
+      <div
+        className={`cin c ${bad ? "bad" : ""}`}
+        style={{ "--len": Math.max(typedCode.length, 1) } as CSSProperties}
+      >
         <label className="mono" htmlFor="pc-c">
           Code by the page number
         </label>
@@ -678,6 +700,19 @@ function CodeForm({
           spellCheck={false}
           aria-invalid={bad || undefined}
           onChange={(event) => handlers.onCodeChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter") return;
+            event.preventDefault();
+            const form = event.currentTarget.form;
+            if (!form) return;
+            if (typeof form.requestSubmit === "function") {
+              form.requestSubmit();
+              return;
+            }
+            form.dispatchEvent(
+              new Event("submit", { bubbles: true, cancelable: true }),
+            );
+          }}
         />
       </div>
       {prompt ? (
@@ -728,6 +763,19 @@ function CodeForm({
               Scan a back cover
             </button>
           </>
+        ) : !signedIn ? (
+          <>
+            <Link className="btn" href={SCAN_SIGN_IN_HREF}>
+              {SCAN_SIGN_IN_ACTION} <span aria-hidden="true">→</span>
+            </Link>
+            <button
+              type="button"
+              className="quiet"
+              onClick={() => handlers.onMode("qr")}
+            >
+              Scan a back cover
+            </button>
+          </>
         ) : (
           <>
             <button type="submit" className="btn" disabled={!typedCode.trim()}>
@@ -743,7 +791,7 @@ function CodeForm({
           </>
         )}
       </div>
-      {state === "code" || state === "signed-out-code" ? (
+      {signedIn && (state === "code" || state === "signed-out-code") ? (
         <p className="opt mono">{SCAN_OPT_LINE}</p>
       ) : null}
     </form>

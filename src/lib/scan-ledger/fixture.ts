@@ -9,6 +9,7 @@ import {
   type ScanViewState,
   type WalletSnapshot,
 } from "@/lib/scan-ledger/types";
+import { invalidCodeMessage } from "@/lib/scan-ledger/copy";
 import {
   deriveBookRow,
   emptyPlates,
@@ -304,7 +305,7 @@ export function createFixtureAdapter(state: ScanViewState): ScanLedgerAdapter {
           ok: false,
           kind: "invalid",
           code: normalized,
-          message: `${normalized} isn't in any of our books. Check the letters by the page number.`,
+          message: invalidCodeMessage(normalized),
         };
       }
       if (!userId) {

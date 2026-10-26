@@ -1,3 +1,4 @@
+import type { CameraIssue } from "@/lib/scan-ledger/camera";
 import type { ScanViewState } from "@/lib/scan-ledger/types";
 import type { TrophyTierName } from "@/lib/scan-tiers";
 
@@ -29,6 +30,8 @@ const PREVIEW_ALIASES: Record<string, ScanViewState> = {
   pro: "tier-reached",
   rare: "tier-reached",
   legendary: "legendary-found",
+  "camera-insecure": "camera-off",
+  "camera-none": "camera-off",
 };
 
 const TROPHY_PREVIEW_TIERS: Record<string, TrophyTierName> = {
@@ -59,4 +62,21 @@ export function scanPreviewTrophyTier(
 ): TrophyTierName | null {
   if (!allowFixture || !value) return null;
   return TROPHY_PREVIEW_TIERS[value] ?? null;
+}
+
+export function scanPreviewCameraIssue(
+  allowFixture: boolean,
+  value: string | null,
+): CameraIssue | null {
+  if (!allowFixture || !value) return null;
+  switch (value) {
+    case "camera-insecure":
+      return { kind: "insecure" };
+    case "camera-none":
+      return { kind: "not-found" };
+    case "camera-off":
+      return { kind: "denied" };
+    default:
+      return null;
+  }
 }

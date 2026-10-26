@@ -40,7 +40,14 @@ describe("/scan entry from the home code form", () => {
     scan.search = "mode=code&code=+ab12+";
     render(<ScanPage />);
     expect(screen.getByPlaceholderText("Code")).toHaveValue("AB12");
-    expect(screen.getByRole("button", { name: /add \+1/i })).not.toBeDisabled();
+    expect(screen.getByPlaceholderText("Code").tagName).toBe("INPUT");
+    expect(screen.queryByRole("button", { name: /add \+1/i })).toBeNull();
+    expect(
+      screen.getByRole("link", { name: /sign in to count/i }),
+    ).toHaveAttribute("href", "/auth?mode=login&next=/scan");
+    expect(
+      screen.getAllByText("Sign in and this code counts toward your book."),
+    ).toHaveLength(1);
   });
 
   it("looks the code up in its normalized form", async () => {
@@ -61,6 +68,35 @@ describe("/scan entry from the home code form", () => {
     fireEvent.submit(field.closest("form")!);
 
     await waitFor(() => expect(eq).toHaveBeenCalledWith("code", "XY9"));
+  });
+
+  it("submits the page code when Enter is pressed in the field", async () => {
+    scan.search = "mode=code";
+    const maybeSingle = vi.fn(async () => ({
+      data: null,
+      error: { message: "x" },
+    }));
+    const eq = vi.fn(() => ({ maybeSingle, single: maybeSingle }));
+    vi.mocked(supabase.from).mockReturnValueOnce({
+      select: vi.fn(() => ({ eq })),
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    render(<ScanPage />);
+    const field = screen.getByPlaceholderText("Code");
+    fireEvent.change(field, { target: { value: "7KQ2" } });
+    fireEvent.keyDown(field, { key: "Enter" });
+
+    await waitFor(() => expect(eq).toHaveBeenCalledWith("code", "7KQ2"));
+  });
+
+  it("strips spaces and newlines from a pasted page code", () => {
+    scan.search = "mode=code";
+    render(<ScanPage />);
+    const field = screen.getByPlaceholderText("Code");
+    fireEvent.change(field, { target: { value: "QA-TEST P01" } });
+    expect(field).toHaveValue("QA-TESTP01");
+    fireEvent.change(field, { target: { value: "qa-test\np01" } });
+    expect(field).toHaveValue("QA-TESTP01");
   });
 
   it("tells a signed-out reader the code looks valid without leaking the plate", async () => {
@@ -141,10 +177,14 @@ describe("/scan preview fixtures", () => {
     );
   });
 
-  it("shows a 0 wallet on the live signed-out page", () => {
+  it("hides wallet points on the live signed-out page and points to sign in", () => {
     render(<ScanPage />);
-    expect(screen.getByText("Wallet · for stories")).toBeInTheDocument();
-    expect(screen.getByText("0")).toBeInTheDocument();
+    expect(screen.queryByText("Wallet · for stories")).toBeNull();
+    expect(screen.queryByText(/WALLET/i)).toBeNull();
+    expect(
+      screen.getByText("Sign in to keep this book and its unlock."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/this code counts/i)).toBeNull();
     expect(screen.queryByText(/not on this build/i)).toBeNull();
     expect(screen.queryByText(/XP/i)).toBeNull();
   });
@@ -206,6 +246,48 @@ describe("/scan preview fixtures", () => {
   );
 });
 
+describe("/scan camera start", () => {
+  beforeEach(() => {
+    scan.search = "";
+    auth.openAuthModal.mockReset();
+  });
+
+  it("calls getUserMedia from Turn on camera on a secure page", async () => {
+    const getUserMedia = vi.fn(async () => ({
+      getTracks: () => [{ stop: vi.fn() }],
+    }));
+    Object.defineProperty(window, "isSecureContext", {
+      configurable: true,
+      value: true,
+    });
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: { getUserMedia },
+    });
+
+    render(<ScanPage />);
+    fireEvent.click(screen.getByRole("button", { name: /turn on camera/i }));
+
+    await waitFor(() => expect(getUserMedia).toHaveBeenCalled());
+  });
+
+  it("opens insecure and no-camera fixtures from preview aliases", () => {
+    scan.search = "preview=camera-insecure";
+    const insecure = render(<ScanPage />);
+    expect(screen.getByText("Not secure")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /turn on camera/i }),
+    ).toBeNull();
+    insecure.unmount();
+
+    scan.search = "preview=camera-none";
+    render(<ScanPage />);
+    expect(screen.getByText("No camera")).toBeInTheDocument();
+    expect(screen.queryByText("Not secure")).toBeNull();
+    expect(screen.queryByText("Blocked")).toBeNull();
+  });
+});
+
 describe("/scan source guardrails", () => {
   it("does not toast a red camera error; the Camera off state explains it", () => {
     const source = readFileSync(
@@ -213,8 +295,33 @@ describe("/scan source guardrails", () => {
       "utf8",
     );
     expect(source).toMatch(/setState\("camera-off"\)/);
+    expect(source).toMatch(/requestCameraAccess/);
+    expect(source).toMatch(/createCapturedImageUrl/);
+    expect(source).toMatch(/revokeCapturedImageUrl/);
     expect(source).not.toMatch(/toastError\(msg\)/);
     expect(source).not.toMatch(/Shown from XP/);
     expect(source).not.toMatch(/fetch\(capturedUrl\)/);
+    expect(source).not.toMatch(/readAsDataURL/);
+    expect(source).toMatch(/replace\(\/\\s\+\/g,\s*""\)/);
+  });
+
+  it("sizes long page codes to one line instead of clipping", () => {
+    const css = readFileSync(
+      join(process.cwd(), "src/app/scan/scan-ledger.css"),
+      "utf8",
+    );
+    expect(css).toMatch(/--len/);
+    expect(css).toMatch(/min\(clamp\(48px, 8vw, 150px\)/);
+    expect(css).toMatch(/\* 0\.76\)/);
+    expect(css).not.toMatch(/\* 0\.68\)/);
+    expect(css).toMatch(/overflow-wrap:\s*anywhere/);
+    expect(css).not.toMatch(/word-break:\s*break-all/);
+    expect(css).toMatch(/\.chip \{[\s\S]*?height:\s*32px/);
+    expect(css).toMatch(/\.chip::after \{[\s\S]*?inset:\s*-6px 0/);
+    expect(css).toMatch(/\.quiet::after \{[\s\S]*?inset:\s*-10px -4px/);
+    expect(css).not.toMatch(/\.quiet \{[\s\S]*?min-height:\s*44px/);
+    const headline = css.match(/\.home-e2\.scan-c \.h1 \{[\s\S]*?\n\}/);
+    expect(headline?.[0]).toMatch(/overflow:\s*visible/);
+    expect(headline?.[0]).not.toMatch(/overflow:\s*hidden/);
   });
 });
