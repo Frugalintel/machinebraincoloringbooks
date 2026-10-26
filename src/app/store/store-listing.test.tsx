@@ -124,7 +124,7 @@ describe("Store listing", () => {
     );
     expect(shop.addItem).toHaveBeenCalledWith({
       id: "10000000-0000-0000-0000-000000000003",
-      title: "HORROR",
+      title: "Night Terror",
       price: 6.66,
       subtitle: "Night Terror",
       image: undefined,

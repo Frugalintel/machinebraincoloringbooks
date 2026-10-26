@@ -54,7 +54,7 @@ export function ComponentGallery() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <main className="min-h-screen bg-background text-cream">
+    <main id="main" className="min-h-screen bg-background text-cream">
       <div className="container mx-auto max-w-4xl px-4 py-12">
         <p className="font-label mb-3 tracking-[0.12em] text-signal">
           Internal

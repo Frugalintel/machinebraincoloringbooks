@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { RunningHead } from "@/components/home-plate";
+import { pageH1Style } from "@/lib/h1-fit";
 import {
   PHOTO_OPTIONAL,
   SCAN_BOOK_TROPHY_LABEL,
@@ -30,7 +31,6 @@ import {
   plateScanCaption,
   sampleNote,
   scanChrome,
-  scanH1Fit,
   storyBarWidth,
   tierTrophyPosterUrl,
   tierTrophyUrl,
@@ -57,11 +57,31 @@ const CELL_CLASS: Record<PlateCell, string> = {
   legendary: "leg",
 };
 
+function withResultPlate(
+  text: string | null,
+  plate: string | null | undefined,
+): string | null {
+  if (!text) return text;
+  const value = plate?.trim();
+  if (!value) return text.replaceAll("Plate 07 counted.", "Counted.");
+  return text.replaceAll("Plate 07", `Plate ${value}`);
+}
+
 function ledgerChrome(state: ScanViewState, snapshot: ScanLedgerSnapshot) {
-  return scanChrome(state, {
+  const chrome = scanChrome(state, {
     trophyTier: snapshot.trophyTier,
     bookPoints: snapshot.sample ? snapshot.books[0]?.bookPoints : undefined,
   });
+  const plate = snapshot.activePlate?.plate;
+  return {
+    ...chrome,
+    lede: withResultPlate(chrome.lede, plate),
+    caption: withResultPlate(chrome.caption, plate),
+  };
+}
+
+function cameraTag(samples: boolean): string {
+  return samples ? "Camera · sample view" : "Camera";
 }
 
 export type ScanLedgerHandlers = {
@@ -91,10 +111,13 @@ export function ScanLedgerView({
   notice,
   sendError = null,
   cameraSlot,
+  samples = false,
   handlers,
 }: {
   state: ScanViewState;
   snapshot: ScanLedgerSnapshot;
+  /** Sample captions. Home's VERCEL_ENV gate, passed from the server page. */
+  samples?: boolean;
   /** Hold the signed-out wallet until the session has actually resolved. */
   authPending?: boolean;
   typedCode: string;
@@ -132,7 +155,7 @@ export function ScanLedgerView({
     state === "legendary-found";
 
   return (
-    <main>
+    <main id="main">
       <section
         className="lg dark plate"
         data-state={state}
@@ -156,21 +179,15 @@ export function ScanLedgerView({
               sendError={sendError}
               folio={folio}
               cameraSlot={cameraSlot}
+              samples={samples}
               handlers={handlers}
             />
           </div>
           <div className="rcol" data-col>
-            <h1
-              className="h1"
-              style={
-                {
-                  "--fd": scanH1Fit(state, snapshot.trophyTier).fd,
-                  "--fm": scanH1Fit(state, snapshot.trophyTier).fm,
-                } as CSSProperties
-              }
-            >
-              {chrome.h1}
+            <h1 className="h1 h1-fit" style={pageH1Style(["Scan."])}>
+              Scan.
             </h1>
+            <p className="mono scan-status">{chrome.h1}</p>
             {showPhotoRun ? (
               <>
                 {plate ? (
@@ -277,6 +294,7 @@ function LeftPanel({
   sendError,
   folio,
   cameraSlot,
+  samples,
   handlers,
 }: {
   state: ScanViewState;
@@ -291,6 +309,7 @@ function LeftPanel({
   sendError: string | null;
   folio: string;
   cameraSlot?: ReactNode;
+  samples: boolean;
   handlers: ScanLedgerHandlers;
 }) {
   const plate = snapshot.activePlate;
@@ -329,20 +348,18 @@ function LeftPanel({
                 <BackCover />
               )}
               <p className="camtag mono">
-                <span className="dot" /> Camera · sample view
+                <span className="dot" /> {cameraTag(samples)}
               </p>
             </div>
             <p className="pcap mono">{caption}</p>
           </div>
           <div className="lacts">
             <ModeChips mode="qr" onMode={handlers.onMode} />
-            <button
-              type="button"
-              className="quiet"
-              onClick={() => handlers.onMode("code")}
-            >
-              Type a page code
-            </button>
+            <InlineCodeField
+              id="scan-inline-code"
+              typedCode={typedCode}
+              handlers={handlers}
+            />
           </div>
         </>
       );
@@ -365,13 +382,11 @@ function LeftPanel({
                 Turn on camera <span aria-hidden="true">→</span>
               </button>
             )}
-            <button
-              type="button"
-              className="quiet"
-              onClick={() => handlers.onMode("code")}
-            >
-              Type a page code
-            </button>
+            <InlineCodeField
+              id="scan-inline-off"
+              typedCode={typedCode}
+              handlers={handlers}
+            />
           </div>
           {cameraCopy ? (
             <div className="fb">
@@ -502,7 +517,7 @@ function LeftPanel({
               )}
               <span className="page-tag mono">Whole page in frame</span>
               <p className="camtag mono">
-                <span className="dot" /> Camera · sample view
+                <span className="dot" /> {cameraTag(samples)}
               </p>
             </div>
             <p className="pcap mono">{caption}</p>
@@ -920,6 +935,34 @@ function BookBlock({ book, state }: { book: BookRow; state: ScanViewState }) {
         </p>
       ) : null}
     </div>
+  );
+}
+
+function InlineCodeField({
+  id,
+  typedCode,
+  handlers,
+}: {
+  id: string;
+  typedCode: string;
+  handlers: ScanLedgerHandlers;
+}) {
+  return (
+    <form className="inline-code" onSubmit={handlers.onSubmitCode}>
+      <label className="mono" htmlFor={id}>
+        Page code
+      </label>
+      <input
+        id={id}
+        value={typedCode}
+        placeholder="Code"
+        maxLength={20}
+        autoComplete="off"
+        autoCapitalize="characters"
+        spellCheck={false}
+        onChange={(event) => handlers.onCodeChange(event.target.value)}
+      />
+    </form>
   );
 }
 

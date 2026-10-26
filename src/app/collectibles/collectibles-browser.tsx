@@ -8,6 +8,7 @@ import { RarityPips } from "@/components/collectibles/rarity-pips";
 import { SetCase } from "@/components/collectibles/set-case";
 import { SetProgressBar } from "@/components/collectibles/set-progress";
 import { useAuth } from "@/context/auth-context";
+import { nbHyphen } from "@/lib/nb-hyphen";
 import type { HeroModel } from "@/lib/collectibles-view";
 import { useVitrine } from "./use-collectibles-reader";
 
@@ -20,7 +21,7 @@ function HeroCaption({ hero }: { hero: HeroModel }) {
             <i className="dot" /> Newest
           </p>
           <p className="hn">
-            <Link href={hero.href}>{hero.item.name}</Link>
+            <Link href={hero.href}>{nbHyphen(hero.item.name)}</Link>
           </p>
           <p className="hm">
             <RarityPips rarity={hero.rarity} />
@@ -35,7 +36,7 @@ function HeroCaption({ hero }: { hero: HeroModel }) {
         <>
           <p className="mono">Locked</p>
           <p className="hn">
-            <Link href={hero.href}>{hero.item.name}</Link>
+            <Link href={hero.href}>{nbHyphen(hero.item.name)}</Link>
           </p>
           <p className="hm">
             <RarityPips rarity={hero.rarity} />
@@ -51,7 +52,7 @@ function HeroCaption({ hero }: { hero: HeroModel }) {
         <>
           <p className="mono">Nothing collected yet</p>
           <p className="hn">
-            <Link href={hero.href}>{hero.item.name}</Link>
+            <Link href={hero.href}>{nbHyphen(hero.item.name)}</Link>
           </p>
           <p className="hm">
             <RarityPips rarity={hero.rarity} />
@@ -73,7 +74,11 @@ function HeroStage({ hero }: { hero: HeroModel }) {
   const owned = hero.kind === "newest";
   return (
     <figure className={owned ? "stage" : "stage empty"}>
-      <Link href={hero.href} className="stage-link" aria-label={hero.item.name}>
+      <Link
+        href={hero.href}
+        className="stage-link"
+        aria-label={nbHyphen(hero.item.name)}
+      >
         <ObjectSlot
           item={hero.item}
           owned={owned}
@@ -102,14 +107,14 @@ export function CollectiblesBrowser({
   const titleStyle = { "--em": view.titleEm } as CSSProperties;
 
   return (
-    <main>
+    <main id="main">
       <header className="plate hero" aria-labelledby="collectibles-title">
         <span className="lamp" aria-hidden="true" />
         <div className="hl">
           <p className="mono eb">Rewards</p>
           <h1
             id="collectibles-title"
-            className="h1 font-display"
+            className="h1 font-display h1-fit"
             style={titleStyle}
           >
             {view.title}

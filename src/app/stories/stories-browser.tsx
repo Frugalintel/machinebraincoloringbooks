@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type CSSProperties } from "react";
 import { useSearchParams } from "next/navigation";
+import { pageH1Style } from "@/lib/h1-fit";
 import { RunningHead } from "@/components/home-plate";
 import { StoryMap } from "@/components/stories/story-map";
 import { useAuth } from "@/context/auth-context";
@@ -20,7 +21,7 @@ import { useStoryCards } from "./use-story-cards";
 
 export function StoriesSkeleton() {
   return (
-    <main className="hero plate" aria-busy="true">
+    <main id="main" className="hero plate" aria-busy="true">
       <p className="mono">Loading</p>
       <div className="skeleton-map" />
     </main>
@@ -99,7 +100,7 @@ export function StoriesBrowser({
   );
 
   return (
-    <main>
+    <main id="main">
       <header className="plate hero" aria-labelledby="stories-title">
         <RunningHead
           items={[
@@ -116,7 +117,11 @@ export function StoriesBrowser({
           />
         ) : null}
         <div className="hg">
-          <h1 id="stories-title" className="h1">
+          <h1
+            id="stories-title"
+            className="h1 h1-fit"
+            style={pageH1Style(["Stories."])}
+          >
             Stories.
           </h1>
           <div className="side">

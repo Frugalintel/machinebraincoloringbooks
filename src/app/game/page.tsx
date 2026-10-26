@@ -89,7 +89,10 @@ export default function GameDashboardPage() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-background text-cream font-sans flex flex-col">
+      <main
+        id="main"
+        className="min-h-screen bg-background text-cream font-sans flex flex-col"
+      >
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center max-w-md">
             <div className="w-24 h-24 mx-auto mb-8 bg-background border border-line rounded-full flex items-center justify-center relative">
@@ -145,7 +148,7 @@ export default function GameDashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-cream font-sans">
+    <main id="main" className="min-h-screen bg-background text-cream font-sans">
       {/* Header */}
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative z-10">

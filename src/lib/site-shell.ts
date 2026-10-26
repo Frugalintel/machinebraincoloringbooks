@@ -82,7 +82,14 @@ export const AUTH_OVERLAY_LINKS: readonly SiteLink[] = [
 export const STORE_NAV_LINKS: readonly SiteLink[] = [
   { name: "Books", href: "/store" },
   { name: "Worlds", href: "/store#worlds" },
+  { name: "Stories", href: "/stories" },
   { name: "About", href: "/about" },
+];
+
+/** Extra rows on every mobile Menu. Scan stays off the desktop header. */
+export const MOBILE_MENU_LINKS: readonly SiteLink[] = [
+  { name: "Scan a code", href: "/scan" },
+  { name: "Help", href: "/help" },
 ];
 
 /**

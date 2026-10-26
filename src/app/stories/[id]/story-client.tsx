@@ -465,7 +465,7 @@ function LiveStory({
 
   if (authLoading || loading) {
     return (
-      <main className="hero plate" aria-busy="true">
+      <main id="main" className="hero plate" aria-busy="true">
         <p className="mono">Loading</p>
       </main>
     );
@@ -682,7 +682,7 @@ function StoryView({
   const locked = !card.unlocked;
 
   return (
-    <main>
+    <main id="main">
       <header className="plate dh" aria-labelledby="story-title">
         {cover ? <img className="bg" src={cover} alt="" /> : null}
         <RunningHead

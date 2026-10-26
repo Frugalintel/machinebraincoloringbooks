@@ -663,11 +663,10 @@
   background: var(--ink);
 }
 
-/* Approved off-guide: a 2px orange ring on the code field, on near-black. */
 .home-e2 .frow:focus-within {
   box-shadow:
     0 0 0 2px var(--base),
-    0 0 0 4px var(--signal);
+    0 0 0 4px var(--cream);
 }
 
 .home-e2 .frow .btn {
@@ -922,6 +921,22 @@
 
 .home-e2 .cols li {
   font: 400 15px/30px var(--sans);
+}
+
+.home-e2 .cols a,
+.home-e2 .legal a {
+  position: relative;
+}
+
+.home-e2 .cols a::after,
+.home-e2 .legal a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
 }
 
 .home-e2 .cols .news {
@@ -1424,9 +1439,13 @@
 
 .home-e2.shell-doc .shell-h {
   margin: 0;
-  max-width: 18ch;
+  max-width: 100%;
   font-weight: 700;
-  font-size: clamp(40px, 6vw, 72px);
+  --h1-gutter: var(--m);
+  font-size: min(
+    clamp(40px, 6vw, 72px),
+    calc((100vw - 2 * var(--h1-gutter)) / var(--h1-em, 8))
+  );
   line-height: 0.9;
   letter-spacing: -0.01em;
   color: var(--cream);

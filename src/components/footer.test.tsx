@@ -213,6 +213,19 @@ describe("Footer", () => {
     expect(nav.signOut).toHaveBeenCalled();
   });
 
+  it("uses the browser path for footer sign-in on the not-found route", () => {
+    window.history.pushState({}, "", "/missing-page");
+    nav.pathname = "/_not-found";
+    render(<HomeFooter samples={false} />);
+    const account = screen.getByRole("navigation", { name: "Account" });
+    expect(
+      within(account).getByRole("link", { name: "Sign in" }),
+    ).toHaveAttribute("href", signInHref("/missing-page"));
+    expect(
+      within(account).getByRole("link", { name: "Create account" }),
+    ).toHaveAttribute("href", registerHref("/missing-page"));
+  });
+
   it("does not paint orange fills or an orange Brain wordmark", () => {
     const { container } = render(<Footer />);
 

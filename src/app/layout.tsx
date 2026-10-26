@@ -21,7 +21,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#0F0F0F",
   viewportFit: "cover",
 };
@@ -37,6 +36,9 @@ export default function RootLayout({
       className={`dark ${displayFont.variable} ${sansFont.variable} ${monoFont.variable}`}
     >
       <body className="antialiased bg-background text-foreground font-sans overflow-x-hidden">
+        <a className="skip-link" href="#main">
+          Skip to content
+        </a>
         <AuthProvider>
           <ToastProvider>
             <GameProvider>

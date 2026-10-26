@@ -313,6 +313,7 @@ describe("Navbar", () => {
         ["Machine Brain", "/"],
         ["Books", "/store"],
         ["Worlds", "/store#worlds"],
+        ["Stories", "/stories"],
         ["About", "/about"],
         ["Sign in", `/auth?mode=login&next=${encodeURIComponent(path)}`],
       ]);
@@ -374,7 +375,7 @@ describe("Navbar", () => {
     nav.user = { email: "you@example.com", id: "u1", initials: "YO" };
     render(<Navbar />);
     expect(screen.queryByRole("button", { name: "Sign in" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Account, YO" }));
+    fireEvent.click(screen.getByRole("button", { name: "Account" }));
     expect(screen.getByRole("menuitem", { name: "Profile" })).toHaveAttribute(
       "href",
       "/profile/me",
@@ -502,6 +503,41 @@ describe("Navbar", () => {
     render(<Navbar />);
     expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
     expect(screen.getByText("Loading account")).toBeInTheDocument();
+  });
+
+  it("spaces the narrow header by cart state and lists Scan, Help, and Cart in the menu", () => {
+    nav.pathname = "/store";
+    nav.cartCount = 0;
+    const empty = render(<Navbar />);
+    const cluster = empty.container.querySelector("[data-header-cluster]");
+    expect(cluster).toHaveAttribute("data-header-cluster", "empty");
+    expect(cluster).toHaveClass("max-[760px]:gap-4");
+    expect(cluster).not.toHaveClass("max-[400px]:!gap-[4.5px]");
+    fireEvent.click(menuButton());
+    const dialog = screen.getByRole("dialog", { name: /menu/i });
+    expect(
+      within(dialog).getByRole("link", { name: "Scan a code" }),
+    ).toHaveAttribute("href", "/scan");
+    expect(within(dialog).getByRole("link", { name: "Help" })).toHaveAttribute(
+      "href",
+      "/help",
+    );
+    expect(
+      within(dialog).getByRole("link", { name: "Stories" }),
+    ).toHaveAttribute("href", "/stories");
+    expect(
+      within(dialog).getByRole("button", { name: "Cart" }),
+    ).toBeInTheDocument();
+    empty.unmount();
+
+    nav.cartCount = 2;
+    const filled = render(<Navbar />);
+    expect(
+      filled.container.querySelector("[data-header-cluster]"),
+    ).toHaveAttribute("data-header-cluster", "filled");
+    expect(filled.container.querySelector("[data-header-cluster]")).toHaveClass(
+      "max-[400px]:!gap-[4.5px]",
+    );
   });
 
   it("hides the customer navbar on admin", () => {

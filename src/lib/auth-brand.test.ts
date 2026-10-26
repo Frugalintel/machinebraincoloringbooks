@@ -83,17 +83,14 @@ describe("Sign in S3 brand guardrails", () => {
     const orange = cssRules()
       .filter(({ body }) => body.includes("--signal"))
       .map(({ selector }) => selector);
-    expect(orange).toEqual([
-      ".sa-signal",
-      ".sa-sum b,\n.sa-msg b",
-      ".sa-input:focus-visible",
-      ".sa :is(.sa-btn, .sa-link, .sa-quiet, .sa-close):focus-visible",
-    ]);
+    expect(orange).toEqual([".sa-signal", ".sa-sum b,\n.sa-msg b"]);
     for (const { body } of cssRules()) {
       expect(body).not.toMatch(/background[^;]*--signal/);
     }
-    expect(CSS).toMatch(/0 0 0 4px var\(--signal\)/);
-    expect(CSS).toMatch(/outline:\s*2px solid var\(--signal\)/);
+    expect(CSS).toMatch(/0 0 0 4px var\(--cream\)/);
+    expect(CSS).toMatch(/outline:\s*2px solid var\(--cream\)/);
+    expect(CSS).not.toMatch(/0 0 0 4px var\(--signal\)/);
+    expect(CSS).not.toMatch(/outline:\s*2px solid var\(--signal\)/);
     expect(SOURCE).not.toMatch(
       /bg-(?:primary|signal|brand-orange)|bg-\[#ff4f00\]|border-primary|text-primary|#ff4f00/i,
     );

@@ -45,7 +45,8 @@ describe("/scan entry from the home code form", () => {
     expect(
       screen.getByRole("button", { name: /turn on camera/i }),
     ).toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("Code")).toBeNull();
+    expect(screen.getByLabelText("Page code")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Code by the page number")).toBeNull();
   });
 
   it("opens manual entry with the code trimmed and upper-cased", () => {
@@ -178,9 +179,8 @@ describe("/scan preview fixtures", () => {
   it("opens the collected already state from ?preview=collected", () => {
     scan.search = "preview=collected";
     render(<ScanPage />);
-    expect(
-      screen.getByRole("heading", { name: "Collected." }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Scan." })).toBeInTheDocument();
+    expect(screen.getByText("Collected.")).toBeInTheDocument();
     expect(
       screen.getByText(/plate 07 is in, code and page/i),
     ).toBeInTheDocument();
@@ -222,7 +222,8 @@ describe("/scan preview fixtures", () => {
   it("opens the Basic trophy fixture from ?preview=basic", () => {
     scan.search = "preview=basic";
     render(<ScanPage />);
-    expect(screen.getByRole("heading", { name: "Basic." })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Scan." })).toBeInTheDocument();
+    expect(screen.getByText("Basic.")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Pro." })).toBeNull();
     expect(screen.getByText(/Trophy · Basic/i)).toBeInTheDocument();
     expect(screen.getByText(/moves up to Basic/)).toBeInTheDocument();
@@ -231,22 +232,23 @@ describe("/scan preview fixtures", () => {
   it("opens Rare, Pro and Legendary trophy aliases from preview", () => {
     scan.search = "preview=rare";
     const rare = render(<ScanPage />);
-    expect(screen.getByRole("heading", { name: "Rare." })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Scan." })).toBeInTheDocument();
+    expect(screen.getByText("Rare.")).toBeInTheDocument();
     expect(screen.getByText(/Trophy · Rare/i)).toBeInTheDocument();
     expect(screen.getByText(/moves up to Rare/)).toBeInTheDocument();
     rare.unmount();
 
     scan.search = "preview=pro";
     const pro = render(<ScanPage />);
-    expect(screen.getByRole("heading", { name: "Pro." })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Scan." })).toBeInTheDocument();
+    expect(screen.getByText("Pro.")).toBeInTheDocument();
     expect(screen.getByText(/Trophy · Pro/i)).toBeInTheDocument();
     pro.unmount();
 
     scan.search = "preview=legendary";
     render(<ScanPage />);
-    expect(
-      screen.getByRole("heading", { name: "Legendary." }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Scan." })).toBeInTheDocument();
+    expect(screen.getByText("Legendary.")).toBeInTheDocument();
     expect(screen.getByText(/Legendary found/i)).toBeInTheDocument();
   });
 

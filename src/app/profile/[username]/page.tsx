@@ -108,7 +108,7 @@ export default function ProfilePage() {
   const ledgerProgress = profileProgressFromLedger(ledger);
 
   return (
-    <main className="min-h-screen bg-background text-cream font-sans">
+    <main id="main" className="min-h-screen bg-background text-cream font-sans">
       {/* Header Banner */}
       <div className="h-64 md:h-80 bg-background relative overflow-hidden border-b border-line">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#222,black)] opacity-50"></div>

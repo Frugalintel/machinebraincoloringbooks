@@ -2,7 +2,10 @@ export const dynamic = "force-dynamic";
 
 export default function ReviewIndexPage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6 py-16">
+    <main
+      id="main"
+      className="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6 py-16"
+    >
       <p className="font-label tracking-[0.12em] text-signal">Private QA</p>
       <h1 className="mt-3 font-display text-title text-cream">Book review</h1>
       <p className="mt-4 text-sm text-muted-foreground">

@@ -238,7 +238,6 @@
 
   /*
    * Cream ring on near-black. Light plates set --shell-focus to ink.
-   * The code field keeps its own orange ring and clears this outline.
    */
   :focus-visible {
     outline: 2px solid var(--shell-focus, var(--cream));
@@ -249,6 +248,52 @@
 .shell-focus:focus-visible {
   outline: 2px solid var(--shell-focus, var(--cream));
   outline-offset: 3px;
+}
+
+/*
+ * Shared page H1 fit. --h1-vw is the design size, --h1-em the longest
+ * Redaction line (displayEm). Floor 32px. The gutter cap wins when the
+ * line would otherwise pass the margin.
+ */
+.h1-fit {
+  font-size: min(
+    max(32px, var(--h1-vw, 12vw)),
+    calc((100vw - 2 * var(--h1-gutter, var(--m, 20px))) / var(--h1-em, 8))
+  );
+}
+
+/* Hit area at least 44px. The box does not change the painted control. */
+.hit-44 {
+  position: relative;
+}
+
+.hit-44::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: 8px;
+  z-index: 100000;
+  transform: translateY(-200%);
+  padding: 8px 12px;
+  background: var(--cream);
+  color: var(--ink);
+  font:
+    600 14px/20px var(--font-sans),
+    system-ui,
+    sans-serif;
+}
+
+.skip-link:focus {
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

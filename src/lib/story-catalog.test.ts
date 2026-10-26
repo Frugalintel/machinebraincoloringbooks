@@ -149,6 +149,22 @@ describe("story catalog rules", () => {
     ).toBe("Yours");
     expect(
       storyStateWord({
+        signedIn: false,
+        unlocked: true,
+        reading: false,
+        codeNeeded: false,
+      }),
+    ).toBe("Free");
+    expect(
+      storyStateWord({
+        signedIn: false,
+        unlocked: true,
+        reading: true,
+        codeNeeded: false,
+      }),
+    ).toBe("Open");
+    expect(
+      storyStateWord({
         signedIn: true,
         unlocked: false,
         reading: false,

@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { SystemLoading } from "@/components/system-loading";
 import { Button } from "@/components/ui/button";
+import { pageH1Style } from "@/lib/h1-fit";
 import { Input } from "@/components/ui/input";
 import { useGame } from "@/context/game-context";
 import { useAuth } from "@/context/auth-context";
@@ -110,7 +110,7 @@ export default function TrophyRoomPage() {
 
         if (unlocked) {
           unlockItem(unlocked.setId, unlocked.slug);
-          success("Artifact Unlocked!");
+          success("Unlocked.");
           setUnlockedReward("Artifact Acquired");
         } else {
           logger.warn("Unlocked item not found in local sets:", {
@@ -131,33 +131,36 @@ export default function TrophyRoomPage() {
     }
   };
 
-  if (isLoading) {
-    return <SystemLoading variant="page" label="Loading" />;
-  }
-
-  if (!user) {
+  if (isLoading || !user) {
     return (
-      <main className="min-h-screen bg-background text-cream font-sans flex flex-col">
-        <div className="flex w-full flex-col items-start px-5 py-16 md:px-10">
-          <div className="text-center space-y-4">
-            <Lock className="w-12 h-12 text-fg-muted mx-auto" />
-            <h1 className="font-display text-title text-cream">
-              Restricted Access
-            </h1>
+      <main id="main" className="shell-doc-main">
+        <h1
+          className="shell-h font-display"
+          style={pageH1Style(["Trophy Room."])}
+        >
+          Trophy Room.
+        </h1>
+        {isLoading ? (
+          <p className="shell-sub" aria-busy="true">
+            Loading
+          </p>
+        ) : (
+          <>
+            <p className="shell-sub">Sign in to see what you have unlocked.</p>
             <Button
               onClick={() => openAuthModal("login")}
-              className="bg-cream text-ink hover:bg-cream"
+              className="hit-44 bg-cream text-ink hover:bg-cream"
             >
-              Login Required
+              Sign in
             </Button>
-          </div>
-        </div>
+          </>
+        )}
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-background text-cream font-sans">
+    <main id="main" className="min-h-screen bg-background text-cream font-sans">
       {/* Header Banner */}
       <div className="bg-background border-b border-line py-12 relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -300,7 +303,7 @@ export default function TrophyRoomPage() {
                 <Input
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  className="bg-background border-line text-cream font-mono text-lg tracking-[0.5em] uppercase h-14 text-center focus:border-primary focus:ring-0 rounded-none placeholder:text-fg-muted"
+                  className="shell-focus bg-background border-line text-cream font-mono text-lg tracking-[0.5em] uppercase h-14 text-center focus:border-cream focus:ring-0 rounded-none placeholder:text-fg-muted"
                   placeholder="CODE"
                   maxLength={12}
                   disabled={loading}

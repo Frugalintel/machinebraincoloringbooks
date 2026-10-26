@@ -6,7 +6,9 @@
   margin: 40px 0 0 -0.04em;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: calc((100vw - 2 * var(--m)) / var(--title-em, 8));
+  --h1-vw: 100vw;
+  --h1-gutter: var(--m);
+  --h1-em: var(--title-em, 8);
   line-height: 0.8;
   letter-spacing: -0.01em;
   color: var(--cream);
@@ -19,6 +21,6 @@
 
 @media (max-width: 760px) {
   .story-display-title {
-    font-size: calc((100vw - 2 * var(--m)) / var(--title-em, 8));
+    --h1-vw: 100vw;
   }
 }

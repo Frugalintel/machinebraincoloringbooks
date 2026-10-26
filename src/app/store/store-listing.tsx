@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
 import { coverAspect } from "@/lib/book-specs";
+import { pageH1Style } from "@/lib/h1-fit";
 import { logger } from "@/lib/logger";
 import { calculatePrice, formatPrice } from "@/lib/pricing";
 import { fetchPublishedProducts, productsOrCatalog } from "@/lib/products";
@@ -153,7 +154,11 @@ function StoreHero({
   return (
     <section className="plate shead s-hero" aria-labelledby="store-h">
       <RunningHead items={["Pl. 00", "The store", "Machine Brain · Books"]} />
-      <h1 id="store-h" className="s-h1 font-display">
+      <h1
+        id="store-h"
+        className="s-h1 font-display h1-fit"
+        style={pageH1Style([STORE_COPY.title])}
+      >
         <span>{STORE_COPY.title}</span>
       </h1>
       <BookShelf products={products} samples={samples} />
@@ -291,7 +296,7 @@ function BookPlate({
             onClick={() => {
               addItem({
                 id: product.id,
-                title: product.title,
+                title: bookName(product),
                 price: priceInfo.finalPrice,
                 subtitle: product.subtitle,
                 image: product.image_url,
@@ -363,7 +368,7 @@ function IndexRow({
         onClick={() => {
           addItem({
             id: product.id,
-            title: product.title,
+            title: bookName(product),
             price: priceInfo.finalPrice,
             subtitle: product.subtitle,
             image: product.image_url,
@@ -383,7 +388,11 @@ export function StoreListingSkeleton({ samples }: { samples: boolean }) {
     <main id="main" aria-busy="true">
       <section className="plate shead s-hero" aria-labelledby="store-h">
         <RunningHead items={["Pl. 00", "The store", "Machine Brain · Books"]} />
-        <h1 id="store-h" className="s-h1 font-display">
+        <h1
+          id="store-h"
+          className="s-h1 font-display h1-fit"
+          style={pageH1Style([STORE_COPY.title])}
+        >
           <span>{STORE_COPY.title}</span>
         </h1>
         <ol className="shelf" aria-hidden="true">

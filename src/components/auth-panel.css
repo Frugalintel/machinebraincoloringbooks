@@ -84,9 +84,16 @@
 
 .sa-h1 {
   margin: 142px 0 0 -0.04em;
-  font: 700 18.2vw/0.8 var(--sa-display);
+  font-family: var(--sa-display);
+  font-weight: 700;
+  line-height: 0.8;
   letter-spacing: -0.01em;
   color: var(--cream);
+}
+
+.sa-lines {
+  --h1-gutter: var(--sa-m);
+  --h1-vw: 18.2vw;
 }
 
 .sa-h1:focus {
@@ -98,16 +105,16 @@
 }
 
 .sa-lines[data-fit="in"] {
-  font-size: 22.3vw;
+  --h1-vw: 22.3vw;
 }
 
 .sa-lines[data-fit="up"],
 .sa-lines[data-fit="code"] {
-  font-size: 19.7vw;
+  --h1-vw: 19.7vw;
 }
 
 .sa-lines[data-fit="check"] {
-  font-size: 17.8vw;
+  --h1-vw: 17.8vw;
 }
 
 .sa-l {
@@ -249,7 +256,7 @@
   background: var(--ink);
   box-shadow:
     0 0 0 2px var(--base),
-    0 0 0 4px var(--signal);
+    0 0 0 4px var(--cream);
 }
 
 .sa-hint,
@@ -316,7 +323,7 @@
 }
 
 .sa :is(.sa-btn, .sa-link, .sa-quiet, .sa-close):focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 2px solid var(--cream);
   outline-offset: 4px;
 }
 
@@ -364,7 +371,7 @@
 .sa[data-auth-hold] .sa-lines[data-fit="code"],
 .sa[data-auth-hold] .sa-lines[data-fit="up"],
 .sa[data-auth-hold] .sa-lines[data-fit="in"] {
-  font-size: 15.56vw;
+  --h1-vw: 15.56vw;
 }
 
 .sa-hold-head {
@@ -469,20 +476,20 @@
   .sa[data-auth-hold] .sa-lines[data-fit="code"],
   .sa[data-auth-hold] .sa-lines[data-fit="up"],
   .sa[data-auth-hold] .sa-lines[data-fit="in"] {
-    font-size: 16.42vw;
+    --h1-vw: 16.42vw;
   }
 
   .sa-lines[data-fit="in"] {
-    font-size: 21.5vw;
+    --h1-vw: 21.5vw;
   }
 
   .sa-lines[data-fit="up"],
   .sa-lines[data-fit="code"] {
-    font-size: 18.9vw;
+    --h1-vw: 18.9vw;
   }
 
   .sa-lines[data-fit="check"] {
-    font-size: 17vw;
+    --h1-vw: 17vw;
   }
 
   .sa-band {

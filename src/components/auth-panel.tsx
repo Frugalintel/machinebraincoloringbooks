@@ -9,6 +9,7 @@ import {
   type ReactNode,
   type Ref,
 } from "react";
+import { pageH1Style } from "@/lib/h1-fit";
 import {
   AUTH_COPY,
   AUTH_FIELD_ORDER,
@@ -237,7 +238,11 @@ export function AuthPanel({
         {headline.prefix && !isHold ? (
           <span className="sa-vh">{`${headline.prefix} `}</span>
         ) : null}
-        <span className="sa-lines" data-fit={headline.fit}>
+        <span
+          className="sa-lines h1-fit"
+          data-fit={headline.fit}
+          style={pageH1Style(headline.lines)}
+        >
           <span className="sa-l">{headline.lines[0]}</span>{" "}
           <span className="sa-l">{headline.lines[1]}</span>
         </span>

@@ -218,7 +218,7 @@ export function CodeEntry({
             Enter
           </button>
         </div>
-        <Link className="quiet" href="/scan">
+        <Link className="quiet hit-44" href="/scan">
           Or scan page
         </Link>
         {resultMessage ? (
@@ -241,7 +241,7 @@ export function CodeEntry({
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="Enter your code"
-            className="bg-background border-line text-cream font-mono uppercase tracking-widest h-12 pl-10 focus:border-primary/50 transition-colors"
+            className="shell-focus bg-background border-line text-cream font-mono uppercase tracking-widest h-12 pl-10 focus:border-cream transition-colors"
           />
           <Lock
             size={14}

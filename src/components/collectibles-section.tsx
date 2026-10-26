@@ -414,7 +414,7 @@ export function CollectiblesSection() {
                     </div>
                     <Link
                       href="/scan"
-                      className=" font-label text-fg-muted hover:text-primary flex items-center gap-1 transition-colors"
+                      className="hit-44 font-label text-fg-muted hover:text-cream flex items-center gap-1 transition-colors"
                     >
                       <Scan size={12} />
                       Or scan page

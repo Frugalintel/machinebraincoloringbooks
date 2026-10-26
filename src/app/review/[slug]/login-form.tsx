@@ -61,7 +61,10 @@ export function ReviewLoginForm({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-16">
+    <main
+      id="main"
+      className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-16"
+    >
       <p className="font-label tracking-[0.12em] text-signal">Private QA</p>
       <h1 className="mt-3 font-display text-title text-cream">Unlock review</h1>
       <p className="mt-3 text-base text-fg-muted">

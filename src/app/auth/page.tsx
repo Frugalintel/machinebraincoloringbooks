@@ -1,8 +1,14 @@
-import "../home.css";
+import type { Metadata } from "next";
 import { AuthPageClient } from "@/app/auth/auth-page-client";
 import { HomeFooter } from "@/components/home-footer";
 import { authEntryFromParams } from "@/lib/auth-ui";
 import { homeShowsSamples } from "@/lib/home";
+import "../home.css";
+
+export const metadata: Metadata = {
+  title: "Sign in · Machine Brain",
+  description: "Sign in or create an account.",
+};
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -30,7 +36,7 @@ export default async function AuthPage({
       data-samples={samples ? "on" : "off"}
       data-testid="auth-page"
     >
-      <main>
+      <main id="main">
         {/* A new query (e.g. the footer's Create account link) starts a fresh form. */}
         <AuthPageClient key={params.toString()} entry={entry} />
       </main>

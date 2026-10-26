@@ -411,6 +411,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
       notice={notice}
       sendError={sendError}
       cameraSlot={cameraSlot}
+      samples={allowFixture}
       handlers={{
         onEnableCamera: () => {
           void startCamera();

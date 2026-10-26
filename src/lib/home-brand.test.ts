@@ -147,7 +147,12 @@ describe("Home type, color and texture guardrails", () => {
     const orange = cssRules()
       .filter(({ body }) => /--signal|#ff4f00|255 79 0/i.test(body))
       .map(({ selector }) => selector);
-    expect(orange).toEqual([".home-e2 .dot", ".home-e2 .frow:focus-within"]);
+    expect(orange).toEqual([".home-e2 .dot"]);
+    const ring = cssRules().find(
+      ({ selector }) => selector === ".home-e2 .frow:focus-within",
+    );
+    expect(ring?.body).toMatch(/0 0 0 4px var\(--cream\)/);
+    expect(ring?.body).not.toMatch(/--signal/);
 
     const dot = cssRules().find(({ selector }) => selector === ".home-e2 .dot");
     expect(dot?.body).not.toMatch(/box-shadow|filter|blur/);

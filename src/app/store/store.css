@@ -14,7 +14,8 @@
 
 .store-e2 .s-h1 {
   margin: 0 0 0 -0.05em;
-  font-size: 31.07vw;
+  --h1-vw: 31.07vw;
+  --h1-gutter: var(--m);
   font-weight: 700;
   line-height: 0.78;
   letter-spacing: -0.01em;
@@ -790,6 +791,20 @@
   gap: 32px;
 }
 
+.store-e2 .meta .act .quiet {
+  position: relative;
+}
+
+.store-e2 .meta .act .quiet::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
+}
+
 .store-e2 .idx {
   padding: 128px var(--m) 128px;
 }
@@ -907,7 +922,7 @@
 
 @media (max-width: 760px) {
   .store-e2 .s-h1 {
-    font-size: min(29.52vw, calc((100vw - 2 * var(--m)) / 5.2));
+    --h1-vw: 29.52vw;
     max-width: 100%;
     min-width: 0;
   }
@@ -1131,7 +1146,10 @@
 
 .store-e2 .top .s-h1 {
   margin: 0 0 0 -0.04em;
-  font-size: max(32px, min(150px, calc(100cqi / var(--book-em, 5))));
+  font-size: min(
+    max(32px, min(150px, calc(100cqi / var(--book-em, 5)))),
+    calc((100vw - 2 * var(--m)) / var(--book-em, 5))
+  );
   line-height: 0.86;
   letter-spacing: -0.01em;
   color: var(--cream);
@@ -1439,13 +1457,57 @@
 
 @media (max-width: 760px) {
   .store-e2 .top {
-    display: block;
+    display: flex;
+    flex-direction: column;
     min-height: 0;
-    padding: 96px var(--m) 72px;
+    padding: 28px var(--m) 48px;
   }
 
   .store-e2 .top > .bg {
-    height: 560px;
+    height: 100%;
+  }
+
+  .store-e2 .top .cv {
+    order: 3;
+    width: min(220px, 62%);
+    margin-top: 28px;
+  }
+
+  .store-e2 .top .cv .s-plate .t {
+    display: none;
+  }
+
+  .store-e2 .top .info {
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+  }
+
+  .store-e2 .top .back {
+    order: 1;
+    margin-bottom: 12px;
+  }
+
+  .store-e2 .top .s-h1 {
+    order: 2;
+  }
+
+  .store-e2 .top .buyb {
+    order: 3;
+    margin-top: 16px;
+  }
+
+  .store-e2 .top .sub {
+    order: 4;
+  }
+
+  .store-e2 .top .ds {
+    order: 5;
+  }
+
+  .store-e2 .top .spec {
+    order: 6;
   }
 
   .store-e2 .top::after {
@@ -1457,14 +1519,10 @@
     );
   }
 
-  .store-e2 .top .info {
-    margin-top: 48px;
-  }
-
   .store-e2 .top .s-h1 {
-    font-size: max(
-      32px,
-      min(150px, calc(100cqi / var(--book-em-m, var(--book-em, 5))))
+    font-size: min(
+      max(32px, min(150px, calc(100cqi / var(--book-em-m, var(--book-em, 5))))),
+      calc((100vw - 2 * var(--m)) / var(--book-em-m, var(--book-em, 5)))
     );
   }
 

@@ -6,10 +6,10 @@ const cart = vi.hoisted(() => ({
   items: [
     {
       id: "1",
-      title: "FLORA",
+      title: "NATURE",
       price: 13,
       quantity: 1,
-      subtitle: "Botanical",
+      subtitle: "Flora",
     },
   ],
   addItem: vi.fn(),

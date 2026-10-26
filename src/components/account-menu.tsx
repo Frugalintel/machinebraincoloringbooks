@@ -118,7 +118,7 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
     <div className="relative shrink-0" ref={menuRef}>
       <button
         type="button"
-        aria-label={`Account, ${label}`}
+        aria-label={label === "Account" ? "Account" : `Account, ${label}`}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls={menuId}

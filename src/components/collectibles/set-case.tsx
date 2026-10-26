@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import type { SetCaseModel } from "@/lib/collectibles-view";
+import { nbHyphen } from "@/lib/nb-hyphen";
 import { LinePlaceholder } from "./line-placeholder";
 import { LinkedLines } from "./linked-lines";
 import { ObjectSlot } from "./object-slot";
@@ -43,7 +44,7 @@ export function SetCase({
           <li key={bay.id} className={bay.owned ? "bay own" : "bay lk"}>
             <Link
               href={bay.href}
-              aria-label={`${bay.name}, ${bay.owned ? "owned" : "locked"}`}
+              aria-label={`${nbHyphen(bay.name)}, ${bay.owned ? "owned" : "locked"}`}
             >
               <span className="lamp" aria-hidden="true" />
               <ObjectSlot
@@ -60,7 +61,7 @@ export function SetCase({
                 No. {bay.no}
                 {bay.owned ? "" : " · Locked"}
               </p>
-              <h3 className="nm">{bay.name}</h3>
+              <h3 className="nm">{nbHyphen(bay.name)}</h3>
               <RarityPips rarity={bay.rarity} />
               {bay.owned ? (
                 <p className="sl mono own">

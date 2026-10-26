@@ -41,6 +41,20 @@ function renderView(
 }
 
 describe("ScanLedgerView wallet and photo register", () => {
+  it("shows the page-code field on the camera view and drops the sample caption in production", () => {
+    renderView("camera-off", fixtureSnapshot("camera-off"), { samples: false });
+    expect(screen.getByLabelText("Page code")).toBeInTheDocument();
+    expect(screen.queryByText("Camera · sample view")).toBeNull();
+    expect(screen.getByRole("heading", { name: "Scan." })).toBeInTheDocument();
+    expect(screen.getByText("Camera off.")).toBeInTheDocument();
+  });
+
+  it("keeps the sample camera caption when samples are on", () => {
+    renderView("index", fixtureSnapshot("index"), { samples: true });
+    expect(screen.getByText("Camera · sample view")).toBeInTheDocument();
+    expect(screen.getByLabelText("Page code")).toBeInTheDocument();
+  });
+
   it("hides .bal when the wallet is unavailable for a signed-in reader", () => {
     const snapshot: ScanLedgerSnapshot = {
       ...fixtureSnapshot("code"),
@@ -103,7 +117,8 @@ describe("ScanLedgerView wallet and photo register", () => {
       "tier-reached",
       fixtureSnapshot("tier-reached", { trophyTier: "Basic" }),
     );
-    expect(screen.getByRole("heading", { name: "Basic." })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Scan." })).toBeInTheDocument();
+    expect(screen.getByText("Basic.")).toBeInTheDocument();
     expect(screen.getByText(/Trophy · Basic/i)).toBeInTheDocument();
     expect(screen.getByText(/moves up to Basic/)).toBeInTheDocument();
     expect(
@@ -118,7 +133,8 @@ describe("ScanLedgerView wallet and photo register", () => {
       "tier-reached",
       fixtureSnapshot("tier-reached", { trophyTier: "Rare" }),
     );
-    expect(screen.getByRole("heading", { name: "Rare." })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Scan." })).toBeInTheDocument();
+    expect(screen.getByText("Rare.")).toBeInTheDocument();
     expect(
       screen.getByText(/The Silver Citadel has 55 book pts/),
     ).toBeInTheDocument();

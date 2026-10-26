@@ -1,6 +1,9 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Mark } from "@/components/mark";
+import { pageH1Em } from "@/lib/h1-fit";
+import { homeShowsSamples } from "@/lib/home";
 import {
   ABOUT_ART,
   ABOUT_BEYOND_COPY,
@@ -41,14 +44,23 @@ function FittedLines({
 }
 
 export default function AboutPage() {
+  const samples = homeShowsSamples(process.env.VERCEL_ENV);
+  const heroStyle = {
+    "--h1-em-d": pageH1Em(ABOUT_HERO_COPY.lines),
+    "--h1-em-m": pageH1Em(ABOUT_HERO_COPY.mobileLines),
+  } as CSSProperties;
   return (
-    <main>
+    <main id="main">
       <section className="spread-hero" aria-labelledby="about-h1">
         <p className="spread-eye mono">
           <span className="spread-sig">{ABOUT_HERO_COPY.plate}</span>
           {ABOUT_HERO_COPY.label}
         </p>
-        <h1 id="about-h1" className="spread-h1 font-display">
+        <h1
+          id="about-h1"
+          className="spread-h1 font-display h1-fit"
+          style={heroStyle}
+        >
           <span className="vh">{ABOUT_HERO_COPY.lines.join(" ")}</span>
           <span aria-hidden="true">
             <FittedLines
@@ -140,7 +152,9 @@ export default function AboutPage() {
             {ABOUT_WORLDS_COPY.heading}
           </h2>
           <p className="spread-body">{ABOUT_WORLDS_COPY.lead}</p>
-          <p className="spread-sample mono">{ABOUT_WORLDS_COPY.sampleNote}</p>
+          {samples ? (
+            <p className="spread-sample mono">{ABOUT_WORLDS_COPY.sampleNote}</p>
+          ) : null}
         </div>
         <ol className="spread-covers">
           {ABOUT_SAMPLE_BOOKS.map((book) => (

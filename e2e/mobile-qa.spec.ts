@@ -40,6 +40,15 @@ test.describe("390px QA screens", () => {
     await expect(heading).toBeVisible();
     fitsViewport(await heading.boundingBox());
     await expectHeaderSignIn(page, "%2F");
+    const signIn = page
+      .locator("header")
+      .getByRole("link", { name: "Sign in" });
+    const menu = page.getByRole("button", { name: "Menu" });
+    const signBox = await signIn.boundingBox();
+    const menuBox = await menu.boundingBox();
+    const clusterGap =
+      (menuBox?.x ?? 0) - ((signBox?.x ?? 0) + (signBox?.width ?? 0));
+    expect(clusterGap).toBeGreaterThanOrEqual(14);
     await shot(page, testInfo, "home-390");
 
     await page.getByRole("button", { name: "Menu" }).click();
@@ -57,7 +66,9 @@ test.describe("390px QA screens", () => {
     await page.goto("/store");
     const books = page.getByRole("heading", { name: "Books." });
     await expect(books).toBeVisible({ timeout: 20_000 });
-    fitsViewport(await books.boundingBox());
+    await expect(async () => {
+      fitsViewport(await books.boundingBox());
+    }).toPass();
     await expectHeaderSignIn(page, "%2Fstore");
     await shot(page, testInfo, "store-390");
 
@@ -100,9 +111,10 @@ test.describe("390px QA screens", () => {
     page,
   }, testInfo) => {
     await page.goto("/scan");
-    const typeCode = page.getByRole("button", { name: /Type a page code/ });
-    await expect(typeCode).toBeVisible({ timeout: 20_000 });
-    fitsViewport(await typeCode.boundingBox());
+    const code = page.getByLabel("Page code");
+    await expect(code).toBeVisible({ timeout: 20_000 });
+    fitsViewport(await code.boundingBox());
+    await expect(page.getByRole("heading", { name: "Scan." })).toBeVisible();
     await expectHeaderSignIn(page, "%2Fscan");
     await shot(page, testInfo, "scan-390");
   });
@@ -115,6 +127,13 @@ test.describe("390px QA screens", () => {
     await expectHeaderSignIn(
       page,
       encodeURIComponent("/this-page-is-not-in-the-catalog"),
+    );
+    const footerSignIn = page
+      .locator("footer")
+      .getByRole("link", { name: "Sign in" });
+    await expect(footerSignIn).toHaveAttribute(
+      "href",
+      `/auth?mode=login&next=${encodeURIComponent("/this-page-is-not-in-the-catalog")}`,
     );
     await shot(page, testInfo, "404-390");
   });

@@ -53,7 +53,9 @@
 }
 
 .home-e2.vitrine .hero .h1 {
-  font-size: calc((100vw - 120px) * 5 / 12 / var(--em));
+  --h1-em: var(--em);
+  --h1-gutter: var(--m);
+  --h1-vw: calc((100vw - 120px) * 5 / 12 / var(--em));
 }
 
 .home-e2.vitrine .hl {
@@ -410,7 +412,7 @@
 .home-e2.vitrine .cbox .frow:focus-within {
   box-shadow:
     0 0 0 2px var(--base),
-    0 0 0 4px var(--signal);
+    0 0 0 4px var(--cream);
 }
 
 .home-e2.vitrine .cbox .frow .btn {
@@ -485,7 +487,7 @@
 .home-e2.vitrine .bays {
   display: grid;
   grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
-  margin: 56px 0 0;
+  margin: 56px 20px 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--c3);
@@ -823,7 +825,11 @@
   .home-e2.vitrine .hero .h1,
   .home-e2.vitrine .st,
   .home-e2.vitrine .nm1 {
-    font-size: calc((100vw - 40px) / var(--em));
+    --h1-vw: calc((100vw - 40px) / var(--em));
+    font-size: min(
+      max(32px, var(--h1-vw)),
+      calc((100vw - 2 * var(--m, 20px)) / var(--em, var(--h1-em, 8)))
+    );
   }
 
   .home-e2.vitrine .eb {
@@ -885,7 +891,8 @@
 
   .home-e2.vitrine .bays {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    margin-top: 36px;
+    margin: 36px 20px 0;
+    gap: 20px;
   }
 
   .home-e2.vitrine .bay {

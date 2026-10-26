@@ -1,6 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
-import { HOME_CODES_COPY } from "@/lib/home";
+import { HelpContactActions } from "@/app/help/help-account";
+import { pageH1Style } from "@/lib/h1-fit";
+import { HOME_CODES_COPY, homeShowsSamples } from "@/lib/home";
 import {
   HELP_ART,
   HELP_CONTACT_EYE,
@@ -15,7 +16,6 @@ import {
   HELP_LEDE,
   HELP_SAMPLE_CODE,
   HELP_SAMPLE_NOTE,
-  HELP_SIGN_IN_HREF,
   HELP_STEPS,
   type HelpStep,
 } from "@/lib/help";
@@ -78,16 +78,21 @@ function StepArt({ step }: { step: HelpStep }) {
 }
 
 export default function HelpPage() {
+  const samples = homeShowsSamples(process.env.VERCEL_ENV);
   return (
     <>
-      <main>
+      <main id="main">
         <section className="help-hero" aria-labelledby="help-title">
           <p className="help-eye mono">
             <span className="sig">{HELP_EYE.plate}</span>
             {HELP_EYE.label}
           </p>
           <div className="help-hg">
-            <h1 id="help-title" className="help-h1 font-display">
+            <h1
+              id="help-title"
+              className="help-h1 font-display h1-fit"
+              style={pageH1Style([HELP_H1])}
+            >
               <span>{HELP_H1}</span>
             </h1>
             <nav className="help-idx" aria-label="Help topics">
@@ -110,11 +115,11 @@ export default function HelpPage() {
         <section className="help-how" id="how" aria-labelledby="help-how">
           <div className="help-hh">
             <p className="help-eye mono">{HELP_HOW_EYE}</p>
-            <p className="help-big" id="help-how">
+            <h2 className="help-big" id="help-how">
               {HELP_HOW_LINES.map((line) => (
                 <span key={line}>{line}</span>
               ))}
-            </p>
+            </h2>
           </div>
           <ol className="help-steps">
             {HELP_STEPS.map((step) => (
@@ -131,7 +136,9 @@ export default function HelpPage() {
               </li>
             ))}
           </ol>
-          <p className="mono help-smpl">{HELP_SAMPLE_NOTE}</p>
+          {samples ? (
+            <p className="mono help-smpl">{HELP_SAMPLE_NOTE}</p>
+          ) : null}
         </section>
 
         <HelpFaq />
@@ -145,23 +152,16 @@ export default function HelpPage() {
             <span className="sig">{HELP_CONTACT_EYE.n}</span>
             {HELP_CONTACT_EYE.label}
           </p>
-          <p className="help-big" id="help-write">
+          <h2 className="help-big" id="help-write">
             <span>{HELP_CONTACT_H}</span>
-          </p>
+          </h2>
           <div className="help-cg">
             <p className="help-body">{HELP_CONTACT_LEAD}</p>
             <div className="help-ph" role="note">
               <p className="mono">{HELP_CONTACT_PLACEHOLDER.label}</p>
               <p className="pt">{HELP_CONTACT_PLACEHOLDER.body}</p>
             </div>
-            <p className="help-acts">
-              <Link className="quiet" href="/orders/lookup">
-                Order lookup
-              </Link>
-              <Link className="quiet" href={HELP_SIGN_IN_HREF}>
-                Sign in
-              </Link>
-            </p>
+            <HelpContactActions />
           </div>
         </section>
       </main>

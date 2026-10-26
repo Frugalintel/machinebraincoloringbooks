@@ -23,6 +23,7 @@ function LoadingChrome({
     // At least a full viewport: prerendered pages swap this fallback out a
     // frame after first paint, and a shorter one lets the footer jump (CLS).
     <main
+      id="main"
       className={cn("min-h-screen bg-background text-cream", className)}
       aria-busy="true"
     >

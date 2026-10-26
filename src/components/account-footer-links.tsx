@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useOptionalAuth } from "@/context/auth-context";
+import { useBrowserPathname } from "@/lib/use-browser-pathname";
 import {
   accountColumnLinks,
   type AccountColumnLink,
@@ -11,7 +11,7 @@ import { SHELL_FOCUS } from "@/lib/site-shell";
 import { cn } from "@/lib/utils";
 
 export function AccountFooterLinks({ variant }: { variant: "home" | "site" }) {
-  const pathname = usePathname();
+  const pathname = useBrowserPathname();
   const { user, signOut } = useOptionalAuth();
   const links = accountColumnLinks(Boolean(user), variant, pathname);
 
@@ -51,7 +51,7 @@ function AccountFooterItem({
   onSignOut: () => void;
 }) {
   const siteClass = cn(
-    "text-sm font-medium text-fg-muted hover:text-cream",
+    "hit-44 text-sm font-medium text-fg-muted hover:text-cream",
     SHELL_FOCUS,
   );
 

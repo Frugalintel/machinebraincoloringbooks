@@ -127,7 +127,7 @@ describe("Product page", () => {
     fireEvent.click(buttons[0]);
     expect(shop.addItem).toHaveBeenCalledWith({
       id: classics.id,
-      title: "CLASSICS",
+      title: "The Origin",
       price: 16.2,
       subtitle: "The Origin",
       image: undefined,

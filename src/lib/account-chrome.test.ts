@@ -11,7 +11,7 @@ describe("accountLabel", () => {
     expect(accountLabel(null)).toBe("Sign in");
   });
 
-  it("prefers a display name, then initials, then the email prefix", () => {
+  it("prefers a display name, otherwise Account", () => {
     expect(
       accountLabel({
         email: "qa@example.com",
@@ -20,9 +20,9 @@ describe("accountLabel", () => {
       }),
     ).toBe("Ada");
     expect(accountLabel({ email: "qa@example.com", initials: "QA" })).toBe(
-      "QA",
+      "Account",
     );
-    expect(accountLabel({ email: "collector@example.com" })).toBe("CO");
+    expect(accountLabel({ email: "collector@example.com" })).toBe("Account");
   });
 });
 
