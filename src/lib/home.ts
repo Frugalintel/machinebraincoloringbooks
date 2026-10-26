@@ -245,8 +245,8 @@ export const HOME_FOOTER_COPY = {
       heading: "Help",
       links: [
         { name: "FAQ", href: HOME_ROUTES.help },
-        { name: "Contact", href: HOME_ROUTES.help },
-        { name: "Shipping", href: HOME_ROUTES.help },
+        { name: "Contact", href: `${HOME_ROUTES.help}#contact` },
+        { name: "Shipping", href: `${HOME_ROUTES.help}#orders` },
         { name: "About", href: HOME_ROUTES.about },
       ],
     },

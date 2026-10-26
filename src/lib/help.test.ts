@@ -32,7 +32,8 @@ describe("Help copy lock", () => {
     );
     expect(HELP_STEPS[2]?.body).toContain("Two points a page at most");
     expect(HELP_STEPS[3]?.body).not.toMatch(/Legendary/);
-    expect(HELP_ART.pageLine.src).toBe("/help/page-half.webp");
+    expect(HELP_ART.pageLine.src).toBe("/help/page-line.webp");
+    expect(HELP_ART.pageLine.src).not.toBe(HELP_ART.pageColor.src);
   });
 
   it("uses curly apostrophes in spoken copy", () => {
