@@ -264,6 +264,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logger.error("Error signing out:", error);
     } finally {
       router.refresh();
+      setSigningOut(false);
     }
   }, [router]);
 

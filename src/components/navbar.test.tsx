@@ -265,7 +265,13 @@ describe("Navbar", () => {
     render(<Navbar />);
     const cart = screen.getByRole("button", { name: "Cart, 2 items" });
     expect(cart).toHaveTextContent("Cart2");
-    expect(cart).toHaveClass("bg-cream", "text-ink");
+    expect(cart).toHaveClass("min-h-11");
+    expect(cart).not.toHaveClass("bg-cream", "h-11");
+    expect(cart.querySelector("span")).toHaveClass(
+      "h-8",
+      "bg-cream",
+      "text-ink",
+    );
     fireEvent.click(cart);
     expect(nav.setIsCartOpen).toHaveBeenCalledWith(true);
   });
@@ -276,7 +282,9 @@ describe("Navbar", () => {
     render(<Navbar />);
     const cart = screen.getByRole("button", { name: "Cart, 1 item" });
     expect(cart).toHaveAttribute("data-filled");
-    expect(cart).toHaveClass("bg-cream");
+    expect(cart).toHaveClass("min-h-11");
+    expect(cart).not.toHaveClass("bg-cream");
+    expect(cart.querySelector("span")).toHaveClass("h-8", "bg-cream");
   });
 
   it("gives the store Home's nav on a solid bar, with cart and sign in always reachable", () => {

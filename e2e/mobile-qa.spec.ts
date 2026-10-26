@@ -119,3 +119,80 @@ test.describe("390px QA screens", () => {
     await shot(page, testInfo, "404-390");
   });
 });
+
+async function visibleBox(
+  locator: ReturnType<Page["locator"]>,
+): Promise<{ x: number; y: number; width: number; height: number } | null> {
+  const count = await locator.count();
+  for (let index = 0; index < count; index += 1) {
+    const box = await locator.nth(index).boundingBox();
+    if (box && box.width > 1 && box.height > 1) return box;
+  }
+  return null;
+}
+
+for (const width of [390, 360] as const) {
+  test.describe(`header clearance at ${width}`, () => {
+    test.use({ viewport: { width, height: 844 } });
+
+    test("Sign in stays clear of the wordmark", async ({ page }, testInfo) => {
+      const pages = [
+        { path: "/", slug: "home", next: "%2F" },
+        { path: "/store", slug: "store", next: "%2Fstore" },
+        { path: "/about", slug: "about", next: "%2Fabout" },
+        { path: "/help", slug: "help", next: "%2Fhelp" },
+      ] as const;
+
+      for (const entry of pages) {
+        await page.goto(entry.path);
+        const signIn = page
+          .locator("header")
+          .getByRole("link", { name: "Sign in" });
+        await expect(signIn).toBeVisible();
+        await expect(signIn).toHaveAttribute(
+          "href",
+          `/auth?mode=login&next=${entry.next}`,
+        );
+        const word = await visibleBox(
+          page.locator("header").getByRole("link", { name: "Machine Brain" }),
+        );
+        const sign = await signIn.boundingBox();
+        expect(word).toBeTruthy();
+        expect(sign).toBeTruthy();
+        const gap = (sign?.x ?? 0) - ((word?.x ?? 0) + (word?.width ?? 0));
+        expect(gap).toBeGreaterThan(0);
+        expect((sign?.x ?? 0) + (sign?.width ?? 0)).toBeLessThanOrEqual(
+          width + 1,
+        );
+        await shot(page, testInfo, `header-${entry.slug}-${width}`);
+
+        if (entry.path === "/store") {
+          const add = page.getByRole("button", { name: /Add to cart/ }).first();
+          await expect(add).toBeVisible({ timeout: 15_000 });
+          await add.click();
+          await page.getByRole("button", { name: "Close cart" }).click();
+          await expect(page.getByRole("heading", { name: "CART" })).toHaveCount(
+            0,
+          );
+          const cart = page.locator("header").getByRole("button", {
+            name: /Cart/,
+          });
+          const pill = await cart.locator("span").first().boundingBox();
+          const hit = await cart.boundingBox();
+          expect(pill?.height).toBeGreaterThanOrEqual(30);
+          expect(pill?.height).toBeLessThanOrEqual(34);
+          expect(hit?.height).toBeGreaterThanOrEqual(44);
+        }
+
+        if (entry.path === "/about") {
+          const cart = page.locator("header").getByRole("button", {
+            name: /Cart/,
+          });
+          const box = await cart.boundingBox();
+          expect(box?.height).toBeGreaterThanOrEqual(38);
+          expect(box?.height).toBeLessThanOrEqual(42);
+        }
+      }
+    });
+  });
+}
