@@ -83,11 +83,20 @@ describe("/scan entry from the home code form", () => {
 
     render(<ScanPage />);
     const field = screen.getByPlaceholderText("Code");
-    fireEvent.change(field, { target: { value: "7kq2\n" } });
-    expect(field).toHaveValue("7KQ2");
+    fireEvent.change(field, { target: { value: "7KQ2" } });
     fireEvent.keyDown(field, { key: "Enter" });
 
     await waitFor(() => expect(eq).toHaveBeenCalledWith("code", "7KQ2"));
+  });
+
+  it("strips spaces and newlines from a pasted page code", () => {
+    scan.search = "mode=code";
+    render(<ScanPage />);
+    const field = screen.getByPlaceholderText("Code");
+    fireEvent.change(field, { target: { value: "QA-TEST P01" } });
+    expect(field).toHaveValue("QA-TESTP01");
+    fireEvent.change(field, { target: { value: "qa-test\np01" } });
+    expect(field).toHaveValue("QA-TESTP01");
   });
 
   it("tells a signed-out reader the code looks valid without leaking the plate", async () => {
@@ -293,6 +302,7 @@ describe("/scan source guardrails", () => {
     expect(source).not.toMatch(/Shown from XP/);
     expect(source).not.toMatch(/fetch\(capturedUrl\)/);
     expect(source).not.toMatch(/readAsDataURL/);
+    expect(source).toMatch(/replace\(\/\\s\+\/g,\s*""\)/);
   });
 
   it("sizes long page codes to one line instead of clipping", () => {
@@ -302,8 +312,14 @@ describe("/scan source guardrails", () => {
     );
     expect(css).toMatch(/--len/);
     expect(css).toMatch(/min\(clamp\(48px, 8vw, 150px\)/);
+    expect(css).toMatch(/\* 0\.76\)/);
+    expect(css).not.toMatch(/\* 0\.68\)/);
     expect(css).toMatch(/overflow-wrap:\s*anywhere/);
     expect(css).not.toMatch(/word-break:\s*break-all/);
+    expect(css).toMatch(/\.chip \{[\s\S]*?height:\s*32px/);
+    expect(css).toMatch(/\.chip::after \{[\s\S]*?inset:\s*-6px 0/);
+    expect(css).toMatch(/\.quiet::after \{[\s\S]*?inset:\s*-10px -4px/);
+    expect(css).not.toMatch(/\.quiet \{[\s\S]*?min-height:\s*44px/);
     const headline = css.match(/\.home-e2\.scan-c \.h1 \{[\s\S]*?\n\}/);
     expect(headline?.[0]).toMatch(/overflow:\s*visible/);
     expect(headline?.[0]).not.toMatch(/overflow:\s*hidden/);

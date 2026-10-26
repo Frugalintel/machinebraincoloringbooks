@@ -416,7 +416,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
           void startCamera();
         },
         onCodeChange: (value) => {
-          setTypedCode(value.replace(/[\r\n]/g, "").toUpperCase());
+          setTypedCode(value.replace(/\s+/g, "").toUpperCase());
           if (state === "invalid") {
             setState("code");
             setNotice(null);
