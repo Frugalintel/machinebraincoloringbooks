@@ -58,7 +58,7 @@ export function Footer() {
                     <Link
                       href={link.href}
                       className={cn(
-                        "text-sm font-medium text-fg-muted hover:text-cream",
+                        "hit-44 text-sm font-medium text-fg-muted hover:text-cream",
                         SHELL_FOCUS,
                       )}
                     >

@@ -1,6 +1,14 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
+import { cartLineCount } from "@/lib/cart-line";
 import { STORAGE_KEYS, getUserStorageKey } from "@/lib/constants";
 import { useAuth } from "@/context/auth-context";
 import { logger } from "@/lib/logger";
@@ -45,18 +53,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Load cart when user changes or app initializes
   useEffect(() => {
     setIsMounted(true);
-    
+
     // Wait for auth to finish loading before initializing cart
     if (authLoading) return;
 
     // Reload cart when user changes or first load
     if (user?.id !== currentUserId || !isInitialized) {
       setCurrentUserId(user?.id || null);
-      
-      const cartKey = user?.id 
+
+      const cartKey = user?.id
         ? getUserStorageKey(STORAGE_KEYS.CART, user.id)
         : STORAGE_KEYS.CART;
-      
+
       const savedCart = localStorage.getItem(cartKey);
       if (savedCart) {
         try {
@@ -87,7 +95,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const existing = prev.find((i) => i.id === newItem.id);
       if (existing) {
         return prev.map((i) =>
-          i.id === newItem.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === newItem.id ? { ...i, quantity: i.quantity + 1 } : i,
         );
       }
       return [...prev, { ...newItem, quantity: 1 }];
@@ -99,45 +107,53 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems((prev) => prev.filter((i) => i.id !== id));
   }, []);
 
-  const updateQuantity = useCallback((id: string | number, quantity: number) => {
-    if (quantity < 1) {
-      setItems((prev) => prev.filter((i) => i.id !== id));
-      return;
-    }
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity } : i))
-    );
-  }, []);
+  const updateQuantity = useCallback(
+    (id: string | number, quantity: number) => {
+      if (quantity < 1) {
+        setItems((prev) => prev.filter((i) => i.id !== id));
+        return;
+      }
+      setItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, quantity } : i)),
+      );
+    },
+    [],
+  );
 
   const clearCart = useCallback(() => setItems([]), []);
 
-  const cartCount = useMemo(() => 
-    items.reduce((acc, item) => acc + item.quantity, 0), 
-    [items]
-  );
-  
-  const cartTotal = useMemo(() => 
-    items.reduce((acc, item) => acc + (item.price * item.quantity), 0),
-    [items]
+  const cartCount = useMemo(() => cartLineCount(items), [items]);
+
+  const cartTotal = useMemo(
+    () => items.reduce((acc, item) => acc + item.price * item.quantity, 0),
+    [items],
   );
 
-  const value = useMemo(() => ({
-    items,
-    addItem,
-    removeItem,
-    updateQuantity,
-    clearCart,
-    cartCount,
-    cartTotal,
-    isCartOpen,
-    setIsCartOpen,
-  }), [items, addItem, removeItem, updateQuantity, clearCart, cartCount, cartTotal, isCartOpen]);
-
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
+  const value = useMemo(
+    () => ({
+      items,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      cartCount,
+      cartTotal,
+      isCartOpen,
+      setIsCartOpen,
+    }),
+    [
+      items,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      cartCount,
+      cartTotal,
+      isCartOpen,
+    ],
   );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {

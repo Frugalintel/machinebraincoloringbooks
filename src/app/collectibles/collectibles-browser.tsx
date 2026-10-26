@@ -102,14 +102,14 @@ export function CollectiblesBrowser({
   const titleStyle = { "--em": view.titleEm } as CSSProperties;
 
   return (
-    <main>
+    <main id="main">
       <header className="plate hero" aria-labelledby="collectibles-title">
         <span className="lamp" aria-hidden="true" />
         <div className="hl">
           <p className="mono eb">Rewards</p>
           <h1
             id="collectibles-title"
-            className="h1 font-display"
+            className="h1 font-display h1-fit"
             style={titleStyle}
           >
             {view.title}

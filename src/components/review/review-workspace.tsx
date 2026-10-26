@@ -396,7 +396,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
 
   if (error || !book || !draft) {
     return (
-      <main className="mx-auto max-w-xl px-6 py-16">
+      <main id="main" className="mx-auto max-w-xl px-6 py-16">
         <h1 className="font-heading text-2xl ">Review unavailable</h1>
         <p className="mt-3 text-sm text-destructive">
           {error || "Book data is missing."}
@@ -438,7 +438,7 @@ export function ReviewWorkspace({ slug }: { slug: string }) {
   );
 
   return (
-    <main className="pb-24">
+    <main id="main" className="pb-24">
       <header className="sticky top-0 z-30 border-b border-line bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
           <div>

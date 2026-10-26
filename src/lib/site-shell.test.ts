@@ -181,6 +181,7 @@ describe("headerVariantFor", () => {
     expect(overlayLinksFor("/store/1").map((link) => link.href)).toEqual([
       "/store",
       "/store#worlds",
+      "/stories",
       "/about",
     ]);
   });

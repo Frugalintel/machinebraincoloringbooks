@@ -1,5 +1,16 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const helpAuth = vi.hoisted(() => ({
+  user: null as null | { email: string },
+}));
+
+vi.mock("@/context/auth-context", () => ({
+  useOptionalAuth: () => ({
+    user: helpAuth.user,
+    signOut: async () => undefined,
+  }),
+}));
 import HelpLayout from "@/app/help/layout";
 import HelpPage from "@/app/help/page";
 import {
@@ -18,6 +29,10 @@ function renderHelp() {
 }
 
 describe("Help (A · Index)", () => {
+  beforeEach(() => {
+    helpAuth.user = null;
+  });
+
   it("renders one Redaction H1", () => {
     const { container } = renderHelp();
     const h1 = screen.getByRole("heading", { level: 1 });
@@ -138,5 +153,24 @@ describe("Help (A · Index)", () => {
         img.getAttribute("src") ?? "",
       ).toBeTruthy();
     }
+  });
+
+  it("swaps Sign in and Create one for Profile once you are signed in", () => {
+    helpAuth.user = { email: "ada@example.com" };
+    const { container } = renderHelp();
+    const text = container.textContent ?? "";
+    expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Create one" })).toBeNull();
+    expect(
+      screen.getAllByRole("link", { name: "Profile" }).length,
+    ).toBeGreaterThan(0);
+    expect(text).toContain(
+      "You already have one. Your books, points and unlocks are on Profile.",
+    );
+    expect(text).toContain(
+      "You are signed in. Open Profile to see your books and points.",
+    );
+    expect(text).not.toContain("Profile with your email");
+    expect(text).not.toContain("Profile with the email and password");
   });
 });

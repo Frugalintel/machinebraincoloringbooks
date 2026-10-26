@@ -6,6 +6,7 @@ import { LogOut } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import {
+  accountCue,
   accountLabel,
   headerAccountLinks,
   signInHref,
@@ -20,7 +21,14 @@ const ITEM =
 
 export type HeaderAccountTone = "overlay" | "full";
 
-export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
+export function HeaderAccount({
+  tone,
+  tight = false,
+}: {
+  tone: HeaderAccountTone;
+  /** Filled cart on a narrow header. The visible cue shortens so the gaps hold. */
+  tight?: boolean;
+}) {
   const pathname = usePathname();
   const { user, signOut, isAdmin, isLoading } = useAuth();
   const [open, setOpen] = useState(false);
@@ -112,13 +120,14 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
   }
 
   const label = accountLabel(user);
+  const shown = tone === "overlay" ? accountCue(label, tight) : label;
   const links = headerAccountLinks(true, pathname);
 
   return (
     <div className="relative shrink-0" ref={menuRef}>
       <button
         type="button"
-        aria-label={`Account, ${label}`}
+        aria-label={label === "Account" ? "Account" : `Account, ${label}`}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls={menuId}
@@ -128,8 +137,12 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
           "inline-flex items-center text-cream",
           SHELL_FOCUS,
           tone === "overlay"
-            ? "h-11 max-w-[9rem] text-[15px] leading-6 font-medium text-cream/66 hover:text-cream max-[760px]:max-w-[4.5rem] max-[400px]:max-w-[3rem]"
+            ? "h-11 max-w-[9rem] text-[15px] leading-6 font-medium text-cream/66 hover:text-cream max-[760px]:max-w-[4.5rem]"
             : "h-11 gap-2",
+          tone === "overlay" &&
+            (tight
+              ? "max-[400px]:max-w-[3rem]"
+              : "max-[400px]:max-w-[4.25rem]"),
         )}
       >
         {tone === "full" ? (
@@ -144,7 +157,7 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
               "hidden max-w-[8rem] text-[13px] font-medium lg:inline",
           )}
         >
-          {label}
+          {shown}
         </span>
       </button>
       {open ? (

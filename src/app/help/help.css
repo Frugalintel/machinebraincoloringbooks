@@ -73,7 +73,8 @@
   margin: 0 0 0 -0.05em;
   font-family: var(--display);
   font-weight: 700;
-  font-size: 20.83vw;
+  --h1-vw: 20.83vw;
+  --h1-gutter: var(--m);
   line-height: 0.84;
   letter-spacing: -0.01em;
   color: var(--cream);
@@ -102,6 +103,7 @@
 }
 
 .help-idx li a {
+  position: relative;
   display: flex;
   gap: 16px;
   align-items: baseline;
@@ -109,6 +111,16 @@
   padding: 9px 0;
   border-bottom: 1px solid var(--c3);
   color: var(--cream);
+}
+
+.help-idx li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
 }
 
 .help-idx li a .mono {
@@ -291,6 +303,7 @@
 }
 
 .help-chip {
+  position: relative;
   font: 500 11px/1 var(--mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -302,6 +315,16 @@
   white-space: nowrap;
   color: var(--cream);
   border: 1px solid var(--c4);
+}
+
+.help-chip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
 }
 
 .help-chip[aria-pressed="true"] {
@@ -503,7 +526,7 @@ html:has(.help-a) {
   }
 
   .help-h1 {
-    font-size: 36.63vw;
+    --h1-vw: 36.63vw;
   }
 
   .help-lede {

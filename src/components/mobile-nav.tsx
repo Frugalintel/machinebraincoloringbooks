@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { BrandLockup } from "@/components/mark";
 import { HEADER_MARK_SIZE_MOBILE_PX } from "@/lib/mark";
 import {
+  MOBILE_MENU_LINKS,
   SHELL_FOCUS,
   SITE_NAV_LINKS,
   isNavLinkActive,
@@ -35,6 +36,7 @@ export function MobileNav({
   accountCue,
   accountPending = false,
   links = SITE_NAV_LINKS,
+  onCart,
 }: {
   open: boolean;
   onClose: () => void;
@@ -46,6 +48,7 @@ export function MobileNav({
   accountCue?: string;
   accountPending?: boolean;
   links?: readonly SiteLink[];
+  onCart?: () => void;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -143,7 +146,7 @@ export function MobileNav({
           <div>
             <p className="font-label mb-4 text-signal tracking-[0.1em]">Menu</p>
             <ul className="flex flex-col gap-1">
-              {links.map((link, index) => {
+              {[...links, ...MOBILE_MENU_LINKS].map((link, index) => {
                 const active = link.href.includes("#")
                   ? isOverlayLinkCurrent(pathname, link)
                   : isNavLinkActive(pathname, link.href);
@@ -171,6 +174,29 @@ export function MobileNav({
                   </li>
                 );
               })}
+              <li>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onCart?.();
+                    onClose();
+                  }}
+                  className={cn(
+                    "flex min-h-11 w-full items-center gap-3 text-left text-[17px] font-medium text-fg-secondary hover:text-cream",
+                    SHELL_FOCUS,
+                  )}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="font-label w-6 text-signal tracking-[0.08em]"
+                  >
+                    {String(
+                      links.length + MOBILE_MENU_LINKS.length + 1,
+                    ).padStart(2, "0")}
+                  </span>
+                  Cart
+                </button>
+              </li>
             </ul>
           </div>
 

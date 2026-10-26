@@ -21,7 +21,7 @@ export function StoryDisplayTitle({
 }) {
   const style = { "--title-em": displayEm(lines) } as CSSProperties;
   return (
-    <h1 id={id} className="story-display-title" style={style}>
+    <h1 id={id} className="story-display-title h1-fit" style={style}>
       {lines.map((line) => (
         <span key={line}>{line}</span>
       ))}

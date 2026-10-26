@@ -84,6 +84,8 @@ export type HelpQuestion = {
   question: string;
   open?: boolean;
   answer: readonly (readonly HelpInline[])[];
+  /** Replaces `answer` once someone is signed in, so the sentence still reads. */
+  signedInAnswer?: readonly (readonly HelpInline[])[];
 };
 
 export type HelpGroup = {
@@ -478,6 +480,15 @@ export const HELP_FAQ: readonly HelpGroup[] = [
             text(" with your email and a password."),
           ],
         ],
+        signedInAnswer: [
+          [
+            text(
+              "You already have one. Your books, points and unlocks are on ",
+            ),
+            link("/profile/me", "Profile"),
+            text("."),
+          ],
+        ],
       },
       {
         id: "signin",
@@ -488,6 +499,13 @@ export const HELP_FAQ: readonly HelpGroup[] = [
             text(
               " with the email and password you used to create your account.",
             ),
+          ],
+        ],
+        signedInAnswer: [
+          [
+            text("You are signed in. Open "),
+            link("/profile/me", "Profile"),
+            text(" to see your books and points."),
           ],
         ],
       },

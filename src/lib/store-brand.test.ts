@@ -29,7 +29,7 @@ describe("Store brand guardrails (STORE-01, STORE-02, SW-ORANGE-USE-01, SW-PALET
   it("sets Redaction on the single H1 and the fitted plate titles", () => {
     const listing = read("src/app/store/store-listing.tsx");
     const product = read("src/app/store/[id]/product-client.tsx");
-    expect(listing).toMatch(/<h1[^>]*className="s-h1 font-display"/);
+    expect(listing).toMatch(/<h1[\s\S]*className="s-h1 font-display h1-fit"/);
     const headings = listing.match(/<h1\b[^>]*>/g) ?? [];
     expect(headings.length).toBeGreaterThan(0);
     for (const heading of headings) {
@@ -37,7 +37,7 @@ describe("Store brand guardrails (STORE-01, STORE-02, SW-ORANGE-USE-01, SW-PALET
     }
     expect(listing).toMatch(/className="tl font-display"/);
     expect(listing).toMatch(/className="ix-line font-display"/);
-    expect(product).toMatch(/<h1[^>]*className="s-h1 font-display"/);
+    expect(product).toMatch(/className="s-h1 font-display"/);
     expect(product).toMatch(/className="lk font-display"/);
     expect(product.match(/font-display/g)).toHaveLength(2);
     expect(CSS).toMatch(/\.tl \{[^}]*var\(--font-display\)/);

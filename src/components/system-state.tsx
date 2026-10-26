@@ -42,6 +42,7 @@ export function SystemState({
 
   return (
     <main
+      id="main"
       className={cn(
         "flex min-h-[calc(100vh-10rem)] flex-col bg-background text-cream",
         standalone && "min-h-screen",
@@ -72,7 +73,12 @@ export function SystemState({
                   ? "secondary"
                   : action.variant;
               return (
-                <Button key={action.href} variant={variant} asChild>
+                <Button
+                  key={action.href}
+                  variant={variant}
+                  className="hit-44"
+                  asChild
+                >
                   <Link href={action.href}>{action.name}</Link>
                 </Button>
               );

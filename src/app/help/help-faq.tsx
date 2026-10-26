@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useOptionalAuth } from "@/context/auth-context";
 import {
   HELP_CHIPS,
   HELP_FAQ,
@@ -11,9 +12,17 @@ import {
   type HelpQuestion,
 } from "@/lib/help";
 
-function HelpQuestionRow({ item }: { item: HelpQuestion }) {
+function HelpQuestionRow({
+  item,
+  signedIn,
+}: {
+  item: HelpQuestion;
+  signedIn: boolean;
+}) {
   const [open, setOpen] = useState(Boolean(item.open));
   const panelId = `${item.id}-answer`;
+  const answer =
+    signedIn && item.signedInAnswer ? item.signedInAnswer : item.answer;
 
   return (
     <div className="help-q" id={item.id} data-open={open ? "true" : "false"}>
@@ -35,7 +44,7 @@ function HelpQuestionRow({ item }: { item: HelpQuestion }) {
         aria-labelledby={`${item.id}-q`}
       >
         <div className="help-a-body" inert={open ? undefined : true}>
-          {item.answer.map((paragraph, index) => (
+          {answer.map((paragraph, index) => (
             <p key={`${item.id}-${index}`}>
               {paragraph.map((part, partIndex) => (
                 <InlinePart
@@ -56,7 +65,11 @@ function InlinePart({ part }: { part: HelpInline }) {
     case "text":
       return part.text;
     case "link":
-      return <Link href={part.href}>{part.label}</Link>;
+      return (
+        <Link className="hit-44" href={part.href}>
+          {part.label}
+        </Link>
+      );
     case "placeholder":
       return <span className="help-ph-in">{part.text}</span>;
     default: {
@@ -67,6 +80,8 @@ function InlinePart({ part }: { part: HelpInline }) {
 }
 
 export function HelpFaq() {
+  const { user } = useOptionalAuth();
+  const signedIn = Boolean(user);
   const [filter, setFilter] = useState<HelpChipId>("all");
   const visible = useMemo(
     () => HELP_FAQ.filter((group) => filter === "all" || group.id === filter),
@@ -126,7 +141,11 @@ export function HelpFaq() {
               </div>
               <div className="help-qs">
                 {group.questions.map((item) => (
-                  <HelpQuestionRow key={item.id} item={item} />
+                  <HelpQuestionRow
+                    key={item.id}
+                    item={item}
+                    signedIn={signedIn}
+                  />
                 ))}
               </div>
             </section>

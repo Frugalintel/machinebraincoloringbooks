@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import { Button } from "@/components/ui/button";
+import { cartLineTitle } from "@/lib/cart-line";
 import { toSentenceCase } from "@/lib/display-text";
+import { bookName } from "@/lib/store";
 import { supabase } from "@/lib/supabase";
 
 interface SuggestedProduct {
@@ -137,83 +139,88 @@ export function CartDrawer() {
                     </p>
                   </div>
                 ) : (
-                  items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="relative group bg-background p-1 border border-line hover:border-primary/50 transition-colors"
-                    >
-                      <div className="flex gap-4 p-3 bg-background">
-                        {/* Image Placeholder */}
-                        <div className="w-16 h-20 bg-background border border-line flex-shrink-0 relative overflow-hidden group-hover:border-primary/30 transition-colors">
-                          {item.image ? (
-                            <img
-                              src={item.image}
-                              alt={toSentenceCase(item.title)}
-                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                            />
-                          ) : (
-                            <>
-                              <div className="absolute inset-0 flex items-center justify-center text-fg-faint font-heading text-2xl opacity-50 font-bold">
-                                {item.title.charAt(0)}
-                              </div>
-                            </>
-                          )}
-                        </div>
-
-                        <div className="flex-1 flex flex-col justify-between py-0.5">
-                          <div>
-                            <div className="flex justify-between items-start gap-2">
-                              <h3 className="font-heading text-base text-cream leading-none tracking-wide group-hover:text-primary transition-colors line-clamp-1">
-                                {toSentenceCase(item.title)}
-                              </h3>
-                              <button
-                                type="button"
-                                aria-label={`Remove ${toSentenceCase(item.title)}`}
-                                onClick={() => removeItem(item.id)}
-                                className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-fg-faint hover:bg-surface-2 hover:text-danger transition-colors rounded-sm"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                            <p className=" text-fg-muted font-label tracking-widest mt-1 uppercase line-clamp-1">
-                              {item.subtitle || "Standard Edition"}
-                            </p>
+                  items.map((item) => {
+                    const lineTitle = cartLineTitle(item);
+                    return (
+                      <div
+                        key={item.id}
+                        className="relative group bg-background p-1 border border-line hover:border-primary/50 transition-colors"
+                      >
+                        <div className="flex gap-4 p-3 bg-background">
+                          {/* Image Placeholder */}
+                          <div className="w-16 h-20 bg-background border border-line flex-shrink-0 relative overflow-hidden group-hover:border-primary/30 transition-colors">
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={lineTitle}
+                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                              />
+                            ) : (
+                              <>
+                                <div className="absolute inset-0 flex items-center justify-center text-fg-faint font-heading text-2xl opacity-50 font-bold">
+                                  {lineTitle.charAt(0)}
+                                </div>
+                              </>
+                            )}
                           </div>
 
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center bg-background border border-line">
-                              <button
-                                type="button"
-                                aria-label={`Decrease quantity of ${toSentenceCase(item.title)}`}
-                                onClick={() =>
-                                  updateQuantity(item.id, item.quantity - 1)
-                                }
-                                className="inline-flex h-11 w-11 items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
-                              >
-                                <Minus size={14} />
-                              </button>
-                              <span className="min-w-11 text-center font-label text-cream border-x border-line h-11 flex items-center justify-center leading-none">
-                                {item.quantity}
-                              </span>
-                              <button
-                                type="button"
-                                aria-label={`Increase quantity of ${toSentenceCase(item.title)}`}
-                                onClick={() =>
-                                  updateQuantity(item.id, item.quantity + 1)
-                                }
-                                className="inline-flex h-11 w-11 items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
-                              >
-                                <Plus size={14} />
-                              </button>
+                          <div className="flex-1 flex flex-col justify-between py-0.5">
+                            <div>
+                              <div className="flex justify-between items-start gap-2">
+                                <h3 className="font-heading text-base text-cream leading-none tracking-wide group-hover:text-primary transition-colors line-clamp-1">
+                                  {lineTitle}
+                                </h3>
+                                <button
+                                  type="button"
+                                  aria-label={`Remove ${lineTitle}`}
+                                  onClick={() => removeItem(item.id)}
+                                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-fg-faint hover:bg-surface-2 hover:text-danger transition-colors rounded-sm"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                              {toSentenceCase(item.title) !== lineTitle ? (
+                                <p className=" text-fg-muted font-label tracking-widest mt-1 uppercase line-clamp-1">
+                                  {toSentenceCase(item.title)}
+                                </p>
+                              ) : null}
                             </div>
-                            <p className="font-heading text-base text-cream tracking-tight">
-                              ${(item.price * item.quantity).toFixed(2)}
-                            </p>
+
+                            <div className="flex items-center justify-between mt-2">
+                              <div className="flex items-center bg-background border border-line">
+                                <button
+                                  type="button"
+                                  aria-label={`Decrease quantity of ${lineTitle}`}
+                                  onClick={() =>
+                                    updateQuantity(item.id, item.quantity - 1)
+                                  }
+                                  className="inline-flex h-11 w-11 items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <span className="min-w-11 text-center font-label text-cream border-x border-line h-11 flex items-center justify-center leading-none">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  type="button"
+                                  aria-label={`Increase quantity of ${lineTitle}`}
+                                  onClick={() =>
+                                    updateQuantity(item.id, item.quantity + 1)
+                                  }
+                                  className="inline-flex h-11 w-11 items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                              <p className="font-heading text-base text-cream tracking-tight">
+                                ${(item.price * item.quantity).toFixed(2)}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
 
@@ -225,55 +232,61 @@ export function CartDrawer() {
                     You might also like
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
-                    {suggestedProducts.map((product) => (
-                      <div
-                        key={product.id}
-                        className="group relative bg-background border border-line hover:border-line-strong transition-colors p-2"
-                      >
-                        <Link
-                          href={`/store/${product.id}`}
-                          onClick={() => setIsCartOpen(false)}
-                          className="block aspect-[3/4] bg-background mb-2 relative overflow-hidden"
+                    {suggestedProducts.map((product) => {
+                      const name = bookName({
+                        title: product.title,
+                        subtitle: product.subtitle ?? "",
+                      });
+                      return (
+                        <div
+                          key={product.id}
+                          className="group relative bg-background border border-line hover:border-line-strong transition-colors p-2"
                         >
-                          {product.image_url ? (
-                            <img
-                              src={product.image_url}
-                              alt={toSentenceCase(product.title)}
-                              className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-surface-2 text-fg-faint font-heading text-xl">
-                              {product.title.charAt(0)}
-                            </div>
-                          )}
-                          {/* Quick Add Overlay */}
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              addItem({
-                                id: product.id,
-                                title: product.title,
-                                price: product.price,
-                                subtitle: product.subtitle || "",
-                                image: product.image_url,
-                              });
-                            }}
-                            className="absolute bottom-0 right-0 w-8 h-8 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cream"
+                          <Link
+                            href={`/store/${product.id}`}
+                            onClick={() => setIsCartOpen(false)}
+                            className="block aspect-[3/4] bg-background mb-2 relative overflow-hidden"
                           >
-                            <Plus size={16} />
-                          </button>
-                        </Link>
-                        <div className="space-y-1">
-                          <h5 className="font-heading text-xs text-cream tracking-wide truncate">
-                            {toSentenceCase(product.title)}
-                          </h5>
-                          <p className="font-label text-fg-muted">
-                            ${product.price.toFixed(2)}
-                          </p>
+                            {product.image_url ? (
+                              <img
+                                src={product.image_url}
+                                alt={name}
+                                className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-surface-2 text-fg-faint font-heading text-xl">
+                                {name.charAt(0)}
+                              </div>
+                            )}
+                            {/* Quick Add Overlay */}
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                addItem({
+                                  id: product.id,
+                                  title: name,
+                                  price: product.price,
+                                  subtitle: product.subtitle || "",
+                                  image: product.image_url,
+                                });
+                              }}
+                              className="absolute bottom-0 right-0 w-8 h-8 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cream"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          </Link>
+                          <div className="space-y-1">
+                            <h5 className="font-heading text-xs text-cream tracking-wide truncate">
+                              {name}
+                            </h5>
+                            <p className="font-label text-fg-muted">
+                              ${product.price.toFixed(2)}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -302,7 +315,7 @@ export function CartDrawer() {
                       Total
                     </span>
                   </div>
-                  <span className="font-heading text-4xl text-primary tracking-tighter leading-none">
+                  <span className="font-heading text-4xl text-cream tracking-tighter leading-none">
                     ${cartTotal.toFixed(2)}
                   </span>
                 </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { pageH1Style } from "@/lib/h1-fit";
 
 export default function OrderLookupPage() {
   const [orderNumber, setOrderNumber] = useState("");
@@ -19,9 +20,14 @@ export default function OrderLookupPage() {
   };
 
   return (
-    <main className="shell-doc-main">
+    <main id="main" className="shell-doc-main">
       <p className="mono shell-kicker text-signal">Orders</p>
-      <h1 className="shell-h font-display">Order tracking.</h1>
+      <h1
+        className="shell-h font-display"
+        style={pageH1Style(["Order tracking."])}
+      >
+        Order tracking.
+      </h1>
       {submitted ? (
         <div ref={noteRef} className="shell-note" role="status" tabIndex={-1}>
           <p>

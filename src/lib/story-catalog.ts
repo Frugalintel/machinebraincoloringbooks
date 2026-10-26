@@ -35,8 +35,10 @@ export function storyStateWord(input: {
   codeNeeded: boolean;
   cost?: number;
 }): string {
-  if (input.unlocked && input.reading) return "Yours · reading";
-  if (input.unlocked) return "Yours";
+  if (input.unlocked && input.reading) {
+    return input.signedIn ? "Yours · reading" : "Open";
+  }
+  if (input.unlocked) return input.signedIn ? "Yours" : "Free";
   if (input.cost !== undefined) return `${input.cost} pts`;
   if (input.signedIn && input.codeNeeded) return "Code required";
   return "Locked";

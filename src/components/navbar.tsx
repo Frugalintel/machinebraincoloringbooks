@@ -159,10 +159,16 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
           wordmark="mono"
           markSize={24}
           ink="cream"
-          className={cn("!shrink-0 [&>span]:!gap-3", SHELL_FOCUS)}
+          className={cn("hit-44 !shrink-0 [&>span]:!gap-3", SHELL_FOCUS)}
           wordmarkClassName="text-[11px] tracking-[0.1em]"
         />
-        <div className="flex shrink-0 items-center gap-9 max-[760px]:gap-4 max-[400px]:!gap-[4.5px]">
+        <div
+          data-header-cluster={cartCount > 0 ? "filled" : "empty"}
+          className={cn(
+            "flex shrink-0 items-center gap-9 max-[760px]:gap-4",
+            cartCount > 0 && "max-[400px]:!gap-[6.5px]",
+          )}
+        >
           <ul
             className={cn(
               HOME_NAV_TEXT,
@@ -177,7 +183,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
                     href={link.href}
                     aria-current={current ? "page" : undefined}
                     className={cn(
-                      "hover:text-cream",
+                      "hit-44 hover:text-cream",
                       current && "text-cream",
                       SHELL_FOCUS,
                     )}
@@ -188,7 +194,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
               );
             })}
           </ul>
-          <HeaderAccount tone="overlay" />
+          <HeaderAccount tone="overlay" tight={cartCount > 0} />
           {solid || cartCount > 0 ? (
             <button
               type="button"
@@ -197,14 +203,14 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
               data-filled={cartCount > 0 ? "" : undefined}
               className={cn(
                 HOME_NAV_TEXT,
-                "inline-flex min-h-11 items-center justify-center bg-transparent text-cream",
+                "hit-44 inline-flex min-h-11 items-center justify-center bg-transparent text-cream",
                 SHELL_FOCUS,
               )}
             >
               <span
                 className={cn(
                   cartCount > 0 &&
-                    "inline-flex h-8 items-center gap-2 bg-cream px-3 text-ink",
+                    "inline-flex h-8 items-center gap-2 bg-cream px-3 text-ink max-[400px]:px-[10px]",
                 )}
               >
                 Cart
@@ -241,6 +247,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
         accountCue={account.cue}
         accountPending={account.pending}
         links={links}
+        onCart={() => setIsCartOpen(true)}
       />
     </header>
   );
@@ -378,6 +385,7 @@ function FullHeader() {
         accountLinks={account.links}
         accountCue={account.cue}
         accountPending={account.pending}
+        onCart={() => setIsCartOpen(true)}
       />
     </header>
   );

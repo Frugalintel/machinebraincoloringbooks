@@ -198,7 +198,10 @@ export default function AdminLayout({
         ) : null}
 
         {/* Main Content */}
-        <main className="flex-1 md:ml-64 min-h-screen bg-background relative w-full">
+        <main
+          id="main"
+          className="flex-1 md:ml-64 min-h-screen bg-background relative w-full"
+        >
           <div className="p-4 pt-20 md:p-8 md:pt-8 relative z-10">
             {children}
           </div>

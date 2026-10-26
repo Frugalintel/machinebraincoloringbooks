@@ -19,8 +19,18 @@ export function accountLabel(user: AccountCueUser | null | undefined): string {
   if (!user) return "Sign in";
   const named = user.displayName?.trim();
   if (named) return named;
-  if (user.initials?.trim()) return user.initials.trim();
-  return user.email.slice(0, 2).toUpperCase();
+  return "Account";
+}
+
+/**
+ * The filled cart at ≤400px only has room for a short cue.
+ * A full name stays available in the accessible name.
+ */
+export function accountCue(label: string, tight: boolean): string {
+  if (!tight) return label;
+  if (label === "Account") return "You";
+  const first = label.trim().split(/\s+/)[0];
+  return first || label;
 }
 
 /** Full-page sign-in. `next` returns the reader to the page they were on. */

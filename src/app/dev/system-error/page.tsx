@@ -11,7 +11,10 @@ export default function SystemErrorPreview() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-10rem)] bg-background px-4 py-16 text-cream">
+    <main
+      id="main"
+      className="min-h-[calc(100vh-10rem)] bg-background px-4 py-16 text-cream"
+    >
       <div className="container mx-auto max-w-xl">
         <p className="font-label mb-3 tracking-[0.12em] text-signal">
           Internal

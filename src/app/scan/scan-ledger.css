@@ -23,7 +23,7 @@
 .home-e2.scan-c a:focus-visible,
 .home-e2.scan-c button:focus-visible,
 .home-e2.scan-c input:focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 2px solid var(--cream);
   outline-offset: 3px;
 }
 
@@ -75,12 +75,21 @@
   margin: 0 0 20px -0.04em;
   padding: 0;
   color: var(--cream);
-  white-space: normal;
+  white-space: nowrap;
   max-width: 100%;
   overflow: visible;
   overflow-wrap: anywhere;
-  word-break: break-word;
-  font-size: var(--fd, 12vw);
+  --h1-vw: 12vw;
+  --h1-gutter: var(--m);
+}
+
+/* 0,4,0 so the home hero size cannot win. The third cap is the right column. */
+.home-e2.scan-c .h1.h1-fit {
+  font-size: min(
+    max(32px, var(--h1-vw, 12vw)),
+    calc((100vw - 2 * var(--h1-gutter, var(--m, 20px))) / var(--h1-em, 8)),
+    calc(((100vw - 2 * var(--m, 40px) - 64px) * 7 / 12) / var(--h1-em, 8))
+  );
 }
 
 .home-e2.scan-c .pn {
@@ -449,6 +458,30 @@
 
 .home-e2.scan-c .cin input:focus-visible {
   border-bottom-color: var(--cream);
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
+}
+
+.home-e2.scan-c .inline-code {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 220px;
+  min-width: min(100%, 16rem);
+}
+
+.home-e2.scan-c .inline-code input {
+  height: 44px;
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid var(--c4);
+  border-radius: 0;
+  background: transparent;
+  color: var(--cream);
+  font: 500 16px/1 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 0 8px;
 }
 
 .home-e2.scan-c .cin.bad input {
@@ -978,24 +1011,34 @@
 
 .home-e2.scan-c .ladder ol {
   list-style: none;
-  margin: 0;
+  margin: 12px 0 0;
   padding: 0;
   position: relative;
-  height: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 2.75rem;
+  height: auto;
 }
 
 .home-e2.scan-c .ladder .tk {
-  position: absolute;
-  top: -9px;
-  transform: translateX(-50%);
+  position: static;
+  top: auto;
+  left: auto !important;
+  transform: none;
   display: flex;
+  flex: 1 1 0;
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  min-width: 0;
   font-size: 11px;
   color: var(--c2);
-  white-space: nowrap;
-  padding-top: 14px;
+  white-space: normal;
+  text-align: center;
+  padding-top: 0;
+  line-height: 1.25;
 }
 
 .home-e2.scan-c .ladder .tk::before {
@@ -1009,10 +1052,10 @@
 }
 
 .home-e2.scan-c .ladder .tk.i1 {
-  padding-top: 38px;
+  padding-top: 0;
 }
 .home-e2.scan-c .ladder .tk.i1::before {
-  height: 34px;
+  height: 10px;
 }
 
 .home-e2.scan-c .ladder .tk.on::before {
@@ -1029,8 +1072,9 @@
 }
 
 .home-e2.scan-c .ladder .tk.lgx {
-  transform: translateX(-100%);
+  transform: none;
   align-items: flex-end;
+  text-align: right;
 }
 .home-e2.scan-c .ladder .tk.lgx::before {
   left: auto;
@@ -1099,14 +1143,21 @@
   .home-e2.scan-c .rcol > .h1 {
     order: 1;
     margin-bottom: 0;
-    font-size: min(var(--fm, 15vw), calc((100vw - 2 * var(--m)) / 6.4));
+    --h1-vw: 18vw;
     position: relative;
     left: auto;
     top: auto;
     padding: 0;
     max-width: 100%;
-    white-space: normal;
+    white-space: nowrap;
     overflow-wrap: anywhere;
+  }
+
+  .home-e2.scan-c .rcol > .h1.h1-fit {
+    font-size: min(
+      max(32px, var(--h1-vw, 18vw)),
+      calc((100vw - 2 * var(--h1-gutter, var(--m, 20px))) / var(--h1-em, 8))
+    );
   }
 
   .home-e2.scan-c .lg[data-bal-first="true"] .rcol > .bal {

@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <div className="home-e2" data-samples={samples ? "on" : "off"}>
-      <main>
+      <main id="main">
         <HomeHero />
         <HomeShop samples={samples} />
         <HomeRest />

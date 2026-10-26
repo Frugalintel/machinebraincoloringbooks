@@ -66,7 +66,7 @@ describe("About copy and assets", () => {
     }
     expect(count).toBe(1);
     expect(read("src/app/about/page.tsx")).toMatch(
-      /<h1 id="about-h1" className="spread-h1 font-display">/,
+      /<h1[\s\S]*className="spread-h1 font-display h1-fit"/,
     );
   });
 

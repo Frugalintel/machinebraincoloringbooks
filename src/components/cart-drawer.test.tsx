@@ -1,15 +1,25 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CartDrawer } from "@/components/cart-drawer";
+
+const suggestions = vi.hoisted(() => ({
+  rows: [] as Array<{
+    id: string;
+    title: string;
+    price: number;
+    subtitle: string;
+    image_url?: string;
+  }>,
+}));
 
 const cart = vi.hoisted(() => ({
   items: [
     {
       id: "1",
-      title: "FLORA",
+      title: "NATURE",
       price: 13,
       quantity: 1,
-      subtitle: "Botanical",
+      subtitle: "Flora",
     },
   ],
   addItem: vi.fn(),
@@ -28,7 +38,7 @@ vi.mock("@/lib/supabase", () => ({
   supabase: {
     from: () => ({
       select: () => ({
-        limit: async () => ({ data: [] }),
+        limit: async () => ({ data: suggestions.rows }),
       }),
     }),
   },
@@ -36,6 +46,8 @@ vi.mock("@/lib/supabase", () => ({
 
 describe("CartDrawer tap targets", () => {
   beforeEach(() => {
+    suggestions.rows = [];
+    cart.addItem.mockReset();
     cart.removeItem.mockReset();
     cart.updateQuantity.mockReset();
     cart.isCartOpen = true;
@@ -59,5 +71,34 @@ describe("CartDrawer tap targets", () => {
 
     fireEvent.click(increase);
     expect(cart.updateQuantity).toHaveBeenCalledWith("1", 2);
+  });
+
+  it("labels suggestion tiles with the book name", async () => {
+    suggestions.rows = [
+      {
+        id: "2",
+        title: "BOTANICAL",
+        price: 12,
+        subtitle: "Realm Walker",
+      },
+    ];
+    render(<CartDrawer />);
+
+    const heading = await screen.findByRole("heading", {
+      name: "Realm Walker",
+    });
+    expect(screen.queryByRole("heading", { name: "Botanical" })).toBeNull();
+
+    const tile = heading.closest(".group");
+    if (!(tile instanceof HTMLElement)) {
+      throw new Error("suggestion tile missing");
+    }
+    fireEvent.click(within(tile).getByRole("button"));
+    expect(cart.addItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Realm Walker",
+        subtitle: "Realm Walker",
+      }),
+    );
   });
 });

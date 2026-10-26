@@ -9,6 +9,7 @@ import { RarityPips } from "@/components/collectibles/rarity-pips";
 import { SetCase } from "@/components/collectibles/set-case";
 import { SetProgressBar } from "@/components/collectibles/set-progress";
 import { RunningHead } from "@/components/home-plate";
+import { nbHyphen } from "@/lib/nb-hyphen";
 import { useCollectibleDetail } from "../use-collectibles-reader";
 
 export function CollectibleDetail({
@@ -25,7 +26,7 @@ export function CollectibleDetail({
   const owned = detail.owned;
 
   return (
-    <main className={owned ? "det" : "det is-locked"}>
+    <main id="main" className={owned ? "det" : "det is-locked"}>
       <header className="plate dh" aria-labelledby="collectible-title">
         <span className="lamp" aria-hidden="true" />
         <RunningHead items={detail.runningHead} />
@@ -47,10 +48,10 @@ export function CollectibleDetail({
         </div>
         <h1
           id="collectible-title"
-          className="h1 nm1 font-display"
+          className="h1 nm1 font-display h1-fit"
           style={titleStyle}
         >
-          {detail.item.name}
+          {nbHyphen(detail.item.name)}
         </h1>
         <p className="dm">
           <RarityPips rarity={detail.rarity} />

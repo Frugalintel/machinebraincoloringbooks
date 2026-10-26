@@ -82,11 +82,23 @@
   margin: 0 0 0 -0.04em;
   padding: 0;
   font-family: var(--font-display);
-  font-size: 11.2vw;
+  --h1-vw: 11.2vw;
+  --h1-gutter: var(--m);
   font-weight: 700;
   line-height: 0.8;
   letter-spacing: -0.01em;
   color: var(--cream);
+}
+
+/* Beats `.home-e2 .h1` (21.4vw). Caps the line to the 7-column hero. */
+.home-e2.stories-b .h1.h1-fit {
+  font-size: min(
+    max(32px, var(--h1-vw, 11.2vw)),
+    calc((100vw - 2 * var(--h1-gutter, var(--m, 40px))) / var(--h1-em, 8)),
+    calc(
+      ((100vw - 2 * var(--m, 40px) - 220px) * 7 / 12 + 120px) / var(--h1-em, 8)
+    )
+  );
 }
 
 .stories-b .side {
@@ -579,7 +591,14 @@
     top: auto;
     margin-bottom: 24px;
     padding: 0;
-    font-size: 26.5vw;
+    --h1-vw: 26.5vw;
+  }
+
+  .home-e2.stories-b .h1.h1-fit {
+    font-size: min(
+      max(32px, var(--h1-vw, 26.5vw)),
+      calc((100vw - 2 * var(--h1-gutter, var(--m, 20px))) / var(--h1-em, 8))
+    );
   }
 
   .stories-b .side {

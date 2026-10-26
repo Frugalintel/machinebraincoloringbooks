@@ -240,7 +240,7 @@ export function ProductClient({
   const addToCart = () => {
     addItem({
       id: product.id,
-      title: product.title,
+      title: name,
       price: priceInfo.finalPrice,
       subtitle: product.subtitle || "",
       image: product.image_url,
@@ -283,7 +283,7 @@ export function ProductClient({
               priority
               aspect={coverAspect(product)}
             />
-            {sampleArt ? (
+            {samples && sampleArt ? (
               <figcaption className="mono smp">
                 {PRODUCT_COPY.sampleCover}
               </figcaption>
