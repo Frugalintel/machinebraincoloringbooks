@@ -4,11 +4,13 @@ import {
   PHOTO_OPTIONAL,
   SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
+  codeInMessage,
   legendaryPlateCaption,
   plateCellLabel,
   sampleNote,
   scanChrome,
   scanH1Fit,
+  signedOutCodeMessage,
   trophyPlateCaption,
 } from "@/lib/scan-ledger/copy";
 
@@ -114,5 +116,14 @@ describe("scan ledger copy", () => {
     expect(
       plateCellLabel("code", { state: "code-only-before", highlight: false }),
     ).toBe(CELL_LABEL.code);
+  });
+
+  it("keeps signed-in already-counted copy and hides the plate when signed out", () => {
+    expect(codeInMessage("07")).toBe(
+      "The code for plate 07 is in. The photo is still open.",
+    );
+    expect(signedOutCodeMessage()).toMatch(/looks valid/i);
+    expect(signedOutCodeMessage()).toMatch(/sign in|register/i);
+    expect(signedOutCodeMessage()).not.toMatch(/plate|\d{2}/i);
   });
 });

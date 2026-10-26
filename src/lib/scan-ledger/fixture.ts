@@ -12,7 +12,6 @@ import {
 import {
   deriveBookRow,
   emptyPlates,
-  folioLine,
   plateLabel,
 } from "@/lib/scan-ledger/state";
 
@@ -314,7 +313,7 @@ export function createFixtureAdapter(state: ScanViewState): ScanLedgerAdapter {
           kind: "signed-out",
           hold: {
             kind: "page-plus",
-            label: `${folioLine(SAMPLE_PAGE.plate, normalized || SAMPLE_PAGE.code)} · +1`,
+            label: normalized || SAMPLE_PAGE.code,
           },
         };
       }
@@ -360,7 +359,7 @@ export function createFixtureAdapter(state: ScanViewState): ScanLedgerAdapter {
           kind: "signed-out",
           hold: {
             kind: "page-plus",
-            label: `${folioLine(SAMPLE_PAGE.plate, SAMPLE_PAGE.code)} · +1`,
+            label: SAMPLE_PAGE.code,
           },
         };
       }

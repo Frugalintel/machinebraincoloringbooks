@@ -356,6 +356,10 @@ export function codeInMessage(plate: string): string {
   return `The code for plate ${plate} is in. The photo is still open.`;
 }
 
+export function signedOutCodeMessage(): string {
+  return "That code looks valid. Sign in or register the book to count it.";
+}
+
 export function systemErrorMessage(): string {
   return "Something went wrong. Try again.";
 }

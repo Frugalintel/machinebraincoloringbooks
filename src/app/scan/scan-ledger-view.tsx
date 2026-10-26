@@ -84,6 +84,7 @@ export function ScanLedgerView({
   sending,
   reducedMotion,
   notice,
+  sendError = null,
   cameraSlot,
   handlers,
 }: {
@@ -97,6 +98,7 @@ export function ScanLedgerView({
   sending: boolean;
   reducedMotion: boolean;
   notice: { title: string; body: string } | null;
+  sendError?: string | null;
   cameraSlot?: ReactNode;
   handlers: ScanLedgerHandlers;
 }) {
@@ -146,6 +148,7 @@ export function ScanLedgerView({
               sending={sending}
               reducedMotion={reducedMotion}
               notice={notice}
+              sendError={sendError}
               folio={folio}
               cameraSlot={cameraSlot}
               handlers={handlers}
@@ -261,6 +264,7 @@ function LeftPanel({
   sending,
   reducedMotion,
   notice,
+  sendError,
   folio,
   cameraSlot,
   handlers,
@@ -275,6 +279,7 @@ function LeftPanel({
   sending: boolean;
   reducedMotion: boolean;
   notice: { title: string; body: string } | null;
+  sendError: string | null;
   folio: string;
   cameraSlot?: ReactNode;
   handlers: ScanLedgerHandlers;
@@ -544,6 +549,12 @@ function LeftPanel({
               {sending ? "Sending…" : "Send it"}{" "}
               <span aria-hidden="true">→</span>
             </button>
+            {sendError ? (
+              <p className="errl" role="alert">
+                <b>Couldn’t send</b>
+                <span>{sendError}</span>
+              </p>
+            ) : null}
             <button type="button" className="quiet" onClick={handlers.onRetake}>
               Retake
             </button>
