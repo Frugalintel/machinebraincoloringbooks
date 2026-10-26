@@ -8,6 +8,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Session } from "@supabase/supabase-js";
 import { AuthProvider, useAuth } from "@/context/auth-context";
+import { authTokenCookieNames } from "@/lib/auth-session";
 import { supabase } from "@/lib/supabase";
 
 /**
@@ -74,17 +75,22 @@ async function expectResolves<T>(
 function AuthProbe() {
   const { user, isLoading, signIn, signOut } = useAuth();
   return (
-    <div>
+    <header>
       <span data-testid="auth-loading">{isLoading ? "loading" : "ready"}</span>
       <span data-testid="auth-user">{user?.email ?? "guest"}</span>
       <span data-testid="auth-name">{user?.displayName ?? ""}</span>
+      {user ? (
+        <span data-testid="auth-account">{user.email}</span>
+      ) : (
+        <a href="/auth?mode=login">Sign in</a>
+      )}
       <button
         type="button"
         onClick={() => {
           void signIn(TEST_EMAIL, TEST_PASSWORD);
         }}
       >
-        Sign in
+        Sign in form
       </button>
       <button
         type="button"
@@ -94,7 +100,7 @@ function AuthProbe() {
       >
         Sign out
       </button>
-    </div>
+    </header>
   );
 }
 
@@ -176,6 +182,11 @@ beforeEach(() => {
 afterEach(() => {
   lockHeld = false;
   listener = undefined;
+  for (const name of authTokenCookieNames(document.cookie)) {
+    document.cookie = `${name}=; Max-Age=0; path=/`;
+  }
+  window.localStorage.clear();
+  window.sessionStorage.clear();
 });
 
 describe("AuthProvider password sign-in", () => {
@@ -232,7 +243,7 @@ describe("AuthProvider password sign-in", () => {
       expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
 
     await expectResolves(
       waitFor(() =>
@@ -265,7 +276,7 @@ describe("AuthProvider password sign-in", () => {
     await waitFor(() =>
       expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
     await waitFor(() =>
       expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
     );
@@ -315,7 +326,7 @@ describe("AuthProvider password sign-in", () => {
     await waitFor(() =>
       expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
     await waitFor(() =>
       expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
     );
@@ -331,5 +342,103 @@ describe("AuthProvider password sign-in", () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
     expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+  });
+
+  it("drops auth cookies before a hung logout so reload cannot restore the account", async () => {
+    const first = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-account")).toHaveTextContent(TEST_EMAIL),
+    );
+
+    document.cookie = "sb-xyz-auth-token=chunk";
+    document.cookie = "sb-xyz-auth-token.0=aaa";
+    window.localStorage.setItem("sb-xyz-auth-token", '{"access_token":"x"}');
+    window.sessionStorage.setItem("sb-xyz-auth-token.1", "bbb");
+
+    vi.mocked(supabase.auth.signOut).mockImplementation(() => neverResolves());
+    vi.mocked(supabase.auth.getSession).mockImplementation(async () => {
+      if (authTokenCookieNames(document.cookie).length === 0) {
+        return { data: { session: null }, error: null };
+      }
+      return { data: { session: sessionFor(TEST_EMAIL) }, error: null };
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+    expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.queryByTestId("auth-account")).toBeNull();
+    expect(authTokenCookieNames(document.cookie)).toEqual([]);
+    expect(window.localStorage.getItem("sb-xyz-auth-token")).toBeNull();
+    expect(window.sessionStorage.getItem("sb-xyz-auth-token.1")).toBeNull();
+
+    first.unmount();
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(screen.queryByText(TEST_EMAIL)).toBeNull();
+  });
+
+  it("does not let a late profile response resurrect the previous user", async () => {
+    let releaseProfile!: () => void;
+    vi.mocked(supabase.from).mockImplementation(
+      () =>
+        ({
+          select: () => ({
+            eq: () => ({
+              maybeSingle: () =>
+                new Promise((resolve) => {
+                  releaseProfile = () =>
+                    resolve({
+                      data: {
+                        id: "user-1",
+                        display_name: "Ada",
+                        is_admin: false,
+                      },
+                      error: null,
+                    });
+                }),
+            }),
+          }),
+        }) as unknown as ReturnType<typeof supabase.from>,
+    );
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-loading")).toHaveTextContent("ready"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sign in form" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("auth-user")).toHaveTextContent(TEST_EMAIL),
+    );
+    expect(screen.getByTestId("auth-name")).toHaveTextContent("");
+
+    fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+    expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
+
+    await act(async () => {
+      releaseProfile();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(screen.getByTestId("auth-name")).toHaveTextContent("");
+    expect(screen.queryByText("Ada")).toBeNull();
   });
 });

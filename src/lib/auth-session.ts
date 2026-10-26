@@ -50,6 +50,44 @@ export function clearAuthTokenCookies(documentLike: {
   return names;
 }
 
+export function isAuthStorageKey(name: string): boolean {
+  return name.startsWith("sb-") && name.includes("-auth-token");
+}
+
+export function clearAuthStorage(
+  storage: Pick<Storage, "length" | "key" | "removeItem">,
+): string[] {
+  const names: string[] = [];
+  for (let i = storage.length - 1; i >= 0; i -= 1) {
+    const name = storage.key(i);
+    if (name && isAuthStorageKey(name)) {
+      names.push(name);
+      storage.removeItem(name);
+    }
+  }
+  return names;
+}
+
+/** Cookies plus any local/session copy. Call this before a logout request. */
+export function clearLocalAuthCopies(targets: {
+  document?: { cookie: string };
+  localStorage?: Pick<Storage, "length" | "key" | "removeItem"> | null;
+  sessionStorage?: Pick<Storage, "length" | "key" | "removeItem"> | null;
+}): void {
+  if (targets.document) clearAuthTokenCookies(targets.document);
+  if (targets.localStorage) clearAuthStorage(targets.localStorage);
+  if (targets.sessionStorage) clearAuthStorage(targets.sessionStorage);
+}
+
+export function shouldApplyHydratedProfile(input: {
+  requestedUserId: string;
+  currentUserId: string | null;
+  signedOutLocally: boolean;
+}): boolean {
+  if (input.signedOutLocally) return false;
+  return input.currentUserId === input.requestedUserId;
+}
+
 export type AuthStateDecision =
   | { kind: "signed-out" }
   | { kind: "signed-in"; session: { user?: unknown } }
