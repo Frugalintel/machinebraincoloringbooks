@@ -322,7 +322,7 @@ function LeftPanel({
     state === "photo-preview"
       ? photoPreviewTag(snapshot.sample)
       : state === "photo"
-        ? cameraTag(samples)
+        ? null
         : state === "camera-off"
           ? null
           : plateScanCaption(state, plate?.plate);
@@ -529,7 +529,7 @@ function LeftPanel({
                 <span className="dot" /> {cameraTag(samples)}
               </p>
             </div>
-            <p className="pcap mono">{caption}</p>
+            {caption ? <p className="pcap mono">{caption}</p> : null}
           </div>
           <div className="lacts">
             <button

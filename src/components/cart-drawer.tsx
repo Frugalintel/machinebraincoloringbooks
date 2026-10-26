@@ -245,19 +245,21 @@ export function CartDrawer() {
                           <Link
                             href={`/store/${product.id}`}
                             onClick={() => setIsCartOpen(false)}
-                            className="block aspect-[3/4] bg-background mb-2 relative overflow-hidden"
+                            className="block aspect-[3/4] bg-background mb-2 relative"
                           >
-                            {product.image_url ? (
-                              <img
-                                src={product.image_url}
-                                alt={name}
-                                className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-surface-2 text-fg-faint font-heading text-xl">
-                                {name.charAt(0)}
-                              </div>
-                            )}
+                            <div className="absolute inset-0 overflow-hidden">
+                              {product.image_url ? (
+                                <img
+                                  src={product.image_url}
+                                  alt={name}
+                                  className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-surface-2 text-fg-faint font-heading text-xl">
+                                  {name.charAt(0)}
+                                </div>
+                              )}
+                            </div>
                             {/* Quick Add Overlay */}
                             <button
                               onClick={(e) => {
@@ -271,7 +273,7 @@ export function CartDrawer() {
                                   image: product.image_url,
                                 });
                               }}
-                              className="absolute bottom-0 right-0 w-8 h-8 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cream"
+                              className="hit-44-abs absolute bottom-0 right-0 w-8 h-8 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cream"
                             >
                               <Plus size={16} />
                             </button>

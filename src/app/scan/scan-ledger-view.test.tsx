@@ -60,6 +60,18 @@ describe("ScanLedgerView wallet and photo register", () => {
     expect(screen.getByLabelText("Page code")).toBeInTheDocument();
   });
 
+  it("shows the photo camera tag once and only samples it when samples are on", () => {
+    const on = renderView("photo", fixtureSnapshot("photo"), {
+      samples: true,
+    });
+    expect(screen.getAllByText("Camera · sample view")).toHaveLength(1);
+    on.unmount();
+
+    renderView("photo", fixtureSnapshot("photo"), { samples: false });
+    expect(screen.queryByText("Camera · sample view")).toBeNull();
+    expect(screen.getAllByText("Camera")).toHaveLength(1);
+  });
+
   it("drops sample strings when samples are off", () => {
     renderView("index", fixtureSnapshot("index"), { samples: false });
     expect(screen.queryByText("Example · sample book")).toBeNull();

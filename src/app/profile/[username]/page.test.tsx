@@ -131,6 +131,16 @@ describe("ProfilePage auth resolution", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText("0/5")).toBeNull();
     expect(screen.getAllByText("—").length).toBeGreaterThanOrEqual(3);
+    expect(screen.queryByText("Novice Collector")).toBeNull();
+    expect(
+      screen.getByText("Collection Rank").nextElementSibling,
+    ).toHaveTextContent("—");
+    expect(
+      screen.getByText("Collected").previousElementSibling,
+    ).toHaveTextContent("—");
+    expect(
+      screen.getByText("Remaining").previousElementSibling,
+    ).toHaveTextContent("—");
   });
 
   it("shows the signed-in profile once the session exists", async () => {

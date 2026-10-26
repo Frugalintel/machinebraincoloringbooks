@@ -282,6 +282,154 @@ for (const width of [390, 360] as const) {
   });
 }
 
+type HeaderClearance = {
+  width: number;
+  path: string;
+  cart: "empty" | "filled";
+  auth: "out" | "in";
+  wordmark: string;
+  fontSize: string;
+  tracking: string;
+  gap: number;
+  menuRight: number;
+  menuInset: number;
+  clientWidth: number;
+  scroll: boolean;
+};
+
+async function readHeaderClearance(
+  page: Page,
+  row: Pick<HeaderClearance, "width" | "path" | "cart" | "auth">,
+): Promise<HeaderClearance> {
+  const measured = await page.evaluate(() => {
+    const header = document.querySelector("header");
+    const word = header?.querySelector(
+      'a[aria-label="Machine Brain"] .uppercase',
+    );
+    const lockup = header?.querySelector('a[aria-label="Machine Brain"]');
+    const account = header?.querySelector(
+      'a[href*="mode=login"], button[aria-label^="Account"]',
+    );
+    const menu = header?.querySelector("button[aria-controls]");
+    const miss = [
+      word instanceof HTMLElement ? "" : "word",
+      lockup instanceof HTMLElement ? "" : "lockup",
+      account instanceof HTMLElement ? "" : "account",
+      menu instanceof HTMLElement ? "" : "menu",
+    ].filter(Boolean);
+    if (miss.length > 0) {
+      return {
+        missing: miss.join(","),
+        html: header?.innerHTML.slice(0, 1500) ?? "no-header",
+      };
+    }
+    const wordEl = word as HTMLElement;
+    const lockupEl = lockup as HTMLElement;
+    const accountEl = account as HTMLElement;
+    const menuEl = menu as HTMLElement;
+    const wordStyle = getComputedStyle(wordEl);
+    const wordBox = wordEl.getBoundingClientRect();
+    const lockupBox = lockupEl.getBoundingClientRect();
+    const accountBox = accountEl.getBoundingClientRect();
+    const menuBox = menuEl.getBoundingClientRect();
+    const visible = wordStyle.display !== "none" && wordBox.width > 0;
+    const brandRight = visible ? wordBox.right : lockupBox.right;
+    const clientWidth = document.documentElement.clientWidth;
+    return {
+      wordmark: wordStyle.display,
+      fontSize: wordStyle.fontSize,
+      tracking: wordStyle.letterSpacing,
+      gap: accountBox.left - brandRight,
+      menuRight: menuBox.right,
+      menuInset: clientWidth - menuBox.right,
+      clientWidth,
+      scroll:
+        document.documentElement.scrollWidth <=
+        document.documentElement.clientWidth + 1,
+    };
+  });
+  if (!measured || "missing" in measured) {
+    console.warn(measured && "html" in measured ? measured.html : "no measure");
+    throw new Error(
+      measured && "missing" in measured ? measured.missing : "no measure",
+    );
+  }
+  return { ...row, ...measured };
+}
+
+test.describe("header clearance", () => {
+  test("keeps the wordmark clear at the narrow widths", async ({ page }) => {
+    test.setTimeout(180_000);
+    const rows: HeaderClearance[] = [];
+    for (const width of [320, 340, 360, 375, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const path of ["/", "/about"]) {
+        for (const cart of ["empty", "filled"] as const) {
+          await page.goto(path);
+          await page.evaluate(
+            ({ filled, cartJson }) => {
+              if (filled) {
+                window.localStorage.setItem("machine-brain-cart", cartJson);
+              } else {
+                window.localStorage.removeItem("machine-brain-cart");
+              }
+            },
+            { filled: cart === "filled", cartJson: FILLED_CART },
+          );
+          await page.reload();
+          await page.evaluate(() => document.fonts.ready);
+          const header = page.locator("header");
+          await expect(
+            header.getByRole("link", { name: "Machine Brain" }),
+          ).toBeVisible();
+          await expect(
+            header.getByRole("link", { name: "Sign in" }),
+          ).toBeVisible();
+          const base = { width, path, cart };
+          rows.push(await readHeaderClearance(page, { ...base, auth: "out" }));
+          // Supabase is unreachable here. Apply the signed-in max-width caps
+          // from account-menu: 3rem filled and 4.25rem empty at ≤400px.
+          await page.evaluate((filled) => {
+            const link = document.querySelector('header a[href*="mode=login"]');
+            if (!(link instanceof HTMLElement)) return;
+            link.textContent = "Ada Lovelace the Collector";
+            const narrow = window.matchMedia("(max-width: 400px)").matches;
+            const mid = window.matchMedia("(max-width: 760px)").matches;
+            link.style.maxWidth = narrow
+              ? filled
+                ? "3rem"
+                : "4.25rem"
+              : mid
+                ? "4.5rem"
+                : "9rem";
+            link.style.overflow = "hidden";
+            link.style.textOverflow = "ellipsis";
+            link.style.whiteSpace = "nowrap";
+          }, cart === "filled");
+          rows.push(await readHeaderClearance(page, { ...base, auth: "in" }));
+        }
+      }
+    }
+
+    const tenth = (value: number) => Math.round(value * 10) / 10;
+    for (const row of rows) {
+      console.warn(
+        `MEASURE header ${row.path} ${row.width} ${row.cart} ${row.auth} wordmark=${row.wordmark} font=${row.fontSize} tracking=${row.tracking} gap=${tenth(row.gap)} menuRight=${tenth(row.menuRight)} menuInset=${tenth(row.menuInset)} scroll=${row.scroll}`,
+      );
+    }
+    for (const row of rows) {
+      expect(row.gap).toBeGreaterThanOrEqual(6);
+      expect(row.menuRight).toBeLessThanOrEqual(row.clientWidth - 20 + 1);
+      expect(row.scroll).toBe(true);
+      if (row.width < 340) expect(row.wordmark).toBe("none");
+      else expect(row.wordmark).not.toBe("none");
+      const font = Number.parseFloat(row.fontSize);
+      if (row.width >= 360) expect(font).toBe(11);
+      else if (row.width >= 340) expect(font).toBe(10);
+    }
+  });
+});
+
 function rightInset(
   width: number,
   box: { x: number; width: number } | null,
@@ -319,13 +467,13 @@ for (const width of [1440, 1280, 390, 360] as const) {
         .boundingBox();
       const headerGap =
         (signIn?.x ?? 0) - ((word?.x ?? 0) + (word?.width ?? 0));
-      measures.headerGap = Math.round(headerGap);
+      measures.headerGap = Math.round(headerGap * 10) / 10;
       expect(headerGap).toBeGreaterThanOrEqual(6);
       const wordmark = await header
         .getByText("Machine Brain", { exact: true })
         .evaluate((el) => getComputedStyle(el).display);
       measures.wordmark = wordmark;
-      if (width < 380) expect(wordmark).toBe("none");
+      if (width < 340) expect(wordmark).toBe("none");
       else expect(wordmark).not.toBe("none");
 
       if (width <= 760) {
@@ -372,7 +520,7 @@ for (const width of [1440, 1280, 390, 360] as const) {
       expect(measures.legalLinkH).toBeGreaterThanOrEqual(44);
 
       await page.goto("/auth");
-      const welcome = page.locator(".sa-l", { hasText: "Welcome" });
+      const welcome = page.locator("main .sa-l", { hasText: "Welcome" });
       await expect(welcome).toBeVisible();
       measures.welcomeInset = Math.round(
         rightInset(width, await welcome.boundingBox()),

@@ -115,6 +115,20 @@ export default function ProfilePage() {
   );
   const statsReady =
     loadedFor === (user?.id ?? null) && loadedFor !== null && !gameLoading;
+  const collectedCount = collectionSets.reduce(
+    (acc, set) => acc + set.collected.length,
+    0,
+  );
+  const remainingCount = collectionSets.reduce(
+    (acc, set) => acc + (set.total - set.collected.length),
+    0,
+  );
+  const collectionRank =
+    collectedCount >= 10
+      ? "Legendary Collector"
+      : collectedCount >= 5
+        ? "Epic Collector"
+        : "Novice Collector";
   const ledgerProgress = profileProgressFromLedger(ledger);
   const statValue = (value: number) => (statsReady ? String(value) : "—");
   const loadoutCount = statsReady ? `${activeAchievementIds.length}/5` : "—/5";
@@ -333,26 +347,13 @@ export default function ProfilePage() {
                         Collection Rank
                       </p>
                       <p className="font-heading text-xl text-cream ">
-                        {collectionSets.reduce(
-                          (acc, set) => acc + set.collected.length,
-                          0,
-                        ) >= 10
-                          ? "Legendary Collector"
-                          : collectionSets.reduce(
-                                (acc, set) => acc + set.collected.length,
-                                0,
-                              ) >= 5
-                            ? "Epic Collector"
-                            : "Novice Collector"}
+                        {gameLoading ? "—" : collectionRank}
                       </p>
                     </div>
                     <div className="flex gap-4">
                       <div>
                         <p className="font-heading text-2xl text-primary">
-                          {collectionSets.reduce(
-                            (acc, set) => acc + set.collected.length,
-                            0,
-                          )}
+                          {gameLoading ? "—" : collectedCount}
                         </p>
                         <p className=" text-fg-muted uppercase tracking-widest font-label">
                           Collected
@@ -360,11 +361,7 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <p className="font-heading text-2xl text-fg-faint">
-                          {collectionSets.reduce(
-                            (acc, set) =>
-                              acc + (set.total - set.collected.length),
-                            0,
-                          )}
+                          {gameLoading ? "—" : remainingCount}
                         </p>
                         <p className=" text-fg-muted uppercase tracking-widest font-label">
                           Remaining

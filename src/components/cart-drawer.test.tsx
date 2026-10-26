@@ -116,6 +116,12 @@ describe("CartDrawer tap targets", () => {
         price: 12,
         subtitle: "Realm Walker",
       },
+      {
+        id: "3",
+        title: "HORROR",
+        price: 14,
+        subtitle: "Night Terror",
+      },
     ];
     render(<CartDrawer />);
 
@@ -127,6 +133,13 @@ describe("CartDrawer tap targets", () => {
     const tile = heading.closest(".group");
     if (!(tile instanceof HTMLElement)) {
       throw new Error("suggestion tile missing");
+    }
+    const adds = screen.getAllByRole("button").filter((button) => {
+      return button.classList.contains("hit-44-abs");
+    });
+    expect(adds).toHaveLength(2);
+    for (const add of adds) {
+      expect(add).toHaveClass("w-8", "h-8", "hit-44-abs");
     }
     fireEvent.click(within(tile).getByRole("button"));
     expect(cart.addItem).toHaveBeenCalledWith(
