@@ -8,6 +8,7 @@ import {
   HOME_HERO_COPY,
   HOME_POINTS,
   HOME_ROUTES,
+  HOME_SHOP_COPY,
   HOME_WORLDS,
   SAMPLE_BOOKS,
   homeShowsSamples,
@@ -207,12 +208,25 @@ describe("Home copy", () => {
   it("speaks to you, without hype", () => {
     const joined = [
       HOME_HERO_COPY.lede,
+      HOME_SHOP_COPY.lead,
       HOME_ENTER_COPY.lead,
       HOME_ENTER_COPY.register,
       ...HOME_POINTS.map((point) => point.text),
     ].join(" ");
     expect(joined).not.toMatch(/!/);
     expect(joined.toLowerCase()).not.toMatch(/\bwe\b|\bour\b|free|prize/);
+  });
+
+  it("does not hard-code a book count in the shop lead", () => {
+    expect(HOME_SHOP_COPY.lead).toBe(
+      "The books, one world each. Start with the one that pulls you\u00a0in.",
+    );
+    expect(HOME_SHOP_COPY.lead).not.toMatch(
+      /\b(one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+books?\b/i,
+    );
+    expect(HOME_FILES.map(read).join("\n")).not.toMatch(
+      /\b(Five|Nine|\d+)\s+books\b/,
+    );
   });
 
   it("keeps the points copy word for word: 1 for a code, 2 with a scan", () => {

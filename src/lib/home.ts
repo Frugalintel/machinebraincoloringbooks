@@ -120,7 +120,7 @@ export const COVER_SIZE = { width: 720, height: 932 } as const;
 
 export const HOME_SHOP_COPY = {
   heading: "Pick a world.",
-  lead: "Five books, one world each. Start with the one that pulls you\u00a0in.",
+  lead: "The books, one world each. Start with the one that pulls you\u00a0in.",
   cta: { label: "Shop all books", href: HOME_ROUTES.books },
   sampleNote: "Cover art and titles · Sample",
 } as const;
