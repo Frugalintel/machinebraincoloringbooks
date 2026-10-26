@@ -86,7 +86,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         // Or just use default.
         // Let's try to read system_settings just in case the migration hasn't run yet
         // to avoid breaking the site completely during transition.
-        // maybeSingle: an empty table is 200 + null, not a 406 from .single().
+        // maybeSingle: an empty table is 200 + null, not a 406.
         const { data: legacyData } = await supabase
           .from("system_settings")
           .select("value")
