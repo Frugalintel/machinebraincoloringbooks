@@ -40,7 +40,10 @@ describe("/scan entry from the home code form", () => {
     scan.search = "mode=code&code=+ab12+";
     render(<ScanPage />);
     expect(screen.getByPlaceholderText("Code")).toHaveValue("AB12");
-    expect(screen.getByRole("button", { name: /add \+1/i })).not.toBeDisabled();
+    expect(screen.queryByRole("button", { name: /add \+1/i })).toBeNull();
+    expect(
+      screen.getAllByRole("link", { name: /sign in/i })[0],
+    ).toHaveAttribute("href", "/auth?mode=login&next=/scan");
   });
 
   it("looks the code up in its normalized form", async () => {
@@ -141,10 +144,13 @@ describe("/scan preview fixtures", () => {
     );
   });
 
-  it("shows a 0 wallet on the live signed-out page", () => {
+  it("hides wallet points on the live signed-out page and points to sign in", () => {
     render(<ScanPage />);
-    expect(screen.getByText("Wallet · for stories")).toBeInTheDocument();
-    expect(screen.getByText("0")).toBeInTheDocument();
+    expect(screen.queryByText("Wallet · for stories")).toBeNull();
+    expect(screen.queryByText(/WALLET/i)).toBeNull();
+    expect(
+      screen.getAllByRole("link", { name: /sign in/i })[0],
+    ).toHaveAttribute("href", "/auth?mode=login&next=/scan");
     expect(screen.queryByText(/not on this build/i)).toBeNull();
     expect(screen.queryByText(/XP/i)).toBeNull();
   });
@@ -206,6 +212,32 @@ describe("/scan preview fixtures", () => {
   );
 });
 
+describe("/scan camera start", () => {
+  beforeEach(() => {
+    scan.search = "";
+    auth.openAuthModal.mockReset();
+  });
+
+  it("calls getUserMedia from Turn on camera on a secure page", async () => {
+    const getUserMedia = vi.fn(async () => ({
+      getTracks: () => [{ stop: vi.fn() }],
+    }));
+    Object.defineProperty(window, "isSecureContext", {
+      configurable: true,
+      value: true,
+    });
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: { getUserMedia },
+    });
+
+    render(<ScanPage />);
+    fireEvent.click(screen.getByRole("button", { name: /turn on camera/i }));
+
+    await waitFor(() => expect(getUserMedia).toHaveBeenCalled());
+  });
+});
+
 describe("/scan source guardrails", () => {
   it("does not toast a red camera error; the Camera off state explains it", () => {
     const source = readFileSync(
@@ -213,8 +245,24 @@ describe("/scan source guardrails", () => {
       "utf8",
     );
     expect(source).toMatch(/setState\("camera-off"\)/);
+    expect(source).toMatch(/requestCameraAccess/);
+    expect(source).toMatch(/createCapturedImageUrl/);
+    expect(source).toMatch(/revokeCapturedImageUrl/);
     expect(source).not.toMatch(/toastError\(msg\)/);
     expect(source).not.toMatch(/Shown from XP/);
     expect(source).not.toMatch(/fetch\(capturedUrl\)/);
+    expect(source).not.toMatch(/readAsDataURL/);
+  });
+
+  it("lets long page codes wrap instead of clipping", () => {
+    const css = readFileSync(
+      join(process.cwd(), "src/app/scan/scan-ledger.css"),
+      "utf8",
+    );
+    expect(css).toMatch(/word-break:\s*break-all/);
+    expect(css).toMatch(/overflow-wrap:\s*anywhere/);
+    const headline = css.match(/\.home-e2\.scan-c \.h1 \{[\s\S]*?\n\}/);
+    expect(headline?.[0]).toMatch(/overflow:\s*visible/);
+    expect(headline?.[0]).not.toMatch(/overflow:\s*hidden/);
   });
 });

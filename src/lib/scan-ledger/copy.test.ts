@@ -2,11 +2,15 @@ import { describe, expect, it } from "vitest";
 import {
   CELL_LABEL,
   PHOTO_OPTIONAL,
+  SCAN_SIGN_IN_ACTION,
+  SCAN_SIGN_IN_HINT,
+  SCAN_SIGN_IN_HREF,
   SCAN_WALLET_FROM_POINTS,
   SCAN_WALLET_LABEL,
   codeInMessage,
   legendaryPlateCaption,
   plateCellLabel,
+  plateScanCaption,
   sampleNote,
   scanChrome,
   scanH1Fit,
@@ -56,6 +60,24 @@ describe("scan ledger copy", () => {
       "PLATE 31 · 9TD4 · CODE + PHOTO",
     );
     expect(legendaryPlateCaption("31")).toBe("PLATE 31 · HIDDEN PAGE");
+  });
+
+  it("uses the real plate number on code and photo captions", () => {
+    expect(plateScanCaption("code-added", "04")).toBe("Plate 04 · code");
+    expect(plateScanCaption("pending", "05")).toBe("Plate 05 · code + photo");
+    expect(plateScanCaption("verified", "06")).toBe("Plate 06 · code + photo");
+    expect(plateScanCaption("pending", "07")).toBe("Plate 07 · code + photo");
+    expect(plateScanCaption("pending", null)).toBe(
+      scanChrome("pending").caption,
+    );
+  });
+
+  it("points a signed-out reader at /auth without promising a count", () => {
+    expect(SCAN_SIGN_IN_HREF).toBe("/auth?mode=login&next=/scan");
+    expect(SCAN_SIGN_IN_HINT).toMatch(/sign in/i);
+    expect(SCAN_SIGN_IN_HINT).not.toMatch(/wallet · for stories/i);
+    expect(SCAN_SIGN_IN_ACTION).toMatch(/sign in/i);
+    expect(SCAN_SIGN_IN_ACTION).not.toMatch(/add \+1/i);
   });
 
   it("derives tier-reached chrome and H1 fit from the trophy tier", () => {

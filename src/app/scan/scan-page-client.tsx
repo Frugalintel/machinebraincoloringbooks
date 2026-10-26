@@ -16,13 +16,19 @@ import { scanEntryFromParams, normalizeBookCode } from "@/lib/scan-params";
 import {
   SAMPLE_PAGE,
   blobFromCapturedImage,
+  classifyCameraError,
+  createCapturedImageUrl,
   createFixtureAdapter,
   createLiveAdapter,
   fixtureSnapshot,
+  requestCameraAccess,
+  revokeCapturedImageUrl,
   scanPreview,
   scanPreviewTrophyTier,
   signedOutCodeMessage,
+  stopCameraStream,
   systemErrorMessage,
+  type CameraIssue,
   type ScanLedgerSnapshot,
   type ScanViewState,
 } from "@/lib/scan-ledger";
@@ -52,14 +58,8 @@ function useReducedMotion() {
   return reduced;
 }
 
-function useSecureContext() {
-  const [isSecure] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const hostname = window.location.hostname;
-    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
-    return isLocalhost || window.isSecureContext;
-  });
-  return isSecure;
+function cameraMedia() {
+  return navigator.mediaDevices?.getUserMedia?.bind(navigator.mediaDevices);
 }
 
 function initialState(
@@ -83,7 +83,6 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   const { success, error: toastError } = useToast();
   const router = useRouter();
   const reducedMotion = useReducedMotion();
-  const isSecure = useSecureContext();
 
   const [state, setState] = useState<ScanViewState>(() =>
     initialState(preview, entry),
@@ -116,7 +115,10 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   );
   const [capturedImage, setCapturedImage] = useState<Blob | null>(null);
   const [cameraOn, setCameraOn] = useState(preview === "index");
-  const [cameraBlocked, setCameraBlocked] = useState(preview === "camera-off");
+  const [cameraIssue, setCameraIssue] = useState<CameraIssue | null>(() => {
+    if (preview === "camera-off") return { kind: "denied" };
+    return null;
+  });
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ title: string; body: string } | null>(
@@ -157,6 +159,12 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
       });
     }
   }, [openAuthModal, preview]);
+
+  useEffect(() => {
+    return () => {
+      revokeCapturedImageUrl(capturedUrl);
+    };
+  }, [capturedUrl]);
 
   useEffect(() => {
     if (!cameraOn || preview) return;
@@ -337,14 +345,26 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   const readFile = (file: File) => {
     setCapturedImage(file);
     setSendError(null);
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        setCapturedUrl(reader.result);
-        setState("photo-preview");
-      }
-    };
-    reader.readAsDataURL(file);
+    setCapturedUrl(createCapturedImageUrl(file));
+    setState("photo-preview");
+  };
+
+  const startCamera = async () => {
+    const result = await requestCameraAccess({
+      isSecureContext:
+        typeof window === "undefined" ? true : window.isSecureContext,
+      getUserMedia: cameraMedia(),
+    });
+    if (!result.ok) {
+      setCameraIssue(result.issue);
+      setCameraOn(false);
+      setState("camera-off");
+      return;
+    }
+    stopCameraStream(result.stream);
+    setCameraIssue(null);
+    setCameraOn(true);
+    setState("index");
   };
 
   const cameraSlot =
@@ -355,7 +375,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
         }}
         onError={(error: unknown) => {
           logger.error("Scanner error:", error);
-          setCameraBlocked(true);
+          setCameraIssue(classifyCameraError(error));
           setCameraOn(false);
           setState("camera-off");
         }}
@@ -380,8 +400,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
       typedCode={typedCode}
       capturedUrl={capturedUrl}
       cameraLive={Boolean(cameraOn && state === "index" && !preview)}
-      cameraBlocked={cameraBlocked}
-      insecure={!isSecure}
+      cameraIssue={cameraIssue}
       sending={sending}
       reducedMotion={reducedMotion}
       notice={notice}
@@ -389,24 +408,14 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
       cameraSlot={cameraSlot}
       handlers={{
         onEnableCamera: () => {
-          if (!isSecure) {
-            setState("camera-off");
-            return;
-          }
-          setCameraOn(true);
-          setState("index");
+          void startCamera();
         },
         onMode: (mode) => {
           if (mode === "code") {
             setState("code");
             return;
           }
-          if (!isSecure) {
-            setState("camera-off");
-            return;
-          }
-          setCameraOn(true);
-          setState("index");
+          void startCamera();
         },
         onCodeChange: (value) => {
           setTypedCode(value.toUpperCase());
@@ -453,6 +462,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
           setTypedCode("");
           setNotice(null);
           setCapturedUrl(null);
+          setCapturedImage(null);
         },
       }}
     />

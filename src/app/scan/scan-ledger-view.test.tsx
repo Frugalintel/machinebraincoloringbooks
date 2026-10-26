@@ -30,8 +30,7 @@ function renderView(
       typedCode={state === "invalid" ? "7KQ3" : "7KQ2"}
       capturedUrl={null}
       cameraLive={false}
-      cameraBlocked={false}
-      insecure={false}
+      cameraIssue={null}
       sending={false}
       reducedMotion
       notice={null}
@@ -169,5 +168,71 @@ describe("ScanLedgerView wallet and photo register", () => {
       screen.getAllByText("PLATE 31 · HIDDEN PAGE").length,
     ).toBeGreaterThan(0);
     expect(screen.queryByText("PLATE 31 · 9TD4 · CODE + PHOTO")).toBeNull();
+  });
+});
+
+describe("ScanLedgerView signed-out code, camera, plate, and preview", () => {
+  it("hides wallet points and Add +1 when signed out, and links to sign in", () => {
+    const snapshot: ScanLedgerSnapshot = {
+      ...fixtureSnapshot("code"),
+      signedIn: false,
+      wallet: { available: false, points: null, source: "unavailable" },
+    };
+    const { container } = renderView("code", snapshot);
+    expect(container.querySelector(".bal")).toBeNull();
+    expect(screen.queryByText("Wallet · for stories")).toBeNull();
+    expect(screen.queryByRole("button", { name: /add \+1/i })).toBeNull();
+    const signIn = screen.getAllByRole("link", { name: /sign in/i });
+    expect(signIn.length).toBeGreaterThan(0);
+    expect(signIn[0]).toHaveAttribute("href", "/auth?mode=login&next=/scan");
+  });
+
+  it("shows only the camera issue that applies and hides start when it cannot work", () => {
+    const insecure = renderView("camera-off", fixtureSnapshot("camera-off"), {
+      cameraIssue: { kind: "insecure" },
+    });
+    expect(screen.getByText("Not secure")).toBeInTheDocument();
+    expect(screen.queryByText("Blocked")).toBeNull();
+    expect(screen.queryByText("No camera")).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: /turn on camera/i }),
+    ).toBeNull();
+    insecure.unmount();
+
+    renderView("camera-off", fixtureSnapshot("camera-off"), {
+      cameraIssue: { kind: "denied" },
+    });
+    expect(screen.getByText("Blocked")).toBeInTheDocument();
+    expect(screen.getByText(/browser settings/i)).toBeInTheDocument();
+    expect(screen.queryByText("Not secure")).toBeNull();
+    expect(
+      screen.getByRole("button", { name: /turn on camera/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("captions pending and verified states with the active plate, not 07", () => {
+    const snapshot: ScanLedgerSnapshot = {
+      ...fixtureSnapshot("pending"),
+      activePlate: {
+        plate: "04",
+        code: "QA-TEST-P04",
+        title: "Page",
+        bookTitle: "The Silver Citadel",
+      },
+    };
+    renderView("pending", snapshot);
+    expect(screen.getByText("Plate 04 · code + photo")).toBeInTheDocument();
+    expect(screen.queryByText("Plate 07 · code + photo")).toBeNull();
+  });
+
+  it("shows the captured object URL instead of the stock plate image", () => {
+    const { container } = renderView(
+      "photo-preview",
+      fixtureSnapshot("photo-preview"),
+      { capturedUrl: "blob:http://localhost/user-photo" },
+    );
+    const photo = container.querySelector(".pvw img");
+    expect(photo).toHaveAttribute("src", "blob:http://localhost/user-photo");
+    expect(photo).not.toHaveAttribute("src", "/home/plate-color.webp");
   });
 });

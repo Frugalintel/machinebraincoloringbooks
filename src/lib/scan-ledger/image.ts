@@ -30,3 +30,13 @@ export async function blobFromCapturedImage(
   if (typeof source !== "string") return source;
   return blobFromDataUrl(source);
 }
+
+export function createCapturedImageUrl(image: Blob): string {
+  return URL.createObjectURL(image);
+}
+
+export function revokeCapturedImageUrl(url: string | null | undefined): void {
+  if (url && url.startsWith("blob:")) {
+    URL.revokeObjectURL(url);
+  }
+}

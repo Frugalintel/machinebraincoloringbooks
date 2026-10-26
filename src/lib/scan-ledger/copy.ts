@@ -14,6 +14,10 @@ export const SCAN_SAMPLE_NOTE = "Example · sample book, code and points";
 export const SCAN_WALLET_LABEL = "Wallet · for stories";
 export const SCAN_WALLET_FROM_POINTS = "Wallet · from your points";
 export const SCAN_BOOK_TROPHY_LABEL = "This book · trophy";
+export const SCAN_SIGN_IN_HREF = "/auth?mode=login&next=/scan";
+export const SCAN_SIGN_IN_ACTION = "Sign in to count";
+export const SCAN_SIGN_IN_HINT =
+  "Sign in to count this code. It is not added while you are signed out.";
 
 export const CELL_LABEL: Record<PlateCell, string> = {
   empty: "not added",
@@ -76,6 +80,40 @@ export function trophyPlateCaption(plate: string, code: string): string {
 
 export function legendaryPlateCaption(plate: string): string {
   return `PLATE ${plate} · HIDDEN PAGE`;
+}
+
+export function plateScanCaption(
+  state: ScanViewState,
+  plate: string | null | undefined,
+): string | null {
+  const fallback = CHROME[state].caption;
+  if (!plate) return fallback;
+  switch (state) {
+    case "code-added":
+      return `Plate ${plate} · code`;
+    case "pending":
+    case "verified":
+    case "tier-reached":
+      return `Plate ${plate} · code + photo`;
+    case "legendary-found":
+      return legendaryPlateCaption(plate);
+    case "signed-out-book":
+    case "signed-out-code":
+    case "camera-off":
+    case "index":
+    case "registered":
+    case "code":
+    case "photo":
+    case "photo-preview":
+    case "code-only-before":
+    case "collected":
+    case "invalid":
+      return fallback;
+    default: {
+      const _exhaustive: never = state;
+      return _exhaustive;
+    }
+  }
 }
 
 export const CAMERA_BLOCKED =
