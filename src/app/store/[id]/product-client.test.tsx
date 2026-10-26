@@ -1,7 +1,10 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MOCK_CATALOG } from "@/__tests__/store-catalog";
-import { ProductClient } from "@/app/store/[id]/product-client";
+import {
+  ProductClient,
+  inlineBuyIsAboveViewport,
+} from "@/app/store/[id]/product-client";
 
 const shop = vi.hoisted(() => ({
   addItem: vi.fn(),
@@ -115,7 +118,12 @@ describe("Product page", () => {
     const buttons = screen.getAllByRole("button", {
       name: "Add to cart: The Origin",
     });
-    expect(buttons).toHaveLength(2);
+    expect(buttons).toHaveLength(1);
+    const bar = document.querySelector(".mbar") as HTMLElement;
+    expect(bar).toHaveAttribute("aria-hidden", "true");
+    expect(bar).toHaveAttribute("inert");
+    const barButton = bar.querySelector("button");
+    expect(barButton).not.toBeNull();
     fireEvent.click(buttons[0]);
     expect(shop.addItem).toHaveBeenCalledWith({
       id: classics.id,
@@ -127,47 +135,62 @@ describe("Product page", () => {
     expect(shop.setIsCartOpen).toHaveBeenCalledWith(true);
     expect(screen.getByRole("status")).toHaveTextContent("In your cart.");
 
-    fireEvent.click(buttons[1]);
+    fireEvent.click(barButton as HTMLButtonElement);
     expect(shop.addItem).toHaveBeenCalledTimes(2);
     expect(shop.setIsCartOpen).toHaveBeenCalledTimes(2);
   });
 
-  it("shows the fixed buy bar only once the buy panel has left the screen", () => {
-    let onIntersect: IntersectionObserverCallback | undefined;
-    const disconnect = vi.fn();
-    class Observer {
-      constructor(callback: IntersectionObserverCallback) {
-        onIntersect = callback;
-      }
-      observe = vi.fn();
-      unobserve = vi.fn();
-      disconnect = disconnect;
-      takeRecords = () => [];
-      root = null;
-      rootMargin = "";
-      thresholds = [];
-    }
-    vi.stubGlobal("IntersectionObserver", Observer);
+  it("shows the fixed buy bar whenever the inline box is above the viewport", () => {
+    expect(inlineBuyIsAboveViewport({ bottom: 900, height: 80 })).toBe(false);
+    expect(inlineBuyIsAboveViewport({ bottom: 0, height: 0 })).toBe(false);
+    expect(inlineBuyIsAboveViewport({ bottom: -1, height: 80 })).toBe(true);
 
     const { container } = renderBook(classics);
+    const panel = container.querySelector(".buyb") as HTMLElement;
     const bar = container.querySelector(".mbar") as HTMLElement;
     expect(bar.classList.contains("is-on")).toBe(false);
 
-    act(() => {
-      onIntersect?.(
-        [{ isIntersecting: false } as IntersectionObserverEntry],
-        {} as IntersectionObserver,
-      );
-    });
-    expect(bar.classList.contains("is-on")).toBe(true);
+    const rect = {
+      bottom: 900,
+      height: 80,
+      top: 820,
+      left: 0,
+      right: 100,
+      width: 100,
+      x: 0,
+      y: 820,
+      toJSON() {
+        return this;
+      },
+    };
+    vi.spyOn(panel, "getBoundingClientRect").mockReturnValue(rect as DOMRect);
 
     act(() => {
-      onIntersect?.(
-        [{ isIntersecting: true } as IntersectionObserverEntry],
-        {} as IntersectionObserver,
-      );
+      window.dispatchEvent(new Event("scroll"));
     });
     expect(bar.classList.contains("is-on")).toBe(false);
+
+    rect.bottom = -1;
+    rect.top = -81;
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
+    expect(bar.classList.contains("is-on")).toBe(true);
+    expect(bar).not.toHaveAttribute("aria-hidden");
+
+    rect.bottom = 2400;
+    rect.top = 2320;
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
+    expect(bar.classList.contains("is-on")).toBe(false);
+
+    rect.bottom = -40;
+    rect.top = -120;
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
+    expect(bar.classList.contains("is-on")).toBe(true);
   });
 
   it("falls back to a labelled typographic cover in production", () => {
@@ -247,6 +270,24 @@ describe("Product page", () => {
     );
     const frame = container.querySelector(".top .cover") as HTMLElement;
     expect(Number(frame.style.aspectRatio)).toBeCloseTo(8 / 10);
+  });
+
+  it("splits a title with no stored lines at the middle word break", () => {
+    const pups = MOCK_CATALOG.find(
+      (product) => product.subtitle === "Vacuum Pups",
+    )!;
+    const { container } = renderBook(pups);
+    const title = container.querySelector(".top .s-h1") as HTMLElement;
+    expect(title.querySelector(".one")).toHaveTextContent("Vacuum Pups");
+    expect(
+      [...title.querySelectorAll(".two span")].map((span) => span.textContent),
+    ).toEqual(["Vacuum", "Pups"]);
+    const main = container.querySelector("main") as HTMLElement;
+    expect(main.style.getPropertyValue("--book-em")).not.toBe("");
+    expect(main.style.getPropertyValue("--book-em-m")).not.toBe("");
+    expect(Number(main.style.getPropertyValue("--book-em-m"))).toBeLessThan(
+      Number(main.style.getPropertyValue("--book-em")),
+    );
   });
 
   it("shows the first sentence, then only the rest of the description", () => {

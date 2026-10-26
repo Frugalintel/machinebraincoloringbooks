@@ -2,26 +2,15 @@ import { FileText } from "lucide-react";
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-background text-cream font-sans">
-      <div className="bg-background border-b border-line py-12 relative overflow-hidden">
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="flex items-center gap-2 mb-4 text-primary font-mono uppercase tracking-widest text-xs">
-            <FileText size={14} />
-            <span>Legal</span>
-          </div>
-          <h1 className="font-display text-title text-cream mb-4">
-            Terms of Service
-          </h1>
-          <p className="font-mono text-sm text-fg-muted tracking-widest uppercase max-w-xl">
-            Rules and regulations for using our platform.
-          </p>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="max-w-2xl text-fg-muted leading-relaxed space-y-6">
-          <p>Content coming soon.</p>
-        </div>
+    <main className="shell-doc-main">
+      <p className="mono shell-kicker text-signal">
+        <FileText size={14} aria-hidden="true" />
+        <span>Legal</span>
+      </p>
+      <h1 className="shell-h font-display">Terms of Service</h1>
+      <p className="shell-sub">The terms for using Machine Brain.</p>
+      <div className="shell-body">
+        <p>Content coming soon.</p>
       </div>
     </main>
   );

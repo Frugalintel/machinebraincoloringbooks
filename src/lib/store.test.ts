@@ -14,6 +14,7 @@ import {
   displayEm,
   fittedEms,
   mobileTitleLines,
+  splitTitleAtMiddle,
   plateBackground,
   plateSentence,
   plateCode,
@@ -76,19 +77,30 @@ describe("store worlds and the ?world= filter", () => {
     expect(plateCode(8)).toBe("Pl. 01i");
   });
 
-  it("fits every plate title from the longest line, about the sample's 11.06vw", () => {
-    const deep = displayEm("Into the Deep Forest");
-    expect(deep).toBeCloseTo(20 * 0.5 + 19 * -0.06, 5);
+  it("fits every plate title from the longest line, inside the sample's vw band", () => {
     const fitted = fittedEms([
       { one: "The Far Station", lines: ["The Far", "Station"] },
       { one: "Into the Deep Forest", lines: ["Into the", "Deep Forest"] },
       { one: "The Wandering Keep", lines: ["The Wandering", "Keep"] },
     ]);
-    expect(fitted.desktop).toBeCloseTo(deep, 5);
+    expect(fitted.desktop).toBeCloseTo(displayEm("The Wandering Keep"), 5);
     expect(fitted.mobile).toBeCloseTo(displayEm("The Wandering"), 5);
-    const at1440 = ((1440 - 80) / deep / 1440) * 100;
+    const at1440 = ((1440 - 80) / fitted.desktop / 1440) * 100;
     expect(at1440).toBeGreaterThan(10);
     expect(at1440).toBeLessThan(12);
+  });
+
+  it("fits Vacuum Pups to the measured display width within 3%", () => {
+    // Redaction50-Bold.woff2, unitsPerEm 1000, default tracking −0.06em.
+    const measured = 6.1;
+    const em = displayEm("Vacuum Pups");
+    expect(Math.abs(em - measured) / measured).toBeLessThanOrEqual(0.03);
+    expect(splitTitleAtMiddle("Vacuum Pups")).toEqual(["Vacuum", "Pups"]);
+    expect(splitTitleAtMiddle("The Silver Citadel")).toEqual([
+      "The Silver",
+      "Citadel",
+    ]);
+    expect(splitTitleAtMiddle("Flora")).toBeUndefined();
   });
 
   it("builds the short spec from the fields that exist", () => {

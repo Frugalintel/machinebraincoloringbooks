@@ -80,6 +80,13 @@ describe("Help (A · Index)", () => {
     expect(document.getElementById("codes")).toBeVisible();
     expect(document.getElementById("codes")).not.toHaveAttribute("hidden");
 
+    const question = document.getElementById("where");
+    const toggle = within(question as HTMLElement).getByRole("button");
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(toggle).toHaveAttribute("aria-controls", "where-answer");
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+
     fireEvent.click(all);
     expect(all).toHaveAttribute("aria-pressed", "true");
     expect(document.getElementById("books")).toBeVisible();

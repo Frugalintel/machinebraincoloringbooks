@@ -15,7 +15,9 @@ export type FooterLinkGroup = {
 
 /**
  * "overlay": home and /auth draw the nav over their first plate and own their footer.
- * "solid": the same home nav on near-black; the store owns its footer too.
+ * "solid": the compact text nav on near-black. Customer routes use this.
+ * "full" remains in the union so the legacy header can still compile, and is
+ * not returned for customer routes.
  */
 export type HeaderVariant = "full" | "overlay" | "solid" | "minimal" | "hidden";
 
@@ -119,20 +121,51 @@ export function isStorePath(pathname: string): boolean {
 }
 
 /**
- * Pages that own the "Take your time." HomeFooter plate.
- * Keep this in lockstep with the layouts that render <HomeFooter />.
+ * Routes whose layout (or page) renders <HomeFooter />.
+ * A new page must be added here or to LEGACY_FOOTER_ROUTES.
+ * site-shell.test.ts fails until that happens.
+ */
+export const HOME_FOOTER_ROUTES = [
+  "/",
+  "/auth",
+  "/about",
+  "/help",
+  "/store",
+  "/stories",
+  "/collectibles",
+  "/scan",
+  "/trophy-room",
+  "/privacy",
+  "/terms",
+  "/licenses",
+  "/orders/lookup",
+  "/game",
+  "/achievements",
+  "/profile",
+] as const;
+
+/** Real pages that still render the legacy footer. /dev is internal. */
+export const LEGACY_FOOTER_ROUTES = ["/dev"] as const;
+
+function matchesRoute(pathname: string, route: string): boolean {
+  if (route === "/") return pathname === "/";
+  return pathname === route || pathname.startsWith(`${route}/`);
+}
+
+/**
+ * Pages that own the "Take your time." plate.
+ * Listed routes opt in. /dev keeps the legacy footer.
+ * Any other URL is the root 404, which also renders the plate.
  */
 export function usesHomeFooterPlate(pathname: string): boolean {
-  return (
-    pathname === "/" ||
-    pathname === "/auth" ||
-    isAboutPath(pathname) ||
-    isHelpPath(pathname) ||
-    isStorePath(pathname) ||
-    isStoriesPath(pathname) ||
-    isCollectiblesPath(pathname) ||
-    isScanPath(pathname)
-  );
+  if (isAdminPath(pathname) || isMinimalChromePath(pathname)) return false;
+  if (LEGACY_FOOTER_ROUTES.some((route) => matchesRoute(pathname, route))) {
+    return false;
+  }
+  if (HOME_FOOTER_ROUTES.some((route) => matchesRoute(pathname, route))) {
+    return true;
+  }
+  return true;
 }
 
 export function overlayLinksFor(pathname: string): readonly SiteLink[] {
@@ -174,19 +207,12 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   if (pathname === "/" || pathname === "/auth") {
     return "overlay";
   }
-  if (
-    isStorePath(pathname) ||
-    isStoriesPath(pathname) ||
-    isCollectiblesPath(pathname) ||
-    isScanPath(pathname)
-  ) {
-    return "solid";
-  }
-  return "full";
+  return "solid";
 }
 
 export function hidesCustomerFooter(pathname: string): boolean {
-  return usesHomeFooterPlate(pathname) || headerVariantFor(pathname) !== "full";
+  if (isAdminPath(pathname) || isMinimalChromePath(pathname)) return true;
+  return usesHomeFooterPlate(pathname);
 }
 
 export function cartLabel(count: number): string {
@@ -197,6 +223,8 @@ export function isNavLinkActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Visible focus ring for shell controls. Signal is the locked focus token. */
-export const SHELL_FOCUS =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal";
+/**
+ * Visible focus ring for shell controls.
+ * Cream on near-black. Light plates set --shell-focus to ink.
+ */
+export const SHELL_FOCUS = "shell-focus";

@@ -184,3 +184,11 @@ export function redactionTitleEm(text: string): number {
     REDACTION_FALLBACK,
   );
 }
+
+/**
+ * Display-face width in em. Advances are Redaction 50 Bold, measured from
+ * the file the page loads. `tracking` is the CSS letter-spacing.
+ */
+export function displayFaceEm(text: string, tracking: number): number {
+  return lineEm(text, REDACTION_ADVANCE, tracking, REDACTION_FALLBACK);
+}

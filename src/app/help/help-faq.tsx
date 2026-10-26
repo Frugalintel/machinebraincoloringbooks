@@ -8,7 +8,48 @@ import {
   isHelpChipId,
   type HelpChipId,
   type HelpInline,
+  type HelpQuestion,
 } from "@/lib/help";
+
+function HelpQuestionRow({ item }: { item: HelpQuestion }) {
+  const [open, setOpen] = useState(Boolean(item.open));
+  const panelId = `${item.id}-answer`;
+
+  return (
+    <div className="help-q" id={item.id} data-open={open ? "true" : "false"}>
+      <button
+        type="button"
+        className="help-qbtn"
+        id={`${item.id}-q`}
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span className="help-qt">{item.question}</span>
+        <i className="help-mark" aria-hidden="true" />
+      </button>
+      <div
+        className="help-panel"
+        id={panelId}
+        role="region"
+        aria-labelledby={`${item.id}-q`}
+      >
+        <div className="help-a-body" inert={open ? undefined : true}>
+          {item.answer.map((paragraph, index) => (
+            <p key={`${item.id}-${index}`}>
+              {paragraph.map((part, partIndex) => (
+                <InlinePart
+                  key={`${item.id}-${index}-${partIndex}`}
+                  part={part}
+                />
+              ))}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function InlinePart({ part }: { part: HelpInline }) {
   switch (part.type) {
@@ -85,29 +126,7 @@ export function HelpFaq() {
               </div>
               <div className="help-qs">
                 {group.questions.map((item) => (
-                  <details
-                    key={item.id}
-                    className="help-q"
-                    id={item.id}
-                    open={item.open}
-                  >
-                    <summary>
-                      <span className="help-qt">{item.question}</span>
-                      <i className="help-mark" aria-hidden="true" />
-                    </summary>
-                    <div className="help-a-body">
-                      {item.answer.map((paragraph, index) => (
-                        <p key={`${item.id}-${index}`}>
-                          {paragraph.map((part, partIndex) => (
-                            <InlinePart
-                              key={`${item.id}-${index}-${partIndex}`}
-                              part={part}
-                            />
-                          ))}
-                        </p>
-                      ))}
-                    </div>
-                  </details>
+                  <HelpQuestionRow key={item.id} item={item} />
                 ))}
               </div>
             </section>

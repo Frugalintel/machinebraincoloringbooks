@@ -101,9 +101,9 @@ export function CodeEntry({
         }
 
         setResult("success");
-        setResultMessage(`Story "${storyData.title}" Unlocked!`);
+        setResultMessage(`"${storyData.title}" is open.`);
         setCode("");
-        success(`Story "${storyData.title}" Unlocked!`);
+        success(`"${storyData.title}" is open.`);
 
         // Trigger refresh
         window.dispatchEvent(new Event("story-unlocked"));
@@ -155,7 +155,7 @@ export function CodeEntry({
               current_node_id: "start",
             },
           ]);
-          unlockMsg = "Story Unlocked!";
+          unlockMsg = "Story opened.";
           window.dispatchEvent(new Event("story-unlocked"));
         }
       } else if (codeData.unlocks_type === "collectible") {
@@ -170,7 +170,7 @@ export function CodeEntry({
               collectible_id: unlocked.slug,
             },
           ]);
-          unlockMsg = "New Collectible Unlocked!";
+          unlockMsg = "Added to your collection.";
         }
       } else if (codeData.unlocks_type === "achievement") {
         await supabase.from("user_achievements").insert([
@@ -179,7 +179,7 @@ export function CodeEntry({
             achievement_id: codeData.unlocks_id,
           },
         ]);
-        unlockMsg = "Achievement Unlocked!";
+        unlockMsg = "Trophy reached.";
       }
 
       setResult("success");

@@ -110,7 +110,12 @@ describe("Home (R-E2 p3 Art book)", () => {
     );
     expect(images.length).toBeGreaterThan(10);
     for (const img of images) {
-      expect(img.getAttribute("sizes"), img.getAttribute("src")!).toBeTruthy();
+      const src = img.getAttribute("src") ?? "";
+      if (src.includes("plate-line-cream")) {
+        expect(img.getAttribute("sizes"), src).toBeNull();
+        continue;
+      }
+      expect(img.getAttribute("sizes"), src).toBeTruthy();
     }
   });
 

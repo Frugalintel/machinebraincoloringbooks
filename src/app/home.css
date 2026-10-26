@@ -32,7 +32,12 @@
   outline-offset: 3px;
 }
 
-.home-e2 .page a:focus-visible {
+.home-e2 .page {
+  --shell-focus: var(--ink);
+}
+
+.home-e2 .page a:focus-visible,
+.home-e2 .page button:focus-visible {
   outline-color: var(--ink);
 }
 
@@ -948,6 +953,11 @@
   padding: 0 16px;
 }
 
+.home-e2 .news:focus-within {
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
+}
+
 .home-e2 .news input::placeholder {
   color: rgb(242 234 216 / 0.4);
 }
@@ -1397,5 +1407,115 @@
   .home-e2 .legal {
     flex-wrap: wrap;
     gap: 12px 20px;
+  }
+}
+
+/* Legal, lookup, trophy room, and the 404. Content sits on the site gutter. */
+.home-e2.shell-doc .shell-doc-main {
+  padding: 64px var(--m) 0;
+}
+
+.home-e2.shell-doc .shell-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.home-e2.shell-doc .shell-h {
+  margin: 0;
+  max-width: 18ch;
+  font-weight: 700;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  color: var(--cream);
+}
+
+.home-e2.shell-doc .shell-sub,
+.home-e2.shell-doc .shell-body,
+.home-e2.shell-doc .shell-note {
+  max-width: 40rem;
+  font: 400 17px/1.55 var(--sans);
+  color: var(--c2);
+}
+
+.home-e2.shell-doc .shell-sub {
+  margin: 16px 0 0;
+}
+
+.home-e2.shell-doc .shell-body {
+  margin-top: 40px;
+}
+
+.home-e2.shell-doc .shell-note {
+  margin: 24px 0 0;
+}
+
+.home-e2.shell-doc .shell-note a {
+  color: var(--cream);
+}
+
+.home-e2.shell-doc .shell-form {
+  display: grid;
+  gap: 20px;
+  max-width: 28rem;
+  margin-top: 32px;
+}
+
+.home-e2.shell-doc .shell-form label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.home-e2.shell-doc .shell-field {
+  display: block;
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--c4);
+  border-radius: 0;
+  background: transparent;
+  color: var(--cream);
+  font: 400 16px/1.4 var(--sans);
+}
+
+.home-e2.shell-doc .shell-field::placeholder {
+  color: rgb(242 234 216 / 0.62);
+}
+
+.home-e2.shell-doc .shell-field:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
+}
+
+.home-e2.shell-doc .shell-form .btn {
+  justify-content: center;
+}
+
+.home-e2.shell-doc .ft {
+  margin-top: 128px;
+}
+
+.home-e2.shell-doc main {
+  min-height: 0;
+}
+
+.home-e2.shell-doc .container {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding-left: var(--m);
+  padding-right: var(--m);
+}
+
+.home-e2.shell-doc main > .container {
+  flex: 0 0 auto;
+  justify-content: flex-start;
+}
+
+@media (max-width: 760px) {
+  .home-e2.shell-doc .ft {
+    margin-top: 96px;
   }
 }

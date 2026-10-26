@@ -27,8 +27,8 @@
 .help-a a:focus-visible,
 .help-a button:focus-visible,
 .help-a summary:focus-visible {
-  outline: 2px solid var(--signal);
-  outline-offset: 4px;
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
 }
 
 .help-a .quiet {
@@ -347,18 +347,20 @@
   border-top: 0;
 }
 
-.help-q summary {
+.help-qbtn {
   list-style: none;
   display: flex;
   justify-content: space-between;
   gap: 24px;
   align-items: center;
+  width: 100%;
   padding: 20px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
-}
-
-.help-q summary::-webkit-details-marker {
-  display: none;
 }
 
 .help-qt {
@@ -390,11 +392,27 @@
   transform: rotate(90deg);
 }
 
-.help-q[open] .help-mark::after {
+.help-q[data-open="true"] .help-mark::after {
   transform: none;
 }
 
+.help-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 200ms ease-out,
+    opacity 200ms ease-out;
+}
+
+.help-q[data-open="true"] .help-panel {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
 .help-a-body {
+  min-height: 0;
+  overflow: hidden;
   padding: 0 0 26px;
   max-width: 60ch;
 }
@@ -573,7 +591,8 @@ html:has(.help-a) {
 
 @media (prefers-reduced-motion: reduce) {
   .help-a,
-  .help-a * {
+  .help-a *,
+  .help-a .help-panel {
     scroll-behavior: auto !important;
     transition: none !important;
   }

@@ -22,7 +22,7 @@ vi.mock("next/navigation", () => ({
 
 describe("Footer", () => {
   beforeEach(() => {
-    nav.pathname = "/privacy";
+    nav.pathname = "/dev";
   });
 
   it("renders grouped links, legal, and the F3 lockup", () => {
@@ -73,17 +73,28 @@ describe("Footer", () => {
     }
   });
 
-  it("stays visible on privacy and other full-chrome legal pages", () => {
-    for (const path of ["/privacy", "/terms", "/licenses", "/trophy-room"]) {
+  it("hides on the routes that own the home plate, including the 404", () => {
+    for (const path of [
+      "/privacy",
+      "/terms",
+      "/licenses",
+      "/trophy-room",
+      "/orders/lookup",
+      "/zz-not-a-page",
+      "/about",
+      "/help",
+      "/game",
+      "/achievements",
+      "/profile/me",
+    ]) {
       nav.pathname = path;
-      const { getByText, unmount } = render(<Footer />);
-      expect(getByText("Coloring books with secrets.")).toBeInTheDocument();
-      expect(getByText(/Est\. 2025/)).toBeInTheDocument();
+      const { container, unmount } = render(<Footer />);
+      expect(container).toBeEmptyDOMElement();
       unmount();
     }
   });
 
-  it("does not leak the customer footer after a client-side move to /help, then shows it on /privacy", () => {
+  it("keeps the legacy footer on /dev without the retired lines", () => {
     nav.pathname = "/about";
     const { container, rerender, unmount } = render(<Footer />);
     expect(container).toBeEmptyDOMElement();
@@ -92,10 +103,11 @@ describe("Footer", () => {
     rerender(<Footer />);
     expect(container).toBeEmptyDOMElement();
 
-    nav.pathname = "/privacy";
+    nav.pathname = "/dev";
     rerender(<Footer />);
     expect(container.querySelector("footer.site-footer")).not.toBeNull();
-    expect(container.textContent).toMatch(/Coloring books with secrets/);
+    expect(container.textContent).not.toMatch(/Coloring books with secrets/);
+    expect(container.textContent).not.toMatch(/Est\. 2025/);
     unmount();
   });
 

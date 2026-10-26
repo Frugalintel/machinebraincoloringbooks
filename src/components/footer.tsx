@@ -40,12 +40,6 @@ export function Footer() {
               className="mb-4"
               wordmarkClassName="text-[16px] md:text-[18px]"
             />
-            <p className="max-w-[220px] text-sm font-normal leading-relaxed text-fg-secondary">
-              Coloring books with secrets.
-            </p>
-            <p className="font-label mt-3 text-signal tracking-[0.1em]">
-              Est. 2025
-            </p>
           </div>
         </div>
 

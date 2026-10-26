@@ -20,7 +20,7 @@ export function HomeFooter({ samples }: { samples: boolean }) {
           width={HOME_ART.lineCream.width}
           height={HOME_ART.lineCream.height}
           alt=""
-          sizes="(max-width: 760px) 150vw, 72vw"
+          unoptimized
         />
         <p className="say">
           {HOME_FOOTER_COPY.lines.map((line) => (

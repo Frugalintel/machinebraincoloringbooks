@@ -1,171 +1,75 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Package, Truck, CheckCircle, AlertCircle } from "lucide-react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import Link from "next/link";
 
 export default function OrderLookupPage() {
-  const [orderId, setOrderId] = useState("");
+  const [orderNumber, setOrderNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
+  const [submitted, setSubmitted] = useState(false);
+  const noteRef = useRef<HTMLDivElement>(null);
 
-  const handleLookup = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus("loading");
+  useEffect(() => {
+    if (submitted) noteRef.current?.focus();
+  }, [submitted]);
 
-    // Mock Lookup
-    setTimeout(() => {
-      if (orderId.toLowerCase().includes("err")) {
-        setStatus("error");
-      } else {
-        setStatus("success");
-      }
-    }, 1500);
+  const handleLookup = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitted(true);
   };
 
   return (
-    <main className="min-h-screen bg-background text-cream font-sans">
-      <div className="container mx-auto px-4 md:px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-10">
-            <h1 className="font-display text-title mb-4">Order Tracking</h1>
-            <p className="text-fg-muted font-mono text-xs uppercase tracking-widest">
-              Enter your order details to check the status.
-            </p>
-          </div>
-
-          <div className="bg-background border border-line p-8 relative overflow-hidden shadow-2xl">
-            {/* Top Accent */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent"></div>
-
-            {status === "success" ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
-              >
-                <div className="flex items-center gap-3 text-success mb-4">
-                  <CheckCircle size={20} />
-                  <span className="font-mono text-sm uppercase tracking-widest">
-                    Order Found
-                  </span>
-                </div>
-
-                <div className="space-y-4 border-b border-line pb-6">
-                  <div className="flex justify-between items-center">
-                    <span className="text-fg-muted text-xs font-mono uppercase">
-                      Order ID
-                    </span>
-                    <span className="text-cream font-heading tracking-wide">
-                      {orderId || "#ORD-8829"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-fg-muted text-xs font-mono uppercase">
-                      Status
-                    </span>
-                    <span className="bg-cream/10 text-primary border border-primary/30 px-2 py-1 font-label uppercase tracking-widest flex items-center gap-2">
-                      <Truck size={10} /> In Transit
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-fg-muted text-xs font-mono uppercase">
-                      Est. Delivery
-                    </span>
-                    <span className="text-cream font-sans">Nov 24, 2025</span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center gap-4">
-                    <div className="w-2 h-2 bg-success rounded-full"></div>
-                    <div className="flex-1">
-                      <p className="text-cream text-sm">Processing Complete</p>
-                      <p className="text-fg-faint text-xs font-mono">Hub 04</p>
-                    </div>
-                    <span className="text-fg-faint text-xs font-mono">
-                      10:00 AM
-                    </span>
-                  </div>
-                  <div className="w-0.5 h-6 bg-surface-3 ml-1"></div>
-                  <div className="flex items-center gap-4">
-                    <div className="w-2 h-2 bg-cream rounded-full animate-pulse"></div>
-                    <div className="flex-1">
-                      <p className="text-cream text-sm">Out for Delivery</p>
-                      <p className="text-fg-faint text-xs font-mono">
-                        Local Courier
-                      </p>
-                    </div>
-                    <span className="text-fg-faint text-xs font-mono">Now</span>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={() => setStatus("idle")}
-                  variant="outline"
-                  className="w-full border-line hover:border-cream hover:text-cream text-fg-muted font-heading tracking-widest h-12 rounded-none mt-4"
-                >
-                  Track Another
-                </Button>
-              </motion.div>
-            ) : (
-              <motion.form
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                onSubmit={handleLookup}
-                className="space-y-6"
-              >
-                <div className="space-y-2">
-                  <label className=" uppercase tracking-widest text-fg-muted font-label flex items-center gap-2">
-                    <Package size={12} /> Order ID
-                  </label>
-                  <Input
-                    value={orderId}
-                    onChange={(e) => setOrderId(e.target.value)}
-                    className="bg-background border-line text-cream font-mono text-base md:text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-fg-muted"
-                    placeholder="ORD-XXXX-XXXX"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className=" uppercase tracking-widest text-fg-muted font-label flex items-center gap-2">
-                    <Search size={12} /> Email Address
-                  </label>
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-background border-line text-cream font-mono text-base md:text-sm h-12 rounded-none focus:border-primary focus:ring-0 placeholder:text-fg-muted"
-                    placeholder="billing@email.com"
-                    required
-                  />
-                </div>
-
-                {status === "error" && (
-                  <div className="p-3 bg-danger-wash border border-danger/50 flex items-center gap-3 text-xs text-danger font-mono">
-                    <AlertCircle size={14} />
-                    <span>Order not found. Check ID and try again.</span>
-                  </div>
-                )}
-
-                <Button
-                  type="submit"
-                  disabled={status === "loading"}
-                  className="w-full h-12 bg-cream text-ink hover:bg-cream/80 font-heading text-xl tracking-[0.2em] rounded-none transition-all group"
-                >
-                  {status === "loading"
-                    ? "Searching Database..."
-                    : "Track Order"}
-                </Button>
-              </motion.form>
-            )}
-          </div>
+    <main className="shell-doc-main">
+      <p className="mono shell-kicker text-signal">Orders</p>
+      <h1 className="shell-h font-display">Order tracking.</h1>
+      {submitted ? (
+        <div ref={noteRef} className="shell-note" role="status" tabIndex={-1}>
+          <p>
+            Tracking isn&apos;t live yet. Your confirmation email has your order
+            details.
+          </p>
+          <p>
+            <Link href="/help#orders">Orders and shipping</Link>
+          </p>
         </div>
-      </div>
+      ) : (
+        <form className="shell-form" onSubmit={handleLookup}>
+          <div>
+            <label className="mono" htmlFor="order-number">
+              Order number
+            </label>
+            <input
+              id="order-number"
+              name="order"
+              className="shell-field"
+              value={orderNumber}
+              onChange={(event) => setOrderNumber(event.target.value)}
+              placeholder="Order number"
+              autoComplete="off"
+              required
+            />
+          </div>
+          <div>
+            <label className="mono" htmlFor="order-email">
+              Email
+            </label>
+            <input
+              id="order-email"
+              name="email"
+              type="email"
+              className="shell-field"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="Email"
+              autoComplete="email"
+              required
+            />
+          </div>
+          <button type="submit" className="btn">
+            Look up
+          </button>
+        </form>
+      )}
     </main>
   );
 }

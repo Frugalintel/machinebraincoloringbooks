@@ -21,6 +21,7 @@ import {
   displayEm,
   linesOf,
   mobileTitleLines,
+  splitTitleAtMiddle,
   plateBackground,
   plateCode,
   plateSentence,
@@ -44,6 +45,15 @@ const UNLOCKS = [
   { figure: "1", unit: "pt", hidden: "1 pt", copy: PRODUCT_COPY.code },
   { figure: "2", unit: "pts", hidden: "2 pts", copy: PRODUCT_COPY.scan },
 ] as const;
+
+/** True once the inline buy box sits fully above the viewport, including a jump. */
+export function inlineBuyIsAboveViewport(rect: {
+  bottom: number;
+  height: number;
+}): boolean {
+  if (rect.height <= 0) return false;
+  return rect.bottom <= 0;
+}
 
 interface ProductClientProps {
   product: Product;
@@ -159,12 +169,17 @@ export function ProductClient({
 
   useEffect(() => {
     const panel = buyPanel.current;
-    if (!panel || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(([entry]) => {
-      setBuyAway(!entry.isIntersecting);
-    });
-    observer.observe(panel);
-    return () => observer.disconnect();
+    if (!panel) return;
+    const update = () => {
+      setBuyAway(inlineBuyIsAboveViewport(panel.getBoundingClientRect()));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, []);
 
   useEffect(() => {
@@ -194,12 +209,14 @@ export function ProductClient({
   const cover = coverFor(product, samples);
   const background = plateBackground(product, samples);
   const sampleArt = cover.kind === "art" && cover.art.sample;
-  const lines = mobileTitleLines(linesOf(product));
-  const longest = lines
-    ? lines.reduce((widest, line) =>
-        displayEm(line, -0.01) > displayEm(widest, -0.01) ? line : widest,
-      )
-    : name;
+  const storedLines = mobileTitleLines(linesOf(product));
+  const mobileLines = storedLines ?? splitTitleAtMiddle(name);
+  const widestLine = (candidates: readonly string[]) =>
+    candidates.reduce((widest, line) =>
+      displayEm(line, -0.01) > displayEm(widest, -0.01) ? line : widest,
+    );
+  const desktopLines = storedLines ?? [name];
+  const fittedMobile = mobileLines ?? [name];
   const sentence = plateSentence(product.description);
   const description = product.description?.replace(/\s+/g, " ").trim();
   const rest =
@@ -236,7 +253,12 @@ export function ProductClient({
     <>
       <main
         id="main"
-        style={{ "--book-em": displayEm(longest, -0.01) } as CSSProperties}
+        style={
+          {
+            "--book-em": displayEm(widestLine(desktopLines), -0.01),
+            "--book-em-m": displayEm(widestLine(fittedMobile), -0.01),
+          } as CSSProperties
+        }
       >
         <section className="plate top" aria-labelledby="h">
           {background ? (
@@ -272,13 +294,21 @@ export function ProductClient({
               <span aria-hidden="true">← </span>
               {PRODUCT_COPY.allBooks}
             </Link>
-            <h1 id="h" className="s-h1 font-display">
-              {lines ? (
-                lines.map((line, lineIndex) => (
+            <h1 id="h" className="s-h1 font-display" aria-label={name}>
+              {storedLines ? (
+                storedLines.map((line, lineIndex) => (
                   <span key={`${lineIndex}-${line}`}>{line}</span>
                 ))
               ) : (
-                <span>{name}</span>
+                <>
+                  <span className="one">{name}</span>
+                  {mobileLines ? (
+                    <span className="two">
+                      <span>{mobileLines[0]}</span>
+                      <span>{mobileLines[1]}</span>
+                    </span>
+                  ) : null}
+                </>
               )}
             </h1>
             {sentence ? <p className="sub">{sentence}</p> : null}
@@ -440,6 +470,8 @@ export function ProductClient({
       <div
         className={buyAway ? "mbar is-on" : "mbar"}
         aria-label={PRODUCT_COPY.buyShort}
+        aria-hidden={buyAway ? undefined : true}
+        inert={buyAway ? undefined : true}
       >
         <BuyPrice
           priceInfo={priceInfo}
