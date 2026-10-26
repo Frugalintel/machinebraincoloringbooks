@@ -1,10 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { BrandLockup, Mark } from "@/components/mark";
 import { Button } from "@/components/ui/button";
+import { useOptionalAuth } from "@/context/auth-context";
 import {
   SYSTEM_STATE_ACTIONS,
   SYSTEM_STATE_MARK_SIZE_PX,
   systemStateCopy,
+  type SystemStateAction,
   type SystemStateKind,
 } from "@/lib/system-state";
 import { cn } from "@/lib/utils";
@@ -32,6 +36,21 @@ function SystemMark({ standalone }: { standalone: boolean }) {
   return <Mark size={SYSTEM_STATE_MARK_SIZE_PX} ink="cream" decorative />;
 }
 
+function systemActions(
+  signedIn: boolean,
+  loading: boolean,
+): readonly SystemStateAction[] {
+  if (loading) {
+    return SYSTEM_STATE_ACTIONS.filter((action) => action.name !== "Sign in");
+  }
+  if (!signedIn) return SYSTEM_STATE_ACTIONS;
+  return SYSTEM_STATE_ACTIONS.map((action) =>
+    action.name === "Sign in"
+      ? { ...action, name: "Account", href: "/profile/me" }
+      : action,
+  );
+}
+
 export function SystemState({
   kind,
   reset,
@@ -39,6 +58,8 @@ export function SystemState({
   className,
 }: SystemStateProps) {
   const copy = systemStateCopy(kind);
+  const { user, isLoading } = useOptionalAuth();
+  const actions = systemActions(Boolean(user), isLoading);
 
   return (
     <main
@@ -67,7 +88,7 @@ export function SystemState({
                 Try again
               </Button>
             ) : null}
-            {SYSTEM_STATE_ACTIONS.map((action) => {
+            {actions.map((action) => {
               const variant =
                 kind === "error" && action.variant === "primary"
                   ? "secondary"
@@ -83,6 +104,14 @@ export function SystemState({
                 </Button>
               );
             })}
+            {isLoading ? (
+              <span
+                className="invisible inline-flex min-h-11 items-center px-4"
+                aria-hidden="true"
+              >
+                Sign in
+              </span>
+            ) : null}
           </div>
         </div>
       </div>

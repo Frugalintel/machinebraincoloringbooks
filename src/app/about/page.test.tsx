@@ -1,10 +1,18 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AboutLayout from "@/app/about/layout";
 import AboutPage from "@/app/about/page";
 import { SAMPLE_BOOKS } from "@/lib/home";
 
 describe("About (A · Spread)", () => {
+  beforeEach(() => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("renders the locked H1, marks the studio placeholder, and links to codes", () => {
     const { container } = render(<AboutPage />);
 
@@ -27,6 +35,18 @@ describe("About (A · Spread)", () => {
 
     expect(container.textContent).not.toMatch(/\bwe\b/i);
     expect(container.textContent).not.toMatch(/!/);
+  });
+
+  it("hides the studio placeholder when the sample gate is off", () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    render(<AboutPage />);
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: /Drawn in line/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/placeholder/i)).toBeNull();
+    expect(screen.queryByText(/who makes the books, and where/i)).toBeNull();
+    expect(document.querySelector(".spread-studio")).toBeNull();
   });
 
   it("reuses the sample books and keeps them labelled as sample", () => {

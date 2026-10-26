@@ -103,7 +103,7 @@ export function Footer() {
             <Link
               href="/terms"
               className={cn(
-                "font-medium text-fg-muted hover:text-cream",
+                "hit-44 font-medium text-fg-muted hover:text-cream",
                 SHELL_FOCUS,
               )}
             >
@@ -112,7 +112,7 @@ export function Footer() {
             <Link
               href="/privacy"
               className={cn(
-                "font-medium text-fg-muted hover:text-cream",
+                "hit-44 font-medium text-fg-muted hover:text-cream",
                 SHELL_FOCUS,
               )}
             >
@@ -124,7 +124,7 @@ export function Footer() {
             type="button"
             onClick={scrollToTop}
             className={cn(
-              "inline-flex items-center gap-2 text-sm font-medium text-fg-muted hover:text-cream",
+              "hit-44 inline-flex items-center gap-2 text-sm font-medium text-fg-muted hover:text-cream",
               SHELL_FOCUS,
             )}
           >

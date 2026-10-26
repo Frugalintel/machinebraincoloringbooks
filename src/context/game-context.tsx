@@ -192,7 +192,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [userBooks, setUserBooks] = useState<UserBook[]>([]);
 
   // === GENERAL STATE ===
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // ============================================================================
   // COMPUTED VALUES
@@ -353,6 +353,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       setStoryProgress({});
       setTotalXP(0);
       setUserBooks([]);
+      setIsLoading(false);
       return;
     }
 

@@ -1683,3 +1683,9 @@
     scroll-padding-bottom: calc(80px + env(safe-area-inset-bottom));
   }
 }
+
+@media (max-width: 760px) {
+  .store-e2 .s-list {
+    min-height: 0;
+  }
+}

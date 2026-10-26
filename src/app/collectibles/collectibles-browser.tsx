@@ -9,6 +9,7 @@ import { SetCase } from "@/components/collectibles/set-case";
 import { SetProgressBar } from "@/components/collectibles/set-progress";
 import { useAuth } from "@/context/auth-context";
 import type { HeroModel } from "@/lib/collectibles-view";
+import { pageH1Style } from "@/lib/h1-fit";
 import { useVitrine } from "./use-collectibles-reader";
 
 function HeroCaption({ hero }: { hero: HeroModel }) {
@@ -99,7 +100,10 @@ export function CollectiblesBrowser({
   const { openAuthModal, isLoading } = useAuth();
   const view = useVitrine(allowFixture);
   const authPending = isLoading;
-  const titleStyle = { "--em": view.titleEm } as CSSProperties;
+  const titleStyle = {
+    ...pageH1Style([view.title]),
+    "--em": view.titleEm,
+  } as CSSProperties;
 
   return (
     <main id="main">

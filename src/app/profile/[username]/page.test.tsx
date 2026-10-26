@@ -25,12 +25,18 @@ vi.mock("@/context/auth-context", () => ({
   useAuth: () => auth,
 }));
 
+const game = vi.hoisted(() => ({
+  isLoading: false,
+  activeAchievementIds: [] as string[],
+}));
+
 vi.mock("@/context/game-context", () => ({
   useGame: () => ({
     collectionSets: [],
     achievements: [],
-    activeAchievementIds: [],
+    activeAchievementIds: game.activeAchievementIds,
     collectibleTimestamps: {},
+    isLoading: game.isLoading,
   }),
 }));
 
@@ -80,6 +86,21 @@ describe("ProfilePage auth resolution", () => {
   beforeEach(() => {
     auth.isLoading = true;
     auth.user = null;
+    game.isLoading = false;
+    game.activeAchievementIds = [];
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: (query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: () => undefined,
+        removeListener: () => undefined,
+        addEventListener: () => undefined,
+        removeEventListener: () => undefined,
+        dispatchEvent: () => false,
+      }),
+    });
   });
 
   it("shows Loading profile until the session resolves", () => {
@@ -98,6 +119,18 @@ describe("ProfilePage auth resolution", () => {
     expect(screen.getByText("Loading profile")).toBeInTheDocument();
     expect(screen.queryByText("GUEST")).toBeNull();
     expect(screen.queryByText("Access Restricted")).toBeNull();
+  });
+
+  it("holds plate and loadout counts until the ledger and game data resolve", () => {
+    auth.isLoading = false;
+    auth.user = { email: "ada@example.com", id: "user-1", initials: "AD" };
+    game.isLoading = true;
+    render(<ProfilePage />);
+    expect(
+      screen.getByRole("button", { name: /Manage Loadout \(—\/5\)/ }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("0/5")).toBeNull();
+    expect(screen.getAllByText("—").length).toBeGreaterThanOrEqual(3);
   });
 
   it("shows the signed-in profile once the session exists", async () => {

@@ -72,9 +72,12 @@ describe("scan ledger copy", () => {
     expect(plateScanCaption("pending", "05")).toBe("Plate 05 · code + photo");
     expect(plateScanCaption("verified", "06")).toBe("Plate 06 · code + photo");
     expect(plateScanCaption("pending", "07")).toBe("Plate 07 · code + photo");
-    expect(plateScanCaption("pending", null)).toBe(
-      scanChrome("pending").caption,
-    );
+    expect(plateScanCaption("pending", null)).toBe("Code + photo");
+    expect(plateScanCaption("pending", null)).not.toMatch(/Plate 07/);
+    expect(plateScanCaption("code-added", null)).toBe("Code");
+    expect(plateScanCaption("verified", "01")).toBe("Plate 01 · code + photo");
+    expect(plateScanCaption("photo", null)).toBe("Camera");
+    expect(scanChrome("photo").caption).toBe("Camera");
   });
 
   it("points a signed-out reader at /auth without promising a count", () => {

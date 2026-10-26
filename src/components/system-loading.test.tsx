@@ -8,6 +8,8 @@ describe("SystemLoading", () => {
 
     expect(screen.getByText("Loading")).toHaveClass("font-label");
     expect(screen.getByRole("status")).toHaveAttribute("aria-live", "polite");
+    expect(container.querySelector("main")).toBeNull();
+    expect(container.querySelectorAll('[role="status"]')).toHaveLength(1);
     expect(container.querySelector(".animate-spin")).toBeNull();
     expect(container.querySelector("[class*='glow']")).toBeNull();
     expect(container.innerHTML).not.toMatch(/bg-primary|bg-signal/);

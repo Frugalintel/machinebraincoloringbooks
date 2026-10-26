@@ -417,7 +417,10 @@
   bottom: 166px;
   margin: 0;
   color: var(--ink);
-  font-size: 20.9vw;
+  font-size: min(
+    20.9vw,
+    calc((100vw - 2 * var(--m, 40px)) / var(--codes-em, 8))
+  );
   line-height: 0.8;
   letter-spacing: -0.06em;
 }
@@ -949,6 +952,14 @@
 .home-e2 .cols a,
 .home-e2 .legal a {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -7px;
+}
+
+.home-e2 .legal a {
+  margin-block: -12px;
 }
 
 .home-e2 .cols a::after,
@@ -958,7 +969,7 @@
   left: 50%;
   top: 50%;
   width: max(100%, 44px);
-  height: 44px;
+  height: max(100%, 44px);
   transform: translate(-50%, -50%);
 }
 
@@ -1189,7 +1200,10 @@
   }
 
   .home-e2 .codes .line {
-    font-size: 19.4vw;
+    font-size: min(
+      19.4vw,
+      calc((100vw - 2 * var(--m, 20px)) / var(--codes-em, 8))
+    );
     bottom: 196px;
     letter-spacing: -0.055em;
   }

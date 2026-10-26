@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import { Button } from "@/components/ui/button";
-import { cartLineTitle } from "@/lib/cart-line";
+import { cartLineTitle, cartUnitCount, cartUnitLabel } from "@/lib/cart-line";
 import { toSentenceCase } from "@/lib/display-text";
 import { bookName } from "@/lib/store";
 import { supabase } from "@/lib/supabase";
@@ -108,7 +108,7 @@ export function CartDrawer() {
                 <div className="flex items-center gap-2 mt-2">
                   <div className="w-1.5 h-1.5 bg-cream animate-pulse"></div>
                   <p className=" text-fg-muted font-label tracking-widest uppercase">
-                    {items.length} items
+                    {cartUnitLabel(cartUnitCount(items))}
                   </p>
                 </div>
               </div>
@@ -116,7 +116,7 @@ export function CartDrawer() {
                 type="button"
                 aria-label="Close cart"
                 onClick={() => setIsCartOpen(false)}
-                className="group relative inline-flex h-11 w-11 items-center justify-center p-2 text-fg-muted hover:text-cream transition-colors"
+                className="hit-44 group relative inline-flex h-11 w-11 items-center justify-center p-2 text-fg-muted hover:text-cream transition-colors"
               >
                 <div className="absolute inset-0 border border-transparent group-hover:border-line transition-colors rotate-45 group-hover:rotate-0 duration-300"></div>
                 <X size={24} className="relative z-10" />
@@ -124,7 +124,7 @@ export function CartDrawer() {
             </div>
 
             {/* Items List */}
-            <div className="relative z-10 flex-1 overflow-y-auto p-6 scrollbar-hide overscroll-contain">
+            <div className="cart-scroll relative z-10 flex-1 overflow-y-auto p-6 overscroll-contain">
               <div className="space-y-4 mb-8">
                 {items.length === 0 ? (
                   <div className="h-40 flex flex-col items-center justify-center text-center opacity-60">
@@ -174,7 +174,7 @@ export function CartDrawer() {
                                   type="button"
                                   aria-label={`Remove ${lineTitle}`}
                                   onClick={() => removeItem(item.id)}
-                                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-fg-faint hover:bg-surface-2 hover:text-danger transition-colors rounded-sm"
+                                  className="hit-44 inline-flex h-11 w-11 shrink-0 items-center justify-center text-fg-faint hover:bg-surface-2 hover:text-danger transition-colors rounded-sm"
                                 >
                                   <Trash2 size={16} />
                                 </button>

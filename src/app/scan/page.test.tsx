@@ -47,6 +47,16 @@ describe("/scan entry from the home code form", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Page code")).toBeInTheDocument();
     expect(screen.queryByLabelText("Code by the page number")).toBeNull();
+    expect(screen.getAllByText(/Camera off/)).toHaveLength(1);
+  });
+
+  it("asks for a code when Enter is pressed on an empty field", () => {
+    render(<ScanPage />);
+    const input = screen.getByLabelText("Page code");
+    const form = input.closest("form");
+    if (!form) throw new Error("page code form missing");
+    fireEvent.submit(form);
+    expect(screen.getByText("Type a code first.")).toBeInTheDocument();
   });
 
   it("opens manual entry with the code trimmed and upper-cased", () => {

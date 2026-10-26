@@ -46,8 +46,10 @@ export default function ProfilePage() {
     achievements,
     activeAchievementIds,
     collectibleTimestamps,
+    isLoading: gameLoading,
   } = useGame();
   const [ledger, setLedger] = useState<ScanLedgerSnapshot | null>(null);
+  const [loadedFor, setLoadedFor] = useState<string | null>(null);
 
   const leavingForHome = useRef(false);
   useEffect(() => {
@@ -55,14 +57,20 @@ export default function ProfilePage() {
   }, [signingOut]);
 
   useEffect(() => {
-    if (!user?.id) {
-      setLedger(null);
-      return;
-    }
+    const userId = user?.id;
+    if (!userId) return;
     let cancelled = false;
-    void loadLedger(supabase, user.id).then((next) => {
-      if (!cancelled) setLedger(next);
-    });
+    void loadLedger(supabase, userId)
+      .then((next) => {
+        if (cancelled) return;
+        setLedger(next);
+        setLoadedFor(userId);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setLedger(null);
+        setLoadedFor(userId);
+      });
     return () => {
       cancelled = true;
     };
@@ -105,7 +113,11 @@ export default function ProfilePage() {
   const displayedAchievements = achievements.filter((ach) =>
     activeAchievementIds.includes(ach.id),
   );
+  const statsReady =
+    loadedFor === (user?.id ?? null) && loadedFor !== null && !gameLoading;
   const ledgerProgress = profileProgressFromLedger(ledger);
+  const statValue = (value: number) => (statsReady ? String(value) : "—");
+  const loadoutCount = statsReady ? `${activeAchievementIds.length}/5` : "—/5";
 
   return (
     <main id="main" className="min-h-screen bg-background text-cream font-sans">
@@ -175,10 +187,13 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <div className="flex gap-8 mb-6 text-center border-l border-line pl-8 hidden md:flex">
+          <div
+            className="flex gap-8 mb-6 text-center border-l border-line pl-8 hidden md:flex"
+            aria-busy={statsReady ? undefined : true}
+          >
             <div>
               <p className="font-heading text-3xl font-bold text-cream">
-                {ledgerProgress.plateCount}
+                {statValue(ledgerProgress.plateCount)}
               </p>
               <p className=" text-fg-muted tracking-widest uppercase font-label">
                 Plates
@@ -186,7 +201,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="font-heading text-3xl font-bold text-cream">
-                {ledgerProgress.bookCount}
+                {statValue(ledgerProgress.bookCount)}
               </p>
               <p className=" text-fg-muted tracking-widest uppercase font-label">
                 Books
@@ -194,7 +209,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="font-heading text-3xl font-bold text-cream">
-                {ledgerProgress.pendingCount}
+                {statValue(ledgerProgress.pendingCount)}
               </p>
               <p className=" text-fg-muted tracking-widest uppercase font-label">
                 Pending
@@ -208,17 +223,17 @@ export default function ProfilePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24">
             {/* Achievements Section */}
             <div className="space-y-8">
-              <div className="flex items-center justify-between border-b border-line pb-4">
-                <h2 className="font-heading text-2xl text-cream tracking-wide flex items-center gap-3">
+              <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+                <h2 className="font-heading text-2xl text-cream tracking-wide flex min-w-0 items-center gap-3">
                   <Trophy className="text-primary" /> Active Missions
                 </h2>
-                <Link href="/achievements">
+                <Link href="/achievements" className="max-w-full min-w-0">
                   <Button
                     variant="ghost"
-                    className="h-8 font-label uppercase tracking-widest hover:text-primary hover:bg-transparent"
+                    className="h-auto max-w-full min-w-0 shrink whitespace-normal py-2 font-label uppercase tracking-widest hover:text-primary hover:bg-transparent"
                   >
-                    Manage Loadout ({activeAchievementIds.length}/5){" "}
-                    <Settings size={12} className="ml-2" />
+                    Manage Loadout ({loadoutCount}){" "}
+                    <Settings size={12} className="ml-2 shrink-0" />
                   </Button>
                 </Link>
               </div>

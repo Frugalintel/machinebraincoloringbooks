@@ -148,7 +148,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
       <nav
         aria-label="Primary"
         className={cn(
-          "flex items-center justify-between",
+          "flex items-center justify-between gap-3",
           solid
             ? "h-16 px-10 max-[760px]:px-5"
             : "absolute inset-x-0 top-full px-10 py-[18px] max-[760px]:px-5 max-[760px]:py-[10px]",
@@ -160,7 +160,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
           markSize={24}
           ink="cream"
           className={cn("hit-44 !shrink-0 [&>span]:!gap-3", SHELL_FOCUS)}
-          wordmarkClassName="text-[11px] tracking-[0.1em]"
+          wordmarkClassName="text-[11px] tracking-[0.1em] max-[379px]:hidden"
         />
         <div
           data-header-cluster={cartCount > 0 ? "filled" : "empty"}
@@ -247,6 +247,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
         accountCue={account.cue}
         accountPending={account.pending}
         links={links}
+        cartCount={cartCount}
         onCart={() => setIsCartOpen(true)}
       />
     </header>
@@ -385,6 +386,7 @@ function FullHeader() {
         accountLinks={account.links}
         accountCue={account.cue}
         accountPending={account.pending}
+        cartCount={cartCount}
         onCart={() => setIsCartOpen(true)}
       />
     </header>

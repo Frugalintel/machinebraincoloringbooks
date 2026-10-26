@@ -453,10 +453,13 @@ export function useAuth() {
 }
 
 /** Footers still render in page tests that do not wrap AuthProvider. */
-export function useOptionalAuth(): Pick<AuthContextType, "user" | "signOut"> {
+export function useOptionalAuth(): Pick<
+  AuthContextType,
+  "user" | "signOut" | "isLoading"
+> {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    return { user: null, signOut: async () => undefined };
+    return { user: null, signOut: async () => undefined, isLoading: false };
   }
   return context;
 }

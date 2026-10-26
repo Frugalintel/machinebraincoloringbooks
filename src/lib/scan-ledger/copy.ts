@@ -25,6 +25,8 @@ export function scanSignInHref(code?: string): string {
   return `/auth?mode=login&next=${encodeURIComponent(`/scan?mode=code&code=${normalized}`)}`;
 }
 
+export const SCAN_EMPTY_CODE = "Type a code first.";
+
 export const SCAN_SIGN_IN_CODE_HINT =
   "Sign in and this code counts toward your book.";
 export const SCAN_SIGN_IN_BOOK_HINT =
@@ -93,11 +95,21 @@ export function legendaryPlateCaption(plate: string): string {
   return `PLATE ${plate} · HIDDEN PAGE`;
 }
 
+const PLATE_FIXTURE_PREFIX = "Plate 07 · ";
+
+/** Live captions never fall back to the Plate 07 fixture string. */
+function captionWithoutFixturePlate(caption: string | null): string | null {
+  if (!caption?.startsWith(PLATE_FIXTURE_PREFIX)) return caption;
+  const rest = caption.slice(PLATE_FIXTURE_PREFIX.length);
+  if (!rest) return null;
+  return rest.charAt(0).toUpperCase() + rest.slice(1);
+}
+
 export function plateScanCaption(
   state: ScanViewState,
   plate: string | null | undefined,
 ): string | null {
-  const fallback = CHROME[state].caption;
+  const fallback = captionWithoutFixturePlate(CHROME[state].caption);
   if (!plate) return fallback;
   switch (state) {
     case "code-added":
@@ -228,7 +240,7 @@ const CHROME: Record<ScanViewState, ScanChrome> = {
     lede: "Fit the whole colored page in the frame.",
     tag: null,
     stamp: null,
-    caption: "Camera · sample view",
+    caption: "Camera",
     primary: null,
     secondary: "Upload from your photos",
     showSpend: false,

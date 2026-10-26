@@ -49,6 +49,12 @@ test.describe("390px QA screens", () => {
     const clusterGap =
       (menuBox?.x ?? 0) - ((signBox?.x ?? 0) + (signBox?.width ?? 0));
     expect(clusterGap).toBeGreaterThanOrEqual(14);
+    const footerLink = page.locator(".home-e2 .cols a").first();
+    await footerLink.scrollIntoViewIfNeeded();
+    expect((await footerLink.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+    const legalLink = page.locator(".home-e2 .legal a").first();
+    await legalLink.scrollIntoViewIfNeeded();
+    expect((await legalLink.boundingBox())?.height).toBeGreaterThanOrEqual(44);
     await shot(page, testInfo, "home-390");
 
     await page.getByRole("button", { name: "Menu" }).click();
@@ -101,6 +107,21 @@ test.describe("390px QA screens", () => {
     const decBox = await decrease.boundingBox();
     expect(decBox?.width).toBeGreaterThanOrEqual(44);
     expect(decBox?.height).toBeGreaterThanOrEqual(44);
+    const remove = page.getByRole("button", { name: /Remove / });
+    const removeBox = await remove.boundingBox();
+    expect(removeBox?.width).toBeGreaterThanOrEqual(44);
+    expect(removeBox?.height).toBeGreaterThanOrEqual(44);
+    const closeBox = await page
+      .getByRole("button", { name: "Close cart" })
+      .boundingBox();
+    expect(closeBox?.height).toBeGreaterThanOrEqual(44);
+    await expect(page.getByText("1 item", { exact: true })).toBeVisible();
+    const scrollbar = await page.locator(".cart-scroll").evaluate((el) => {
+      const style = getComputedStyle(el);
+      return `${style.scrollbarColor} ${style.scrollbarWidth}`;
+    });
+    expect(scrollbar).toContain("242");
+    expect(scrollbar).toContain("thin");
     await shot(page, testInfo, "cart-drawer-390");
 
     await page.getByRole("button", { name: "Close cart" }).click();
@@ -115,6 +136,9 @@ test.describe("390px QA screens", () => {
     await expect(code).toBeVisible({ timeout: 20_000 });
     fitsViewport(await code.boundingBox());
     await expect(page.getByRole("heading", { name: "Scan." })).toBeVisible();
+    await expect(page.getByText(/Camera off/)).toHaveCount(1);
+    await page.getByLabel("Page code").press("Enter");
+    await expect(page.getByText("Type a code first.")).toBeVisible();
     await expectHeaderSignIn(page, "%2Fscan");
     await shot(page, testInfo, "scan-390");
   });
@@ -251,6 +275,194 @@ for (const width of [390, 360] as const) {
         });
         await assertClear(entry.slug, entry.next, "name");
       }
+    });
+  });
+}
+
+function rightInset(
+  width: number,
+  box: { x: number; width: number } | null,
+): number {
+  return width - ((box?.x ?? 0) + (box?.width ?? 0));
+}
+
+for (const width of [1440, 1280, 390, 360] as const) {
+  test.describe(`surface layout at ${width}`, () => {
+    test.use({ viewport: { width, height: 900 } });
+    test.describe.configure({ timeout: 180_000 });
+
+    test("keeps type, taps, and the store list inside the frame", async ({
+      page,
+    }, testInfo) => {
+      const measures: Record<string, number | string | boolean> = { width };
+      const noScroll = () =>
+        page.evaluate(
+          () =>
+            document.documentElement.scrollWidth <=
+            document.documentElement.clientWidth + 1,
+        );
+
+      await page.goto("/");
+      await expect(page.locator("h1").first()).toBeVisible();
+      measures.homeScroll = await noScroll();
+      expect(measures.homeScroll).toBe(true);
+
+      const header = page.locator("header");
+      const word = await visibleBox(
+        header.getByRole("link", { name: "Machine Brain" }),
+      );
+      const signIn = await header
+        .getByRole("link", { name: "Sign in" })
+        .boundingBox();
+      const menu = await header
+        .getByRole("button", { name: "Menu" })
+        .boundingBox();
+      const headerGap =
+        (signIn?.x ?? 0) - ((word?.x ?? 0) + (word?.width ?? 0));
+      measures.headerGap = Math.round(headerGap);
+      measures.menuRightInset = Math.round(rightInset(width, menu));
+      expect(headerGap).toBeGreaterThanOrEqual(6);
+      if (width <= 400) {
+        expect(rightInset(width, menu)).toBeGreaterThanOrEqual(19);
+      }
+      const wordmark = await header
+        .getByText("Machine Brain", { exact: true })
+        .evaluate((el) => getComputedStyle(el).display);
+      measures.wordmark = wordmark;
+      if (width < 380) expect(wordmark).toBe("none");
+      else expect(wordmark).not.toBe("none");
+
+      await page.getByRole("button", { name: "Menu" }).click();
+      const menuCart = page
+        .getByRole("dialog", { name: /menu/i })
+        .getByRole("button", { name: /Cart, \d+ items/ });
+      await expect(menuCart).toBeVisible();
+      measures.menuCart = (await menuCart.innerText()).replace(/\s+/g, " ");
+      await page.keyboard.press("Escape");
+
+      const codes = page.locator("#home-codes-h span");
+      await codes.first().scrollIntoViewIfNeeded();
+      const codeCount = await codes.count();
+      let codesInset = Number.POSITIVE_INFINITY;
+      for (let index = 0; index < codeCount; index += 1) {
+        codesInset = Math.min(
+          codesInset,
+          rightInset(width, await codes.nth(index).boundingBox()),
+        );
+      }
+      measures.codesInset = Math.round(codesInset);
+      expect(codesInset).toBeGreaterThanOrEqual(16);
+
+      const footerLink = page.locator(".home-e2 .cols a").first();
+      await footerLink.scrollIntoViewIfNeeded();
+      measures.footerLinkH = Math.round(
+        (await footerLink.boundingBox())?.height ?? 0,
+      );
+      expect(measures.footerLinkH).toBeGreaterThanOrEqual(44);
+      const legalLink = page.locator(".home-e2 .legal a").first();
+      await legalLink.scrollIntoViewIfNeeded();
+      measures.legalLinkH = Math.round(
+        (await legalLink.boundingBox())?.height ?? 0,
+      );
+      expect(measures.legalLinkH).toBeGreaterThanOrEqual(44);
+
+      await page.goto("/auth");
+      const welcome = page.locator(".sa-l", { hasText: "Welcome" });
+      await expect(welcome).toBeVisible();
+      measures.welcomeInset = Math.round(
+        rightInset(width, await welcome.boundingBox()),
+      );
+      expect(measures.welcomeInset).toBeGreaterThanOrEqual(16);
+      measures.authScroll = await noScroll();
+      expect(measures.authScroll).toBe(true);
+
+      await page.goto("/collectibles");
+      const collectibles = page.getByRole("heading", { name: "Collectibles." });
+      await expect(collectibles).toBeVisible({ timeout: 20_000 });
+      measures.collectiblesMains = await page.locator("main").count();
+      expect(measures.collectiblesMains).toBe(1);
+      measures.collectiblesInset = Math.round(
+        rightInset(width, await collectibles.boundingBox()),
+      );
+      expect(measures.collectiblesInset).toBeGreaterThanOrEqual(16);
+      measures.collectiblesScroll = await noScroll();
+      expect(measures.collectiblesScroll).toBe(true);
+
+      await page.goto("/store");
+      await expect(page.getByRole("heading", { name: "Books." })).toBeVisible({
+        timeout: 20_000,
+      });
+      measures.storeListMin = await page.evaluate(() => {
+        const host = document.querySelector(".store-e2");
+        if (!host) return "missing";
+        const probe = document.createElement("div");
+        probe.className = "s-list";
+        host.append(probe);
+        const value = getComputedStyle(probe).minHeight;
+        const live = document.querySelectorAll(".store-e2 .s-list").length - 1;
+        probe.remove();
+        return `${value} live=${live}`;
+      });
+      expect(
+        String(measures.storeListMin).startsWith(
+          width <= 760 ? "0px" : "760px",
+        ),
+      ).toBe(true);
+      measures.storeHeroGap = await page.evaluate(() => {
+        const hero = document.querySelector(".s-hero");
+        const next = hero?.nextElementSibling;
+        if (!hero || !next) return -1;
+        return Math.round(
+          next.getBoundingClientRect().top -
+            hero.getBoundingClientRect().bottom,
+        );
+      });
+      measures.storeScroll = await noScroll();
+      expect(measures.storeScroll).toBe(true);
+
+      await page.goto("/scan");
+      await expect(page.getByLabel("Page code")).toBeVisible({
+        timeout: 20_000,
+      });
+      measures.cameraOff = await page.getByText(/Camera off/).count();
+      expect(measures.cameraOff).toBe(1);
+      measures.scanScroll = await noScroll();
+      expect(measures.scanScroll).toBe(true);
+
+      await page.goto("/trophy-room");
+      const gate = page.locator("main .shell-sub", {
+        hasText: "Sign in to see",
+      });
+      await expect(gate).toBeVisible({ timeout: 20_000 });
+      const gateBox = await gate.boundingBox();
+      const gateButton = await page
+        .locator("main")
+        .getByRole("button", { name: "Sign in" })
+        .boundingBox();
+      measures.trophyGap = Math.round(
+        (gateButton?.y ?? 0) - ((gateBox?.y ?? 0) + (gateBox?.height ?? 0)),
+      );
+      expect(measures.trophyGap).toBeGreaterThan(12);
+      measures.trophyScroll = await noScroll();
+      expect(measures.trophyScroll).toBe(true);
+
+      await page.goto("/this-page-is-not-in-the-catalog");
+      await expect(
+        page.getByRole("heading", { name: "Page not found" }),
+      ).toBeVisible();
+      measures.notFoundChrome =
+        (await page.locator("header").getAttribute("data-site-chrome")) ?? "";
+      expect(measures.notFoundChrome).not.toBe("");
+      measures.notFoundMains = await page.locator("main").count();
+      expect(measures.notFoundMains).toBe(1);
+      measures.notFoundScroll = await noScroll();
+      expect(measures.notFoundScroll).toBe(true);
+
+      console.warn(`MEASURE ${JSON.stringify(measures)}`);
+      await testInfo.attach(`layout-${width}.json`, {
+        body: JSON.stringify(measures, null, 2),
+        contentType: "application/json",
+      });
     });
   });
 }

@@ -22,20 +22,18 @@ function LoadingChrome({
   return (
     // At least a full viewport: prerendered pages swap this fallback out a
     // frame after first paint, and a shorter one lets the footer jump (CLS).
-    <main
-      id="main"
+    // A div, not <main>: the page keeps the only main landmark.
+    <div
       className={cn("min-h-screen bg-background text-cream", className)}
+      role="status"
+      aria-live="polite"
       aria-busy="true"
     >
-      <div
-        className="container mx-auto px-4 py-16 md:px-6 md:py-20"
-        role="status"
-        aria-live="polite"
-      >
+      <div className="container mx-auto px-4 py-16 md:px-6 md:py-20">
         <p className="font-label mb-8 tracking-[0.12em] text-signal">{label}</p>
         {children}
       </div>
-    </main>
+    </div>
   );
 }
 
