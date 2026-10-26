@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   Settings,
   Box,
@@ -42,8 +42,14 @@ export default function ProfilePage() {
     collectibleTimestamps,
   } = useGame();
 
+  const leavingForHome = useRef(false);
   useEffect(() => {
-    if (isLoading || signingOut) return;
+    if (signingOut) leavingForHome.current = true;
+  }, [signingOut]);
+
+  useEffect(() => {
+    // signingOut flips back to false while replace("/") is still in flight.
+    if (isLoading || signingOut || leavingForHome.current) return;
     if (username === "me" && !user) {
       router.replace("/auth?next=/profile/me");
     }
@@ -53,7 +59,7 @@ export default function ProfilePage() {
     const onPageShow = (event: PageTransitionEvent) => {
       if (!event.persisted) return;
       router.refresh();
-      if (!user && username === "me") {
+      if (!user && username === "me" && !leavingForHome.current) {
         router.replace("/auth?next=/profile/me");
       }
     };

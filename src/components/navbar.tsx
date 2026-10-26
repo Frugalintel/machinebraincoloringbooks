@@ -151,7 +151,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
           "flex items-center justify-between",
           solid
             ? "h-16 px-10 max-[760px]:px-5"
-            : "absolute inset-x-0 top-full px-10 py-7 max-[760px]:px-5 max-[760px]:py-5",
+            : "absolute inset-x-0 top-full px-10 py-[26px] max-[760px]:px-5 max-[760px]:py-[18px]",
         )}
       >
         <BrandLockup
@@ -326,7 +326,7 @@ function FullHeader() {
               aria-label={cartLabel(cartCount)}
               className={cn(
                 "relative inline-flex h-10 items-center gap-2 border border-line-strong px-3 text-[14px] font-semibold text-cream hover:bg-cream hover:text-ink",
-                "before:absolute before:-inset-y-0.5 before:inset-x-0 before:content-['']",
+                "before:absolute before:-inset-y-[3px] before:inset-x-0 before:content-['']",
                 SHELL_FOCUS,
               )}
             >
