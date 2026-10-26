@@ -16,7 +16,6 @@ import {
   deriveBookRow,
   deriveCodeOutcome,
   emptyPlates,
-  folioLine,
   isPlausiblePageCode,
   plateIndex,
   plateLabel,
@@ -467,7 +466,7 @@ export function createLiveAdapter(client: ScanQueryClient): ScanLedgerAdapter {
           kind: "signed-out",
           hold: {
             kind: "page-plus",
-            label: `${folioLine(plate.plate, normalized)} · +1`,
+            label: normalized,
           },
         };
       }
@@ -528,7 +527,7 @@ export function createLiveAdapter(client: ScanQueryClient): ScanLedgerAdapter {
           kind: "signed-out",
           hold: {
             kind: "page-plus",
-            label: `${folioLine("—", normalized || "CODE")} · +1`,
+            label: normalized || "CODE",
           },
         };
       }

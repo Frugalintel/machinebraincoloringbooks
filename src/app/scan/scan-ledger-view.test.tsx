@@ -21,6 +21,7 @@ const handlers: ScanLedgerHandlers = {
 function renderView(
   state: Parameters<typeof ScanLedgerView>[0]["state"],
   snapshot: ScanLedgerSnapshot = fixtureSnapshot(state),
+  extra: Partial<Parameters<typeof ScanLedgerView>[0]> = {},
 ) {
   return render(
     <ScanLedgerView
@@ -35,6 +36,7 @@ function renderView(
       reducedMotion
       notice={null}
       handlers={handlers}
+      {...extra}
     />,
   );
 }
@@ -137,6 +139,28 @@ describe("ScanLedgerView wallet and photo register", () => {
       screen.getByText(/The Silver Citadel has 45 book pts/),
     ).toBeInTheDocument();
     expect(screen.queryByText(/The Silver Citadel has 99 book pts/)).toBeNull();
+  });
+
+  it("keeps signed-in already-counted copy on the code form", () => {
+    renderView("code-only-before");
+    expect(screen.getByText("Already counted")).toBeInTheDocument();
+    expect(
+      screen.getByText("The code for plate 07 is in. The photo is still open."),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a photo send failure next to Send it and keeps the button usable", () => {
+    renderView("photo-preview", fixtureSnapshot("photo-preview"), {
+      sendError: "Something went wrong. Try again.",
+    });
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("Something went wrong. Try again.");
+    expect(
+      alert.compareDocumentPosition(
+        screen.getByRole("button", { name: /send it/i }),
+      ),
+    ).toBe(Node.DOCUMENT_POSITION_PRECEDING);
+    expect(screen.getByRole("button", { name: /send it/i })).toBeEnabled();
   });
 
   it("captions the legendary trophy as a hidden page", () => {

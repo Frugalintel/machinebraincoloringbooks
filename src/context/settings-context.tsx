@@ -68,7 +68,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         .eq("is_active", true)
         .order("updated_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (data) {
         setActiveCampaignId(data.id);
@@ -90,7 +90,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
           .from("system_settings")
           .select("value")
           .eq("key", "global_discount")
-          .single();
+          .maybeSingle();
 
         if (legacyData && legacyData.value) {
           // Legacy adaptation logic

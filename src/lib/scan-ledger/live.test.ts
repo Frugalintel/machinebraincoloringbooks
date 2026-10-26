@@ -107,6 +107,34 @@ describe("createLiveAdapter fail-safe stubs", () => {
     expect(inserts).toEqual([]);
   });
 
+  it("holds a signed-out page code without leaking the plate number", async () => {
+    const inserts: { table: string; row: unknown }[] = [];
+    const adapter = createLiveAdapter(
+      memoryClient({
+        inserts,
+        bookCode: {
+          id: "code-1",
+          code: "7KQ2",
+          page_number: 7,
+          is_active: true,
+          products: { title: "The Silver Citadel" },
+        },
+      }),
+    );
+    const result = await adapter.submitPageCode({
+      userId: null,
+      code: "7kq2",
+    });
+    expect(result).toMatchObject({
+      ok: false,
+      kind: "signed-out",
+      hold: { kind: "page-plus", label: "7KQ2" },
+    });
+    if (result.ok || result.kind !== "signed-out") return;
+    expect(result.hold.label).not.toMatch(/plate|pl\.|07/i);
+    expect(inserts).toEqual([]);
+  });
+
   it("holds a signed-out book scan instead of writing", async () => {
     const inserts: { table: string; row: unknown }[] = [];
     const adapter = createLiveAdapter(memoryClient({ inserts }));

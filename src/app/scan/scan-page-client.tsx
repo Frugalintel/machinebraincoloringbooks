@@ -15,11 +15,14 @@ import { supabase } from "@/lib/supabase";
 import { scanEntryFromParams, normalizeBookCode } from "@/lib/scan-params";
 import {
   SAMPLE_PAGE,
+  blobFromCapturedImage,
   createFixtureAdapter,
   createLiveAdapter,
   fixtureSnapshot,
   scanPreview,
   scanPreviewTrophyTier,
+  signedOutCodeMessage,
+  systemErrorMessage,
   type ScanLedgerSnapshot,
   type ScanViewState,
 } from "@/lib/scan-ledger";
@@ -111,9 +114,11 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   const [capturedUrl, setCapturedUrl] = useState<string | null>(
     preview === "photo-preview" ? PAGE_COLOR : null,
   );
+  const [capturedImage, setCapturedImage] = useState<Blob | null>(null);
   const [cameraOn, setCameraOn] = useState(preview === "index");
   const [cameraBlocked, setCameraBlocked] = useState(preview === "camera-off");
   const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ title: string; body: string } | null>(
     null,
   );
@@ -148,7 +153,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
     } else if (preview === "signed-out-code") {
       openAuthModal("login", undefined, SAMPLE_PAGE.code, {
         kind: "page-plus",
-        label: `PL. 07 · ${SAMPLE_PAGE.code} · +1`,
+        label: SAMPLE_PAGE.code,
       });
     }
   }, [openAuthModal, preview]);
@@ -170,6 +175,11 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   ) => {
     if (result.ok === false && result.kind === "signed-out") {
       openAuthModal("login", undefined, heldCode || typedCode, result.hold);
+      setNotice({
+        title: "Code looks valid",
+        body: signedOutCodeMessage(),
+      });
+      setState("code");
       return;
     }
     if (result.ok === false && result.kind === "invalid") {
@@ -291,15 +301,17 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
       }, 200);
       return;
     }
-    if (!capturedUrl) return;
+    if (!capturedImage && !capturedUrl) return;
     setSending(true);
+    setSendError(null);
     try {
-      const res = await fetch(capturedUrl);
-      const blob = await res.blob();
+      const image = capturedImage
+        ? capturedImage
+        : await blobFromCapturedImage(capturedUrl as string);
       const result = await adapter.submitPagePhoto({
         userId: user?.id ?? null,
         code: heldCode || typedCode,
-        image: blob,
+        image,
       });
       if (result.ok === false && result.kind === "signed-out") {
         openAuthModal("login", undefined, heldCode || typedCode, result.hold);
@@ -307,7 +319,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
         return;
       }
       if (result.ok === false) {
-        toastError(result.message);
+        setSendError(result.message);
         setState("photo-preview");
         return;
       }
@@ -315,7 +327,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
       setState("pending");
     } catch (error) {
       logger.error("Photo send failed", error);
-      toastError("Something went wrong. Try again.");
+      setSendError(systemErrorMessage());
       setState("photo-preview");
     } finally {
       setSending(false);
@@ -323,6 +335,8 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   };
 
   const readFile = (file: File) => {
+    setCapturedImage(file);
+    setSendError(null);
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") {
@@ -371,6 +385,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
       sending={sending}
       reducedMotion={reducedMotion}
       notice={notice}
+      sendError={sendError}
       cameraSlot={cameraSlot}
       handlers={{
         onEnableCamera: () => {
@@ -429,6 +444,8 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
         },
         onRetake: () => {
           setCapturedUrl(null);
+          setCapturedImage(null);
+          setSendError(null);
           setState("photo");
         },
         onAnotherCode: () => {

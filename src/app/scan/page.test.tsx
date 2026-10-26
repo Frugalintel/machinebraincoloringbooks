@@ -62,12 +62,61 @@ describe("/scan entry from the home code form", () => {
 
     await waitFor(() => expect(eq).toHaveBeenCalledWith("code", "XY9"));
   });
+
+  it("tells a signed-out reader the code looks valid without leaking the plate", async () => {
+    scan.search = "mode=code";
+    const maybeSingle = vi.fn(async () => ({
+      data: {
+        id: "code-1",
+        code: "7KQ2",
+        page_number: 7,
+        is_active: true,
+        products: { id: "p1", title: "The Silver Citadel" },
+      },
+      error: null,
+    }));
+    const eq = vi.fn(() => ({ maybeSingle, single: maybeSingle }));
+    vi.mocked(supabase.from).mockReturnValueOnce({
+      select: vi.fn(() => ({ eq })),
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    render(<ScanPage />);
+    const field = screen.getByPlaceholderText("Code");
+    fireEvent.change(field, { target: { value: "7KQ2" } });
+    fireEvent.submit(field.closest("form")!);
+
+    await waitFor(() =>
+      expect(auth.openAuthModal).toHaveBeenCalledWith(
+        "login",
+        undefined,
+        "7KQ2",
+        expect.objectContaining({ kind: "page-plus", label: "7KQ2" }),
+      ),
+    );
+    expect(screen.queryByRole("heading", { name: "Counted." })).toBeNull();
+    expect(screen.queryByText(/plate 07/i)).toBeNull();
+    expect(screen.getByText("Code looks valid")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "That code looks valid. Sign in or register the book to count it.",
+      ),
+    ).toBeInTheDocument();
+  });
 });
 
 describe("/scan preview fixtures", () => {
   beforeEach(() => {
     scan.search = "";
     auth.openAuthModal.mockReset();
+  });
+
+  it("keeps signed-in already-counted copy on the code-only-before preview", () => {
+    scan.search = "preview=code-only-before";
+    render(<ScanPage />);
+    expect(screen.getByText("Already counted")).toBeInTheDocument();
+    expect(
+      screen.getByText("The code for plate 07 is in. The photo is still open."),
+    ).toBeInTheDocument();
   });
 
   it("opens the collected already state from ?preview=collected", () => {
@@ -166,5 +215,6 @@ describe("/scan source guardrails", () => {
     expect(source).toMatch(/setState\("camera-off"\)/);
     expect(source).not.toMatch(/toastError\(msg\)/);
     expect(source).not.toMatch(/Shown from XP/);
+    expect(source).not.toMatch(/fetch\(capturedUrl\)/);
   });
 });

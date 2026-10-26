@@ -48,6 +48,7 @@ export {
   codeInMessage,
   collectedMessage,
   invalidCodeMessage,
+  signedOutCodeMessage,
   legendaryPlateCaption,
   plateCellLabel,
   sampleNote,
@@ -66,6 +67,10 @@ export {
   fixtureActivePlate,
   fixtureSnapshot,
 } from "@/lib/scan-ledger/fixture";
+export {
+  blobFromCapturedImage,
+  blobFromDataUrl,
+} from "@/lib/scan-ledger/image";
 export {
   booksFromExistingRows,
   createLiveAdapter,
