@@ -153,7 +153,7 @@ export function MobileNav({
                       href={link.href}
                       onClick={onClose}
                       className={cn(
-                        "flex items-baseline gap-3 py-2 text-[17px] font-medium",
+                        "flex min-h-11 items-center gap-3 text-[17px] font-medium",
                         SHELL_FOCUS,
                         active
                           ? "text-cream"

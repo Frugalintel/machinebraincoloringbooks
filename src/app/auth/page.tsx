@@ -31,7 +31,7 @@ export default async function AuthPage({
       data-testid="auth-page"
     >
       <main>
-        {/* A new query (e.g. the footer's Register link) starts a fresh form. */}
+        {/* A new query (e.g. the footer's Create account link) starts a fresh form. */}
         <AuthPageClient key={params.toString()} entry={entry} />
       </main>
       <HomeFooter samples={samples} />

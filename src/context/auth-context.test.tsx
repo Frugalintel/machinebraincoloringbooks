@@ -260,6 +260,7 @@ describe("AuthProvider password sign-in", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
     expect(screen.getByTestId("auth-user")).toHaveTextContent("guest");
+    expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
     releaseSignOut();
   });
 });

@@ -49,14 +49,12 @@ describe("ProfilePage auth resolution", () => {
     ).toBeNull();
   });
 
-  it("shows the restricted state only after auth resolves signed out", () => {
+  it("keeps /profile/me on Loading profile when the session is signed out", () => {
     auth.isLoading = false;
     render(<ProfilePage />);
-    expect(screen.getByText("GUEST")).toBeInTheDocument();
-    expect(screen.getByText("Access Restricted")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Authenticate User" }),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Loading profile")).toBeInTheDocument();
+    expect(screen.queryByText("GUEST")).toBeNull();
+    expect(screen.queryByText("Access Restricted")).toBeNull();
   });
 
   it("shows the signed-in profile once the session exists", () => {

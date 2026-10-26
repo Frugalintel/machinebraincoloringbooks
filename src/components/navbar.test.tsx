@@ -388,6 +388,37 @@ describe("Navbar", () => {
     ).toHaveAttribute("href", "/auth?mode=login&next=%2F");
   });
 
+  it("moves account-menu focus with arrow keys and restores it on Escape", () => {
+    nav.pathname = "/store";
+    nav.user = {
+      email: "Ada@example.com",
+      id: "u1",
+      initials: "AD",
+      displayName: "Ada",
+    };
+    render(<Navbar />);
+
+    const trigger = screen.getByRole("button", { name: "Account, Ada" });
+    fireEvent.click(trigger);
+    const profile = screen.getByRole("menuitem", { name: "Profile" });
+    expect(document.activeElement).toBe(profile);
+    expect(screen.getByText("Ada@example.com")).toHaveClass(
+      "normal-case",
+      "font-sans",
+    );
+    expect(screen.getByRole("menuitem", { name: "Sign out" })).not.toHaveClass(
+      "text-danger",
+    );
+
+    fireEvent.keyDown(document, { key: "ArrowDown" });
+    expect(document.activeElement).toBe(
+      screen.getByRole("menuitem", { name: "Orders" }),
+    );
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(trigger);
+  });
+
   it("shows the signed-in name and account menu on the home header", () => {
     nav.pathname = "/";
     nav.user = {

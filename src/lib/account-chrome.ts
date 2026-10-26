@@ -1,6 +1,6 @@
 /**
  * Signed-in vs signed-out chrome shared by header and both footers.
- * Guest copy stays the existing Sign in / Register (or Create account) links.
+ * Guest copy is Sign in / Create account.
  */
 
 export type AccountColumnLink = {
@@ -55,7 +55,7 @@ export function headerAccountLinks(
   }
   return [
     { name: "Sign in", href: signInHref(pathname) },
-    { name: "Register", href: registerHref(pathname) },
+    { name: "Create account", href: registerHref(pathname) },
     { name: "Order lookup", href: "/orders/lookup" },
   ];
 }
@@ -87,7 +87,7 @@ export function accountColumnLinks(
 
   return [
     { name: "Sign in", href: "/auth?mode=login" },
-    { name: "Register", href: "/auth?mode=register" },
+    { name: "Create account", href: "/auth?mode=register" },
     { name: "Order lookup", href: "/orders/lookup" },
     { name: "Help", href: "/help" },
   ];

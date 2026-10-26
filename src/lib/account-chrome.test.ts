@@ -35,13 +35,13 @@ describe("accountColumnLinks", () => {
     ]);
     expect(accountColumnLinks(false, "site").map((link) => link.name)).toEqual([
       "Sign in",
-      "Register",
+      "Create account",
       "Order lookup",
       "Help",
     ]);
   });
 
-  it("swaps Sign in / Register for Profile, Orders, and a labelled Sign out", () => {
+  it("swaps Sign in / Create account for Profile, Orders, and a labelled Sign out", () => {
     expect(accountColumnLinks(true, "home")).toEqual([
       { name: "Profile", href: "/profile/me" },
       { name: "Orders", href: "/profile/me#orders" },
@@ -74,9 +74,8 @@ describe("signInHref", () => {
       { name: "Orders", href: "/profile/me#orders" },
       { name: "Sign out", action: "sign-out" },
     ]);
-    expect(headerAccountLinks(false, "/scan")[0]).toEqual({
-      name: "Sign in",
-      href: "/auth?mode=login&next=%2Fscan",
-    });
+    expect(headerAccountLinks(false, "/scan").map((link) => link.name)).toEqual(
+      ["Sign in", "Create account", "Order lookup"],
+    );
   });
 });

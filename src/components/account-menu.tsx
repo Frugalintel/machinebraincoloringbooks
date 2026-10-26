@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import {
   accountLabel,
@@ -25,17 +25,50 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
   const { user, signOut, isAdmin, isLoading } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
 
+  const closeMenu = useCallback((restoreFocus: boolean) => {
+    setOpen(false);
+    if (restoreFocus) triggerRef.current?.focus();
+  }, []);
+
   useEffect(() => {
-    if (!open) return;
+    if (!open || !menuRef.current) return;
+    const panel = menuRef.current;
+    const items = () =>
+      Array.from(panel.querySelectorAll<HTMLElement>('[role="menuitem"]'));
+    items()[0]?.focus();
+
     const onPointer = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
+      if (!panel.contains(event.target as Node)) setOpen(false);
     };
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      const list = items();
+      const index = list.indexOf(document.activeElement as HTMLElement);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu(true);
+        return;
+      }
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        if (list.length === 0) return;
+        const step = event.key === "ArrowDown" ? 1 : -1;
+        const next =
+          index < 0
+            ? step === 1
+              ? 0
+              : list.length - 1
+            : (index + step + list.length) % list.length;
+        list[next]?.focus();
+        return;
+      }
+      if (event.key === "Home" || event.key === "End") {
+        event.preventDefault();
+        const target = event.key === "Home" ? list[0] : list[list.length - 1];
+        target?.focus();
+      }
     };
     document.addEventListener("mousedown", onPointer);
     document.addEventListener("keydown", onKey);
@@ -43,13 +76,13 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
       document.removeEventListener("mousedown", onPointer);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open]);
+  }, [closeMenu, open]);
 
   if (isLoading) {
     return (
       <span
         className={cn(
-          "inline-flex h-10 items-center text-[13px] tracking-[0.12em] text-cream/40",
+          "inline-flex h-11 min-w-11 items-center text-[13px] tracking-[0.12em] text-cream/40",
           tone === "overlay" && "text-[15px] leading-6",
         )}
         aria-busy="true"
@@ -69,8 +102,8 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
           "inline-flex shrink-0 items-center whitespace-nowrap text-cream hover:text-cream",
           SHELL_FOCUS,
           tone === "overlay"
-            ? "h-10 text-[15px] leading-6 font-medium text-cream/66 hover:text-cream"
-            : "h-10 px-1 text-[13px] font-medium",
+            ? "h-11 text-[15px] leading-6 font-medium text-cream/66 hover:text-cream"
+            : "h-11 px-1 text-[13px] font-medium",
         )}
       >
         Sign in
@@ -89,17 +122,18 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls={menuId}
+        ref={triggerRef}
         onClick={() => setOpen((current) => !current)}
         className={cn(
           "inline-flex items-center text-cream",
           SHELL_FOCUS,
           tone === "overlay"
-            ? "h-10 max-w-[9rem] text-[15px] leading-6 font-medium text-cream/66 hover:text-cream max-[760px]:max-w-[4.5rem]"
-            : "h-10 gap-2",
+            ? "h-11 max-w-[9rem] text-[15px] leading-6 font-medium text-cream/66 hover:text-cream max-[760px]:max-w-[4.5rem]"
+            : "h-11 gap-2",
         )}
       >
         {tone === "full" ? (
-          <span className="inline-flex h-10 w-10 items-center justify-center border border-line text-sm font-semibold">
+          <span className="inline-flex h-11 w-11 items-center justify-center border border-line text-sm font-semibold">
             {user.initials || label.slice(0, 2)}
           </span>
         ) : null}
@@ -120,9 +154,9 @@ export function HeaderAccount({ tone }: { tone: HeaderAccountTone }) {
           label={label}
           links={links}
           isAdmin={isAdmin}
-          onClose={() => setOpen(false)}
+          onClose={() => closeMenu(false)}
           onSignOut={() => {
-            setOpen(false);
+            closeMenu(false);
             void signOut();
           }}
         />
@@ -156,7 +190,7 @@ function AccountPanel({
     >
       <div className="border-b border-line px-4 py-3">
         <p className="truncate font-medium text-cream">{label}</p>
-        <p className="font-label mt-1 truncate tracking-[0.08em] text-fg-muted">
+        <p className="mt-1 truncate font-sans text-sm normal-case tracking-normal text-fg-muted">
           {user.email}
         </p>
       </div>
@@ -167,11 +201,7 @@ function AccountPanel({
             type="button"
             role="menuitem"
             onClick={onSignOut}
-            className={cn(
-              ITEM,
-              "gap-2 border-t border-line text-danger hover:bg-danger-wash hover:text-danger",
-              SHELL_FOCUS,
-            )}
+            className={cn(ITEM, "gap-2 border-t border-line", SHELL_FOCUS)}
           >
             <LogOut size={14} strokeWidth={1.75} />
             {link.name}

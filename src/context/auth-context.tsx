@@ -44,6 +44,8 @@ type AuthContextType = {
   ) => Promise<{ error: Error | null; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
   isLoading: boolean;
+  /** True while this browser is signing out, so /profile/me does not bounce to /auth. */
+  signingOut: boolean;
   authModal: AuthModalState;
   openAuthModal: (
     view?: "login" | "register",
@@ -61,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [signingOut, setSigningOut] = useState(false);
   const [authModal, setAuthModal] = useState<AuthModalState>({
     isOpen: false,
     view: "login",
@@ -248,16 +251,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = useCallback(async () => {
     // Drop chrome immediately so mobile menus cannot keep a stale Sign out.
+    // local: this browser only. There is no product need to sign out other devices.
+    setSigningOut(true);
     setUser(null);
     setSession(null);
     setAuthModal({ isOpen: false, view: "login" });
     setIsLoading(false);
+    router.replace("/");
     try {
-      await supabase.auth.signOut({ scope: "global" });
+      await supabase.auth.signOut({ scope: "local" });
     } catch (error) {
       logger.error("Error signing out:", error);
     } finally {
-      router.replace("/");
       router.refresh();
     }
   }, [router]);
@@ -292,6 +297,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signOut,
       isLoading,
+      signingOut,
       authModal,
       openAuthModal,
       closeAuthModal,
@@ -304,6 +310,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signOut,
       isLoading,
+      signingOut,
       authModal,
       openAuthModal,
       closeAuthModal,

@@ -34,7 +34,7 @@ const TrophyCanvas = dynamic(
 export default function ProfilePage() {
   const { username } = useParams();
   const router = useRouter();
-  const { user, signOut, openAuthModal, isLoading } = useAuth();
+  const { user, signOut, openAuthModal, isLoading, signingOut } = useAuth();
   const {
     collectionSets,
     achievements,
@@ -43,11 +43,11 @@ export default function ProfilePage() {
   } = useGame();
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || signingOut) return;
     if (username === "me" && !user) {
       router.replace("/auth?next=/profile/me");
     }
-  }, [isLoading, router, username, user]);
+  }, [isLoading, router, signingOut, username, user]);
 
   useEffect(() => {
     const onPageShow = (event: PageTransitionEvent) => {
@@ -61,7 +61,7 @@ export default function ProfilePage() {
     return () => window.removeEventListener("pageshow", onPageShow);
   }, [router, username, user]);
 
-  if (isLoading) {
+  if (isLoading || (username === "me" && !user)) {
     return <SystemLoading variant="account" label="Loading profile" />;
   }
 
