@@ -121,32 +121,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initAuth = async () => {
       try {
         // Setup listener first to catch any events during initialization
-        const {
-          data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+        const applySession = async (
+          event: string,
+          newSession: Session | null,
+        ) => {
           if (!mounted) return;
 
           if (newSession?.user) {
             setSession(newSession);
-            // Only fetch profile if we have a user and session changed significantly
-            // or if we don't have a user set yet
             const profile = await fetchProfile(newSession.user.id);
             if (mounted) {
               setUser(formatUser(newSession.user, profile));
             }
-          } else {
-            if (mounted) {
-              setSession(null);
-              setUser(null);
-            }
+          } else if (mounted) {
+            setSession(null);
+            setUser(null);
           }
 
-          // Close modal on successful auth
           if (event === "SIGNED_IN" && mounted) {
             setAuthModal((prev) => ({ ...prev, isOpen: false }));
           }
 
           if (mounted) setIsLoading(false);
+        };
+
+        // supabase-js 2.84 holds navigator.locks and awaits this callback.
+        // fetchProfile uses supabase.from(), which needs that same lock, so
+        // awaiting it here deadlocks signInWithPassword (auth-js#762).
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange((event, newSession) => {
+          setTimeout(() => {
+            void applySession(event, newSession);
+          }, 0);
         });
 
         // Get initial session to ensure we have state before first render if possible
