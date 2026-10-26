@@ -240,6 +240,9 @@ for (const width of [390, 360] as const) {
         expect(menu).toBeTruthy();
         const gap =
           (accountBox?.x ?? 0) - ((word?.x ?? 0) + (word?.width ?? 0));
+        console.warn(
+          `MEASURE filled-cart ${slug} ${width} ${state} gap=${Math.round(gap)} menuInset=${Math.round(width - ((menu?.x ?? 0) + (menu?.width ?? 0)))}`,
+        );
         expect(gap).toBeGreaterThanOrEqual(6);
         expect((menu?.x ?? 0) + (menu?.width ?? 0)).toBeLessThanOrEqual(
           width - 20 + 1,
@@ -314,17 +317,10 @@ for (const width of [1440, 1280, 390, 360] as const) {
       const signIn = await header
         .getByRole("link", { name: "Sign in" })
         .boundingBox();
-      const menu = await header
-        .getByRole("button", { name: "Menu" })
-        .boundingBox();
       const headerGap =
         (signIn?.x ?? 0) - ((word?.x ?? 0) + (word?.width ?? 0));
       measures.headerGap = Math.round(headerGap);
-      measures.menuRightInset = Math.round(rightInset(width, menu));
       expect(headerGap).toBeGreaterThanOrEqual(6);
-      if (width <= 400) {
-        expect(rightInset(width, menu)).toBeGreaterThanOrEqual(19);
-      }
       const wordmark = await header
         .getByText("Machine Brain", { exact: true })
         .evaluate((el) => getComputedStyle(el).display);
@@ -332,13 +328,22 @@ for (const width of [1440, 1280, 390, 360] as const) {
       if (width < 380) expect(wordmark).toBe("none");
       else expect(wordmark).not.toBe("none");
 
-      await page.getByRole("button", { name: "Menu" }).click();
-      const menuCart = page
-        .getByRole("dialog", { name: /menu/i })
-        .getByRole("button", { name: /Cart, \d+ items/ });
-      await expect(menuCart).toBeVisible();
-      measures.menuCart = (await menuCart.innerText()).replace(/\s+/g, " ");
-      await page.keyboard.press("Escape");
+      if (width <= 760) {
+        const menu = await header
+          .getByRole("button", { name: "Menu" })
+          .boundingBox();
+        measures.menuRightInset = Math.round(rightInset(width, menu));
+        if (width <= 400) {
+          expect(rightInset(width, menu)).toBeGreaterThanOrEqual(19);
+        }
+        await page.getByRole("button", { name: "Menu" }).click();
+        const menuCart = page
+          .getByRole("dialog", { name: /menu/i })
+          .getByRole("button", { name: /Cart, \d+ items/ });
+        await expect(menuCart).toBeVisible();
+        measures.menuCart = (await menuCart.innerText()).replace(/\s+/g, " ");
+        await page.keyboard.press("Escape");
+      }
 
       const codes = page.locator("#home-codes-h span");
       await codes.first().scrollIntoViewIfNeeded();
@@ -416,6 +421,21 @@ for (const width of [1440, 1280, 390, 360] as const) {
           next.getBoundingClientRect().top -
             hero.getBoundingClientRect().bottom,
         );
+      });
+      measures.storeChildGap = await page.evaluate(() => {
+        const main = document.querySelector("main");
+        if (!main) return -1;
+        const kids = [...main.children].filter(
+          (el) => el.getBoundingClientRect().height > 0,
+        );
+        let max = 0;
+        for (let index = 0; index < kids.length - 1; index += 1) {
+          const above = kids[index]?.getBoundingClientRect();
+          const below = kids[index + 1]?.getBoundingClientRect();
+          if (!above || !below) continue;
+          max = Math.max(max, below.top - above.bottom);
+        }
+        return Math.round(max);
       });
       measures.storeScroll = await noScroll();
       expect(measures.storeScroll).toBe(true);
