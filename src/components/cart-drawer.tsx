@@ -111,8 +111,10 @@ export function CartDrawer() {
                 </div>
               </div>
               <button
+                type="button"
+                aria-label="Close cart"
                 onClick={() => setIsCartOpen(false)}
-                className="group relative p-2 text-fg-muted hover:text-cream transition-colors"
+                className="group relative inline-flex h-11 w-11 items-center justify-center p-2 text-fg-muted hover:text-cream transition-colors"
               >
                 <div className="absolute inset-0 border border-transparent group-hover:border-line transition-colors rotate-45 group-hover:rotate-0 duration-300"></div>
                 <X size={24} className="relative z-10" />
@@ -165,10 +167,12 @@ export function CartDrawer() {
                                 {toSentenceCase(item.title)}
                               </h3>
                               <button
+                                type="button"
+                                aria-label={`Remove ${toSentenceCase(item.title)}`}
                                 onClick={() => removeItem(item.id)}
-                                className="text-fg-faint hover:text-danger transition-colors -mt-0.5 hover:bg-surface-2 rounded-sm"
+                                className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-fg-faint hover:bg-surface-2 hover:text-danger transition-colors rounded-sm"
                               >
-                                <Trash2 size={14} />
+                                <Trash2 size={16} />
                               </button>
                             </div>
                             <p className=" text-fg-muted font-label tracking-widest mt-1 uppercase line-clamp-1">
@@ -179,23 +183,27 @@ export function CartDrawer() {
                           <div className="flex items-center justify-between mt-2">
                             <div className="flex items-center bg-background border border-line">
                               <button
+                                type="button"
+                                aria-label={`Decrease quantity of ${toSentenceCase(item.title)}`}
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity - 1)
                                 }
-                                className="w-6 h-6 flex items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
+                                className="inline-flex h-11 w-11 items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
                               >
-                                <Minus size={10} />
+                                <Minus size={14} />
                               </button>
-                              <span className="w-6 text-center font-label text-cream border-x border-line h-4 flex items-center justify-center leading-none">
+                              <span className="min-w-11 text-center font-label text-cream border-x border-line h-11 flex items-center justify-center leading-none">
                                 {item.quantity}
                               </span>
                               <button
+                                type="button"
+                                aria-label={`Increase quantity of ${toSentenceCase(item.title)}`}
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity + 1)
                                 }
-                                className="w-6 h-6 flex items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
+                                className="inline-flex h-11 w-11 items-center justify-center hover:bg-surface-2 text-fg-muted hover:text-cream transition-colors"
                               >
-                                <Plus size={10} />
+                                <Plus size={14} />
                               </button>
                             </div>
                             <p className="font-heading text-base text-cream tracking-tight">

@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import {
   Settings,
   Box,
@@ -31,13 +32,33 @@ const TrophyCanvas = dynamic(
 
 export default function ProfilePage() {
   const { username } = useParams();
-  const { user, signOut, openAuthModal } = useAuth();
+  const router = useRouter();
+  const { user, signOut, openAuthModal, isLoading } = useAuth();
   const {
     collectionSets,
     achievements,
     activeAchievementIds,
     collectibleTimestamps,
   } = useGame();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (username === "me" && !user) {
+      router.replace("/auth?next=/profile/me");
+    }
+  }, [isLoading, router, username, user]);
+
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+      router.refresh();
+      if (!user && username === "me") {
+        router.replace("/auth?next=/profile/me");
+      }
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, [router, username, user]);
 
   const isCurrentUser = username === "me" || (user && username === user.id);
   const displayName =
@@ -95,13 +116,25 @@ export default function ProfilePage() {
 
           <div className="flex-1 mb-4">
             <div className="flex flex-col md:flex-row md:items-center gap-4 mb-2">
-              <h1 className="font-display text-title leading-none">
+              <h1 className="font-display text-title leading-none min-w-0 break-words">
                 {displayName}
               </h1>
               <span className="self-start md:self-auto font-label bg-cream/10 text-primary border border-primary/30 px-2 py-1 uppercase tracking-widest">
                 Auth Level:{" "}
                 {isCurrentUser && user ? "1 (Verified)" : "0 (Guest)"}
               </span>
+              {isCurrentUser && user ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    void signOut();
+                  }}
+                  className="self-start rounded-none border-line font-label uppercase tracking-widest hover:border-cream hover:text-cream"
+                >
+                  Sign out
+                </Button>
+              ) : null}
             </div>
             <p className="text-fg-muted font-sans max-w-xl text-sm md:text-base uppercase tracking-wide flex items-center gap-2">
               <Terminal size={12} /> Unit {user ? user.id.slice(-4) : "0000"} //
@@ -460,7 +493,7 @@ export default function ProfilePage() {
                           onClick={signOut}
                           className="w-full border border-danger/50 text-danger hover:bg-danger-strong hover:text-cream font-heading tracking-widest h-12 rounded-none"
                         >
-                          Disconnect System (Logout)
+                          Sign out
                         </Button>
                       </div>
                     </div>

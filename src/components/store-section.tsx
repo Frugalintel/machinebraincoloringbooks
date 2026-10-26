@@ -6,7 +6,6 @@ import { Plus, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/cart-context";
 import { useSettings } from "@/context/settings-context";
-import { useAuth } from "@/context/auth-context";
 import { fetchPublishedProducts, productsOrCatalog } from "@/lib/products";
 import { Product } from "@/lib/types";
 import { logger } from "@/lib/logger";
@@ -16,7 +15,6 @@ import { calculatePrice, formatPrice } from "@/lib/pricing";
 export function StoreSection() {
   const { addItem } = useCart();
   const { campaign } = useSettings();
-  const { isLoading: isAuthLoading } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,12 +30,9 @@ export function StoreSection() {
     }
   };
 
-  // Initial fetch - wait for auth
   useEffect(() => {
-    if (!isAuthLoading) {
-      fetchProducts();
-    }
-  }, [isAuthLoading]);
+    void fetchProducts();
+  }, []);
 
   // Refetch when tab becomes visible (handles mobile tab switching)
   useEffect(() => {

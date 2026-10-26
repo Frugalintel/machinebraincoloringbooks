@@ -20,6 +20,7 @@ import {
   HEADER_MARK_SIZE_DESKTOP_PX,
   HEADER_MARK_SIZE_MOBILE_PX,
 } from "@/lib/mark";
+import { accountLabel } from "@/lib/account-chrome";
 import {
   SHELL_FOCUS,
   SITE_NAV_LINKS,
@@ -118,27 +119,104 @@ const HOME_NAV_TEXT = "text-[15px] leading-6 font-medium";
 
 /** Desktop account entry for the solid nav; below 761 px it lives in Menu. */
 function SolidAccountLink() {
-  const { user, openAuthModal } = useAuth();
+  const { user, signOut, openAuthModal, isAdmin } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const className = cn(
     HOME_NAV_TEXT,
     "text-cream/66 hover:text-cream max-[760px]:hidden",
     SHELL_FOCUS,
   );
-  if (user) {
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (!user) {
     return (
-      <Link href="/profile/me" className={className}>
-        Account
-      </Link>
+      <button
+        type="button"
+        onClick={() => openAuthModal("login")}
+        className={className}
+      >
+        Sign in
+      </button>
     );
   }
+
+  const label = accountLabel(user);
+
   return (
-    <button
-      type="button"
-      onClick={() => openAuthModal("login")}
-      className={className}
-    >
-      Sign in
-    </button>
+    <div className="relative max-[760px]:hidden" ref={menuRef}>
+      <button
+        type="button"
+        aria-label={`Account, ${label}`}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        onClick={() => setIsOpen((open) => !open)}
+        className={className}
+      >
+        {label}
+      </button>
+      {isOpen ? (
+        <div
+          role="menu"
+          className="absolute top-10 right-0 z-50 flex w-56 flex-col border border-line bg-surface-1 shadow-2xl"
+        >
+          <div className="border-b border-line p-4">
+            <p className="font-semibold text-cream">{label}</p>
+            <p className="font-label mt-1 truncate tracking-[0.08em] text-fg-muted">
+              {user.email}
+            </p>
+          </div>
+          <Link
+            href="/profile/me"
+            role="menuitem"
+            className={cn(
+              "px-4 py-3 text-sm font-medium text-fg-secondary hover:bg-surface-2 hover:text-cream",
+              SHELL_FOCUS,
+            )}
+            onClick={() => setIsOpen(false)}
+          >
+            Profile and orders
+          </Link>
+          {isAdmin ? (
+            <Link
+              href="/admin"
+              role="menuitem"
+              className={cn(
+                "border-t border-line px-4 py-3 text-sm font-medium text-fg-secondary hover:bg-surface-2 hover:text-cream",
+                SHELL_FOCUS,
+              )}
+              onClick={() => setIsOpen(false)}
+            >
+              Admin
+            </Link>
+          ) : null}
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              void signOut();
+              setIsOpen(false);
+            }}
+            className={cn(
+              "flex w-full items-center gap-2 border-t border-line px-4 py-3 text-left text-sm font-medium text-danger hover:bg-danger-wash",
+              SHELL_FOCUS,
+            )}
+          >
+            <LogOut size={14} strokeWidth={1.75} />
+            Sign out
+          </button>
+        </div>
+      ) : null}
+    </div>
   );
 }
 

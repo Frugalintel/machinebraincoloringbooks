@@ -20,6 +20,14 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/auth",
 }));
 
+vi.mock("@/context/auth-context", () => {
+  const useAuth = () => ({
+    user: null,
+    signOut: vi.fn(),
+  });
+  return { useAuth, useOptionalAuth: useAuth };
+});
+
 const signIn = vi.mocked(supabase.auth.signInWithPassword);
 const signUp = vi.mocked(supabase.auth.signUp);
 

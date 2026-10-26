@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
+import { AccountFooterLinks } from "@/components/account-footer-links";
 import { BrandLockup } from "@/components/mark";
 import {
   FOOTER_LINK_GROUPS,
@@ -43,28 +44,32 @@ export function Footer() {
           </div>
         </div>
 
-        {FOOTER_LINK_GROUPS.map((group) => (
-          <div key={group.heading}>
-            <h2 className="font-label mb-5 tracking-[0.12em] text-cream">
-              {group.heading}
-            </h2>
-            <ul className="space-y-3">
-              {group.links.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className={cn(
-                      "text-sm font-medium text-fg-muted hover:text-cream",
-                      SHELL_FOCUS,
-                    )}
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {FOOTER_LINK_GROUPS.map((group) =>
+          group.heading === "Account" ? (
+            <AccountFooterLinks key={group.heading} variant="site" />
+          ) : (
+            <div key={group.heading}>
+              <h2 className="font-label mb-5 tracking-[0.12em] text-cream">
+                {group.heading}
+              </h2>
+              <ul className="space-y-3">
+                {group.links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        "text-sm font-medium text-fg-muted hover:text-cream",
+                        SHELL_FOCUS,
+                      )}
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ),
+        )}
       </div>
 
       {SITE_SOCIAL_LINKS.length > 0 ? (

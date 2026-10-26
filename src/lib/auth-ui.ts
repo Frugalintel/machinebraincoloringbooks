@@ -183,7 +183,39 @@ export const AUTH_COPY = {
   holdPageBody: "Sign in or create an account and the point is yours.",
   networkError:
     "Sign in couldn’t reach the server. Check your connection and try again.",
+  timedOut: "Sign in took too long. Check your connection and try again.",
 } as const;
+
+/** Client hang budget: long enough for a slow token, short enough to retry. */
+export const AUTH_CLIENT_TIMEOUT_MS = 12_000;
+
+export class AuthTimeoutError extends Error {
+  constructor(message = AUTH_COPY.timedOut) {
+    super(message);
+    this.name = "AuthTimeoutError";
+  }
+}
+
+export function withAuthTimeout<T>(
+  promise: Promise<T>,
+  ms = AUTH_CLIENT_TIMEOUT_MS,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new AuthTimeoutError());
+    }, ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error: unknown) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
 
 const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -236,6 +268,12 @@ export function authFailure(error: unknown): AuthFailure {
   }
   if (/Failed to fetch|NetworkError|Load failed/.test(error.message)) {
     return { summary: AUTH_COPY.networkError, fields: {} };
+  }
+  if (
+    error instanceof AuthTimeoutError ||
+    error.message === AUTH_COPY.timedOut
+  ) {
+    return { summary: AUTH_COPY.timedOut, fields: {} };
   }
   return { summary: error.message, fields: {} };
 }

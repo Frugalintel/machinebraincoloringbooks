@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { AccountFooterLinks } from "@/components/account-footer-links";
 import { Mark } from "@/components/mark";
 import { HOME_ART, HOME_FOOTER_COPY } from "@/lib/home";
 import { SITE_SOCIAL_LINKS } from "@/lib/site-shell";
@@ -34,18 +35,22 @@ export function HomeFooter({ samples }: { samples: boolean }) {
       </div>
       <div className="fin">
         <div className="cols">
-          {HOME_FOOTER_COPY.groups.map((group) => (
-            <nav key={group.heading} aria-label={group.heading}>
-              <p className="h mono">{group.heading}</p>
-              <ul>
-                {group.links.map((link) => (
-                  <li key={link.name}>
-                    <Link href={link.href}>{link.name}</Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))}
+          {HOME_FOOTER_COPY.groups.map((group) =>
+            group.heading === "Account" ? (
+              <AccountFooterLinks key={group.heading} variant="home" />
+            ) : (
+              <nav key={group.heading} aria-label={group.heading}>
+                <p className="h mono">{group.heading}</p>
+                <ul>
+                  {group.links.map((link) => (
+                    <li key={link.name}>
+                      <Link href={link.href}>{link.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ),
+          )}
           {SITE_SOCIAL_LINKS.length > 0 ? (
             <nav aria-label="Follow">
               <p className="h mono">Follow</p>

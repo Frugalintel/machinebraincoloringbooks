@@ -1,9 +1,11 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
+  AUTH_CLIENT_TIMEOUT_MS,
   AUTH_COPY,
   AUTH_DEFAULT_NEXT,
+  AuthTimeoutError,
   authEntryFromParams,
   authFailure,
   authHeadline,
@@ -12,6 +14,7 @@ import {
   codeFromNext,
   safeNextPath,
   validateAuthForm,
+  withAuthTimeout,
   type AuthView,
 } from "@/lib/auth-ui";
 
@@ -233,6 +236,18 @@ describe("authFailure", () => {
       "Signups not allowed",
     );
     expect(authFailure("nope").summary).toBe(AUTH_COPY.genericError);
+    expect(authFailure(new AuthTimeoutError()).summary).toBe(
+      AUTH_COPY.timedOut,
+    );
+  });
+
+  it("times out a hung auth request so the form can retry", async () => {
+    vi.useFakeTimers();
+    const hung = withAuthTimeout(new Promise(() => undefined));
+    const rejected = expect(hung).rejects.toBeInstanceOf(AuthTimeoutError);
+    await vi.advanceTimersByTimeAsync(AUTH_CLIENT_TIMEOUT_MS);
+    await rejected;
+    vi.useRealTimers();
   });
 });
 

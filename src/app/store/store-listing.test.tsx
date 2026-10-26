@@ -34,8 +34,10 @@ vi.mock("@/context/settings-context", () => ({
   useSettings: () => ({ globalDiscount: shop.discount }),
 }));
 
+const auth = vi.hoisted(() => ({ isLoading: true }));
+
 vi.mock("@/context/auth-context", () => ({
-  useAuth: () => ({ isLoading: false }),
+  useAuth: () => ({ isLoading: auth.isLoading }),
 }));
 
 vi.mock("@/lib/logger", () => ({ logger: { error: vi.fn() } }));
@@ -71,8 +73,20 @@ beforeEach(() => {
   shop.addItem.mockReset();
   shop.setIsCartOpen.mockReset();
   shop.discount = { enabled: false, percentage: 0, label: "" };
+  auth.isLoading = true;
   fetchMock.mockReset();
   fetchMock.mockResolvedValue({ data: MOCK_CATALOG, error: null });
+});
+
+describe("Store listing auth independence", () => {
+  it("renders books while auth is still hydrating", async () => {
+    auth.isLoading = true;
+    await renderStore();
+    expect(fetchMock).toHaveBeenCalled();
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Books." }),
+    ).toBeInTheDocument();
+  });
 });
 
 describe("Store listing", () => {

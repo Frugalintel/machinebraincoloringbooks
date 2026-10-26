@@ -335,15 +335,17 @@ describe("Navbar", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows Account instead of Sign in on the store once you are signed in", () => {
+  it("shows the signed-in cue and Sign out on the store instead of Account", () => {
     nav.pathname = "/store";
     nav.user = { email: "you@example.com", id: "u1", initials: "YO" };
     render(<Navbar />);
-    expect(screen.getByRole("link", { name: "Account" })).toHaveAttribute(
-      "href",
-      "/profile/me",
-    );
     expect(screen.queryByRole("button", { name: "Sign in" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Account, YO" }));
+    expect(
+      screen.getByRole("menuitem", { name: "Profile and orders" }),
+    ).toHaveAttribute("href", "/profile/me");
+    fireEvent.click(screen.getByRole("menuitem", { name: "Sign out" }));
+    expect(nav.signOut).toHaveBeenCalled();
   });
 
   it("hides the customer navbar on admin", () => {

@@ -5,6 +5,7 @@ import { AuthPanel } from "@/components/auth-panel";
 import { useAuthForm, type AuthAttempt } from "@/components/use-auth-form";
 import type { AuthEntry } from "@/lib/auth-ui";
 import { STORAGE_KEYS } from "@/lib/constants";
+import { withAuthTimeout } from "@/lib/auth-ui";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 /** `entry` is parsed on the server, so the first paint is already the right state. */
@@ -20,22 +21,27 @@ export function AuthPageClient({ entry }: { entry: AuthEntry }) {
     localStorage.setItem(STORAGE_KEYS.LAST_PROVIDER, "email");
 
     if (mode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await withAuthTimeout(
+        supabase.auth.signInWithPassword({
+          email,
+          password,
+        }),
+      );
       if (error) return { kind: "error", error };
-      // Refresh router to update server components with new auth state
-      router.refresh();
+      // Navigate first. Awaiting refresh on /auth?next=/profile/me can hang
+      // while profile/collectibles hydrate.
       router.push(entry.next);
+      router.refresh();
       return { kind: "done" };
     }
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await withAuthTimeout(
+      supabase.auth.signUp({ email, password }),
+    );
     if (error) return { kind: "error", error };
     if (data.user?.email && !data.session) return { kind: "check" };
-    router.refresh();
     router.push(entry.next);
+    router.refresh();
     return { kind: "done" };
   };
 
