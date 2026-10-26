@@ -19,6 +19,7 @@ import dynamic from "next/dynamic";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SystemLoading } from "@/components/system-loading";
 import { useAuth } from "@/context/auth-context";
 import { useGame } from "@/context/game-context";
 import { AchievementCard } from "@/components/achievements/achievement-card";
@@ -59,6 +60,10 @@ export default function ProfilePage() {
     window.addEventListener("pageshow", onPageShow);
     return () => window.removeEventListener("pageshow", onPageShow);
   }, [router, username, user]);
+
+  if (isLoading) {
+    return <SystemLoading variant="account" label="Loading profile" />;
+  }
 
   const isCurrentUser = username === "me" || (user && username === user.id);
   const displayName =
@@ -418,7 +423,7 @@ export default function ProfilePage() {
         )}
 
         {/* --- MAINTENANCE SECTION: ORDERS & SETTINGS --- */}
-        <div className="border-t border-line pt-12">
+        <div id="orders" className="border-t border-line pt-12">
           <h2 className="font-heading text-xl text-fg-muted tracking-widest mb-8 flex items-center gap-2">
             <Shield size={16} /> Account Maintenance
           </h2>

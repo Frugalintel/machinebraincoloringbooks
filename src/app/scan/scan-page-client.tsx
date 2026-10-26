@@ -78,7 +78,7 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   const preview = scanPreview(allowFixture, previewParam);
   const previewTrophyTier = scanPreviewTrophyTier(allowFixture, previewParam);
   const entry = scanEntryFromParams(params);
-  const { user, openAuthModal } = useAuth();
+  const { user, openAuthModal, isLoading } = useAuth();
   const { success, error: toastError } = useToast();
   const router = useRouter();
   const reducedMotion = useReducedMotion();
@@ -394,7 +394,8 @@ export function ScanPageClient({ allowFixture }: { allowFixture: boolean }) {
   return (
     <ScanLedgerView
       state={state}
-      snapshot={snapshot}
+      authPending={!preview && isLoading}
+      snapshot={preview ? snapshot : { ...snapshot, signedIn: Boolean(user) }}
       typedCode={typedCode}
       capturedUrl={capturedUrl}
       cameraLive={Boolean(cameraOn && state === "index" && !preview)}

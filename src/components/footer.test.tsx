@@ -168,8 +168,11 @@ describe("Footer", () => {
 
     const account = screen.getByRole("navigation", { name: "Account" });
     expect(
-      within(account).getByRole("link", { name: "Profile and orders" }),
+      within(account).getByRole("link", { name: "Profile" }),
     ).toHaveAttribute("href", "/profile/me");
+    expect(
+      within(account).getByRole("link", { name: "Orders" }),
+    ).toHaveAttribute("href", "/profile/me#orders");
     expect(within(account).queryByRole("link", { name: "Sign in" })).toBeNull();
     expect(
       within(account).queryByRole("link", { name: "Register" }),
@@ -184,8 +187,11 @@ describe("Footer", () => {
 
     const account = screen.getByRole("navigation", { name: "Account" });
     expect(
-      within(account).getByRole("link", { name: "Profile and orders" }),
+      within(account).getByRole("link", { name: "Profile" }),
     ).toHaveAttribute("href", "/profile/me");
+    expect(
+      within(account).getByRole("link", { name: "Orders" }),
+    ).toHaveAttribute("href", "/profile/me#orders");
     expect(
       within(account).queryByRole("link", { name: "Create account" }),
     ).toBeNull();

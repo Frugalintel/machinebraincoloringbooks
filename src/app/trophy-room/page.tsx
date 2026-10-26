@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { SystemLoading } from "@/components/system-loading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGame } from "@/context/game-context";
@@ -36,7 +37,7 @@ const TrophyCanvas = dynamic(
 );
 
 export default function TrophyRoomPage() {
-  const { user, openAuthModal } = useAuth();
+  const { user, openAuthModal, isLoading } = useAuth();
   const { collectionSets, unlockItem, collectibleTimestamps } = useGame();
   const { success, error: toastError } = useToast();
   const [code, setCode] = useState("");
@@ -129,6 +130,10 @@ export default function TrophyRoomPage() {
       setLoading(false);
     }
   };
+
+  if (isLoading) {
+    return <SystemLoading variant="page" label="Loading" />;
+  }
 
   if (!user) {
     return (

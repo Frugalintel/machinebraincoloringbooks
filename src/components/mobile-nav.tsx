@@ -21,6 +21,8 @@ export type MobileNavAccountLink = {
   name: string;
   href?: string;
   onSelect?: () => void;
+  /** The signed-out Sign in row, set in cream so it reads as the action. */
+  tone?: "primary";
 };
 
 export function MobileNav({
@@ -30,6 +32,8 @@ export function MobileNav({
   triggerRef,
   pathname,
   accountLinks,
+  accountCue,
+  accountPending = false,
   links = SITE_NAV_LINKS,
 }: {
   open: boolean;
@@ -38,6 +42,9 @@ export function MobileNav({
   triggerRef: RefObject<HTMLButtonElement | null>;
   pathname: string;
   accountLinks: readonly MobileNavAccountLink[];
+  /** Signed-in name or initial, shown above the account rows. */
+  accountCue?: string;
+  accountPending?: boolean;
   links?: readonly SiteLink[];
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -124,7 +131,7 @@ export function MobileNav({
             onClick={onClose}
             aria-label="Close menu"
             className={cn(
-              "p-2 text-cream hover:text-fg-secondary",
+              "inline-flex h-11 w-11 items-center justify-center text-cream hover:text-fg-secondary",
               SHELL_FOCUS,
             )}
           >
@@ -141,7 +148,7 @@ export function MobileNav({
                   ? isOverlayLinkCurrent(pathname, link)
                   : isNavLinkActive(pathname, link.href);
                 return (
-                  <li key={link.href}>
+                  <li key={link.name}>
                     <Link
                       href={link.href}
                       onClick={onClose}
@@ -168,41 +175,58 @@ export function MobileNav({
           </div>
 
           <div>
-            <p className="font-label mb-4 text-fg-muted tracking-[0.1em]">
+            <p className="font-label mb-3 text-fg-muted tracking-[0.1em]">
               Account
             </p>
-            <ul className="flex flex-col gap-1">
-              {accountLinks.map((item) => (
-                <li key={item.name}>
-                  {item.href ? (
-                    <Link
-                      href={item.href}
-                      onClick={onClose}
-                      className={cn(
-                        "block py-2 text-[16px] font-medium text-fg-secondary hover:text-cream",
-                        SHELL_FOCUS,
-                      )}
-                    >
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        item.onSelect?.();
-                        onClose();
-                      }}
-                      className={cn(
-                        "block w-full py-2 text-left text-[16px] font-medium text-fg-secondary hover:text-cream",
-                        SHELL_FOCUS,
-                      )}
-                    >
-                      {item.name}
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
+            {accountCue ? (
+              <p className="mb-2 truncate text-[15px] font-medium text-cream">
+                {accountCue}
+              </p>
+            ) : null}
+            {accountPending ? (
+              <p
+                className="font-label text-fg-muted tracking-[0.1em]"
+                aria-busy="true"
+              >
+                Loading
+              </p>
+            ) : (
+              <ul className="flex flex-col">
+                {accountLinks.map((item) => (
+                  <li key={item.name}>
+                    {item.href ? (
+                      <Link
+                        href={item.href}
+                        onClick={onClose}
+                        className={cn(
+                          "flex min-h-11 items-center text-[16px] font-medium hover:text-cream",
+                          SHELL_FOCUS,
+                          item.tone === "primary"
+                            ? "text-cream"
+                            : "text-fg-secondary",
+                        )}
+                      >
+                        {item.name}
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          item.onSelect?.();
+                          onClose();
+                        }}
+                        className={cn(
+                          "flex min-h-11 w-full items-center text-left text-[16px] font-medium text-fg-secondary hover:text-cream",
+                          SHELL_FOCUS,
+                        )}
+                      >
+                        {item.name}
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>

@@ -23,13 +23,51 @@ export function accountLabel(user: AccountCueUser | null | undefined): string {
   return user.email.slice(0, 2).toUpperCase();
 }
 
+/** Full-page sign-in. `next` returns the reader to the page they were on. */
+export function signInHref(pathname: string): string {
+  if (!pathname || pathname === "/auth" || pathname.startsWith("/auth/")) {
+    return "/auth?mode=login";
+  }
+  return `/auth?mode=login&next=${encodeURIComponent(pathname)}`;
+}
+
+export function registerHref(pathname: string): string {
+  if (!pathname || pathname === "/auth" || pathname.startsWith("/auth/")) {
+    return "/auth?mode=register";
+  }
+  return `/auth?mode=register&next=${encodeURIComponent(pathname)}`;
+}
+
+export const PROFILE_HREF = "/profile/me";
+export const ORDERS_HREF = "/profile/me#orders";
+
+/** Header and mobile-menu account rows. Signed-out Sign in is always a link. */
+export function headerAccountLinks(
+  signedIn: boolean,
+  pathname: string,
+): AccountColumnLink[] {
+  if (signedIn) {
+    return [
+      { name: "Profile", href: PROFILE_HREF },
+      { name: "Orders", href: ORDERS_HREF },
+      { name: "Sign out", action: "sign-out" },
+    ];
+  }
+  return [
+    { name: "Sign in", href: signInHref(pathname) },
+    { name: "Register", href: registerHref(pathname) },
+    { name: "Order lookup", href: "/orders/lookup" },
+  ];
+}
+
 export function accountColumnLinks(
   signedIn: boolean,
   variant: "home" | "site",
 ): AccountColumnLink[] {
   if (signedIn) {
     const links: AccountColumnLink[] = [
-      { name: "Profile and orders", href: "/profile/me" },
+      { name: "Profile", href: PROFILE_HREF },
+      { name: "Orders", href: ORDERS_HREF },
       { name: "Sign out", action: "sign-out" },
       { name: "Order lookup", href: "/orders/lookup" },
     ];

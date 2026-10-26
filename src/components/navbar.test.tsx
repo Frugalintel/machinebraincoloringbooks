@@ -8,8 +8,14 @@ const nav = vi.hoisted(() => ({
   setIsCartOpen: vi.fn(),
   openAuthModal: vi.fn(),
   signOut: vi.fn(),
-  user: null as null | { email: string; id: string; initials: string },
+  user: null as null | {
+    email: string;
+    id: string;
+    initials: string;
+    displayName?: string;
+  },
   isAdmin: false,
+  isLoading: false,
 }));
 
 vi.mock("next/navigation", () => ({
@@ -39,6 +45,7 @@ vi.mock("@/context/auth-context", () => ({
     signOut: nav.signOut,
     openAuthModal: nav.openAuthModal,
     isAdmin: nav.isAdmin,
+    isLoading: nav.isLoading,
   }),
 }));
 
@@ -62,6 +69,7 @@ describe("Navbar", () => {
     nav.cartCount = 2;
     nav.user = null;
     nav.isAdmin = false;
+    nav.isLoading = false;
     nav.setIsCartOpen.mockReset();
     nav.openAuthModal.mockReset();
     nav.signOut.mockReset();
@@ -212,6 +220,7 @@ describe("Navbar", () => {
       ["Worlds", "/store"],
       ["Stories", "/stories"],
       ["About", "/about"],
+      ["Sign in", "/auth?mode=login&next=%2F"],
     ]);
     expect(container.querySelector('a[href="#"]')).toBeNull();
     expect(screen.queryByRole("button", { name: /cart/i })).toBeNull();
@@ -245,6 +254,7 @@ describe("Navbar", () => {
       ["Books", "/store"],
       ["Stories", "/stories"],
       ["About", "/about"],
+      ["Sign in", "/auth?mode=login"],
     ]);
     expect(screen.getByRole("button", { name: "Menu" })).toBeInTheDocument();
   });
@@ -289,6 +299,7 @@ describe("Navbar", () => {
         ["Books", "/store"],
         ["Worlds", "/store#worlds"],
         ["About", "/about"],
+        ["Sign in", `/auth?mode=login&next=${encodeURIComponent(path)}`],
       ]);
       expect(
         within(primary).getByRole("link", { name: "Books" }),
@@ -299,8 +310,12 @@ describe("Navbar", () => {
       expect(cart).not.toHaveClass("bg-cream");
       fireEvent.click(cart);
       expect(nav.setIsCartOpen).toHaveBeenCalledWith(true);
-      fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
-      expect(nav.openAuthModal).toHaveBeenCalledWith("login");
+      expect(
+        within(primary).getByRole("link", { name: "Sign in" }),
+      ).toHaveAttribute(
+        "href",
+        `/auth?mode=login&next=${encodeURIComponent(path)}`,
+      );
       unmount();
     }
   });
@@ -325,11 +340,15 @@ describe("Navbar", () => {
       ["Worlds", "/store#worlds"],
       ["Stories", "/stories"],
       ["About", "/about"],
+      ["Sign in", "/auth?mode=login&next=%2Fstories%2Flantern"],
     ]);
     expect(
       within(primary).getByRole("link", { name: "Stories" }),
     ).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute(
+      "href",
+      "/auth?mode=login&next=%2Fstories%2Flantern",
+    );
     expect(
       screen.getByRole("button", { name: "Cart, 0 items" }),
     ).toBeInTheDocument();
@@ -341,11 +360,86 @@ describe("Navbar", () => {
     render(<Navbar />);
     expect(screen.queryByRole("button", { name: "Sign in" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Account, YO" }));
-    expect(
-      screen.getByRole("menuitem", { name: "Profile and orders" }),
-    ).toHaveAttribute("href", "/profile/me");
+    expect(screen.getByRole("menuitem", { name: "Profile" })).toHaveAttribute(
+      "href",
+      "/profile/me",
+    );
+    expect(screen.getByRole("menuitem", { name: "Orders" })).toHaveAttribute(
+      "href",
+      "/profile/me#orders",
+    );
     fireEvent.click(screen.getByRole("menuitem", { name: "Sign out" }));
     expect(nav.signOut).toHaveBeenCalled();
+  });
+
+  it("shows Sign in on the home header and inside the mobile menu", () => {
+    nav.pathname = "/";
+    render(<Navbar />);
+
+    const header = screen.getByRole("navigation", { name: "Primary" });
+    expect(
+      within(header).getByRole("link", { name: "Sign in" }),
+    ).toHaveAttribute("href", "/auth?mode=login&next=%2F");
+
+    fireEvent.click(screen.getByRole("button", { name: "Menu" }));
+    const dialog = screen.getByRole("dialog", { name: /menu/i });
+    expect(
+      within(dialog).getByRole("link", { name: "Sign in" }),
+    ).toHaveAttribute("href", "/auth?mode=login&next=%2F");
+  });
+
+  it("shows the signed-in name and account menu on the home header", () => {
+    nav.pathname = "/";
+    nav.user = {
+      email: "ada@example.com",
+      id: "u1",
+      initials: "AD",
+      displayName: "Ada",
+    };
+    render(<Navbar />);
+
+    expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Account, Ada" }));
+    expect(
+      screen.getByRole("menuitem", { name: "Profile" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("menuitem", { name: "Orders" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("menuitem", { name: "Sign out" }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps Sign in on the full header and the minimal header", () => {
+    nav.pathname = "/help";
+    const full = render(<Navbar />);
+    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute(
+      "href",
+      "/auth?mode=login&next=%2Fhelp",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Menu" }));
+    expect(
+      within(screen.getByRole("dialog", { name: /menu/i })).getByRole("link", {
+        name: "Sign in",
+      }),
+    ).toHaveAttribute("href", "/auth?mode=login&next=%2Fhelp");
+    full.unmount();
+
+    nav.pathname = "/review";
+    render(<Navbar />);
+    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute(
+      "href",
+      "/auth?mode=login&next=%2Freview",
+    );
+  });
+
+  it("does not flash Sign in while the session is still loading", () => {
+    nav.pathname = "/";
+    nav.isLoading = true;
+    render(<Navbar />);
+    expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
+    expect(screen.getByText("Loading account")).toBeInTheDocument();
   });
 
   it("hides the customer navbar on admin", () => {

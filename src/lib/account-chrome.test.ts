@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { accountColumnLinks, accountLabel } from "@/lib/account-chrome";
+import {
+  accountColumnLinks,
+  accountLabel,
+  headerAccountLinks,
+  signInHref,
+} from "@/lib/account-chrome";
 
 describe("accountLabel", () => {
   it("says Sign in when there is no session", () => {
@@ -36,17 +41,42 @@ describe("accountColumnLinks", () => {
     ]);
   });
 
-  it("swaps Sign in / Register for Profile and a labelled Sign out", () => {
+  it("swaps Sign in / Register for Profile, Orders, and a labelled Sign out", () => {
     expect(accountColumnLinks(true, "home")).toEqual([
-      { name: "Profile and orders", href: "/profile/me" },
+      { name: "Profile", href: "/profile/me" },
+      { name: "Orders", href: "/profile/me#orders" },
       { name: "Sign out", action: "sign-out" },
       { name: "Order lookup", href: "/orders/lookup" },
     ]);
     expect(accountColumnLinks(true, "site").map((link) => link.name)).toEqual([
-      "Profile and orders",
+      "Profile",
+      "Orders",
       "Sign out",
       "Order lookup",
       "Help",
     ]);
+  });
+});
+
+describe("signInHref", () => {
+  it("returns the reader to the page they were on", () => {
+    expect(signInHref("/")).toBe("/auth?mode=login&next=%2F");
+    expect(signInHref("/store")).toBe("/auth?mode=login&next=%2Fstore");
+    expect(signInHref("/stories/lantern")).toBe(
+      "/auth?mode=login&next=%2Fstories%2Flantern",
+    );
+    expect(signInHref("/auth")).toBe("/auth?mode=login");
+  });
+
+  it("lists Profile, Orders, and Sign out once a session exists", () => {
+    expect(headerAccountLinks(true, "/")).toEqual([
+      { name: "Profile", href: "/profile/me" },
+      { name: "Orders", href: "/profile/me#orders" },
+      { name: "Sign out", action: "sign-out" },
+    ]);
+    expect(headerAccountLinks(false, "/scan")[0]).toEqual({
+      name: "Sign in",
+      href: "/auth?mode=login&next=%2Fscan",
+    });
   });
 });

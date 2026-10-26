@@ -2,14 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LogOut,
-  Scan,
-  Search,
-  ShoppingCart,
-  User as UserIcon,
-} from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { Scan, Search, ShoppingCart } from "lucide-react";
+import { useId, useRef, useState } from "react";
+import { HeaderAccount } from "@/components/account-menu";
 import { CampaignBanner } from "@/components/campaign-banner";
 import { BrandLockup } from "@/components/mark";
 import { MobileNav, type MobileNavAccountLink } from "@/components/mobile-nav";
@@ -20,7 +15,7 @@ import {
   HEADER_MARK_SIZE_DESKTOP_PX,
   HEADER_MARK_SIZE_MOBILE_PX,
 } from "@/lib/mark";
-import { accountLabel } from "@/lib/account-chrome";
+import { accountLabel, headerAccountLinks } from "@/lib/account-chrome";
 import {
   SHELL_FOCUS,
   SITE_NAV_LINKS,
@@ -67,158 +62,63 @@ function MinimalHeader() {
       style={{ backgroundColor: "var(--base)" }}
     >
       <nav
-        className="container mx-auto flex h-16 items-center justify-between px-4 lg:h-20"
+        className="container mx-auto flex h-16 items-center justify-between gap-4 px-4 lg:h-20"
         aria-label="Minimal"
       >
         <HeaderLockups />
-        <Link
-          href="/"
-          className={cn(
-            "text-[13px] font-medium text-fg-secondary hover:text-cream",
-            SHELL_FOCUS,
-          )}
-        >
-          Home
-        </Link>
+        <div className="flex shrink-0 items-center gap-5">
+          <HeaderAccount tone="full" />
+          <Link
+            href="/"
+            className={cn(
+              "text-[13px] font-medium text-fg-secondary hover:text-cream",
+              SHELL_FOCUS,
+            )}
+          >
+            Home
+          </Link>
+        </div>
       </nav>
     </header>
   );
 }
 
-function useAccountLinks(): MobileNavAccountLink[] {
-  const { user, signOut, openAuthModal, isAdmin } = useAuth();
-  return user
-    ? [
-        { name: "Profile and orders", href: "/profile/me" },
-        ...(isAdmin ? [{ name: "Admin", href: "/admin" }] : []),
-        {
-          name: "Sign out",
-          onSelect: () => {
-            void signOut();
+function useAccountLinks(): {
+  links: MobileNavAccountLink[];
+  cue?: string;
+  pending: boolean;
+} {
+  const pathname = usePathname();
+  const { user, signOut, isAdmin, isLoading } = useAuth();
+  if (isLoading) {
+    return { links: [], pending: true };
+  }
+  const links = headerAccountLinks(Boolean(user), pathname).map(
+    (link): MobileNavAccountLink =>
+      link.action === "sign-out"
+        ? {
+            name: link.name,
+            onSelect: () => {
+              void signOut();
+            },
+          }
+        : {
+            name: link.name,
+            href: link.href,
+            tone: link.name === "Sign in" ? "primary" : undefined,
           },
-        },
-      ]
-    : [
-        {
-          name: "Sign in",
-          onSelect: () => {
-            openAuthModal("login");
-          },
-        },
-        {
-          name: "Register",
-          onSelect: () => {
-            openAuthModal("register");
-          },
-        },
-        { name: "Order lookup", href: "/orders/lookup" },
-      ];
+  );
+  if (isAdmin && user) {
+    links.splice(links.length - 1, 0, { name: "Admin", href: "/admin" });
+  }
+  return {
+    links,
+    pending: false,
+    cue: user ? accountLabel(user) : undefined,
+  };
 }
 
 const HOME_NAV_TEXT = "text-[15px] leading-6 font-medium";
-
-/** Desktop account entry for the solid nav; below 761 px it lives in Menu. */
-function SolidAccountLink() {
-  const { user, signOut, openAuthModal, isAdmin } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const className = cn(
-    HOME_NAV_TEXT,
-    "text-cream/66 hover:text-cream max-[760px]:hidden",
-    SHELL_FOCUS,
-  );
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  if (!user) {
-    return (
-      <button
-        type="button"
-        onClick={() => openAuthModal("login")}
-        className={className}
-      >
-        Sign in
-      </button>
-    );
-  }
-
-  const label = accountLabel(user);
-
-  return (
-    <div className="relative max-[760px]:hidden" ref={menuRef}>
-      <button
-        type="button"
-        aria-label={`Account, ${label}`}
-        aria-expanded={isOpen}
-        aria-haspopup="menu"
-        onClick={() => setIsOpen((open) => !open)}
-        className={className}
-      >
-        {label}
-      </button>
-      {isOpen ? (
-        <div
-          role="menu"
-          className="absolute top-10 right-0 z-50 flex w-56 flex-col border border-line bg-surface-1 shadow-2xl"
-        >
-          <div className="border-b border-line p-4">
-            <p className="font-semibold text-cream">{label}</p>
-            <p className="font-label mt-1 truncate tracking-[0.08em] text-fg-muted">
-              {user.email}
-            </p>
-          </div>
-          <Link
-            href="/profile/me"
-            role="menuitem"
-            className={cn(
-              "px-4 py-3 text-sm font-medium text-fg-secondary hover:bg-surface-2 hover:text-cream",
-              SHELL_FOCUS,
-            )}
-            onClick={() => setIsOpen(false)}
-          >
-            Profile and orders
-          </Link>
-          {isAdmin ? (
-            <Link
-              href="/admin"
-              role="menuitem"
-              className={cn(
-                "border-t border-line px-4 py-3 text-sm font-medium text-fg-secondary hover:bg-surface-2 hover:text-cream",
-                SHELL_FOCUS,
-              )}
-              onClick={() => setIsOpen(false)}
-            >
-              Admin
-            </Link>
-          ) : null}
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => {
-              void signOut();
-              setIsOpen(false);
-            }}
-            className={cn(
-              "flex w-full items-center gap-2 border-t border-line px-4 py-3 text-left text-sm font-medium text-danger hover:bg-danger-wash",
-              SHELL_FOCUS,
-            )}
-          >
-            <LogOut size={14} strokeWidth={1.75} />
-            Sign out
-          </button>
-        </div>
-      ) : null}
-    </div>
-  );
-}
 
 /**
  * `overlay` sits on the first plate of home and /auth and shows Cart once it has items.
@@ -228,7 +128,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
   const { setIsCartOpen, cartCount } = useCart();
   const { campaign } = useSettings();
   const pathname = usePathname();
-  const accountLinks = useAccountLinks();
+  const account = useAccountLinks();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
@@ -262,7 +162,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
           className={cn("[&>span]:!gap-3", SHELL_FOCUS)}
           wordmarkClassName="text-[11px] tracking-[0.1em]"
         />
-        <div className="flex items-center gap-9 max-[760px]:gap-6">
+        <div className="flex min-w-0 items-center gap-9 max-[760px]:gap-4">
           <ul
             className={cn(
               HOME_NAV_TEXT,
@@ -288,7 +188,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
               );
             })}
           </ul>
-          {solid ? <SolidAccountLink /> : null}
+          <HeaderAccount tone="overlay" />
           {solid || cartCount > 0 ? (
             <button
               type="button"
@@ -331,7 +231,9 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
         menuId={menuId}
         triggerRef={menuTriggerRef}
         pathname={pathname}
-        accountLinks={accountLinks}
+        accountLinks={account.links}
+        accountCue={account.cue}
+        accountPending={account.pending}
         links={links}
       />
     </header>
@@ -340,28 +242,12 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
 
 function FullHeader() {
   const { setIsCartOpen, cartCount } = useCart();
-  const { user, signOut, openAuthModal, isAdmin } = useAuth();
   const { campaign } = useSettings();
   const pathname = usePathname();
-  const accountLinks = useAccountLinks();
+  const account = useAccountLinks();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const profileRef = useRef<HTMLDivElement>(null);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(event.target as Node)
-      ) {
-        setIsProfileOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
     <header
@@ -415,131 +301,15 @@ function FullHeader() {
               <span>Search</span>
             </button>
 
-            <div className="relative hidden md:block" ref={profileRef}>
-              <button
-                type="button"
-                aria-label="Account"
-                aria-expanded={isProfileOpen}
-                aria-haspopup="menu"
-                onClick={() => setIsProfileOpen((open) => !open)}
-                className={cn(
-                  "flex h-10 w-10 items-center justify-center border border-line text-cream hover:border-cream",
-                  SHELL_FOCUS,
-                )}
-              >
-                {user ? (
-                  <span className="text-sm font-semibold">{user.initials}</span>
-                ) : (
-                  <UserIcon size={18} strokeWidth={1.75} />
-                )}
-              </button>
-
-              {isProfileOpen ? (
-                <div
-                  role="menu"
-                  className="absolute top-12 right-0 z-50 flex w-56 flex-col border border-line bg-surface-1 shadow-2xl"
-                >
-                  {user ? (
-                    <>
-                      <div className="border-b border-line p-4">
-                        <p className="font-semibold text-cream">
-                          {user.initials}
-                        </p>
-                        <p className="font-label mt-1 truncate tracking-[0.08em] text-fg-muted">
-                          {user.email}
-                        </p>
-                      </div>
-                      <Link
-                        href="/profile/me"
-                        role="menuitem"
-                        className={cn(
-                          "px-4 py-3 text-sm font-medium text-fg-secondary hover:bg-surface-2 hover:text-cream",
-                          SHELL_FOCUS,
-                        )}
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        Profile and orders
-                      </Link>
-                      {isAdmin ? (
-                        <Link
-                          href="/admin"
-                          role="menuitem"
-                          className={cn(
-                            "border-t border-line px-4 py-3 text-sm font-medium text-fg-secondary hover:bg-surface-2 hover:text-cream",
-                            SHELL_FOCUS,
-                          )}
-                          onClick={() => setIsProfileOpen(false)}
-                        >
-                          Admin
-                        </Link>
-                      ) : null}
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          void signOut();
-                          setIsProfileOpen(false);
-                        }}
-                        className={cn(
-                          "flex w-full items-center gap-2 border-t border-line px-4 py-3 text-left text-sm font-medium text-danger hover:bg-danger-wash",
-                          SHELL_FOCUS,
-                        )}
-                      >
-                        <LogOut size={14} strokeWidth={1.75} />
-                        Sign out
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          openAuthModal("login");
-                          setIsProfileOpen(false);
-                        }}
-                        className={cn(
-                          "w-full border-b border-line px-4 py-3 text-left text-sm font-semibold text-cream hover:bg-surface-2",
-                          SHELL_FOCUS,
-                        )}
-                      >
-                        Sign in
-                      </button>
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          openAuthModal("register");
-                          setIsProfileOpen(false);
-                        }}
-                        className={cn(
-                          "w-full px-4 py-3 text-left text-sm font-medium text-fg-secondary hover:bg-surface-2 hover:text-cream",
-                          SHELL_FOCUS,
-                        )}
-                      >
-                        Register
-                      </button>
-                      <Link
-                        href="/orders/lookup"
-                        role="menuitem"
-                        className={cn(
-                          "border-t border-line px-4 py-3 text-sm font-medium text-fg-secondary hover:bg-surface-2 hover:text-cream",
-                          SHELL_FOCUS,
-                        )}
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        Order lookup
-                      </Link>
-                    </>
-                  )}
-                </div>
-              ) : null}
-            </div>
+            <HeaderAccount tone="full" />
 
             <Link
               href="/scan"
               aria-label="Scan"
-              className={cn("p-2 text-fg-muted hover:text-cream", SHELL_FOCUS)}
+              className={cn(
+                "inline-flex h-11 w-11 items-center justify-center text-fg-muted hover:text-cream",
+                SHELL_FOCUS,
+              )}
             >
               <Scan size={20} strokeWidth={1.75} />
             </Link>
@@ -568,12 +338,9 @@ function FullHeader() {
               aria-label="Menu"
               aria-expanded={isMobileMenuOpen}
               aria-controls={menuId}
-              onClick={() => {
-                setIsProfileOpen(false);
-                setIsMobileMenuOpen(true);
-              }}
+              onClick={() => setIsMobileMenuOpen(true)}
               className={cn(
-                "p-2 text-cream hover:text-fg-secondary lg:hidden",
+                "inline-flex h-11 w-11 items-center justify-center text-cream hover:text-fg-secondary lg:hidden",
                 SHELL_FOCUS,
               )}
             >
@@ -602,7 +369,9 @@ function FullHeader() {
         menuId={menuId}
         triggerRef={menuTriggerRef}
         pathname={pathname}
-        accountLinks={accountLinks}
+        accountLinks={account.links}
+        accountCue={account.cue}
+        accountPending={account.pending}
       />
     </header>
   );

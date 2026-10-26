@@ -39,12 +39,8 @@ export function StoriesBrowser({
   const params = useSearchParams();
   const fixture = samples && params.get("reader") === "sample";
   const { openAuthModal } = useAuth();
-  const { cards, loading, signedIn, balance, sampleBalance } = useStoryCards(
-    samples,
-    fixture,
-    catalog,
-    samplePoints,
-  );
+  const { cards, loading, signedIn, authPending, balance, sampleBalance } =
+    useStoryCards(samples, fixture, catalog, samplePoints);
   const [world, setWorld] = useState("all");
   const worlds = storyWorlds(cards);
   const lead = signedIn
@@ -130,6 +126,7 @@ export function StoriesBrowser({
             </p>
             <StoryAccount
               signedIn={signedIn}
+              pending={authPending}
               balance={balance}
               sample={sampleBalance}
               onSignIn={signIn}

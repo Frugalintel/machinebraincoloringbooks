@@ -232,17 +232,27 @@ export function StoryPlate({
 
 export function StoryAccount({
   signedIn,
+  pending = false,
   balance,
   sample,
   onSignIn,
   onRegister,
 }: {
   signedIn: boolean;
+  pending?: boolean;
   balance?: number;
   sample: boolean;
   onSignIn: () => void;
   onRegister: () => void;
 }) {
+  if (pending) {
+    return (
+      <div className="acct" aria-busy="true">
+        <p className="mono">Loading</p>
+      </div>
+    );
+  }
+
   if (!signedIn) {
     return (
       <div className="acct">

@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { SystemLoading } from "@/components/system-loading";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { useAchievements, useGame } from "@/context/game-context";
@@ -36,7 +37,7 @@ const TrophyCanvas = dynamic(
 );
 
 export default function AchievementsPage() {
-  const { user, openAuthModal } = useAuth();
+  const { user, openAuthModal, isLoading } = useAuth();
   const {
     achievements,
     unlockedAchievements,
@@ -106,6 +107,10 @@ export default function AchievementsPage() {
   const handleViewCollectible = () => {
     router.push("/trophy-room");
   };
+
+  if (isLoading) {
+    return <SystemLoading variant="page" label="Loading" />;
+  }
 
   if (!user) {
     return (
