@@ -157,11 +157,20 @@ describe("Help (A · Index)", () => {
 
   it("swaps Sign in and Create one for Profile once you are signed in", () => {
     helpAuth.user = { email: "ada@example.com" };
-    renderHelp();
+    const { container } = renderHelp();
+    const text = container.textContent ?? "";
     expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Create one" })).toBeNull();
     expect(
       screen.getAllByRole("link", { name: "Profile" }).length,
     ).toBeGreaterThan(0);
+    expect(text).toContain(
+      "You already have one. Your books, points and unlocks are on Profile.",
+    );
+    expect(text).toContain(
+      "You are signed in. Open Profile to see your books and points.",
+    );
+    expect(text).not.toContain("Profile with your email");
+    expect(text).not.toContain("Profile with the email and password");
   });
 });

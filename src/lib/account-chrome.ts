@@ -22,6 +22,17 @@ export function accountLabel(user: AccountCueUser | null | undefined): string {
   return "Account";
 }
 
+/**
+ * The filled cart at ≤400px only has room for a short cue.
+ * A full name stays available in the accessible name.
+ */
+export function accountCue(label: string, tight: boolean): string {
+  if (!tight) return label;
+  if (label === "Account") return "You";
+  const first = label.trim().split(/\s+/)[0];
+  return first || label;
+}
+
 /** Full-page sign-in. `next` returns the reader to the page they were on. */
 export function signInHref(pathname: string): string {
   if (!pathname || pathname === "/auth" || pathname.startsWith("/auth/")) {

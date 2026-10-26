@@ -601,8 +601,19 @@
 }
 
 .store-e2 .fbar .jump {
+  position: relative;
   margin-left: auto;
   color: var(--cream);
+}
+
+.store-e2 .fbar .jump::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: 44px;
+  transform: translate(-50%, -50%);
 }
 
 .store-e2 .fbar .chips {
@@ -1139,9 +1150,20 @@
 }
 
 .store-e2 .top .back {
+  position: relative;
   display: inline-block;
   margin-bottom: 32px;
   color: var(--c2);
+}
+
+.store-e2 .top .back::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: 44px;
+  transform: translate(-50%, -50%);
 }
 
 .store-e2 .top .s-h1 {
@@ -1486,7 +1508,7 @@
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    margin-top: 8px;
+    margin-top: 32px;
   }
 
   .store-e2 .top .back,

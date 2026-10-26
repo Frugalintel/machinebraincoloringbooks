@@ -449,6 +449,22 @@ describe("Navbar", () => {
     });
     expect(trigger).toHaveClass("max-[400px]:max-w-[3rem]");
     expect(trigger.querySelector("span")).toHaveClass("truncate");
+    expect(trigger.querySelector("span")).toHaveTextContent("Ada");
+  });
+
+  it("shows Account in full when the narrow cart is empty", () => {
+    nav.pathname = "/about";
+    nav.cartCount = 0;
+    nav.user = {
+      email: "ada@example.com",
+      id: "u1",
+      initials: "AL",
+    };
+    render(<Navbar />);
+    const trigger = screen.getByRole("button", { name: "Account" });
+    expect(trigger).toHaveClass("max-[400px]:max-w-[4.25rem]");
+    expect(trigger).not.toHaveClass("max-[400px]:max-w-[3rem]");
+    expect(trigger.querySelector("span")).toHaveTextContent("Account");
   });
 
   it("shows the signed-in name and account menu on the home header", () => {

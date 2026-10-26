@@ -213,8 +213,11 @@
 
 .home-e2.vitrine .hn {
   margin: 0;
-  font: 700 40px/1 var(--sans);
+  max-width: 100%;
+  min-width: 0;
+  font: 700 40px/1.05 var(--sans);
   letter-spacing: -0.03em;
+  overflow-wrap: break-word;
 }
 
 .home-e2.vitrine .hn a {
@@ -583,9 +586,20 @@
 }
 
 .home-e2.vitrine .mis a {
+  position: relative;
   color: var(--cream);
   padding-bottom: 1px;
   background: linear-gradient(var(--c4), var(--c4)) 0 100% / 100% 1px no-repeat;
+}
+
+.home-e2.vitrine .mis a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: 44px;
+  transform: translate(-50%, -50%);
 }
 
 .home-e2.vitrine .sl {

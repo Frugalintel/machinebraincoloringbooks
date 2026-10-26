@@ -21,6 +21,8 @@ function HelpQuestionRow({
 }) {
   const [open, setOpen] = useState(Boolean(item.open));
   const panelId = `${item.id}-answer`;
+  const answer =
+    signedIn && item.signedInAnswer ? item.signedInAnswer : item.answer;
 
   return (
     <div className="help-q" id={item.id} data-open={open ? "true" : "false"}>
@@ -42,13 +44,12 @@ function HelpQuestionRow({
         aria-labelledby={`${item.id}-q`}
       >
         <div className="help-a-body" inert={open ? undefined : true}>
-          {item.answer.map((paragraph, index) => (
+          {answer.map((paragraph, index) => (
             <p key={`${item.id}-${index}`}>
               {paragraph.map((part, partIndex) => (
                 <InlinePart
                   key={`${item.id}-${index}-${partIndex}`}
                   part={part}
-                  signedIn={signedIn}
                 />
               ))}
             </p>
@@ -59,27 +60,11 @@ function HelpQuestionRow({
   );
 }
 
-function InlinePart({
-  part,
-  signedIn,
-}: {
-  part: HelpInline;
-  signedIn: boolean;
-}) {
+function InlinePart({ part }: { part: HelpInline }) {
   switch (part.type) {
     case "text":
       return part.text;
     case "link":
-      if (
-        signedIn &&
-        (part.label === "Sign in" || part.label === "Create one")
-      ) {
-        return (
-          <Link className="hit-44" href="/profile/me">
-            Profile
-          </Link>
-        );
-      }
       return (
         <Link className="hit-44" href={part.href}>
           {part.label}

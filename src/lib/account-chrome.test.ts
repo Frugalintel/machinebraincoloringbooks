@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   accountColumnLinks,
+  accountCue,
   accountLabel,
   headerAccountLinks,
   signInHref,
@@ -23,6 +24,21 @@ describe("accountLabel", () => {
       "Account",
     );
     expect(accountLabel({ email: "collector@example.com" })).toBe("Account");
+  });
+});
+
+describe("accountCue", () => {
+  it("keeps the full name when the cart is empty", () => {
+    expect(accountCue("Ada Lovelace the Collector", false)).toBe(
+      "Ada Lovelace the Collector",
+    );
+    expect(accountCue("Account", false)).toBe("Account");
+  });
+
+  it("shortens the filled-cart cue so it does not ellipsize", () => {
+    expect(accountCue("Ada Lovelace the Collector", true)).toBe("Ada");
+    expect(accountCue("Ada", true)).toBe("Ada");
+    expect(accountCue("Account", true)).toBe("You");
   });
 });
 

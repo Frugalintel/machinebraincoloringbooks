@@ -194,7 +194,7 @@ function HomeNavHeader({ solid }: { solid: boolean }) {
               );
             })}
           </ul>
-          <HeaderAccount tone="overlay" />
+          <HeaderAccount tone="overlay" tight={cartCount > 0} />
           {solid || cartCount > 0 ? (
             <button
               type="button"
