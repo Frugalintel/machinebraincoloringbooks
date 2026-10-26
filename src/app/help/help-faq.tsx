@@ -74,9 +74,17 @@ function InlinePart({
         signedIn &&
         (part.label === "Sign in" || part.label === "Create one")
       ) {
-        return <Link href="/profile/me">Profile</Link>;
+        return (
+          <Link className="hit-44" href="/profile/me">
+            Profile
+          </Link>
+        );
       }
-      return <Link href={part.href}>{part.label}</Link>;
+      return (
+        <Link className="hit-44" href={part.href}>
+          {part.label}
+        </Link>
+      );
     case "placeholder":
       return <span className="help-ph-in">{part.text}</span>;
     default: {

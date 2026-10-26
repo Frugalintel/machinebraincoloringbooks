@@ -75,13 +75,21 @@
   margin: 0 0 20px -0.04em;
   padding: 0;
   color: var(--cream);
-  white-space: normal;
+  white-space: nowrap;
   max-width: 100%;
   overflow: visible;
   overflow-wrap: anywhere;
-  word-break: break-word;
   --h1-vw: 12vw;
   --h1-gutter: var(--m);
+}
+
+/* 0,4,0 so the home hero size cannot win. The third cap is the right column. */
+.home-e2.scan-c .h1.h1-fit {
+  font-size: min(
+    max(32px, var(--h1-vw, 12vw)),
+    calc((100vw - 2 * var(--h1-gutter, var(--m, 20px))) / var(--h1-em, 8)),
+    calc(((100vw - 2 * var(--m, 40px) - 64px) * 7 / 12) / var(--h1-em, 8))
+  );
 }
 
 .home-e2.scan-c .pn {
@@ -1141,8 +1149,15 @@
     top: auto;
     padding: 0;
     max-width: 100%;
-    white-space: normal;
+    white-space: nowrap;
     overflow-wrap: anywhere;
+  }
+
+  .home-e2.scan-c .rcol > .h1.h1-fit {
+    font-size: min(
+      max(32px, var(--h1-vw, 18vw)),
+      calc((100vw - 2 * var(--h1-gutter, var(--m, 20px))) / var(--h1-em, 8))
+    );
   }
 
   .home-e2.scan-c .lg[data-bal-first="true"] .rcol > .bal {

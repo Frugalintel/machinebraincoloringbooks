@@ -512,7 +512,7 @@ describe("Navbar", () => {
     const cluster = empty.container.querySelector("[data-header-cluster]");
     expect(cluster).toHaveAttribute("data-header-cluster", "empty");
     expect(cluster).toHaveClass("max-[760px]:gap-4");
-    expect(cluster).not.toHaveClass("max-[400px]:!gap-[4.5px]");
+    expect(cluster).not.toHaveClass("max-[400px]:!gap-[6.5px]");
     fireEvent.click(menuButton());
     const dialog = screen.getByRole("dialog", { name: /menu/i });
     expect(
@@ -536,7 +536,13 @@ describe("Navbar", () => {
       filled.container.querySelector("[data-header-cluster]"),
     ).toHaveAttribute("data-header-cluster", "filled");
     expect(filled.container.querySelector("[data-header-cluster]")).toHaveClass(
-      "max-[400px]:!gap-[4.5px]",
+      "max-[400px]:!gap-[6.5px]",
+    );
+    const cart = filled.getByRole("button", { name: "Cart, 2 items" });
+    expect(cart).toHaveClass("hit-44");
+    expect(cart.querySelector("span")).toHaveClass("max-[400px]:px-[10px]");
+    expect(filled.getByRole("link", { name: "Machine Brain" })).toHaveClass(
+      "hit-44",
     );
   });
 

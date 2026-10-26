@@ -312,6 +312,11 @@
   color: var(--sa-c2);
 }
 
+.sa-link,
+.sa-quiet {
+  position: relative;
+}
+
 .sa-link {
   font: 500 15px/22px var(--sa-sans);
   color: var(--cream);
@@ -320,6 +325,17 @@
   background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px
     no-repeat;
   cursor: pointer;
+}
+
+.sa-link::after,
+.sa-quiet::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: 44px;
+  transform: translate(-50%, -50%);
 }
 
 .sa :is(.sa-btn, .sa-link, .sa-quiet, .sa-close):focus-visible {

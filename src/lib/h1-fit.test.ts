@@ -75,4 +75,20 @@ describe("page H1 fit", () => {
       /100vw - 2 \* var\(--h1-gutter, var\(--m, 20px\)\)\) \/ var\(--h1-em/,
     );
   });
+
+  it("lets .h1-fit beat the home hero size", () => {
+    const home = readFileSync(join(root, "src/app/home.css"), "utf8");
+    expect(home).toMatch(/\.home-e2 \.h1 \{[\s\S]*font-size:\s*21\.4vw/);
+    expect(home).toMatch(/\.home-e2 \.h1 \{[\s\S]*font-size:\s*26\.6vw/);
+    expect(home).toMatch(
+      /\.home-e2 \.h1\.h1-fit \{[\s\S]*font-size:\s*min\(\s*max\(32px, var\(--h1-vw/,
+    );
+    const stories = readFileSync(
+      join(root, "src/app/stories/paths.css"),
+      "utf8",
+    );
+    expect(stories).toMatch(
+      /\.home-e2\.stories-b \.h1\.h1-fit \{[\s\S]*font-size:\s*min\(/,
+    );
+  });
 });

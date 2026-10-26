@@ -8,6 +8,7 @@ import { useCart } from "@/context/cart-context";
 import { Button } from "@/components/ui/button";
 import { cartLineTitle } from "@/lib/cart-line";
 import { toSentenceCase } from "@/lib/display-text";
+import { bookName } from "@/lib/store";
 import { supabase } from "@/lib/supabase";
 
 interface SuggestedProduct {
@@ -231,55 +232,61 @@ export function CartDrawer() {
                     You might also like
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
-                    {suggestedProducts.map((product) => (
-                      <div
-                        key={product.id}
-                        className="group relative bg-background border border-line hover:border-line-strong transition-colors p-2"
-                      >
-                        <Link
-                          href={`/store/${product.id}`}
-                          onClick={() => setIsCartOpen(false)}
-                          className="block aspect-[3/4] bg-background mb-2 relative overflow-hidden"
+                    {suggestedProducts.map((product) => {
+                      const name = bookName({
+                        title: product.title,
+                        subtitle: product.subtitle ?? "",
+                      });
+                      return (
+                        <div
+                          key={product.id}
+                          className="group relative bg-background border border-line hover:border-line-strong transition-colors p-2"
                         >
-                          {product.image_url ? (
-                            <img
-                              src={product.image_url}
-                              alt={toSentenceCase(product.title)}
-                              className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-surface-2 text-fg-faint font-heading text-xl">
-                              {product.title.charAt(0)}
-                            </div>
-                          )}
-                          {/* Quick Add Overlay */}
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              addItem({
-                                id: product.id,
-                                title: product.title,
-                                price: product.price,
-                                subtitle: product.subtitle || "",
-                                image: product.image_url,
-                              });
-                            }}
-                            className="absolute bottom-0 right-0 w-8 h-8 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cream"
+                          <Link
+                            href={`/store/${product.id}`}
+                            onClick={() => setIsCartOpen(false)}
+                            className="block aspect-[3/4] bg-background mb-2 relative overflow-hidden"
                           >
-                            <Plus size={16} />
-                          </button>
-                        </Link>
-                        <div className="space-y-1">
-                          <h5 className="font-heading text-xs text-cream tracking-wide truncate">
-                            {toSentenceCase(product.title)}
-                          </h5>
-                          <p className="font-label text-fg-muted">
-                            ${product.price.toFixed(2)}
-                          </p>
+                            {product.image_url ? (
+                              <img
+                                src={product.image_url}
+                                alt={name}
+                                className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-surface-2 text-fg-faint font-heading text-xl">
+                                {name.charAt(0)}
+                              </div>
+                            )}
+                            {/* Quick Add Overlay */}
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                addItem({
+                                  id: product.id,
+                                  title: name,
+                                  price: product.price,
+                                  subtitle: product.subtitle || "",
+                                  image: product.image_url,
+                                });
+                              }}
+                              className="absolute bottom-0 right-0 w-8 h-8 bg-cream text-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cream"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          </Link>
+                          <div className="space-y-1">
+                            <h5 className="font-heading text-xs text-cream tracking-wide truncate">
+                              {name}
+                            </h5>
+                            <p className="font-label text-fg-muted">
+                              ${product.price.toFixed(2)}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

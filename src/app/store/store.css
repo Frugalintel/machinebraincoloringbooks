@@ -798,11 +798,11 @@
 .store-e2 .meta .act .quiet::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 50%;
   top: 50%;
+  width: max(100%, 44px);
   height: 44px;
-  transform: translateY(-50%);
+  transform: translate(-50%, -50%);
 }
 
 .store-e2 .idx {
@@ -1481,7 +1481,22 @@
     order: 2;
     display: flex;
     flex-direction: column;
+    align-self: stretch;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     margin-top: 8px;
+  }
+
+  .store-e2 .top .back,
+  .store-e2 .top .buyb,
+  .store-e2 .top .s-h1,
+  .store-e2 .top .sub,
+  .store-e2 .top .ds {
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
   }
 
   .store-e2 .top .back {

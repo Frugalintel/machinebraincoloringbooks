@@ -72,11 +72,22 @@
 }
 
 .home-e2 .quiet {
+  position: relative;
   font: 500 16px/24px var(--sans);
   color: var(--cream);
   padding-bottom: 2px;
   background: linear-gradient(var(--c4), var(--c4)) 0 100% / 100% 1px no-repeat;
   white-space: nowrap;
+}
+
+.home-e2 .quiet::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: 44px;
+  transform: translate(-50%, -50%);
 }
 
 .home-e2 .plate {
@@ -190,6 +201,18 @@
 
 .home-e2 .h1 span + span {
   margin-top: 0.04em;
+}
+
+/*
+ * Page H1s that opt into .h1-fit. Specificity beats `.home-e2 .h1`
+ * (21.4vw / 26.6vw), which is the home hero only. Home's own H1 has
+ * no .h1-fit class, so it stays 308 / 104 / 96.
+ */
+.home-e2 .h1.h1-fit {
+  font-size: min(
+    max(32px, var(--h1-vw, 12vw)),
+    calc((100vw - 2 * var(--h1-gutter, var(--m, 20px))) / var(--h1-em, 8))
+  );
 }
 
 .home-e2 .hfoot {
