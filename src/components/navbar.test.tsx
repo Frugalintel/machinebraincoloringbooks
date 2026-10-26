@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Navbar } from "@/components/navbar";
+import { SITE_NAV_LINKS } from "@/lib/site-shell";
 
 const nav = vi.hoisted(() => ({
   pathname: "/",
@@ -76,41 +77,42 @@ describe("Navbar", () => {
     document.body.style.overflow = "";
   });
 
-  it("renders the compact lockup and home nav on /help", () => {
+  it("renders the F3 lockup and existing customer routes", () => {
     render(<Navbar />);
 
-    const home = screen.getByRole("link", { name: "Machine Brain" });
+    const home = screen.getAllByRole("link", { name: "Machine Brain" })[0];
     expect(home).toHaveAttribute("href", "/");
     expect(home.querySelector("img")).toHaveAttribute(
       "src",
-      "/brand/mb-mark-S3-small-cream.svg",
+      expect.stringMatching(/mb-mark-(full|S3-small)-cream\.svg$/),
     );
 
-    const primary = screen.getByRole("navigation", { name: "Primary" });
-    expect(
-      within(primary)
-        .getAllByRole("link")
-        .map((link) => [link.textContent, link.getAttribute("href")]),
-    ).toEqual([
-      ["Machine Brain", "/"],
-      ["Books", "/store"],
-      ["Worlds", "/store"],
-      ["Stories", "/stories"],
-      ["About", "/about"],
-    ]);
-    expect(
-      screen.queryByRole("link", { name: "Store" }),
-    ).not.toBeInTheDocument();
+    for (const link of SITE_NAV_LINKS) {
+      expect(
+        screen.getAllByRole("link", { name: link.name })[0],
+      ).toHaveAttribute("href", link.href);
+    }
+
+    expect(screen.getByRole("link", { name: /scan/i })).toHaveAttribute(
+      "href",
+      "/scan",
+    );
   });
 
-  it("uses the compact S3 mark on the solid header", () => {
+  it("uses the stacked lockup: S3 at 32 px below lg, full mark at 48 px", () => {
     render(<Navbar />);
 
-    const lockup = screen.getByRole("link", { name: "Machine Brain" });
-    const mark = lockup.querySelector("img");
-    expect(mark).toHaveAttribute("src", "/brand/mb-mark-S3-small-cream.svg");
-    expect(mark).toHaveAttribute("width", "24");
-    expect(within(lockup).getByText("Machine Brain")).toHaveClass("font-mono");
+    const lockups = screen.getAllByRole("link", { name: "Machine Brain" });
+    const marks = lockups.map((link) => link.querySelector("img")!);
+    expect(marks.map((img) => img.getAttribute("src"))).toEqual([
+      "/brand/mb-mark-S3-small-cream.svg",
+      "/brand/mb-mark-full-cream.svg",
+    ]);
+    expect(marks.map((img) => img.getAttribute("width"))).toEqual(["32", "48"]);
+    for (const link of lockups) {
+      expect(link.querySelector("span")).toHaveClass("flex-col");
+      expect(within(link).getByText("Machine Brain")).toHaveClass("font-mono");
+    }
   });
 
   it("opens and closes the mobile menu with aria-expanded and aria-controls", () => {
@@ -165,9 +167,9 @@ describe("Navbar", () => {
     fireEvent.click(menuButton());
 
     const dialog = screen.getByRole("dialog", { name: /menu/i });
-    const books = within(dialog).getByRole("link", { name: "Books" });
-    expect(books).toHaveAttribute("href", "/store");
-    expect(books.tabIndex).toBeGreaterThanOrEqual(0);
+    const store = within(dialog).getByRole("link", { name: "Store" });
+    expect(store).toHaveAttribute("href", "/store");
+    expect(store.tabIndex).toBeGreaterThanOrEqual(0);
   });
 
   it("opens the cart from the header action", () => {

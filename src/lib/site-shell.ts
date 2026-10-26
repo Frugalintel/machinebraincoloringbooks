@@ -15,9 +15,8 @@ export type FooterLinkGroup = {
 
 /**
  * "overlay": home and /auth draw the nav over their first plate and own their footer.
- * "solid": the compact text nav on near-black. Customer routes use this.
- * "full" remains in the union so the legacy header can still compile, and is
- * not returned for customer routes.
+ * "solid": the same home nav on near-black; the store, stories, collectibles, and scan use it.
+ * "full": the approved customer header on the other routes, including /about and /help.
  */
 export type HeaderVariant = "full" | "overlay" | "solid" | "minimal" | "hidden";
 
@@ -207,7 +206,15 @@ export function headerVariantFor(pathname: string): HeaderVariant {
   if (pathname === "/" || pathname === "/auth") {
     return "overlay";
   }
-  return "solid";
+  if (
+    isStorePath(pathname) ||
+    isStoriesPath(pathname) ||
+    isCollectiblesPath(pathname) ||
+    isScanPath(pathname)
+  ) {
+    return "solid";
+  }
+  return "full";
 }
 
 export function hidesCustomerFooter(pathname: string): boolean {
